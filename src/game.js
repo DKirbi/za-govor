@@ -901,6 +901,7 @@ let SCR = null;   // current screen container (below the top bar)
 function mountShell() { app.innerHTML = ''; app.append(renderTopbar(), SCR = h('div', { id: 'screen' })); }
 function go(screen, arg) {
   S.screen = screen;
+  if (screen === 'title') S.pickIds = null;
   if (screen !== 'battle') { S.battle = null; B = null; }
   mountShell();
   ({ title: renderTitle, pick: renderPick, travel: renderTravel, ending: renderEnding, battle: startBattle, chest: startChest, trap: startTrap, gallery: renderGallery, hero: renderHeroMoment })[screen](arg);
@@ -2754,6 +2755,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, useItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { UNLOCKED, unlock, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, useItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 

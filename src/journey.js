@@ -8,6 +8,26 @@ const ITEMS = Object.fromEntries(WORLD.items.map(it => [it.id, it]));
 const TV_SPEED = 240;                      // walking speed, world pixels per second
 function has(id) { return !!(S.run && S.run.relics.includes(id)); }
 
+// ------------------------------------------------------------ who can start a journey
+// The first journey always starts with Martin Krpan. A folk hero you meet on the road is unlocked
+// for later journeys (remembered in this browser); the start screen then offers Krpan and two of
+// the unlocked ones. Gods never start a journey — they are met at the shrine.
+const STARTER = 'krpan', STARTER_SLOTS = 3;
+const UNLOCKED = new Set([STARTER]);
+try { JSON.parse(localStorage.getItem('zg-unlocked') || '[]').forEach(id => { if (ROSTER[id]) UNLOCKED.add(id); }); } catch (e) { /* no storage */ }
+function unlock(id) {
+  if (UNLOCKED.has(id)) return false;
+  UNLOCKED.add(id); try { localStorage.setItem('zg-unlocked', JSON.stringify([...UNLOCKED])); } catch (e) { /* no storage */ }
+  return true;
+}
+function starterChoices() {
+  if (!S.pickIds) {
+    const folk = CHARS.filter(c => !isGod(c.id) && c.id !== STARTER).map(c => c.id);
+    S.pickIds = [STARTER].concat(S.testMode ? folk : shuffle(folk.filter(id => UNLOCKED.has(id))).slice(0, STARTER_SLOTS - 1));
+  }
+  return S.pickIds;
+}
+
 Object.assign(LORE, {
   erazem: { story: ['Erazem Predjamski je bil vitez iz 15. stoletja, gospodar gradu v skalni steni pri Postojni. Ko se je zameril cesarju, ga je vojska oblegala leto in dan.', 'Po skrivnem rovu skozi jamo je dobival svežo hrano in oblegovalcem za posmeh metal češnje. Izročilo pravi, da ga je izdal sluga in da ga je topovska krogla zadela na stranišču.'],
     meet: 'Moj grad ne pade. Če greste na zmaja, grem z vami — rov poznam le jaz.', after: 'Leto in dan sem zdržal. To je bila malenkost.' },
@@ -103,15 +123,17 @@ function openBag() {
 
 // ------------------------------------------------------------ choosing the first hero
 function renderPick() {
-  S.pickSel = clamp(S.pickSel, 0, CHARS.length - 1);
-  const ch = CHARS[S.pickSel], K = ROSTER[ch.id];
+  const ids = starterChoices(), list = ids.map(id => CHARS.find(c => c.id === id));
+  S.pickSel = clamp(S.pickSel, 0, list.length - 1);
+  const ch = list[S.pickSel], K = ROSTER[ch.id];
+  const locked = CHARS.filter(c => !isGod(c.id) && !UNLOCKED.has(c.id)).length;
   SCR.append(h('div', { class: 'pick' },
     h('div', { class: 'logo', style: { 'font-size': '30px' } }, 'Kdo gre na pot?'),
-    h('p', { class: 'lead' }, 'Pot začneš z enim junakom. Drugi se ti pridružijo na poti, v družini so največ štirje. Bogovi so močnejši, zato gre s teboj le eden: če začneš z bogom, drugega ne boš več srečal.'),
-    h('div', { class: 'pickgrid' }, CHARS.map((c, i) => h('button', { class: 'pickcard' + (i === S.pickSel ? ' on' : '') + (isGod(c.id) ? ' god' : ''), style: { '--c': c.c }, 'aria-pressed': i === S.pickSel ? 'true' : 'false',
+    h('p', { class: 'lead' }, 'Prvo pot začne Martin Krpan. Junaka, ki ga srečaš na poti, odkleneš: naslednjič lahko začneš tudi z njim. Na izbiro so vedno največ trije; bogovi poti ne začenjajo, enega lahko srečaš pri svetišču.' + (locked ? ` Še neodkritih junakov: ${locked}.` : ' Vsi junaki so odkriti.') + (S.testMode ? ' (Preizkusni način: na izbiro so vsi.)' : '')),
+    h('div', { class: 'pickgrid' }, list.map((c, i) => h('button', { class: 'pickcard' + (i === S.pickSel ? ' on' : ''), style: { '--c': c.c }, 'aria-pressed': i === S.pickSel ? 'true' : 'false',
       onclick: () => { if (S.pickSel === i) return startJourney(); S.pickSel = i; sfx('sel'); mountShell(); renderPick(); } },
-      h('i', { style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, c.name), h('span', {}, isGod(c.id) ? 'bog' : K && ROSTER[c.id].role))),
-    ),
+      h('i', { style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, c.name), h('span', {}, ROSTER[c.id].role))),
+      Array.from({ length: Math.max(0, STARTER_SLOTS - list.length) }, () => h('div', { class: 'pickcard locked' }, h('i', { class: 'q' }, '?'), h('b', {}, 'Še neodkrit'), h('span', {}, 'srečaš ga na poti')))),
     h('div', { class: 'pickinfo', style: { '--c': ch.c } },
       h('div', { class: 'spirit' }, spriteEl(ch.id, ch.c)),
       h('div', {},
@@ -128,11 +150,11 @@ function renderPick() {
 }
 function pickKey(e) {
   const d = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0;
-  if (d) { e.preventDefault(); S.pickSel = (S.pickSel + d + CHARS.length) % CHARS.length; sfx('sel'); mountShell(); renderPick(); }
+  if (d) { e.preventDefault(); const n = starterChoices().length; S.pickSel = (S.pickSel + d + n) % n; sfx('sel'); mountShell(); renderPick(); }
   else if (e.key === 'Enter') { e.preventDefault(); startJourney(); }
   else if (e.key === 'Escape') go('title');
 }
-function startJourney() { newRun(CHARS[S.pickSel].id); go('travel'); }
+function startJourney() { const ids = starterChoices(); newRun(ids[clamp(S.pickSel, 0, ids.length - 1)]); S.pickIds = null; S.pickSel = 0; go('travel'); }
 
 // ------------------------------------------------------------ a run and its regions
 function newRun(starterId) {
@@ -155,10 +177,10 @@ function enterRegion(i) {
     const stop = { kind, x: (n + 1) * gap, done: false, passed: false };
     if (kind === 'battle' || kind === 'elite' || kind === 'boss') stop.enemies = enemyGroup(reg, i, kind);
     else if (kind === 'hero') {
-      // the hero of this place; if they already travel with you (or were met), someone else is on the road
+      // a random folk hero you have not met on this journey; heroes you never unlocked come first
       const free = id => !R.met.includes(id) && !HEROES.some(x => x.id === id);
-      const others = CHARS.filter(c => !isGod(c.id) && free(c.id)).map(c => c.id);
-      stop.hero = reg.hero && free(reg.hero) ? reg.hero : others.length ? pick(others) : null;
+      const others = CHARS.filter(c => !isGod(c.id) && free(c.id)).map(c => c.id), fresh = others.filter(id => !UNLOCKED.has(id));
+      stop.hero = fresh.length ? pick(fresh) : others.length ? pick(others) : null;
       if (stop.hero) R.met.push(stop.hero); else stop.kind = 'well';
     } else if (kind === 'god') stop.gods = shuffle(CHARS.filter(c => isGod(c.id)).map(c => c.id)).slice(0, 3);
     else if (kind === 'shop') {
@@ -321,12 +343,13 @@ function stopBattle(stop) {
 function meetHero(stop, ids) {
   const R = S.run, back = () => go('travel');
   const leave = () => { stop.passed = true; R.prompt = null; back(); };
+  const fresh = ids.filter(id => !isGod(id) && unlock(id));          // meeting a folk hero unlocks them as a starter
   go('hero', { kind: 'meet', ids, sel: 0,
     info: A => { const id = A.ids[A.sel], full = HEROES.length >= 4;
-      return (isGod(id) ? 'Bog je močnejši od ljudskih junakov, a s teboj gre le eden. ' : '') + (full ? 'Družina je polna (štirje). Če ga vzameš s seboj, se mora eden od tvojih posloviti.' : `V družini je še prostor (${HEROES.length} od 4).`); },
+      return (fresh.includes(id) ? `${ROSTER[id].name} je odklenjen: odslej lahko pot začneš tudi z njim. ` : '') + (isGod(id) ? 'Bog je močnejši od ljudskih junakov, a s teboj gre le eden. ' : '') + (full ? 'Družina je polna (štirje). Če ga vzameš s seboj, se mora eden od tvojih posloviti.' : `V družini je še prostor (${HEROES.length} od 4).`); },
     actions: A => { const id = A.ids[A.sel], hr = ROSTER[id], join = at => () => { joinHero(id, at); stop.done = stop.passed = true; R.prompt = null; sfx('win', { vol: .6 }); back(); };
       const acts = HEROES.length < 4 ? [{ label: `${hr.name} gre s teboj`, primary: true, fn: join() }]
-        : HEROES.map((x, k) => ({ label: `Namesto: ${x.name}${S.heroes[k].down ? ' (obležal)' : ''}`, fn: join(k) }));
+        : HEROES.map((x, k) => ({ label: `${S.heroes[k].down ? 'Zapusti' : 'Namesto'}: ${x.name}${S.heroes[k].down ? ' (obležal)' : ''}`, fn: join(k) }));
       return acts.concat([{ label: 'Pojdi naprej brez novega junaka', fn: leave }]); } });
 }
 function openShop(stop) {

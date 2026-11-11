@@ -714,3 +714,7 @@ body.mobile .gitems { grid-template-columns: 1fr; } body.mobile .foename { font-
 body.mobile .regdots i { width: 7px; height: 7px; }
 @media (prefers-reduced-motion: reduce) { .obj.spr.npc .sp { animation: none; } }
 .rock { background-color: transparent; border-color: transparent; background-size: 100% 100%; background-repeat: no-repeat; image-rendering: pixelated; text-shadow: 0 1px 3px #000, 0 0 2px #000; }
+
+.pickgrid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.pickcard.locked { cursor: default; opacity: .55; border-style: dashed; }
+.pickcard .q { display: grid; place-items: center; font-style: normal; font-size: 34px; font-weight: 800; color: var(--faint); }
