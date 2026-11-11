@@ -1955,6 +1955,12 @@ function openCrossword(kind, id, opts = {}) {
   if (S.mobile) UI.puzzle.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 const cellKey = (e, p) => (e.row + (e.dir === 'D' ? p : 0)) + ',' + (e.col + (e.dir === 'A' ? p : 0));
+// Pressing a clue, a cell or a banner button must not blur the input first: the blur redraws the banner,
+// which can move the grid and the clues under the finger, and on a phone it closes the keyboard.
+const keepCwFocus = {
+  onpointerdown: e => { if (!isTextInput(e.target)) e.preventDefault(); },
+  onmousedown: e => { if (!isTextInput(e.target)) e.preventDefault(); },
+};
 function focusCwInput() { const C = B && B.cw; if (C && C.input) { try { C.input.focus({ preventScroll: true }); } catch (e) { C.input.focus(); } } }
 
 // Built once per crossword; typing only repaints (so the input keeps focus and the phone keyboard stays open)
@@ -1995,12 +2001,12 @@ function renderCrossword() {
   C.input.addEventListener('focus', () => { C.focused = true; cwPaint(); });
   C.input.addEventListener('blur', () => { C.focused = false; cwPaint(); });
   // tapping anywhere on the grid focuses the input (a label does this natively, which phones accept as a user gesture)
-  const gridWrap = h('label', { class: 'cwgridwrap' }, grid, C.input);
+  const gridWrap = h('label', { class: 'cwgridwrap', ...keepCwFocus }, grid, C.input);
 
   C.clueEls = new Map();
   const clueList = dir => D.entries.map((e, k) => {
     if (e.dir !== dir) return null;
-    const el = h('button', { class: 'clue' + (e.geslo ? ' geslo' : '') + (e.main ? ' main' : ''), onclick: () => { cwSelect(k); focusCwInput(); } },
+    const el = h('button', { class: 'clue' + (e.geslo ? ' geslo' : '') + (e.main ? ' main' : ''), ...keepCwFocus, onclick: () => { cwSelect(k); focusCwInput(); } },
       h('b', {}, e.num), e.main ? '★ ' : '', e.clue, LV().showLen ? h('span', { class: 'muted' }, ` (${e.answer.length})`) : null);
     C.clueEls.set(k, el); return el;
   });
@@ -2029,8 +2035,7 @@ function cwPaint() {
   C.banner.innerHTML = '';
   C.banner.append(h('b', {}, curE.geslo ? '★ Geslo' : `${curE.num} ${curE.dir === 'A' ? 'vodoravno' : 'navpično'}`), ` ${curE.clue}` + (LV().showLen ? ` (${curE.answer.length})` : ''));
   if (C.reveals > 0 && !C.solved.has(C.cur.e)) C.banner.append(h('button', { class: 'kbbtn revbtn', title: 'Razkrij eno črko te besede (beseda nato udari s pol moči)',
-    // keep focus in the crossword input: a blur would redraw the banner under the pointer and close the phone keyboard
-    onpointerdown: e => e.preventDefault(), onmousedown: e => e.preventDefault(), onclick: e => { e.preventDefault(); cwReveal(); } }, `Razkrij črko · ${C.reveals}`));
+    ...keepCwFocus, onclick: e => { e.preventDefault(); cwReveal(); } }, `Razkrij črko · ${C.reveals}`));
   if (!C.focused) C.banner.append(h('button', { class: 'kbbtn', onclick: e => { e.preventDefault(); focusCwInput(); } }, S.mobile ? 'Tapni za tipkovnico' : 'Klikni za tipkanje'));
 }
 function cwSelect(k) { B.cw.cur = { e: k, p: 0 }; cwPaint(); }
