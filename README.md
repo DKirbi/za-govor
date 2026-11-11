@@ -60,9 +60,10 @@ castle:
 
 ### Battles: the letter mesh
 - A 5×6 grid of Slovene letters (Scrabble letter distribution, balanced vowels). Chain
-  neighbouring letters in any of 8 directions into a word of 3+ letters and send it.
+  neighbouring letters in any of 8 directions into a word and send it (at least 3 letters
+  on Malček, 4 on Učenjak and Knjižni molj).
 - Used letters disappear and new ones fall in. *Premešaj* reshuffles the grid; *Namig*
-  shows a word (3 per battle).
+  shows the start of a good word (3 per battle on Malček, 1 on Učenjak, none on Knjižni molj).
 - Most tiles belong to a hero (coloured, with the hero's initial). **The hero whose tiles
   you use attacks**: one tile = small move, two = medium, three or more = big move with a
   painted card. Several heroes can attack with one word.
@@ -74,8 +75,8 @@ castle:
   same base word in one battle weakens it: ×1, ×0.6, ×0.35, ×0.2.
 - **Č, Š, Ž** in a word give a critical hit (×1.5). Each hero has **domain words** that
   hit ×1.5 (Perun: *grom, strela, nevihta*…; Mokoš: *voda, zemlja, kruh*…).
-- Optional **word proposals** (for learners) list up to 8 words that continue the letters
-  you have started.
+- Optional **word proposals** (Malček only, for learners) list up to 8 words that continue
+  the letters you have started.
 
 ### Heroes
 | Hero | Role | Moves (small → big) |
@@ -110,10 +111,11 @@ Enemies attack in real time, telegraphed by a glowing wind-up. Their strongest m
   fires the theme hero's attack at once; partial or wrong entries stay **black** and do
   nothing. Solving the whole grid adds a big themed finisher (Perun strikes every enemy,
   Kresnik burns them, Mokoš heals and cleanses, Triglav stuns).
-- Crosswords are **about everyday things** and generated fresh every time from 359
-  original clues in 14 topics: food, home, nature, animals, body, sport and music, town,
-  people, objects, time, colours and opposites, verbs, Slovenia, and proverbs
-  (*Ni vse ___, kar se sveti* → ZLATO).
+- Crosswords are generated fresh every time from the clue bank of your
+  [knowledge level](#two-difficulty-choices): everyday words for Malček (*Ni vse ___, kar
+  se sveti* → ZLATO), longer and harder words for Učenjak (*Kuj ___, dokler je vroče* →
+  ŽELEZO), and knowledge clues in the style of paper crosswords for Knjižni molj
+  (*Avtor Desetega brata* → JURČIČ).
 - **Mythology is the reward, not the obstacle.** About half the finishers hide a god's
   name in a **gold column** (*geslo*): PERUN, MOKOŠ, KRESNIK, TRIGLAV… Every correct row
   reveals one letter. Guess the keyword early and the zagovor fires at once, stronger for
@@ -123,6 +125,9 @@ Enemies attack in real time, telegraphed by a glowing wind-up. Their strongest m
   of easy words with the mesh closed: solve them for a counterattack, fail and take triple
   damage. The hidden keyword is a way out — URŠKA (from Prešeren's ballad *Povodni mož*)
   frees you from the whirlpool, ZMAJ from the dragon's riddle.
+- **Razkrij črko** (or `?`) reveals one letter of the current entry: five per crossword on
+  Malček, two on Učenjak, one on Knjižni molj. A word finished with a revealed letter still
+  fires, at half power, and revealed keyword letters don't count as guessed.
 
 ### Between battles
 - **Chest:** rebuild a hidden word from scrambled letters before time runs out (40 s, 80 s
@@ -131,10 +136,23 @@ Enemies attack in real time, telegraphed by a glowing wind-up. Their strongest m
 - **Rock slide:** every falling rock carries a letter; type any word containing it before
   it lands. Long words break several rocks.
 
-### Pace
-Two difficulty options. **Real-time** (recommended) has no countdown: enemies attack at
-their own pace and wear the party down. **Calm mode** (*mirni način*) only lets enemies act
+### Two difficulty choices
+**Pace** (*Težavnost*): **real-time** (recommended) has no countdown — enemies attack at
+their own pace and wear the party down; **calm mode** (*mirni način*) only lets enemies act
 after you play words.
+
+**Knowledge** (*Znanje*), chosen below the pace and remembered between visits:
+
+| | Malček (baby) | Učenjak (scholar) | Knjižni molj (book worm) |
+| --- | --- | --- | --- |
+| Who it's for | Learning words | Learning longer and harder words | Seasoned crossword solvers |
+| Shortest word in the mesh | 3 letters | 4 letters | 4 letters |
+| Mesh tips | Word proposals, 3 hints per battle, word count, coaching tips | 1 hint per battle, word count, coaching tips | None |
+| Finisher crosswords | 359 everyday clues, words up to 7 letters | 219 longer, harder words (school subjects, society, Slovenia, harder proverbs), up to 9 letters | 257 paper-crossword clues (capitals, rivers, Slovene places and writers, art, music, antiquity, science, classic crossword animals) plus the Učenjak words |
+| Enemy crosswords | Easiest words, up to 5 letters | Malček words, up to 6 letters | Molj and Učenjak words, up to 6 letters |
+| Crossword tips | Letter counts, 5 revealed letters | Letter counts, 2 revealed letters | No letter counts, 1 revealed letter |
+
+Malček is the game as it was before the levels were added.
 
 ## Controls
 | Action | Keyboard | Mouse / touch |
@@ -145,6 +163,7 @@ after you play words.
 | Remove the last letter | `Backspace` | *Briši* |
 | Speak the zagovor (meter full) | `Space` | *Izreci zagovor* |
 | Hint / reshuffle | `1` / `2` | *Namig* / *Premešaj* |
+| Crossword: reveal a letter | `?` | *Razkrij črko* |
 | Crossword: next entry, move | `Enter` or `Tab`, arrow keys | Tap a cell or a clue; the phone keyboard opens |
 
 ## Build from source
@@ -160,14 +179,16 @@ The two data files are committed, so this is all you need. To regenerate them:
 ```sh
 pip install simplemma wordfreq
 python3 tools/build_dict.py   # battle word list  -> data/dict.json  (~1 min)
-python3 tools/cluebank.py     # crossword clues   -> data/clues.json (validates every clue)
+python3 tools/cluebank.py     # crossword clues   -> data/clues.json (validates every clue on every level)
 python3 build.py
 ```
 
-To add or change crossword clues, edit the `BANK` (and `THEMES` for the mythology
-keywords) in `tools/cluebank.py`. The script checks the alphabet, length, duplicates,
-that no clue gives its answer away, and that every keyword letter has enough everyday
-words to build a keyword column.
+To add or change crossword clues, edit the banks in `tools/cluebank.py` — `MALCEK`,
+`UCENJAK` and `MOLJ`, one line per clue (`ANSWER|clue|topic|difficulty`) — and `THEMES`
+for the mythology keywords. The script checks the alphabet, length, duplicates, that no
+clue gives its answer away, and that on every level every keyword letter has enough words
+to build a keyword column. The level settings themselves live in `LEVELS` in
+`src/game.js`; `tools/cluebank.py` mirrors the crossword part to validate against it.
 
 ## Tests
 The tests open the built page in headless Chrome and play it through a test hook
@@ -176,13 +197,14 @@ The tests open the built page in headless Chrome and play it through a test hook
 ```sh
 npm install
 python3 build.py
-npm test                                  # all four test files
+npm test                                  # all five test files
 CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 ```
 
 | File | What it checks |
 | --- | --- |
-| `tests/crossword-generator.test.js` | 2,800 generated crosswords: no letter clashes or stray letters, connected grids, everything fits 9×9, easy words only in enemy crosswords, the gold column spells the keyword |
+| `tests/crossword-generator.test.js` | 4,200 generated crosswords on all three levels: no letter clashes or stray letters, connected grids, everything fits 9×9, only that level's clue banks, short words in enemy crosswords, the gold column spells the keyword |
+| `tests/levels.test.js` | Each knowledge level: chosen and saved on the title screen, hints and proposals, word count and coaching tips, shortest word, crossword bank, letter counts, revealed letters (and half power), mouse clicks reaching the crossword |
 | `tests/keyword.test.js` | Guessing the keyword early ends the crossword and fires the zagovor; in Povodni mož's whirlpool *urska* with a plain s stays black and *urška* breaks it |
 | `tests/phone.test.js` | On a 390×844 touch screen: *Pošlji* is visible and works, wrong entries stay black, correct ones turn green and fire, phone-keyboard composition input, chest partial rewards, rock slide input |
 | `tests/desktop.test.js` | A keyboard playthrough: c/s/z are not accepted for č/š/ž, first battle, result and hero screens, chest, finisher, Lintvern's letter lock and forced crossword, ambush, rock slide, and no console errors anywhere |
@@ -201,10 +223,10 @@ za-govor/
 │   └── game.css              # styles, desktop and phone layouts
 ├── data/
 │   ├── dict.json             # battle word list: 9,867 base words → 46,094 forms
-│   └── clues.json            # crossword clue bank and mythology keywords
+│   └── clues.json            # crossword clue banks per knowledge level, mythology keywords
 ├── tools/
 │   ├── build_dict.py         # builds data/dict.json
-│   ├── cluebank.py           # the clue bank itself; validates and builds data/clues.json
+│   ├── cluebank.py           # the three clue banks; validates and builds data/clues.json
 │   └── readme-shots.js       # regenerates docs/images/
 ├── tests/                    # headless Chrome tests (puppeteer-core)
 └── docs/
@@ -254,11 +276,13 @@ za-govor/
   or base word is common, minus a short profanity list, plus the mythology and enemy names.
   **The real game will use [Sloleks 3](https://www.clarin.si/repository/xmlui/handle/11356/1745)
   (CC BY-SA 4.0)** instead.
-- **Crossword clues:** all 359 clues were written for this project. There is no Slovene
-  crossword API; magazine crosswords (*Razvedrilo*, *KIH*, *3K*) are copyrighted, and
-  solver sites such as Pet vodoravno are communities, not data sources. The clues follow
-  the friendly modern Slovene style — everyday words, verbs, adjectives, proverb
-  fill-ins — instead of obscure crossword filler. To scale up later, CJVT's open synonym
+- **Crossword clues:** all 835 clues (359 Malček, 219 Učenjak, 257 Knjižni molj) were
+  written for this project. There is no Slovene crossword API; magazine crosswords
+  (*Razvedrilo*, *KIH*, *3K*) are copyrighted, and solver sites such as Pet vodoravno are
+  communities, not data sources, so the Knjižni molj clues are written *in the style of*
+  paper crosswords, not taken from them. Malček and Učenjak follow the friendly modern
+  Slovene style — everyday words, verbs, adjectives, proverb fill-ins — instead of obscure
+  crossword filler. To scale up later, CJVT's open synonym
   and collocation dictionaries can suggest clue candidates for a person to edit; a
   professional setter (for example Križankar) could edit the final bank.
 - **Mythology:** Slovene folklore first (Monika Kropej's work), then pan-Slavic deities and
