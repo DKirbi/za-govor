@@ -1,6 +1,6 @@
 // Desktop walk-through with the keyboard: battle, chest, finisher crossword,
 // Lintvern's letter lock and forced crossword, ambush crossword, rock slide.
-const { openGame, runner, sleep, deacc } = require('./harness');
+const { openGame, runner, sleep, typeText } = require('./harness');
 const { check, run } = runner('Desktop playthrough (keyboard)');
 
 const state = page => page.evaluate(() => {
@@ -9,16 +9,15 @@ const state = page => page.evaluate(() => {
            : { screen: Z.S.screen };
 });
 
-// Type a random valid word from the current mesh and send it. Words with č/š/ž are
-// skipped: typed as c/s/z they can match a plain c/s/z tile path instead. If a word
+// Type a random valid word from the current mesh (č/š/ž included) and send it. If a word
 // is still selected after Enter, Escape clears it (Escape on an empty word pauses).
 async function playWord(page) {
   const w = await page.evaluate(() => {
-    const ws = [...window.__ZG.allWords().keys()].filter(w => w.length >= 4 && w.length <= 6 && !/[čšž]/.test(w));
+    const ws = [...window.__ZG.allWords().keys()].filter(w => w.length >= 4 && w.length <= 6);
     return ws[Math.floor(Math.random() * ws.length)] || null;
   });
   if (!w) return null;
-  for (const ch of deacc(w)) await page.keyboard.type(ch);
+  await typeText(page, w);
   await page.keyboard.press('Enter');
   await sleep(50);
   if (await page.evaluate(() => { const B = window.__ZG.B; return !!(B && !B.cw && (B.typed || B.path.length)); })) await page.keyboard.press('Escape');
@@ -30,7 +29,7 @@ async function solveCrossword(page) {
   for (let i = 0; i < 10; i++) {
     const cur = await page.evaluate(() => { const C = window.__ZG.B && window.__ZG.B.cw; return C ? C.D.entries[C.cur.e].answer : null; });
     if (!cur) return true;
-    for (const ch of deacc(cur)) await page.keyboard.type(ch);
+    await typeText(page, cur);
     await sleep(150);
   }
   return page.evaluate(() => !window.__ZG.B.cw);
@@ -44,6 +43,28 @@ run(async () => {
   await page.keyboard.press('Enter'); await sleep(200);
   await page.keyboard.press('Enter'); await sleep(700);
   check((await state(page)).screen === 'battle', 'Enter twice starts the first battle');
+
+  // Č, Š, Ž are deliberate: typing c/s/z for them finds no path; the real letter works
+  const sumnik = await page.evaluate(() => {
+    const Z = window.__ZG, plain = w => w.replace(/č/g, 'c').replace(/š/g, 's').replace(/ž/g, 'z');
+    for (let i = 0; i < 40; i++) {
+      const w = [...Z.allWords().keys()].find(w => /[čšž]/.test(w) && !(Z.findPath(plain(w)) || []).length);
+      if (w) return { word: w, plain: plain(w) };
+      Z.go('battle', Z.NODES[0]);
+    }
+    return null;
+  });
+  if (check(sumnik, 'the mesh has a word with č, š or ž to try')) {
+    const words0 = await page.evaluate(() => window.__ZG.B.words);
+    for (const ch of sumnik.plain) await page.keyboard.type(ch);
+    await page.keyboard.press('Enter'); await sleep(200);
+    const words1 = await page.evaluate(() => window.__ZG.B.words);
+    check(words1 === words0, 'typing c/s/z instead of č/š/ž is not accepted', `${sumnik.plain} for ${sumnik.word}`);
+    await page.keyboard.press('Escape'); await sleep(100);
+    await typeText(page, sumnik.word);
+    await page.keyboard.press('Enter'); await sleep(700);
+    check(await page.evaluate(() => window.__ZG.B.words) === words0 + 1, 'typing the real letters plays the word', sumnik.word);
+  }
   let n = 0;
   while (n < 30) {
     const s = await state(page);
@@ -62,7 +83,7 @@ run(async () => {
   // Chest: type the hidden word and send it
   await page.evaluate(() => window.__ZG.go('chest', window.__ZG.NODES[1])); await sleep(300);
   const answer = await page.evaluate(() => window.__ZG.S.ev.item.w);
-  for (const ch of deacc(answer)) await page.keyboard.type(ch);
+  await typeText(page, answer);
   await page.keyboard.press('Enter'); await sleep(300);
   const chest = await page.evaluate(() => ({ win: window.__ZG.S.ev.win, bonus: window.__ZG.S.meterBonus }));
   check(chest.win && chest.bonus > 0, 'chest opens with the hidden word and fills the next zagovor meter', answer);

@@ -1,7 +1,7 @@
 // Regenerate the screenshots in docs/images/ used by the README.
 //   python3 build.py && npm run screenshots
 const path = require('path');
-const { openGame, sleep, deacc } = require('../tests/harness');
+const { openGame, sleep, typeText } = require('../tests/harness');
 
 const IMG = path.resolve(__dirname, '../docs/images');
 const save = (page, name, clip) => page.screenshot({ path: path.join(IMG, name), ...(clip ? { clip } : {}) });
@@ -17,7 +17,7 @@ const save = (page, name, clip) => page.screenshot({ path: path.join(IMG, name),
   await sleep(800);
   const w = await page.evaluate(() => [...window.__ZG.allWords().keys()].filter(w => w.length >= 6 && !/[čšž]/.test(w))[0]
     || [...window.__ZG.allWords().keys()].filter(w => !/[čšž]/.test(w)).sort((a, b) => b.length - a.length)[0]);
-  for (const ch of deacc(w)) await page.keyboard.type(ch);
+  await typeText(page, w);
   await page.keyboard.press('Enter');
   await sleep(450);
   await save(page, 'battle-desktop.png');

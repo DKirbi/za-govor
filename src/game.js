@@ -28,12 +28,8 @@ const UP = s => s.toUpperCase();
 
 // ============================================================ word data
 const DICT = JSON.parse($('#dict').textContent);
-const WORDS = new Set(), LEMMA = new Map(), ASCII = new Map();
-const deacc = s => s.replace(/[čšž]/g, c => ({ č: 'c', š: 's', ž: 'z' })[c]);
-for (const [lem, forms] of Object.entries(DICT)) for (const f of forms) {
-  WORDS.add(f); LEMMA.set(f, lem);
-  const a = deacc(f); if (!ASCII.has(a)) ASCII.set(a, []); ASCII.get(a).push(f);
-}
+const WORDS = new Set(), LEMMA = new Map();
+for (const [lem, forms] of Object.entries(DICT)) for (const f of forms) { WORDS.add(f); LEMMA.set(f, lem); }
 const TRIE = {};
 for (const w of WORDS) { let n = TRIE; for (const ch of w) n = n[ch] || (n[ch] = {}); n.$ = 1; }
 
@@ -720,7 +716,7 @@ const S = {
     else if (d < 0) { const k = living().sort((a, b) => this.heroes[b].hp - this.heroes[a].hp)[0]; if (k != null) this.heroes[k].hp = Math.max(1, this.heroes[k].hp + d); }
   },
   get level() { const l = living(); return l.length ? Math.round(l.reduce((a, k) => a + this.heroes[k].lvl, 0) / l.length) : 1; },
-  screen: 'title', mode: 'real', lenient: true, unlockAll: false,
+  screen: 'title', mode: 'real', unlockAll: false,
   xp: 0, done: {}, meterBonus: 0, mapSel: 0,
   battle: null, ev: null, suggest: true,
   mobile: (() => { try { const v = localStorage.getItem('zg-mobile'); if (v != null) return v === '1'; } catch (e) { /* no storage */ }
@@ -731,7 +727,8 @@ const S = {
 const applyMobileClass = () => document.body.classList.toggle('mobile', S.mobile);
 applyMobileClass();
 const xpNeed = () => 100 * S.level;
-const letterEq = (tile, typed) => tile === typed || (S.lenient && deacc(tile) === typed);
+// Č, Š and Ž are letters of their own: only č matches č, c never stands in for it.
+const letterEq = (tile, typed) => tile === typed;
 
 const app = $('#app');
 let SCR = null;   // current screen container (below the top bar)
@@ -787,8 +784,6 @@ function renderTitle() {
     h('div', { class: 'choices' },
       choice('real', 'Realni čas', 'Sovražniki napadajo sproti in počasi topijo zdravje družine. Hitrejše besede pomenijo manj udarcev.', 'priporočeno'),
       choice('calm', 'Mirni način', 'Sovražniki počakajo na tvojo besedo. V bitkah ni časovnega pritiska; dogodki imajo dvojni čas.')),
-    h('label', { class: 'toggle' }, h('input', { type: 'checkbox', checked: S.lenient, onchange: e => { S.lenient = e.target.checked; } }),
-      'Šumniki brez strogega vnosa (c velja za č, s za š, z za ž)'),
     h('label', { class: 'toggle' }, h('input', { type: 'checkbox', checked: S.suggest, onchange: e => { S.suggest = e.target.checked; } }),
       'Predlogi besed med igro (lažje — dobro za učenje)'),
     h('label', { class: 'toggle' }, h('input', { type: 'checkbox', checked: S.unlockAll, onchange: e => { S.unlockAll = e.target.checked; } }),
@@ -1198,7 +1193,7 @@ function neighbors(i) {
 }
 const tileScore = i => { const t = B.grid[i]; return (ownerActive(t) ? 10 : 0) + (SUMNIKI.includes(t.ch) ? 3 : 0); };
 
-// Find the best path in the mesh that spells the typed string (lenient diacritics)
+// Find the best path in the mesh that spells the typed string exactly
 function findPath(typed) {
   if (!typed) return [];
   let best = null, bestScore = -1;
@@ -1757,8 +1752,7 @@ function shuffleGrid(byPlayer) {
 // two invisible characters keep Backspace producing an input event even when the field looks empty.
 const SENT = '​​';
 function normLetter(raw) {
-  let ch = raw.toLowerCase();
-  if (ch === 'ć') ch = 'č'; if (ch === 'đ') ch = 'd';
+  const ch = raw.toLowerCase();
   return /^[abcčdefghijklmnoprsštuvzž]$/.test(ch) ? ch : null;
 }
 function bindLetterInput(inp, onChar, onBack) {
@@ -2228,8 +2222,7 @@ function battleKey(e) {
 }
 function letterKey(e) {
   if (e.ctrlKey || e.metaKey || e.altKey || e.key.length !== 1) return null;
-  let ch = e.key.toLowerCase();
-  if (ch === 'ć') ch = 'č'; if (ch === 'đ') ch = 'd';
+  const ch = e.key.toLowerCase();
   return /^[abcčdefghijklmnoprsštuvzž]$/.test(ch) ? ch : null;
 }
 
@@ -2369,7 +2362,7 @@ function trapSubmit() {
   const typed = [...UI.trapInput.value].map(normLetter).filter(Boolean).join('');
   UI.trapInput.value = '';
   if (typed.length < 3) { trapFb('Beseda mora imeti vsaj 3 črke.', 'warn'); return; }
-  let cands = S.lenient ? (ASCII.get(deacc(typed)) || []).filter(w => deacc(w) === deacc(typed) && [...typed].every((c, i) => letterEq(w[i], c))) : (WORDS.has(typed) ? [typed] : []);
+  let cands = WORDS.has(typed) ? [typed] : [];
   if (!cands.length) { trapFb(`»${UP(typed)}« ni v slovarju.`, 'err'); return; }
   cands = cands.filter(w => !E.used.has(w));
   if (!cands.length) { trapFb('Ta beseda je že uporabljena.', 'warn'); return; }

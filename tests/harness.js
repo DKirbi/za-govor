@@ -8,8 +8,18 @@ const PAGE_URL = 'file://' + path.resolve(__dirname, '../dist/index.html');
 const OUT_DIR = path.resolve(__dirname, '../test-output');
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-// Players on English keyboards type c/s/z for č/š/ž; the game accepts both.
-const deacc = s => s.toLowerCase().replace(/č/g, 'c').replace(/š/g, 's').replace(/ž/g, 'z');
+// Type text the way a player with a Slovene keyboard does. Puppeteer's US layout has no
+// č/š/ž keys, so those are sent as text into a focused field (crosswords, rock slide) or as
+// a keydown with that key on the page (letter mesh, chest), which is what a Slovene
+// keyboard produces. Č, Š and Ž must be typed deliberately; c/s/z never stand in for them.
+async function typeText(page, text) {
+  for (const ch of text.toLowerCase()) {
+    if (!'čšž'.includes(ch)) { await page.keyboard.type(ch); continue; }
+    const inField = await page.evaluate(() => { const a = document.activeElement; return !!a && a.tagName === 'INPUT' && a.type === 'text'; });
+    if (inField) await page.keyboard.sendCharacter(ch);
+    else await page.evaluate(c => document.dispatchEvent(new KeyboardEvent('keydown', { key: c, bubbles: true, cancelable: true })), ch);
+  }
+}
 
 function chromePath() {
   const candidates = [
@@ -66,4 +76,4 @@ function runner(title) {
   return { check, run };
 }
 
-module.exports = { openGame, runner, sleep, deacc, OUT_DIR };
+module.exports = { openGame, runner, sleep, typeText, OUT_DIR };

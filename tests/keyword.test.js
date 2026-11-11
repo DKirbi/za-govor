@@ -1,6 +1,6 @@
 // The hidden mythology keyword (geslo): guessing it early ends the crossword with a
 // stronger zagovor, and it is a way out of Povodni mož's forced crossword.
-const { openGame, runner, sleep } = require('./harness');
+const { openGame, runner, sleep, typeText } = require('./harness');
 const { check, run } = runner('Hidden keyword (geslo) on a phone');
 
 run(async () => {
@@ -43,8 +43,13 @@ run(async () => {
   await page.evaluate(() => document.querySelector('.clue.geslo').click());
   await page.evaluate(() => document.querySelector('.nativein').focus());
   await page.keyboard.type('urska'); await sleep(400);
+  check(await page.evaluate(() => { const C = window.__ZG.B.cw; return !!C && C.solved.size === 0 && document.querySelectorAll('.cell.typed').length === 5; }),
+    'URSKA with a plain s stays black and does not count');
+  for (let i = 0; i < 6; i++) { await page.keyboard.press('Backspace'); await sleep(30); }
+  await page.evaluate(() => { const C = window.__ZG.B.cw; C.cur.p = 0; });
+  await typeText(page, 'urška'); await sleep(400);
   const lock = await page.evaluate(() => ({ open: !!window.__ZG.B.cw, log: window.__ZG.B.logLines[0] }));
-  check(!lock.open && /Geslo uganjeno prej/.test(lock.log), 'typing urska (s for š) breaks the whirlpool', lock.log);
+  check(!lock.open && /Geslo uganjeno prej/.test(lock.log), 'URŠKA with a real š breaks the whirlpool', lock.log);
 
   check(errors.length === 0, 'no page or console errors', errors.join(' | '));
   return ctx;

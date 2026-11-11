@@ -1,6 +1,6 @@
 // Phone viewport (390×844, touch): send button, crossword typing through the native
 // keyboard input, green-fires / black-does-nothing, chest partial reward, rock slide input.
-const { openGame, runner, sleep, deacc } = require('./harness');
+const { openGame, runner, sleep, typeText } = require('./harness');
 const { check, run } = runner('Phone (touch, 390×844)');
 
 const center = (page, sel, idx = 0) => page.evaluate((s, i) => {
@@ -38,7 +38,7 @@ run(async () => {
   check(wrong.solved === 0 && wrong.black > 0 && JSON.stringify(wrong.hp) === JSON.stringify(before), 'a wrong entry stays black and fires nothing');
   for (let i = 0; i <= first.length; i++) { await page.keyboard.press('Backspace'); await sleep(30); }
   await page.evaluate(() => { window.__ZG.B.cw.cur.p = 0; });
-  await page.keyboard.type(deacc(first)); await sleep(250);
+  await typeText(page, first); await sleep(250);
   const right = await page.evaluate(() => { const C = window.__ZG.B.cw; return { solved: C ? C.solved.size : -1, green: document.querySelectorAll('.cell.ok').length, cards: document.querySelectorAll('.card').length }; });
   check(right.solved >= 1 && right.green >= first.length && right.cards > 0, 'a correct entry turns green and fires an attack card', first);
   await shot('phone-02-crossword');
@@ -59,7 +59,7 @@ run(async () => {
   for (let k = 0; k < 8; k++) {
     const a = await page.evaluate(() => { const C = window.__ZG.B && window.__ZG.B.cw; return C ? C.D.entries[C.cur.e].answer : null; });
     if (!a) break;
-    await page.keyboard.type(deacc(a)); await sleep(250);
+    await typeText(page, a); await sleep(250);
   }
   check(await page.evaluate(() => !window.__ZG.B.cw), 'the whole crossword can be finished on the phone');
 
@@ -91,8 +91,8 @@ run(async () => {
   // 4. Rock slide: a real text field plus Pošlji
   await page.evaluate(() => window.__ZG.go('trap', window.__ZG.NODES[3])); await sleep(1600);
   const rock = await page.evaluate(() => window.__ZG.S.ev.rocks.find(r => r.state === 'fall').ch);
-  const tw = await page.evaluate(c => [...window.__ZG.WORDS].find(x => x.includes(c) && x.length === 5 && !/[čšž]/.test(x)), rock);
-  await page.tap('.wordin'); await page.keyboard.type(tw); await sleep(100);
+  const tw = await page.evaluate(c => [...window.__ZG.WORDS].find(x => x.includes(c) && x.length === 5), rock);
+  await page.tap('.wordin'); await typeText(page, tw); await sleep(100);
   await page.tap('.sendrow .btn.send'); await sleep(250);
   const trap = await page.evaluate(() => ({ broken: window.__ZG.S.ev.broken, focused: document.activeElement.className }));
   check(trap.broken >= 1 && trap.focused.includes('wordin'), 'Pošlji breaks the rock and keeps the keyboard open', `${rock} → ${tw}`);
