@@ -71,10 +71,14 @@ Ljubljana castle is the last battle.
 
 - **Walking:** press `→` (or *Naprej*) and the party walks to the next stop; a prompt offers
   what can be done there (`Enter` for the main choice, `Esc` to walk past where that is allowed).
-- **The party:** you start with one hero; up to four travel together. A fifth hero can only
-  take somebody's place. **Only one god** may travel with you — gods hit harder.
-- **Health stays as it is after a battle.** Heroes heal at **wells**. A hero at zero health
-  lies down for the rest of the journey unless something raises them.
+- **The party:** the first journey starts with Martin Krpan. Folk heroes wait at random
+  along the road; meeting one unlocks them as a starter for later journeys (three choices at
+  most, never a god). Up to four travel together; a fifth can only take somebody's place.
+  **Only one god** may travel with you — gods hit harder.
+- **Health stays as it is after a battle.** **Wells** heal everyone fully and raise the
+  fallen. Heroes' healing skills stop at 70 % of health, and a hero under 30 % drinks
+  *Živa voda* by themselves if the party carries one. A fallen hero stays down until a
+  well, a skill or *Mrtva voda* raises them.
 - **Enemies are random:** every battle draws from the enemies of its region, and they grow
   stronger from region to region.
 - **Gold and items:** battles and chests pay gold; the pedlar sells potions, poisons and
@@ -173,12 +177,13 @@ everyone).
   fires, at half power, and revealed keyword letters don't count as guessed.
 
 ### On the road
-- **Chest:** rebuild a hidden word from scrambled letters before time runs out (40 s, 80 s
-  in calm mode). Every real word you find pays 3 XP per letter; the hidden word opens the
-  chest for 50 XP, gold and one item, and starts the next battle with a half-full zagovor meter.
-- **Rock slide:** every falling rock carries a letter; type any word containing it before
-  it lands. Long words break several rocks. Rocks that land hurt, and the wounds stay.
-- **Well:** every standing hero is healed.
+- **Chest:** one word from scrambled letters before time runs out (40 s, 80 s in calm
+  mode). The hidden word opens the chest: XP for every hero, gold, one item and a half-full
+  zagovor meter in the next battle. A real word that leaves letters unused ends it with
+  part of the XP and gold.
+- **Rock slide:** every falling rock carries a letter and you have one word. Rocks whose
+  letters are in it break (XP and gold for each); the rest graze the party for half damage.
+- **Well:** every hero is healed and the fallen stand up again.
 - **Pedlar:** four potions or poisons and two relics for gold.
 - **Shrine:** three gods offer themselves; one may join.
 - **Bag:** `T` on the road, `3` in a battle (the fight pauses while the bag is open).

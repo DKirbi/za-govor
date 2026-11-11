@@ -1,4 +1,4 @@
-# Za govor — journey and progression design (updated 11 Nov 2026, afternoon)
+# Za govor — journey and progression design (updated 11 Nov 2026, evening)
 
 Prototype: https://claude.ai/artifact/NTdMnud7X8Um2p38G1fVnb
 
@@ -6,6 +6,7 @@ This replaces the earlier "three starters and cursed-god bosses" proposal. Every
 
 ## Status at a glance
 - **Decided by the user (11 Nov):** the 2D side-scrolling journey is the point of the game; the levels are places in Slovenia visited one after another, with no level list; the dragon at Ljubljana castle is the final battle; healing happens only at special places such as wells; the player starts with one character; four is the most in a party; only one god per play, and gods are stronger; Erasmus of Lueg (Erazem Predjamski) is a new character and more should be explored; all characters are unlocked; there are items with mythical Slavic names; merchants sell potions, poisons and attack boosts; traps, chests and wells have their own sprites; the web prototype is expanded for fast testing and Godot stays the end goal.
+- **Evening fixes (built):** partial healing outside wells, automatic potions, wells raise the fallen, gold and XP from every enemy, one-word chests and rock slides with partial outcomes, Krpan as the first starter with unlocks.
 - **Built:** the journey (ten regions, 45 stops), choosing the first hero, meeting and swapping heroes, the shrine with one god, wells, the pedlar, gold, 23 items, random regional enemies, sprites for every stop, four new heroes, battle abilities for all fifteen heroes.
 - **Parked:** cursed gods as bosses (section 7 of the old design). Gods are simply powerful companions now.
 - **Not balance-tested:** the journey runs end to end in automated tests, but nobody has played it through for difficulty.
@@ -32,19 +33,27 @@ One road, walked left to right. The party stands still and the world scrolls pas
 - **Data:** regions, stop order, enemy pools and items live in `data/world.json`, so the Godot game can read the same file.
 
 ## 2. Party rules
-- **Start with one hero**, chosen on the "Kdo gre na pot?" screen. All fifteen characters can start.
-- **At most four** travel together. A fifth can only take somebody's place; the one who leaves is gone for this journey.
-- **One god per journey.** At the shrine on Bled three random gods offer themselves and one may join. If a god already travels with you (because you started with one), the shrine only gives a blessing (+40 XP, the next battle starts with a half-full zagovor).
+- **The first journey always starts with Martin Krpan.** Every folk hero you meet on the road is unlocked (remembered in the browser) and can start a later journey.
+- **Three starters at most:** the start screen offers Krpan and up to two unlocked folk heroes, drawn at random; locked places are shown as "Še neodkrit". **Gods never start a journey.** (Test mode offers all nine folk heroes.)
+- **Heroes are met at random:** each hero stop holds a random folk hero you have not met on this journey, preferring ones not yet unlocked.
+- **At most four** travel together. A fifth can only take somebody's place; a hero who has fallen can be left behind this way ("Zapusti").
+- **One god per journey.** At the shrine on Bled three random gods offer themselves and one may join.
 - **A hero who joins** arrives at the party's average level.
 - **Gods are stronger:** attack ×1.35 (Veles ×1.5) and about a quarter more health than folk heroes.
 - **Letter mesh:** the share of coloured tiles grows with the party (30 % with one hero, 46 %, 56 %, 62 % with four).
 
 ## 3. Health, falling and healing
-- Every hero has their own health bar (as before). **Health does not come back after a battle.**
-- **Wells heal:** drinking restores every standing hero to full. There are six wells on the road, two of them right before the two bosses.
-- A hero at 0 health lies down for the rest of the journey. Only *Mrtva voda*, Mokoš's Materina roka (once per battle) or Zeleni Jurij's Jurjevo (once per journey) bring one back.
+- Every hero has their own health bar. **Health does not come back after a battle.**
+- **Wells are the main healing:** drinking restores every hero to full and raises the fallen. There are six wells on the road.
+- **Heroes' healing is partial:** the skills of Mokoš and Zeleni Jurij (and Mokoš's zagovor) never lift a hero above 70 % of their health.
+- **Potions work by themselves:** a hero who drops under 30 % in a battle drinks *Živa voda* (+60 % of their health) and the flask is gone. On the road it can be given by hand to the most wounded hero.
+- **A fallen hero stays down** until a well, a hero's skill (Mokoš's Materina roka once per battle, Zeleni Jurij's Jurjevo once per journey) or *Mrtva voda* raises them. Until then their letters are grey, and they can be left behind when a new hero is met.
 - After a lost battle the prototype still lets you try again from the state before the fight; "Konec poti" ends the run.
-- **Calls made here, easy to change:** heroes who heal (Mokoš, Zeleni Jurij) still heal during a battle, and the potion *Živa voda* heals one hero anywhere. The zagovor crossword of Mokoš heals half as much as before. If healing should be wells only, these three are the switches.
+
+## 3a. Rewards
+- **Every defeated enemy** drops gold at once (4 + a share of its XP) and gives its full XP to every hero still standing.
+- **Chest (one word):** the hidden word, or any real word from all the letters, opens it: 50 XP for every hero, 15–25 gold, one item, and a half-full zagovor in the next battle. A real word that leaves letters unused ends the chest with a share of the reward (XP and gold in proportion to the letters used, no item). Running out of time gives nothing.
+- **Rock slide (one word):** the rocks whose letters are in the word break (8 XP for every hero and 3 gold per rock); the others graze the party for half damage (4 each). A word with every letter breaks the whole slide. If no word is sent, every rock lands with full force (8 each).
 
 ## 4. Levels (unchanged)
 Three levels per hero: level 2 at 50 XP, level 3 at 140 XP; health ×1.25 / ×1.6, attack ×1.15 / ×1.3, and long words add 4 % / 10 % per letter beyond the fourth.
@@ -108,7 +117,7 @@ Gold (*zlatniki*) comes from battles (about 7–25 per fight) and chests (15–2
 | Item | Price | Effect |
 | --- | --- | --- |
 | Mrtva voda | 70 | Raises a fallen hero with half health (also on the road) |
-| Živa voda | 40 | Heals the most wounded hero fully (also on the road) |
+| Živa voda | 40 | Drunk automatically by a hero under 30 % health in battle: +60 % health; can be given by hand on the road |
 | Triglavov napoj | 35 | Fills the zagovor at once |
 | Velesov strup (poison) | 30 | The target loses health for a long time |
 | Morin prah (poison) | 30 | Every enemy falls asleep for a while |
@@ -133,9 +142,8 @@ On the name *Perun's Hammer*: in the sources Perun's weapon is an axe (and the t
 - Sprite sheets are plain PNG frames (idle | attack), ready for `AnimatedSprite2D`.
 
 ## 10. Still to decide
-1. Healing: wells only, or keep healer heroes and *Živa voda* as they are now?
-2. May a god be the starter, or should gods only be met at the shrine?
-3. Journey length: ten regions and 19 battles is long for one sitting. Save points, or a shorter road?
-4. Should a hero you leave behind be met again later, or are they gone (as now)?
-5. One shrine or several (different gods in different places)?
-6. Which regions come next (Bela krajina, Celje, Kras and Škocjan, Kočevski rog, Prekmurje)?
+1. Starters: now Krpan plus up to two random unlocked folk heroes. Should the three be fixed instead (for example Krpan, Zeleni Jurij, Kurent)?
+2. Journey length: ten regions and 19 battles is long for one sitting. Save points, or a shorter road?
+3. Should a hero you leave behind be met again later, or are they gone (as now)?
+4. One shrine or several (different gods in different places)?
+5. Which regions come next (Bela krajina, Celje, Kras and Škocjan, Kočevski rog, Prekmurje)?
