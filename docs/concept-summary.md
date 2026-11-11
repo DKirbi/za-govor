@@ -1,4 +1,4 @@
-# Za govor — concept summary (updated 11 Nov 2026, afternoon)
+# Za govor — concept summary (updated 11 Nov 2026, evening)
 
 Full concept doc: https://claude.ai/artifact/SNNktnteBoppi5M4PMkzFF
 Playable UX prototype (browser; all party heroes and enemies have sprites, cards and sound): https://claude.ai/artifact/NTdMnud7X8Um2p38G1fVnb

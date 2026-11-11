@@ -14,7 +14,7 @@ This replaces the earlier "three starters and cursed-god bosses" proposal. Every
 ## 1. The journey
 One road, walked left to right. The party stands still and the world scrolls past; the background pans slowly across the landmark of the region. Walking stops at every stop and a prompt offers what can be done there. A signpost at the end of each region leads to the next.
 
-| # | Region | Landmark in the background | Hero who waits there | Stops | Enemies |
+| # | Region | Landmark in the background | Hero of the place (lore; heroes now appear at random) | Stops | Enemies |
 | --- | --- | --- | --- | --- | --- |
 | 1 | Ptuj | castle above the snowy town | Kurent | battle, hero, chest, battle | Škrat, Vešča |
 | 2 | Peca | King Matjaž's cave | Kralj Matjaž | battle, rock slide, hero, well, battle | Perkmandeljc, Škrat, Pesjan |
@@ -29,7 +29,7 @@ One road, walked left to right. The party stands still and the world scrolls pas
 
 - **Random enemies:** each battle draws its enemies from the region's pool. One enemy while the party is a single hero, two after that. The very first fight is always one Škrat with the tutorial tips.
 - **Scaling:** enemy health +10 % and attack +6 % per region (bosses are fixed).
-- **If the local hero is already with you** (or was your starter), another folk hero you have not met stands there instead; if none is left, the stop becomes a well.
+- **Hero stops are random:** any folk hero you have not met on this journey may stand there, not only the hero of the place; if none is left, the stop becomes a well.
 - **Data:** regions, stop order, enemy pools and items live in `data/world.json`, so the Godot game can read the same file.
 
 ## 2. Party rules

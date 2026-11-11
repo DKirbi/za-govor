@@ -56,12 +56,12 @@ and walk; the road stops you at enemies, chests, rock slides, wells, pedlars and
 heroes. There is no level list — the road leads from region to region, and the dragon at
 Ljubljana castle is the last battle.
 
-| # | Region | Who waits there | On the road |
+| # | Region | Legend of the place | On the road |
 | --- | --- | --- | --- |
 | 1 | **Ptuj** | Kurent | two battles, a chest |
 | 2 | **Peca** | Kralj Matjaž | two battles, a rock slide, a well |
 | 3 | **Triglav** | Ajdovska deklica | two battles, a rock slide, a pedlar |
-| 4 | **Bled** | the shrine: one god may join | two battles, a chest, a well |
+| 4 | **Bled** | a shrine of the old gods: one god may join | two battles, a chest, a well |
 | 5 | **Trnovski gozd** | Martin Krpan | two battles, a chest |
 | 6 | **Piranske soline** | Lepa Vida | two battles, a pedlar, a well |
 | 7 | **Predjamski grad** | Erazem Predjamski | a battle, a rock slide, a chest, an ambush |
