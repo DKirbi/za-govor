@@ -1111,9 +1111,9 @@ function startBattle(node) {
   B = S.battle = {
     node, def, enemies: def.enemies.map((k, i) => makeEnemy(k, i, def.scale)), target: 0, grid: [], path: [], typed: '', nopath: false,
     lemmaUses: new Map(), meter: Math.round(METER_MAX * Math.max(def.meterStart, S.meterBonus)), hints: LV().hints + (has('praprotno-seme') ? 1 : 0), shield: has('svarogovo-kladivo') ? 8 : 0,
-    boost: 0, double: 1, evade: 0, grow: 0, snapBag: S.run ? JSON.stringify(S.run.bag) : null,
+    boost: 0, double: 1, evade: 0, grow: 0, snapBag: S.run ? JSON.stringify(S.run.bag) : null, snapGold: S.run ? S.run.gold : 0,
     get hp() { return S.partyHp; }, set hp(v) { S.partyHp = v; }, snap: JSON.stringify(S.heroes), revived: false, sleep: {}, time: 0, paused: false, over: false, cw: null, words: 0, logLines: [], fbTimer: 0,
-    stats: { words: 0, longest: '', best: 0, cw: 0, xp: 0 }, lastFinisher: null,
+    stats: { words: 0, longest: '', best: 0, cw: 0, xp: 0, gold: 0 }, lastFinisher: null,
   };
   S.meterBonus = 0;
   B.enemies.forEach(e => {
@@ -1804,8 +1804,11 @@ function damageEnemy(e, amount, opts = {}) {
   if (e.hp <= 0) {
     sfx('dead', { delay: .28 });
     e.charge = 0; e.burn = null; e.burnTurns = 0;
-    log(`${e.name} je ${e.f ? 'premagana' : 'premagan'} (+${e.xp} XP).`);
-    gainXp(e.xp); retarget();
+    // every defeated enemy drops gold and gives its experience to every hero still standing
+    const drop = S.run ? gainGold(4 + Math.round(e.xp / 8)) : 0; B.stats.gold += drop;
+    if (drop) floatOn(e.el, `+${drop} zlatnikov`, 'crit');
+    log(`${e.name} je ${e.f ? 'premagana' : 'premagan'}: vsak junak +${e.xp} XP` + (drop ? `, +${drop} zlatnikov.` : '.'));
+    gainXp(e.xp, null, true); retarget();
     const b = B; setTimeout(() => { if (B === b) checkEnd(); }, 650);
   }
   renderEnemies();
@@ -1837,12 +1840,12 @@ function heroFalls(k) {
   setTimeout(() => { if (B && S.battle === B) { renderParty(); renderPuzzle(); renderSide(); } }, 350);
 }
 
-function gainXp(n, k) {                 // k = hero index; without it the XP is shared by the heroes still standing
+function gainXp(n, k, each) {           // k = hero index; without it the XP is split among the heroes still standing, or with `each` everyone gets all of it
   if (B) B.stats.xp += n;
   const who = k != null && k >= 0 ? [k] : living();
   who.forEach(i => {
     const st = S.heroes[i]; if (st.down) return;
-    st.xp += k != null && k >= 0 ? n : Math.ceil(n / who.length);
+    st.xp += (k != null && k >= 0) || each ? n : Math.ceil(n / who.length);
     while (st.lvl < 3 && st.xp >= LV_XP[st.lvl]) {
       st.lvl++; st.leveled = true;
       const mh = heroMaxHp(HEROES[i].id, st.lvl); st.hp += mh - st.maxHp; st.maxHp = mh;
@@ -2435,11 +2438,11 @@ function showResult(win) {
   const node = B.node, st = B.stats, R = S.run; B.won = win;
   let gold = 0, loot = null;
   if (win && R && node.stop) {
-    gold = gainGold(B.enemies.reduce((a, e) => a + 4 + Math.round(e.xp / 8), 0));
+    gold = st.gold;
     node.stop.done = node.stop.passed = true; R.battles++; R.firstBattle = false; R.prompt = null;
     if (node.stop.kind !== 'battle') { loot = randomItem(node.stop.kind === 'boss' ? 'relic' : null); if (loot) giveItem(loot.id); }
   }
-  if (!win) { S.heroes = JSON.parse(B.snap); if (R && B.snapBag) R.bag = JSON.parse(B.snapBag); }   // prototype: a lost battle can be tried again from where it started
+  if (!win) { S.heroes = JSON.parse(B.snap); if (R && B.snapBag) { R.bag = JSON.parse(B.snapBag); R.gold = B.snapGold; } }   // prototype: a lost battle can be tried again from where it started
   const hurt = S.heroes.some(x => !x.down && x.hp < x.maxHp);
   const ov = h('div', { class: 'overlay' }, h('div', { class: 'dialog' },
     h('h2', {}, win ? 'Zmaga!' : 'Poraz'),
