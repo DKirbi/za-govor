@@ -1,0 +1,20 @@
+{
+  "name": "za-govor",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Za govor — a Slovene word-puzzle RPG with Slavic mythology. Browser prototype of the mini-games.",
+  "scripts": {
+    "build": "python3 build.py",
+    "test": "node tests/run-all.js",
+    "test:desktop": "node tests/desktop.test.js",
+    "test:phone": "node tests/phone.test.js",
+    "test:crosswords": "node tests/crossword-generator.test.js",
+    "test:keyword": "node tests/keyword.test.js"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^23.11.1"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
