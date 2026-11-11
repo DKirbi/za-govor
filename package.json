@@ -9,7 +9,8 @@
     "test:desktop": "node tests/desktop.test.js",
     "test:phone": "node tests/phone.test.js",
     "test:crosswords": "node tests/crossword-generator.test.js",
-    "test:keyword": "node tests/keyword.test.js"
+    "test:keyword": "node tests/keyword.test.js",
+    "screenshots": "node tools/readme-shots.js"
   },
   "devDependencies": {
     "puppeteer-core": "^23.11.1"
