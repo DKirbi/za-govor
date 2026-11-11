@@ -596,3 +596,11 @@ body.mobile .spirit::before { width: 150px; height: 150px; margin-left: -75px; }
 @media (max-width: 760px) { .spirit.grand { height: 250px; } .spirit.grand .hero.spr { --px: 4px; } }
 body.mobile .spirit.grand { height: 250px; } body.mobile .spirit.grand .hero.spr { --px: 4px; }
 body.mobile .herowrap .hpnum { font-size: 9px; gap: 2px; } body.mobile .party { gap: 8px; }
+
+/* knowledge levels: three choice cards, revealed crossword letters */
+.choices.three { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 860px) { .choices.three { grid-template-columns: 1fr; } }
+body.mobile .choices.three { grid-template-columns: 1fr; }
+.cell.typed.rev { background: #22324c; color: #d6e4ff; }
+.curclue .revbtn { margin-left: auto; border-color: #8fb3ff; color: #b9cff7; }
+.curclue .revbtn + .kbbtn { margin-left: 0; }
