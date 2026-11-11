@@ -14,6 +14,15 @@ run(async () => {
 
   // 1. Letter mesh: tap a word, the send button is visible and plays it
   await page.evaluate(() => window.__ZG.go('battle', window.__ZG.NODES[2])); await sleep(600);
+  // every tile can be tapped without scrolling: nothing (the sticky action bar) covers any of them
+  const covered = () => page.evaluate(() => [...document.querySelectorAll('.mesh .tile')].filter(t => {
+    const r = t.getBoundingClientRect(), e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+    return !e || !t.contains(e);
+  }).length);
+  check(await covered() === 0 && await page.evaluate(() => scrollY === 0), 'the whole letter grid is tappable without scrolling (390×844)');
+  await page.setViewport({ width: 360, height: 780, isMobile: true, hasTouch: true, deviceScaleFactor: 2 }); await sleep(300);
+  check(await covered() === 0, 'the whole letter grid is tappable without scrolling (360×780)');
+  await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 2 }); await sleep(300);
   const [word, tiles] = await page.evaluate(() => [...window.__ZG.allWords().entries()].find(([w]) => w.length >= 4));
   for (const i of tiles) { const [x, y] = await center(page, '.mesh .tile', i); await page.touchscreen.tap(x, y); await sleep(50); }
   await sleep(150);
@@ -27,15 +36,20 @@ run(async () => {
   check(await page.evaluate(() => window.__ZG.B.words === 1), 'tapping Pošlji plays the word');
 
   // 2. Crossword: wrong letters stay black and do nothing; a correct entry turns green and fires
-  await page.evaluate(() => { const B = window.__ZG.B; B.meter = 30; B.enemies.forEach(e => { e.hp = e.maxHp; }); });
+  // full health and no Kresnik burn ticking from the first word, so only the crossword can do damage
+  await page.evaluate(() => { const B = window.__ZG.B; B.meter = 30; B.enemies.forEach(e => { e.hp = e.maxHp; e.burn = null; e.burnTurns = 0; }); });
   await page.keyboard.press(' '); await sleep(300);
   check(await page.evaluate(() => !!window.__ZG.B.cw), 'the zagovor crossword opens');
-  await page.tap('.cwgrid .cell:not(.void)'); await sleep(150);
+  // tap a regular clue: solving the keyword (gold column or ★ entry) would finish the whole zagovor
+  const clueAt = await page.evaluate(() => { const r = document.querySelector('.clues .clue:not(.geslo):not(.main)').getBoundingClientRect(); return [Math.round(r.top), Math.round(r.bottom), innerHeight, scrollY]; });
+  await page.tap('.clues .clue:not(.geslo):not(.main)'); await sleep(150);
+  const picked = await page.evaluate(() => { const C = window.__ZG.B.cw, e = C.D.entries[C.cur.e]; return { cur: C.cur.e, regular: !e.geslo && !e.main, focus: document.activeElement === C.input, active: document.activeElement.className || document.activeElement.tagName }; });
+  check(picked.regular && picked.focus, 'tapping a clue selects its entry and opens the keyboard', JSON.stringify({ ...picked, clueAt }));
   const first = await page.evaluate(() => { const C = window.__ZG.B.cw; return C.D.entries[C.cur.e].answer; });
   const before = await page.evaluate(() => window.__ZG.B.enemies.map(e => e.hp));
   await page.keyboard.type('a'.repeat(first.length)); await sleep(200);
   const wrong = await page.evaluate(() => ({ solved: window.__ZG.B.cw.solved.size, black: document.querySelectorAll('.cell.typed').length, hp: window.__ZG.B.enemies.map(e => e.hp) }));
-  check(wrong.solved === 0 && wrong.black > 0 && JSON.stringify(wrong.hp) === JSON.stringify(before), 'a wrong entry stays black and fires nothing');
+  check(wrong.solved === 0 && wrong.black > 0 && JSON.stringify(wrong.hp) === JSON.stringify(before), 'a wrong entry stays black and fires nothing', JSON.stringify({ first, before, ...wrong }));
   for (let i = 0; i <= first.length; i++) { await page.keyboard.press('Backspace'); await sleep(30); }
   await page.evaluate(() => { window.__ZG.B.cw.cur.p = 0; });
   await typeText(page, first); await sleep(250);
@@ -48,7 +62,7 @@ run(async () => {
   if (next) {
     const solvedBefore = await page.evaluate(() => window.__ZG.B.cw.solved.size);
     await page.evaluate(w => {
-      const inp = window.__ZG.B.cw.input; let v = '​​';
+      const inp = window.__ZG.B.cw.input; let v = inp.value;   // an IME composes at the caret, after what is already there
       for (const ch of w) { v += ch; inp.value = v; inp.dispatchEvent(new InputEvent('input', { bubbles: true, isComposing: true, data: ch, inputType: 'insertCompositionText' })); }
       inp.dispatchEvent(new CompositionEvent('compositionend', { data: w }));
     }, next);
