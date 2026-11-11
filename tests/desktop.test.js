@@ -39,10 +39,15 @@ run(async () => {
   const ctx = await openGame();
   const { page, errors, shot } = ctx;
 
-  // Battle 1: title → map → Barje, play random valid words until the škrati fall
+  // title → choose the first hero → the road (the journey itself is covered by journey.test.js)
   await page.keyboard.press('Enter'); await sleep(200);
-  await page.keyboard.press('Enter'); await sleep(700);
-  check((await state(page)).screen === 'battle', 'Enter twice starts the first battle');
+  check((await state(page)).screen === 'pick', 'Enter on the title screen opens the choice of the first hero');
+  await page.keyboard.press('Enter'); await sleep(300);
+  check((await state(page)).screen === 'travel', 'Enter again starts the journey');
+
+  // Battle 1: the practice battle at Barje with the classic four; play random valid words until the škrati fall
+  await page.evaluate(() => { const Z = window.__ZG; Z.resetRun(); Z.go('battle', Z.NODES[0]); }); await sleep(700);
+  check((await state(page)).screen === 'battle', 'a practice battle starts with the classic four heroes');
 
   // Č, Š, Ž are deliberate: typing c/s/z for them finds no path; the real letter works
   const sumnik = await page.evaluate(() => {
@@ -76,9 +81,9 @@ run(async () => {
   await shot('desktop-01-battle-won');
   await sleep(1200);
 
-  // result → after-battle hero screen → map
-  for (let i = 0; i < 4 && (await state(page)).screen !== 'map'; i++) { await page.keyboard.press('Enter'); await sleep(500); }
-  check((await state(page)).screen === 'map', 'Enter goes through the result and hero screens back to the map');
+  // result → after-battle hero screen → out of the practice battle
+  for (let i = 0; i < 4 && (await state(page)).screen !== 'title'; i++) { await page.keyboard.press('Enter'); await sleep(500); }
+  check((await state(page)).screen === 'title', 'Enter goes through the result and hero screens');
 
   // Chest: type the hidden word and send it
   await page.evaluate(() => window.__ZG.go('chest', window.__ZG.NODES[1])); await sleep(300);

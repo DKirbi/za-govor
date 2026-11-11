@@ -11,6 +11,7 @@
     "test:crosswords": "node tests/crossword-generator.test.js",
     "test:keyword": "node tests/keyword.test.js",
     "test:levels": "node tests/levels.test.js",
+    "test:journey": "node tests/journey.test.js",
     "screenshots": "node tools/readme-shots.js"
   },
   "devDependencies": {
