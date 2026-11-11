@@ -67,6 +67,9 @@ castle:
   you use attacks**: one tile = small move, two = medium, three or more = big move with a
   painted card. Several heroes can attack with one word.
 - **Longer words hit harder:** 3 letters ×1, 4 ×1.3, 5 ×1.6, 6 ×2, 7 ×2.5, 8 ×3, 9+ ×4.
+- **Č, Š and Ž are letters of their own.** They are picked deliberately — typed on a
+  Slovene keyboard or tapped — and c, s, z never stand in for them, in the mesh, the
+  crosswords, the chest or the rock slide.
 - **Every inflected form counts** (*volk, volka, volkom, volkovi…*), but repeating the
   same base word in one battle weakens it: ×1, ×0.6, ×0.35, ×0.2.
 - **Č, Š, Ž** in a word give a critical hit (×1.5). Each hero has **domain words** that
@@ -136,7 +139,7 @@ after you play words.
 ## Controls
 | Action | Keyboard | Mouse / touch |
 | --- | --- | --- |
-| Make a word | Type it; the path is found for you (c/s/z also work for č/š/ž) | Drag across tiles, or tap them one by one |
+| Make a word | Type it; the path is found for you. Č, Š, Ž must be typed as themselves (a Slovene keyboard layout), c/s/z never stand in for them | Drag across tiles, or tap them one by one |
 | Send the word | `Enter` | *Pošlji* |
 | Clear the word / pause | `Esc` (clears first, pauses on an empty word) | *Počisti* / *Premor* |
 | Remove the last letter | `Backspace` | *Briši* |
@@ -180,9 +183,9 @@ CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 | File | What it checks |
 | --- | --- |
 | `tests/crossword-generator.test.js` | 2,800 generated crosswords: no letter clashes or stray letters, connected grids, everything fits 9×9, easy words only in enemy crosswords, the gold column spells the keyword |
-| `tests/keyword.test.js` | Guessing the keyword early ends the crossword and fires the zagovor; URŠKA (typed as *urska*) breaks Povodni mož's whirlpool |
+| `tests/keyword.test.js` | Guessing the keyword early ends the crossword and fires the zagovor; in Povodni mož's whirlpool *urska* with a plain s stays black and *urška* breaks it |
 | `tests/phone.test.js` | On a 390×844 touch screen: *Pošlji* is visible and works, wrong entries stay black, correct ones turn green and fire, phone-keyboard composition input, chest partial rewards, rock slide input |
-| `tests/desktop.test.js` | A keyboard playthrough: first battle, result and hero screens, chest, finisher, Lintvern's letter lock and forced crossword, ambush, rock slide, and no console errors anywhere |
+| `tests/desktop.test.js` | A keyboard playthrough: c/s/z are not accepted for č/š/ž, first battle, result and hero screens, chest, finisher, Lintvern's letter lock and forced crossword, ambush, rock slide, and no console errors anywhere |
 
 Screenshots from each run land in `test-output/` (ignored by git).
 `npm run screenshots` regenerates the images in `docs/images/` used by this README.
@@ -219,8 +222,8 @@ za-govor/
   the game builds a set of forms, a form → lemma map (for the repeat penalty and the "base
   form" hint) and a trie. Finding every word in the mesh is a depth-first search over the
   8-neighbour grid, pruned by the trie; the same search powers hints, proposals and the
-  "words in the mesh" count. Typed input finds a matching path automatically, with c/s/z
-  accepted for č/š/ž.
+  "words in the mesh" count. Typed input finds a matching path automatically; letters must
+  match exactly, so c, s and z never match a č, š or ž tile.
 - **Mesh refill.** Letters are drawn from the Slovene Scrabble distribution (98 tiles),
   vowels are balanced, and the grid is re-rolled if it holds too few words.
 - **Crossword generator.** Two styles. *Keyword column:* for each letter of the keyword,
@@ -283,10 +286,6 @@ in [docs/progression-design.md](docs/progression-design.md) and
 [docs/platform-roadmap.md](docs/platform-roadmap.md).
 
 ## Known issues
-- **Typing c/s/z for č/š/ž can very rarely pick the wrong tiles.** If the grid has both
-  *s* and *š*, typing *seze* may select ŠEŽE (not a word) although SEŽE is there — about 1
-  in 340 such words. The path finder should prefer a path that spells a real word. Typing
-  the real letter or tapping tiles always works.
 - The sound effects were tuned without listening and need adjusting by ear.
 - Battles still use the four gods as the party; the planned party of three starters is not
   built yet.

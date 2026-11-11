@@ -17,7 +17,8 @@ Playable UX prototype (browser; all party heroes and enemies have sprites, cards
 - **Enemy strongest attacks take the language away:** letter locks (ash, flood), sleeping heroes (grey tiles), and forced crosswords (34 s, easy words) with the mesh closed; their hidden keyword (URŠKA for Povodni mož, ZMAJ for Lintvern) is a shortcut out (solve = counterattack, fail = triple damage).
 - **Timed sequences:** chest (scrambled word, 40 s / 80 s calm; every real word found = partial reward of 3 XP per letter, the hidden word = 50 XP + next battle's meter half full), rock slide (type words containing each falling letter).
 - **Inflection:** every inflected form is valid in battle; crosswords use base forms; repeated forms of the same word hit weaker (×1, ×0.6, ×0.35, ×0.2).
-- **Input:** keyboard typing (path found automatically, diacritic-lenient), mouse drag / click tile by tile, or touch.
+- **Input:** keyboard typing (path found automatically), mouse drag / click tile by tile, or touch.
+- **Č, Š, Ž are deliberate letters (11 Nov):** they must be typed (Slovene keyboard layout) or tapped; c, s, z never stand in for them anywhere — mesh, crosswords, chest, rock slide. The audience is primarily Slovene, so this is fine. The old "lenient diacritics" option is gone, and ć/đ are no longer mapped to č/d.
 - **Mobile mode:** "Mobilni prikaz" switch in a top bar on every screen (auto-on for touch devices, keeps game state). Phone layout: thumb bar pinned to the bottom (Briši, Počisti, Pošlji; Zagovor, Namig, Premešaj).
 - **Send button (iteration 3):** a visible *Pošlji* button next to the word in the mesh, chest and rock slide; green when the word is valid; Enter still works.
 - **Crossword typing (iteration 3):** tapping the grid opens the phone's native keyboard (swipe, autocorrect and diacritics work); the custom on-screen keyboard was removed. On phones the clues stack under the grid.

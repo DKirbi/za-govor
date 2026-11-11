@@ -36,7 +36,7 @@ binary DAWG; a full form list would be too big for low-end phones.
   1280×800.
 
 ## 5. Three kinds of input
-- **Keyboard and mouse:** typing, lenient c/s/z for English layouts.
+- **Keyboard and mouse:** typing with a Slovene keyboard layout; č, š, ž are deliberate letters, c/s/z never stand in for them (players without the layout click tiles).
 - **Touch:** drag across tiles; crosswords use the native keyboard (proven in the
   prototype); move the grid up when the keyboard opens.
 - **Controller (Steam Deck):** d-pad over the mesh, buttons for select / undo / send; for
