@@ -677,6 +677,27 @@ const CHESTS = [
   { w: 'pisanica', clue: 'Poslikano jajce iz Bele krajine' },
 ];
 
+// ============================================================ knowledge levels
+// The second difficulty choice; pace (real-time or calm) is the first.
+// Malček: learning words — the original game. Učenjak: longer, harder words and few tips.
+// Knjižni molj: crosswords in the style of paper crosswords, no tips in the letter mesh.
+// Crossword settings: fin = finisher crosswords, easy = ambush and forced (enemy) crosswords;
+// banks feed the grid, maxLen caps word length, rowMax / X / size shape the keyword column.
+// tools/cluebank.py mirrors the crossword settings to validate the clue banks.
+const LEVELS = {
+  malcek: { name: 'Malček', minWord: 3, hints: 3, proposals: true, meshCount: true, coach: true, reveals: 5, showLen: true,
+    fin:  { banks: ['malcek'], maxLen: 7, rowMax: 6, X: 3, size: 9, count: 6 },
+    easy: { banks: ['malcek'], maxLen: 5, rowMax: 5, X: 2, size: 7, count: 4, d: 1 } },
+  ucenjak: { name: 'Učenjak', minWord: 4, hints: 1, proposals: false, meshCount: true, coach: true, reveals: 2, showLen: true,
+    fin:  { banks: ['ucenjak'], maxLen: 9, rowMax: 8, X: 4, size: 9, count: 6 },
+    easy: { banks: ['malcek'], maxLen: 6, rowMax: 6, X: 2, size: 7, count: 4 } },
+  molj: { name: 'Knjižni molj', minWord: 4, hints: 0, proposals: false, meshCount: false, coach: false, reveals: 1, showLen: false,
+    fin:  { banks: ['molj', 'ucenjak'], maxLen: 9, rowMax: 8, X: 4, size: 9, count: 7 },
+    easy: { banks: ['molj', 'ucenjak'], maxLen: 6, rowMax: 6, X: 2, size: 7, count: 4 } },
+};
+const LV = () => LEVELS[S.know] || LEVELS.malcek;
+const MINW = () => LV().minWord;
+
 const FINISHER_FX = {
   perun: { text: 'Strele udarijo vse sovražnike!', hero: 0, move: 'Strela zagovora' },
   kres: { text: 'Ogenj zajame vse sovražnike!', hero: 3, move: 'Kresni plamen' },
@@ -717,6 +738,7 @@ const S = {
   },
   get level() { const l = living(); return l.length ? Math.round(l.reduce((a, k) => a + this.heroes[k].lvl, 0) / l.length) : 1; },
   screen: 'title', mode: 'real', unlockAll: false,
+  know: (() => { try { const v = localStorage.getItem('zg-know'); if (LEVELS[v]) return v; } catch (e) { /* no storage */ } return 'malcek'; })(),
   xp: 0, done: {}, meterBonus: 0, mapSel: 0,
   battle: null, ev: null, suggest: true,
   mobile: (() => { try { const v = localStorage.getItem('zg-mobile'); if (v != null) return v === '1'; } catch (e) { /* no storage */ }
@@ -773,19 +795,27 @@ function renderTitle() {
   const choice = (mode, title, text, badge) => h('button', { class: 'choice' + (S.mode === mode ? ' on' : ''),
     onclick: () => { S.mode = mode; go('title'); } },
     h('h3', {}, title, badge ? h('span', { class: 'badge' }, badge) : null), h('p', {}, text));
+  const know = (id, text) => h('button', { class: 'choice' + (S.know === id ? ' on' : ''),
+    onclick: () => { S.know = id; try { localStorage.setItem('zg-know', id); } catch (e) { /* no storage */ } go('title'); } },
+    h('h3', {}, LEVELS[id].name), h('p', {}, text));
   SCR.append(h('div', { class: 'title' },
     h('div', { class: 'logo' }, 'Za', h('span', { class: 'dot' }, '·'), 'govor'),
     h('div', { class: 'tagline' }, 'Besedna igra s slovanskimi bogovi — prototip mini iger'),
     h('div', { class: 'folk-rule' }),
-    h('div', { class: 'note' }, 'Novo: vsi junaki in sovražniki imajo piksel sličice in poslikane karte, ki ostanejo vidne do tri sekunde. Dodani so zvočni učinki (stikalo ♪ Zvok zgoraj) in ozadja stopenj. Vsak junak ima svoje zdravje in tri ravni; kdor pade, obleži do konca poti (Mokoš lahko z Materino roko enega obudi). Sovražniki napadajo počasneje. Po vsaki zmagi se pokažejo junaki s karto, ki jo lahko obrneš in prebereš njihovo zgodbo. V galeriji je vseh enajst junakov s prizoroma srečanja in zlomljenega uroka. ',
+    h('div', { class: 'note' }, 'Novo: izberi stopnjo znanja — Malček, Učenjak ali Knjižni molj; vsaka ima svoje križanke in drugačno pomoč. Vsi junaki in sovražniki imajo piksel sličice in poslikane karte, ki ostanejo vidne do tri sekunde. Dodani so zvočni učinki (stikalo ♪ Zvok zgoraj) in ozadja stopenj. Vsak junak ima svoje zdravje in tri ravni; kdor pade, obleži do konca poti (Mokoš lahko z Materino roko enega obudi). Sovražniki napadajo počasneje. Po vsaki zmagi se pokažejo junaki s karto, ki jo lahko obrneš in prebereš njihovo zgodbo. V galeriji je vseh enajst junakov s prizoroma srečanja in zlomljenega uroka. ',
       h('button', { class: 'btn small', style: { 'margin-left': '4px' }, onclick: () => go('gallery') }, 'Liki in karte'),
       h('button', { class: 'btn small', style: { 'margin-left': '4px' }, onclick: () => { resetRun(); go('map'); } }, 'Nova pot (junaki od začetka)')),
     h('h3', {}, 'Težavnost'),
     h('div', { class: 'choices' },
       choice('real', 'Realni čas', 'Sovražniki napadajo sproti in počasi topijo zdravje družine. Hitrejše besede pomenijo manj udarcev.', 'priporočeno'),
       choice('calm', 'Mirni način', 'Sovražniki počakajo na tvojo besedo. V bitkah ni časovnega pritiska; dogodki imajo dvojni čas.')),
-    h('label', { class: 'toggle' }, h('input', { type: 'checkbox', checked: S.suggest, onchange: e => { S.suggest = e.target.checked; } }),
-      'Predlogi besed med igro (lažje — dobro za učenje)'),
+    h('h3', {}, 'Znanje'),
+    h('div', { class: 'choices three' },
+      know('malcek', 'Za učenje besed. Kratke vsakdanje besede v križankah, predlogi in trije namigi v mreži, pet razkritih črk na križanko.'),
+      know('ucenjak', 'Daljše in zahtevnejše besede. V mreži besede z vsaj štirimi črkami in en namig na bitko, v križanki dve razkriti črki.'),
+      know('molj', 'Križanke kot v časopisu: zemljepis, književnost, glasba, antika. V mreži nobene pomoči, v križanki ena razkrita črka.')),
+    LV().proposals ? h('label', { class: 'toggle' }, h('input', { type: 'checkbox', checked: S.suggest, onchange: e => { S.suggest = e.target.checked; } }),
+      'Predlogi besed med igro (lažje — dobro za učenje)') : null,
     h('label', { class: 'toggle' }, h('input', { type: 'checkbox', checked: S.unlockAll, onchange: e => { S.unlockAll = e.target.checked; } }),
       'Odkleni vse bitke in dogodke (za preizkušanje)'),
     h('div', { class: 'row', style: { 'justify-content': 'flex-start' } },
@@ -799,7 +829,8 @@ function renderTitle() {
       h('span', {}, h('kbd', {}, 'presledek')), h('span', {}, 'izreci zagovor, ko je poln'),
       h('span', {}, h('kbd', {}, '←'), ' ', h('kbd', {}, '→')), h('span', {}, 'izberi cilj (v križanki: premik po mreži)'),
       h('span', {}, h('kbd', {}, '1'), ' ', h('kbd', {}, '2')), h('span', {}, 'namig · premešaj mrežo'),
-      h('span', {}, h('kbd', {}, 'Tab')), h('span', {}, 'v križanki: naslednje geslo'))));
+      h('span', {}, h('kbd', {}, 'Tab')), h('span', {}, 'v križanki: naslednja beseda'),
+      h('span', {}, h('kbd', {}, '?')), h('span', {}, 'v križanki: razkrij črko (število je omejeno)'))));
 }
 
 
@@ -920,7 +951,7 @@ function renderMap() {
     h('div', { class: 'logo', style: { 'font-size': '30px' } }, 'Pot'),
     h('div', { class: 'status-line' },
       h('span', {}, `Družina: ${S.partyHp}/${S.maxHp}`), h('span', {}, `Ravni junakov: ${S.heroes.map(x => x.down ? '†' : x.lvl).join(' · ')}`),
-      h('span', {}, S.mode === 'real' ? 'Realni čas' : 'Mirni način'),
+      h('span', {}, S.mode === 'real' ? 'Realni čas' : 'Mirni način'), h('span', {}, LV().name),
       S.meterBonus ? h('span', { style: { color: 'var(--gold)' } }, 'Zagovor začne napolnjen do polovice') : null),
     h('div', { class: 'nodes' }, NODES.map((n, i) => {
       const open = nodeOpen(i);
@@ -955,7 +986,7 @@ function startBattle(node) {
   const def = node.battle;
   B = S.battle = {
     node, def, enemies: def.enemies.map(makeEnemy), target: 0, grid: [], path: [], typed: '', nopath: false,
-    lemmaUses: new Map(), meter: Math.round(METER_MAX * Math.max(def.meterStart, S.meterBonus)), hints: 3, shield: 0,
+    lemmaUses: new Map(), meter: Math.round(METER_MAX * Math.max(def.meterStart, S.meterBonus)), hints: LV().hints, shield: 0,
     get hp() { return S.partyHp; }, set hp(v) { S.partyHp = v; }, snap: JSON.stringify(S.heroes), revived: false, sleep: {}, time: 0, paused: false, over: false, cw: null, words: 0, logLines: [], fbTimer: 0,
     stats: { words: 0, longest: '', best: 0, cw: 0, xp: 0 }, lastFinisher: null,
   };
@@ -968,12 +999,17 @@ function startBattle(node) {
 }
 
 function buildBattleDom() {
-  SCR.append(h('div', { class: 'battle' },
+  // On a phone the coach tip floats over the empty sky of the scene instead of taking a row,
+  // so the letter grid keeps its place when the tip appears or goes away.
+  const coach = h('div', { class: 'coach', ref: el => UI.coach = el });
+  let battle;
+  SCR.append(battle = h('div', { class: 'battle' },
     h('div', { class: 'bhead' },
       h('div', { class: 't' }, B.node.title, h('small', {}, B.node.sub)),
       h('div', { class: 'meta', ref: el => UI.meta = el }),
       h('button', { class: 'btn small', onclick: () => togglePause() }, 'Premor')),
     h('div', { class: 'scene' + (NODE_BG[B.node.id] ? ' hasbg' : ''), style: NODE_BG[B.node.id] ? { 'background-image': `linear-gradient(rgba(14,16,26,.36), rgba(14,16,26,.16)), url(${BG[NODE_BG[B.node.id]]})` } : {}, ref: el => UI.scene = el },
+      S.mobile ? coach : null,   // first, so actors, the target marker and cards paint over it
       h('div', { class: 'party', ref: el => UI.party = el }),
       h('div', { class: 'partyhp', ref: el => UI.partyhp = el }),
       h('div', { class: 'enemies', ref: el => UI.enemies = el }),
@@ -985,17 +1021,19 @@ function buildBattleDom() {
       h('div', { class: 'chips', ref: el => UI.chips = el }),
       h('div', { class: 'props', ref: el => UI.props = el }),
       h('div', { class: 'fb', ref: el => UI.fb = el }),
-      h('div', { class: 'coach', ref: el => UI.coach = el })),
+      S.mobile ? null : coach),
     h('div', { class: 'board' },
       h('div', { class: 'puzzle', ref: el => UI.puzzle = el }),
       h('aside', { class: 'side', ref: el => UI.side = el })),
     h('div', { class: 'log', ref: el => UI.log = el })));
+  // the phone layout sizes the battle to the space below the top bar (see .battle in game.css)
+  battle.style.setProperty('--battle-top', Math.round(battle.getBoundingClientRect().top + scrollY) + 'px');
   renderMeta(); renderParty(); renderEnemies(); renderPuzzle(); renderSide(); renderWord(); renderCoach(); renderLog();
 }
 
 function renderMeta() {
   if (!UI.meta) return;
-  UI.meta.textContent = `Ravni ${S.heroes.map(x => x.down ? '†' : x.lvl).join(' · ')} · ${S.mode === 'real' ? 'Realni čas' : 'Mirni način'}`;
+  UI.meta.textContent = `Ravni ${S.heroes.map(x => x.down ? '†' : x.lvl).join(' · ')} · ${S.mode === 'real' ? 'Realni čas' : 'Mirni način'} · ${LV().name}`;
 }
 const asleep = hIdx => !!B.sleep[hIdx] || S.heroes[hIdx].down;   // a fallen hero's letters go grey too
 function renderParty() {
@@ -1075,7 +1113,7 @@ function renderSide() {
         h('button', { class: 'btn zgbtn' + (full ? ' primary' : ''), disabled: !full, onclick: openFinisher },
           full ? null : h('i', { class: 'fill', style: { width: (100 * B.meter / METER_MAX) + '%' } }),
           h('span', {}, full ? 'Izreci zagovor' : `Zagovor ${Math.floor(B.meter)}/${METER_MAX}`)),
-        h('button', { class: 'btn', disabled: B.hints <= 0, onclick: useHint }, `Namig (${B.hints})`),
+        LV().hints ? h('button', { class: 'btn', disabled: B.hints <= 0, onclick: useHint }, `Namig (${B.hints})`) : null,
         h('button', { class: 'btn', onclick: () => shuffleGrid(true) }, 'Premešaj')));
     return;
   }
@@ -1088,7 +1126,7 @@ function renderSide() {
       h('button', { class: 'btn' + (full ? ' primary' : ''), disabled: !full || !!B.cw, onclick: openFinisher, style: { width: '100%' } },
         'Izreci zagovor ', h('kbd', {}, 'presledek'))),
     h('div', { class: 'box', style: { display: 'flex', gap: '8px' } },
-      h('button', { class: 'btn small', style: { flex: 1 }, disabled: !!B.cw || B.hints <= 0, onclick: useHint }, `Namig (${B.hints}) `, h('kbd', {}, '1')),
+      LV().hints ? h('button', { class: 'btn small', style: { flex: 1 }, disabled: !!B.cw || B.hints <= 0, onclick: useHint }, `Namig (${B.hints}) `, h('kbd', {}, '1')) : null,
       h('button', { class: 'btn small', style: { flex: 1 }, disabled: !!B.cw, onclick: () => shuffleGrid(true) }, 'Premešaj ', h('kbd', {}, '2'))),
     h('div', { class: 'box' }, h('h4', {}, 'Junaki in barve'),
       h('div', { class: 'legend' }, HEROES.map((hr, i) => h('div', { style: { '--c': hr.c } },
@@ -1113,8 +1151,9 @@ function log(text) {
 }
 function renderLog() { if (UI.log) { UI.log.innerHTML = ''; B.logLines.forEach(l => UI.log.append(h('div', {}, l))); } }
 function renderCoach() {
-  const tip = (B.def.tips || []).find(t => B.words < t.until);
+  const tip = LV().coach ? (B.def.tips || []).find(t => B.words < t.until) : null;
   UI.coach.style.display = tip ? '' : 'none';
+  if (UI.scene) UI.scene.classList.toggle('coaching', !!tip && S.mobile);
   if (tip) UI.coach.textContent = 'Namig: ' + (S.mobile && tip.m ? tip.m : tip.text);
 }
 
@@ -1215,10 +1254,11 @@ function findPath(typed) {
 
 // All dictionary words currently reachable in the mesh (for hints + solvability)
 function allWords(limit = 400) {
+  const minW = MINW();
   const out = new Map();
   const used = new Array(ROWS * COLS).fill(false);
   function dfs(i, node, word, path) {
-    if (node.$ && word.length >= 3 && !out.has(word)) out.set(word, path.slice());
+    if (node.$ && word.length >= minW && !out.has(word)) out.set(word, path.slice());
     if (out.size >= limit || word.length >= 9) return;
     for (const n of neighbors(i)) {
       const t = B.grid[n];
@@ -1286,7 +1326,7 @@ function svgEl(tag, attrs) {
 function renderSelection() {
   { const n = B && B.path ? B.path.length : 0; if (n > SEL_N) sfx('sel', { rate: 1 + Math.min(n, 10) * .07, vol: .7 }); SEL_N = n; }
   if (!UI.tiles || B.cw) return;
-  const w = pathWord(B.path), valid = B.path.length >= 3 && WORDS.has(w);
+  const w = pathWord(B.path), valid = B.path.length >= MINW() && WORDS.has(w);
   UI.tiles.forEach((el, i) => { el.classList.toggle('sel', B.path.includes(i)); el.classList.toggle('valid', valid && B.path.includes(i)); });
   const svg = UI.pathsvg; svg.innerHTML = '';
   if (B.path.length > 1) {
@@ -1305,7 +1345,7 @@ function renderWord() {
     renderProposals(); return;
   }
   const shown = B.path.length ? pathWord(B.path) : B.typed;
-  const valid = B.path.length >= 3 && WORDS.has(pathWord(B.path));
+  const valid = B.path.length >= MINW() && WORDS.has(pathWord(B.path));
   if (UI.send) { UI.send.style.visibility = ''; UI.send.disabled = !B.path.length; UI.send.classList.toggle('ready', valid); }
   UI.word.className = 'word' + (valid ? ' valid' : '') + (B.nopath && B.typed ? ' nopath' : '');
   if (!shown) UI.word.append(h('span', { class: 'ph' }, S.mobile ? 'Vleci ali tapkaj po črkah …' : 'Tipkaj ali vleci čez črke …'));
@@ -1315,7 +1355,7 @@ function renderWord() {
     const counts = [0, 0, 0, 0];
     B.path.forEach(i => { const t = B.grid[i]; if (ownerActive(t)) counts[t.owner]++; });
     counts.forEach((n, k) => { if (n) UI.chips.append(h('span', { class: 'chip', style: { '--c': HEROES[k].c } }, `${HEROES[k].name} ${HEROES[k].moves[Math.min(n, 3) - 1]}`)); });
-    if (B.path.length >= 3) UI.chips.append(h('span', { class: 'chip' }, `dolžina ×${num(LEN_MULT(B.path.length))}`));
+    if (B.path.length >= MINW()) UI.chips.append(h('span', { class: 'chip' }, `dolžina ×${num(LEN_MULT(B.path.length))}`));
     if (valid) {
       const lem = LEMMA.get(pathWord(B.path)), uses = B.lemmaUses.get(lem) || 0;
       if (uses) UI.chips.append(h('span', { class: 'chip', style: { '--c': 'var(--gold)' } }, `ponovitev ×${num(REPEAT[Math.min(uses, 3)])}`));
@@ -1334,7 +1374,7 @@ function extensions(path, limit = 300) {
   path.forEach(i => { used[i] = true; });
   (function dfs(i, nd, word, p) {
     if (out.length >= limit) return;
-    if (nd.$ && word.length >= 3 && word.length > w0.length) out.push([word, p.slice()]);
+    if (nd.$ && word.length >= MINW() && word.length > w0.length) out.push([word, p.slice()]);
     if (word.length >= 9) return;
     for (const n of neighbors(i)) {
       const t = B.grid[n];
@@ -1355,12 +1395,13 @@ function proposalScore(w, p) {
 function renderProposals() {
   if (!UI.props) return;
   UI.props.innerHTML = '';
-  if (!S.suggest || B.cw) { UI.props.style.display = 'none'; return; }
+  const L = LV(), props = S.suggest && L.proposals;
+  if (B.cw || (!props && !L.meshCount)) { UI.props.style.display = 'none'; return; }
   UI.props.style.display = '';
-  if (!B.path.length) {
+  if (!B.path.length || !props) {
     const n = gridWordCount();
     const cnt = n >= 600 ? 'več kot 600' : n;
-    UI.props.append(h('span', { class: 'muted' }, S.mobile ? `${cnt} besed v mreži` : `V mreži je ${cnt} besed. Začni besedo in tu se pokažejo predlogi.`));
+    UI.props.append(h('span', { class: 'muted' }, S.mobile || !props ? `${cnt} besed v mreži` : `V mreži je ${cnt} besed. Začni besedo in tu se pokažejo predlogi.`));
     return;
   }
   const best = new Map();
@@ -1435,7 +1476,7 @@ function bindMeshPointer(wrap) {
   });
   const up = () => {
     if (!down) return; down = false;
-    if ((moved && B.path.length >= 3) || submitOnUp) submitWord();
+    if ((moved && B.path.length >= MINW()) || submitOnUp) submitWord();
   };
   wrap.addEventListener('pointerup', up);
   wrap.addEventListener('pointercancel', () => { down = false; });
@@ -1447,7 +1488,7 @@ function submitWord() {
   if (!B || B.over || B.cw || B.paused) return;
   if (!B.path.length) { if (B.typed) fb(`Za »${UP(B.typed)}« ni poti v mreži.`, 'err'); return; }
   const w = pathWord(B.path);
-  if (w.length < 3) { fb('Beseda mora imeti vsaj 3 črke.', 'warn'); return; }
+  if (w.length < MINW()) { fb(`Beseda mora imeti vsaj ${MINW()} črke.`, 'warn'); return; }
   if (!WORDS.has(w)) { fb(`»${UP(w)}« ni v slovarju.`, 'err'); shakeEl(UI.word); return; }
   resolveWord(w, B.path.slice());
 }
@@ -1728,7 +1769,8 @@ window.addEventListener('blur', () => { if (B && S.screen === 'battle' && S.mode
 
 // ------------------------------------------------------------ hint + shuffle
 function useHint() {
-  if (B.cw || B.hints <= 0) return;
+  if (B.cw) return;
+  if (B.hints <= 0) { fb(LV().hints ? 'Namigov je zmanjkalo.' : 'Knjižni molj igra brez namigov.', 'warn'); return; }
   const words = [...allWords(400).entries()].filter(([w]) => w.length >= 4 && w.length <= 7);
   if (!words.length) { fb('Ni dobrih besed — premešaj mrežo.', 'warn'); return; }
   words.sort((a, b) => b[1].reduce((s, i) => s + tileScore(i), 0) - a[1].reduce((s, i) => s + tileScore(i), 0));
@@ -1777,26 +1819,27 @@ const isTextInput = el => el && el.tagName === 'INPUT' && el.type === 'text';
 // Mythology appears only as the hidden keyword (geslo) in the shaded column,
 // or sometimes as one main entry of a mixed crossword.
 const CLUES = JSON.parse($('#cluedata').textContent);
-const BANK = CLUES.bank.map(([a, c, t, d]) => ({ a, c, t, d }));
+const BANKS = Object.fromEntries(Object.entries(CLUES.banks).map(([k, rows]) => [k, rows.map(([a, c, t, d]) => ({ a, c, t, d }))]));
 
 function makeCrossword(kind, id) {
   const th = CLUES.themes[id] || { title: 'Križanka', style: 'cross', keys: [] };
-  const easy = kind !== 'finisher';
-  const pool = BANK.filter(w => easy ? (w.d === 1 && w.a.length <= 5) : w.a.length <= 7);
+  const cfg = kind === 'finisher' ? LV().fin : LV().easy, seen = new Set();
+  const pool = cfg.banks.flatMap(b => BANKS[b])
+    .filter(w => w.a.length <= cfg.maxLen && (!cfg.d || w.d <= cfg.d) && !seen.has(w.a) && seen.add(w.a));
   const style = th.style || (Math.random() < 0.55 ? 'geslo' : 'cross');
   let D = null;
-  if (style === 'geslo' && th.keys.length) D = genGeslo(pick(th.keys), pool, easy);
+  if (style === 'geslo' && th.keys.length) D = genGeslo(pick(th.keys), pool, cfg);
   if (!D) {
-    const main = kind === 'finisher' && th.keys.length && Math.random() < 0.4 ? pick(th.keys.filter(k => k[0].length <= 7)) : null;
-    D = genCross(pool, { main, count: easy ? 4 : 6, maxR: easy ? 7 : 9, maxC: easy ? 7 : 9 });
+    const main = kind === 'finisher' && th.keys.length && Math.random() < 0.4 ? pick(th.keys.filter(k => k[0].length <= cfg.size - 2)) : null;
+    D = genCross(pool, { main, count: cfg.count, maxR: cfg.size, maxC: cfg.size });
   }
   D.title = th.title;
   return D;
 }
 
 // Rows of everyday words; the shaded column spells the keyword.
-function genGeslo([key, clue], pool, easy) {
-  const n = key.length, X = easy ? 2 : 3, W = easy ? 7 : 9, maxLen = easy ? 5 : 6;
+function genGeslo([key, clue], pool, cfg) {
+  const n = key.length, X = cfg.X, W = cfg.size, maxLen = cfg.rowMax;
   for (let attempt = 0; attempt < 40; attempt++) {
     const used = new Set([key]), rows = [];
     for (const ch of key) {
@@ -1903,7 +1946,8 @@ function openCrossword(kind, id, opts = {}) {
   const real = S.mode === 'real';
   const timerMax = kind === 'lock' ? (real ? 34 : Infinity) : kind === 'ambush' ? (real ? 30 : Infinity) : Infinity;
   B.cw = { kind, id, D, cells, fill: new Map(), solved: new Set(), locked: new Set(), cur: { e: 0, p: 0 },
-    timer: timerMax, timerMax, enemy: opts.enemy || null, flash: new Set(), focused: false };
+    timer: timerMax, timerMax, enemy: opts.enemy || null, flash: new Set(), focused: false,
+    reveals: LV().reveals, revealed: new Set() };
   clearWord();
   renderPuzzle(); renderWord();
   // Opened by a tap or key press, this also opens the phone keyboard; opened by an enemy, the player taps the grid.
@@ -1911,6 +1955,12 @@ function openCrossword(kind, id, opts = {}) {
   if (S.mobile) UI.puzzle.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 const cellKey = (e, p) => (e.row + (e.dir === 'D' ? p : 0)) + ',' + (e.col + (e.dir === 'A' ? p : 0));
+// Pressing a clue, a cell or a banner button must not blur the input first: the blur redraws the banner,
+// which can move the grid and the clues under the finger, and on a phone it closes the keyboard.
+const keepCwFocus = {
+  onpointerdown: e => { if (!isTextInput(e.target)) e.preventDefault(); },
+  onmousedown: e => { if (!isTextInput(e.target)) e.preventDefault(); },
+};
 function focusCwInput() { const C = B && B.cw; if (C && C.input) { try { C.input.focus({ preventScroll: true }); } catch (e) { C.input.focus(); } } }
 
 // Built once per crossword; typing only repaints (so the input keeps focus and the phone keyboard stays open)
@@ -1925,7 +1975,7 @@ function renderCrossword() {
   const btn = C.kind === 'finisher' ? h('button', { class: 'btn small', onclick: () => { closeCrossword(); fb('Zagovor prekinjen — moč ostane shranjena.', 'warn'); } }, 'Prekliči ', h('kbd', {}, 'Esc'))
     : C.kind === 'ambush' ? h('button', { class: 'btn small', onclick: () => cwFail() }, 'Preskoči')
     : C.timer === Infinity ? h('button', { class: 'btn small', onclick: () => cwFail() }, 'Predaj se (prejmi udarec)') : null;
-  UI.puzzle.append(h('div', { class: 'cwhead' }, h('span', { class: 'k ' + C.kind }, label), h('h3', {}, head), h('span', { class: 'sp' }), btn));
+  UI.puzzle.append(h('div', { class: 'cwhead' }, h('span', { class: 'k ' + C.kind }, label), h('h3', {}, head), h('span', { class: 'grow' }), btn));
   UI.cwTimer = null;
   if (C.timer !== Infinity) UI.puzzle.append(h('div', { class: 'timer' }, h('i', { ref: el => UI.cwTimer = el, style: { width: clamp(100 * C.timer / C.timerMax, 0, 100) + '%' } })));
 
@@ -1945,18 +1995,19 @@ function renderCrossword() {
     if (B.cw !== C) return;
     if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); cwNext(e.shiftKey ? -1 : 1); }
     else if (e.key.startsWith('Arrow')) { e.preventDefault(); cwArrow(e.key === 'ArrowUp' ? -1 : e.key === 'ArrowDown' ? 1 : 0, e.key === 'ArrowLeft' ? -1 : e.key === 'ArrowRight' ? 1 : 0); }
+    else if (e.key === '?') { e.preventDefault(); cwReveal(); }
     else if (e.key === 'Escape') { e.preventDefault(); if (C.kind === 'finisher') { closeCrossword(); fb('Zagovor prekinjen — moč ostane shranjena.', 'warn'); } else togglePause(); }
   });
   C.input.addEventListener('focus', () => { C.focused = true; cwPaint(); });
   C.input.addEventListener('blur', () => { C.focused = false; cwPaint(); });
   // tapping anywhere on the grid focuses the input (a label does this natively, which phones accept as a user gesture)
-  const gridWrap = h('label', { class: 'cwgridwrap' }, grid, C.input);
+  const gridWrap = h('label', { class: 'cwgridwrap', ...keepCwFocus }, grid, C.input);
 
   C.clueEls = new Map();
   const clueList = dir => D.entries.map((e, k) => {
     if (e.dir !== dir) return null;
-    const el = h('button', { class: 'clue' + (e.geslo ? ' geslo' : '') + (e.main ? ' main' : ''), onclick: () => { cwSelect(k); focusCwInput(); } },
-      h('b', {}, e.num), e.main ? '★ ' : '', e.clue, h('span', { class: 'muted' }, ` (${e.answer.length})`));
+    const el = h('button', { class: 'clue' + (e.geslo ? ' geslo' : '') + (e.main ? ' main' : ''), ...keepCwFocus, onclick: () => { cwSelect(k); focusCwInput(); } },
+      h('b', {}, e.num), e.main ? '★ ' : '', e.clue, LV().showLen ? h('span', { class: 'muted' }, ` (${e.answer.length})`) : null);
     C.clueEls.set(k, el); return el;
   });
   const clues = h('div', { class: 'clues' },
@@ -1965,7 +2016,7 @@ function renderCrossword() {
       G ? h('p', { class: 'muted gnote' }, 'Geslo se razkriva s pravilnimi besedami. Ugani ga prej in moč zagovora zraste.') : null),
     h('div', { class: 'legend-cw' }, h('span', { class: 'sw ok' }), 'pravilno — sproži napad', h('span', { class: 'sw typed' }, ''), 'vpisano, še ni pravilno',
       G ? h('span', { class: 'sw gk' }) : null, G ? 'skrito geslo' : null),
-    S.mobile ? null : h('div', { class: 'muted', style: { 'font-size': '12px' } }, 'Tipkaj črke · ', h('kbd', {}, 'Tab'), ' ali ', h('kbd', {}, 'Enter'), ' naslednja beseda · puščice za premik'));
+    S.mobile ? null : h('div', { class: 'muted', style: { 'font-size': '12px' } }, 'Tipkaj črke · ', h('kbd', {}, 'Tab'), ' ali ', h('kbd', {}, 'Enter'), ' naslednja beseda · puščice za premik', LV().reveals ? h('span', {}, ' · ', h('kbd', {}, '?'), ' razkrij črko') : null));
   UI.puzzle.append(C.banner, h('div', { class: 'cwbody' }, gridWrap, clues));
   if (B.paused) UI.puzzle.append(h('div', { class: 'pausebanner' }, h('div', {}, 'Premor — ', h('button', { class: 'btn', onclick: togglePause }, 'Nadaljuj'))));
   cwPaint();
@@ -1977,15 +2028,35 @@ function cwPaint() {
     const cell = C.cells.get(key), val = C.fill.get(key) || '';
     const ok = C.locked.has(key);
     el.className = 'cell' + (cell.ents.includes(C.cur.e) ? ' inent' : '') + (key === curKey ? ' cur' : '') +
-      (ok ? ' ok' : val ? ' typed' : '') + (C.flash.has(key) ? ' flash' : '') + (cell.gk ? ' gk' : '');
+      (ok ? ' ok' : val ? ' typed' : '') + (C.flash.has(key) ? ' flash' : '') + (cell.gk ? ' gk' : '') + (C.revealed.has(key) && !ok ? ' rev' : '');
     el.querySelector('b').textContent = val;
   }
   C.clueEls.forEach((el, k) => { el.classList.toggle('cur', k === C.cur.e); el.classList.toggle('ok', C.solved.has(k)); });
   C.banner.innerHTML = '';
-  C.banner.append(h('b', {}, curE.geslo ? '★ Geslo' : `${curE.num} ${curE.dir === 'A' ? 'vodoravno' : 'navpično'}`), ` ${curE.clue} (${curE.answer.length})`);
+  C.banner.append(h('b', {}, curE.geslo ? '★ Geslo' : `${curE.num} ${curE.dir === 'A' ? 'vodoravno' : 'navpično'}`), ` ${curE.clue}` + (LV().showLen ? ` (${curE.answer.length})` : ''));
+  if (C.reveals > 0 && !C.solved.has(C.cur.e)) C.banner.append(h('button', { class: 'kbbtn revbtn', title: 'Razkrij eno črko te besede (beseda nato udari s pol moči)',
+    ...keepCwFocus, onclick: e => { e.preventDefault(); cwReveal(); } }, `Razkrij črko · ${C.reveals}`));
   if (!C.focused) C.banner.append(h('button', { class: 'kbbtn', onclick: e => { e.preventDefault(); focusCwInput(); } }, S.mobile ? 'Tapni za tipkovnico' : 'Klikni za tipkanje'));
 }
 function cwSelect(k) { B.cw.cur = { e: k, p: 0 }; cwPaint(); }
+// Tip: reveal one letter of the current entry (a few per crossword, depending on the level).
+// An entry that needed a revealed letter still fires, at half power; revealed keyword letters
+// don't count as guessed.
+function cwReveal() {
+  const C = B && B.cw; if (!C || C.reveals <= 0 || C.solved.has(C.cur.e)) return;
+  const e = C.D.entries[C.cur.e], keys = [...e.answer].map((_, p) => cellKey(e, p));
+  let idx = -1;
+  for (let i = 0; i < keys.length; i++) {
+    const q = (C.cur.p + i) % keys.length, k = keys[q];
+    if (!C.locked.has(k) && C.fill.get(k) !== C.cells.get(k).ch) { idx = q; break; }
+  }
+  if (idx < 0) return;
+  const k = keys[idx];
+  C.fill.set(k, C.cells.get(k).ch); C.revealed.add(k); C.reveals--;
+  C.cur.p = Math.min(idx + 1, keys.length - 1);
+  sfx('sel', { rate: 0.8, vol: .5 });
+  cwCheck();
+}
 function cwClickCell(key) {
   const C = B.cw, cell = C.cells.get(key);
   const curKey = cellKey(C.D.entries[C.cur.e], C.cur.p);
@@ -2050,11 +2121,12 @@ function cwCheck() {
     if (!keys.every(key => C.fill.get(key))) return;
     const right = keys.every((key, p) => letterEq(e.answer[p].toLowerCase(), C.fill.get(key)));
     if (!right) return;
-    const hidden = keys.filter(key => !C.locked.has(key)).length;
+    const hidden = keys.filter(key => !C.locked.has(key) && !C.revealed.has(key)).length;
+    const aided = keys.some(key => C.revealed.has(key));
     C.solved.add(k); solvedNow = true;
     keys.forEach((key, p) => { C.locked.add(key); C.fill.set(key, e.answer[p].toLowerCase()); C.flash.add(key); });
     setTimeout(() => { keys.forEach(key => C.flash.delete(key)); if (B && B.cw === C) cwPaint(); }, 700);
-    cwEntrySolved(e, hidden);
+    cwEntrySolved(e, hidden, aided);
   });
   if (B.cw !== C) return;
   if (C.solved.size === C.D.entries.length || C.D.entries.some((e, k) => e.geslo && C.solved.has(k))) { cwComplete(); return; }
@@ -2064,8 +2136,8 @@ function cwCheck() {
 const lvlMult = () => 1 + 0.1 * (S.level - 1);
 function cwTarget() { return B.enemies[B.target] && B.enemies[B.target].hp > 0 ? B.enemies[B.target] : B.enemies.find(x => x.hp > 0); }
 const crk = n => n === 1 ? 'črka' : n === 2 ? 'črki' : n <= 4 ? 'črke' : 'črk';
-function cwEntrySolved(e, hidden = 0) {
-  const C = B.cw, len = e.answer.length, word = UP(e.answer), lv = lvlMult();
+function cwEntrySolved(e, hidden = 0, aided = false) {
+  const C = B.cw, len = e.answer.length, word = UP(e.answer), lv = lvlMult(), pw = aided ? 0.5 : 1;
   if (e.geslo) {
     // the keyword is free once every row is solved; guessing it early multiplies the zagovor
     C.gesloHidden = hidden; C.gesloBonus = 1 + 0.15 * hidden;
@@ -2079,22 +2151,22 @@ function cwEntrySolved(e, hidden = 0) {
     const card = { tier: 2, c: hero.c, name: hero.name, move: fx.move, word, art: hero.id };
     attackAnim(UI.heroEls[fx.hero], 2, UI.scene);
     if (C.id === 'mokos') {
-      const heal = Math.round(3 * len * lv), got = healParty(heal);
+      const heal = Math.round(3 * len * lv * pw), got = healParty(heal);
       renderPartyHp(); if (got) floatOn(UI.party, `+${got}`, 'heal');
       card.value = got ? `+${got} zdravja` : 'zdravje je polno';
     } else if (t) {
-      card.value = `−${damageEnemy(t, 3 * len * lv)}`;
+      card.value = `−${damageEnemy(t, 3 * len * lv * pw)}`;
       if (C.id === 'kres') { applyBurn(t, 1.5); card.extra = 'cilj gori'; }
     }
     spawnCard(UI.heroEls[fx.hero], card);
   } else if (C.kind === 'ambush') {
-    const d = Math.round(2.5 * len * lv);
+    const d = Math.round(2.5 * len * lv * pw);
     B.enemies.filter(x => x.hp > 0).forEach(x => damageEnemy(x, d));
     spawnCard(UI.heroEls[0], { tier: 2, c: 'var(--water)', name: 'Družina', move: 'Udarec iz zasede', word, value: `−${d} vsem` });
   } else if (C.enemy && C.enemy.hp > 0) {
-    spawnCard(UI.heroEls[0], { tier: 2, c: 'var(--perun)', name: 'Družina', move: 'Protiudarec', word, value: `−${damageEnemy(C.enemy, 3 * len * lv)}` });
+    spawnCard(UI.heroEls[0], { tier: 2, c: 'var(--perun)', name: 'Družina', move: 'Protiudarec', word, value: `−${damageEnemy(C.enemy, 3 * len * lv * pw)}` });
   }
-  fb(`${word} — pravilno! Napad sprožen.`, 'ok');
+  fb(aided ? `${word} — pravilno, s pomočjo: napad s pol moči.` : `${word} — pravilno! Napad sprožen.`, 'ok');
 }
 function cwComplete() {
   const C = B.cw, D = C.D, lv = lvlMult();
@@ -2207,6 +2279,7 @@ function battleKey(e) {
     if (k === 'Tab') { e.preventDefault(); cwNext(e.shiftKey ? -1 : 1); return; }
     if (k === 'Enter') { e.preventDefault(); cwNext(); return; }
     if (k === 'Backspace') { e.preventDefault(); cwBackspace(); return; }
+    if (k === '?') { e.preventDefault(); cwReveal(); return; }
     if (k.startsWith('Arrow')) { e.preventDefault(); cwArrow(k === 'ArrowUp' ? -1 : k === 'ArrowDown' ? 1 : 0, k === 'ArrowLeft' ? -1 : k === 'ArrowRight' ? 1 : 0); return; }
     const ch = letterKey(e); if (ch) { e.preventDefault(); cwType(ch); }
     return;
@@ -2252,7 +2325,7 @@ function renderChest() {
       h('div', { class: 'timer', style: { margin: '14px 0 4px' } }, h('i', { ref: el => UI.evTimer = el, style: { width: clamp(100 * E.time / E.timeMax, 0, 100) + '%' } })),
       h('div', { class: 'sendrow' },
         h('div', { class: 'guess' }, [...E.item.w].map((_, k) => h('span', { class: 'lt' }, E.sel[k] != null ? E.letters[E.sel[k]].ch : ''))),
-        E.done ? null : h('button', { class: 'btn primary send' + (guess.length >= 3 ? ' ready' : ''), disabled: guess.length < 3, onclick: chestSubmit }, 'Pošlji ', h('kbd', {}, 'Enter'))),
+        E.done ? null : h('button', { class: 'btn primary send' + (guess.length >= MINW() ? ' ready' : ''), disabled: guess.length < MINW(), onclick: chestSubmit }, 'Pošlji ', h('kbd', {}, 'Enter'))),
       h('div', { class: 'letters' }, E.letters.map((l, i) => h('div', { class: 'tile' + (l.used ? ' used' : ''), onclick: () => chestPick(i) }, l.ch))),
       E.msg ? h('p', { class: 'fb ' + E.msgKind }, E.msg) : null,
       E.done ? h('div', {}, h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')))
@@ -2288,7 +2361,7 @@ function chestClear() { const E = S.ev; if (E.done) return; E.sel = []; E.letter
 function chestSubmit() {
   const E = S.ev; if (E.done) return;
   const guess = E.sel.map(i => E.letters[i].ch).join('');
-  if (guess.length < 3) { E.msg = 'Beseda mora imeti vsaj 3 črke.'; E.msgKind = 'warn'; renderChest(); return; }
+  if (guess.length < MINW()) { E.msg = `Beseda mora imeti vsaj ${MINW()} črke.`; E.msgKind = 'warn'; renderChest(); return; }
   if (guess === E.item.w) {
     E.done = true; E.win = true; S.meterBonus = 0.5; S.done[E.node.id] = true; gainXp(CHEST_XP_WIN);
     const partial = E.found.reduce((s, f) => s + f.xp, 0);
@@ -2361,7 +2434,7 @@ function trapSubmit() {
   const E = S.ev; if (E.done || !UI.trapInput) return;
   const typed = [...UI.trapInput.value].map(normLetter).filter(Boolean).join('');
   UI.trapInput.value = '';
-  if (typed.length < 3) { trapFb('Beseda mora imeti vsaj 3 črke.', 'warn'); return; }
+  if (typed.length < MINW()) { trapFb(`Beseda mora imeti vsaj ${MINW()} črke.`, 'warn'); return; }
   let cands = WORDS.has(typed) ? [typed] : [];
   if (!cands.length) { trapFb(`»${UP(typed)}« ni v slovarju.`, 'err'); return; }
   cands = cands.filter(w => !E.used.has(w));
@@ -2472,6 +2545,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { S, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES };
+window.__ZG = { S, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 

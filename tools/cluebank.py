@@ -15,7 +15,8 @@ this script and build.py.
 # or, sometimes, as one main entry. See THEMES at the bottom.
 import json, pathlib, re, sys
 
-BANK = """
+# MALČEK (baby): everyday words for learners.
+MALCEK = """
 KRUH|Vsakdanji ___, pečen iz moke|hrana|1
 MLEKO|Bela pijača, ki jo daje krava|hrana|1
 SIR|Ementalec, gavda ali trapist|hrana|1
@@ -377,6 +378,495 @@ SVET|Ves planet z ljudmi, tudi občinski ___|pregovori|1
 ROG|Ima ga koza ali jelen|zivali|1
 """
 
+# ---------------------------------------------------------------------------------------
+# UČENJAK (scholar): longer and more demanding words, 5-9 letters, from school subjects,
+# society, Slovenia and harder proverbs. Clues ask for a little more knowledge.
+UCENJAK = """
+VULKAN|Gora, ki bruha lavo|narava|1
+POTRES|Tresenje tal, merjeno z Richterjevo lestvico|narava|1
+PUŠČAVA|Sahara ali Gobi|narava|1
+PRAGOZD|Gost tropski gozd, ki ga človek ni posekal|narava|1
+SNEŽINKA|Šesterokraki ledeni kristal|narava|1
+STRELOVOD|Kovinska palica, ki odvede blisk v zemljo|narava|2
+KAPNIK|Raste s stropa ali tal kraške jame|narava|1
+PAŠNIK|Travnik, kjer se pasejo krave|narava|1
+VIŠINA|Meri se v metrih nad morjem|narava|1
+MAGNET|Privlači železne predmete|znanost|1
+KOMPAS|Njegova igla kaže proti severu|znanost|1
+TOPLOMER|Meri temperaturo|znanost|1
+KISIK|Plin, ki ga vdihavamo, znak O|znanost|1
+VODIK|Najlažji kemijski element|znanost|1
+OGLJIK|Element v diamantu in grafitu|znanost|2
+BAKER|Rdečkasta kovina za električne žice|znanost|1
+SREBRO|Kovina za drugo mesto na olimpijskih igrah|znanost|1
+PLANET|Mars, Venera ali Jupiter|znanost|1
+KOMET|Nebesno telo z repom iz ledu in prahu|znanost|1
+GALAKSIJA|Rimska cesta je naša ___|znanost|1
+ATMOSFERA|Plinski ovoj Zemlje|znanost|2
+MOLEKULA|Najmanjši delec snovi, ki ohrani njene lastnosti|znanost|2
+CELICA|Osnovna gradbena enota živih bitij|znanost|1
+BAKTERIJA|Enocelični mikroorganizem, včasih povzroča bolezen|znanost|2
+KISLINA|Ima pH pod sedem|znanost|2
+ELEKTRIKA|Teče po žicah do vtičnice|znanost|1
+MIKROSKOP|Z njim vidimo bakterije|znanost|1
+TELESKOP|Z njim opazujemo zvezde|znanost|1
+BATERIJA|Napaja daljinec ali uro|tehnika|1
+ZASLON|Na njem vidimo sliko računalnika|tehnika|1
+MIŠKA|Računalniška ___ s kolescem|tehnika|1
+SPLET|Svetovni ___ (internet)|tehnika|1
+ROBOT|Stroj, ki samostojno opravlja delo|tehnika|1
+RAKETA|Ponese satelit v vesolje|tehnika|1
+SATELIT|Kroži okoli Zemlje; Luna je naravni ___|tehnika|1
+TOVARNA|Tam izdelke izdelujejo v velikem številu|tehnika|1
+MOŽGANI|Organ v lobanji, s katerim mislimo|telo|1
+PLJUČA|Organ, s katerim dihamo|telo|1
+JETRA|Največja žleza v telesu|telo|2
+LEDVICE|Organa, ki čistita kri|telo|2
+OKOSTJE|Vse kosti telesa skupaj|telo|1
+MIŠICA|Krči se, ko dvigujemo|telo|1
+ŽELODEC|Organ, v katerem se prebavlja hrana|telo|1
+ZDRAVILO|Predpiše ga zdravnik, dobimo ga v lekarni|telo|1
+LEKARNA|Tam kupimo zdravila|telo|1
+VROČINA|Povišana telesna temperatura|telo|1
+PREHLAD|Smrkanje in kihanje v hladnih dneh|telo|1
+CEPIVO|Varuje pred boleznijo, dobimo ga z injekcijo|telo|1
+VITAMIN|Veliko ga je v limoni, na primer C|telo|1
+DRŽAVA|Slovenija je samostojna ___ od leta 1991|druzba|1
+USTAVA|Najvišji pravni akt države|druzba|2
+ZAKON|Sprejme ga državni zbor; tudi poroka|druzba|1
+VOLITVE|Na njih izbiramo poslance|druzba|1
+POSLANEC|Član državnega zbora|druzba|2
+ŽUPAN|Vodi občino|druzba|1
+OBČINA|Ljubljana je največja slovenska ___|druzba|1
+SODIŠČE|Tam sodnik izreče sodbo|druzba|1
+POLICIJA|Pokličemo jo na 113|druzba|1
+GASILEC|Pokličemo ga na 112, ko gori|druzba|1
+REŠILEC|Vozilo, ki bolnika odpelje v bolnišnico|druzba|1
+MUZEJ|Tam so razstavljeni stari predmeti|druzba|1
+KNJIŽNICA|Tam si izposodimo knjige|druzba|1
+RAZSTAVA|V galeriji si ogledamo ___ slik|umetnost|1
+KIPAR|Umetnik, ki kleše v kamen|umetnost|1
+SKLADBA|Glasbeno delo|umetnost|1
+ORKESTER|Glasbeniki pod vodstvom dirigenta|umetnost|1
+DIRIGENT|Vodi orkester s taktirko|umetnost|1
+PESNIK|Piše pesmi|umetnost|1
+ROMAN|Daljše prozno delo, na primer Deseti brat|umetnost|1
+PRAVLJICA|Zgodba, ki se začne z »Nekoč je živel …«|umetnost|1
+BASEN|Kratka zgodba z živalmi in naukom|umetnost|1
+UGANKA|Vprašanje, ki ga moraš razvozlati|umetnost|1
+PREGOVOR|Kratek ljudski izrek z naukom|jezik|1
+PRIDEVNIK|Beseda, ki pove, kakšen je samostalnik|jezik|2
+GLAGOL|Beseda, ki pove, kaj kdo dela|jezik|1
+ABECEDA|Vrsta črk od A do Ž|jezik|1
+STAVEK|Začne se z veliko začetnico in konča s piko|jezik|1
+VEJICA|Ločilo pred »ki« in »da«|jezik|2
+NAREČJE|Prekmursko ali rezijansko ___|jezik|2
+DVOJINA|Slovnično število za dva|jezik|1
+SLOVAR|V njem poiščemo pomen besede|jezik|1
+VITEZ|Bojevnik v oklepu na konju|zgodovina|1
+KOLIŠČE|Prazgodovinsko bivališče na kolih, na primer na Barju|zgodovina|2
+PIRAMIDA|Grobnica egiptovskega faraona|zgodovina|1
+RIMLJANI|Ustanovili so Emono|zgodovina|1
+EMONA|Rimsko mesto na mestu današnje Ljubljane|zgodovina|2
+KRALJICA|Žena kralja ali vladarica|zgodovina|1
+PRESTOL|Na njem sedi kralj|zgodovina|1
+KRONA|Kraljevo pokrivalo, tudi nekdanji denar|zgodovina|1
+OKLEP|Kovinska obleka viteza|zgodovina|1
+TABOR|Obzidana cerkev, zatočišče pred Turki|zgodovina|2
+TRUBAR|Avtor prve slovenske knjige|zgodovina|1
+ABECEDNIK|Trubarjeva prva knjiga, skupaj s Katekizmom|zgodovina|2
+RAVNILO|Z njim narišemo ravno črto|sola|1
+ŠESTILO|Z njim narišemo krog|sola|1
+RADIRKA|Z njo zbrišemo svinčnik|sola|1
+POČITNICE|Poletne ali zimske, brez pouka|sola|1
+ODMOR|Čas med dvema šolskima urama|sola|1
+NALOGA|Domača ___ za jutri|sola|1
+ZEMLJEVID|Na njem poiščemo mesta in reke|sola|1
+GLOBUS|Vrteča se krogla s celinami|sola|1
+CELINA|Evropa ali Afrika|sola|1
+OCEAN|Atlantski ali Tihi|sola|1
+EKVATOR|Namišljena črta okoli sredine Zemlje|sola|1
+POLOTOK|Kopno, ki ga voda obdaja s treh strani|sola|1
+ZALIV|Del morja, ki sega v kopno, na primer Piranski|sola|1
+NOVINAR|Piše članke za časopis|poklici|1
+ARHITEKT|Načrtuje stavbe|poklici|1
+ODVETNIK|Zastopa stranko na sodišču|poklici|2
+VRTNAR|Skrbi za cvetlice in grede|poklici|1
+FRIZER|Postriže lase|poklici|1
+NATAKAR|Postreže v gostilni|poklici|1
+SLAŠČIČAR|Izdeluje torte in pecivo|poklici|1
+GOZDAR|Skrbi za gozd in drevje|poklici|1
+ČEBELAR|Skrbi za panje in pridobiva med|poklici|1
+LOVEC|Hodi na lov s puško|poklici|1
+POSTAJA|Tam čakamo na vlak ali avtobus|mesto|1
+LETALIŠČE|Od tam vzleti letalo|mesto|1
+KRIŽIŠČE|Tam se sekata dve cesti|mesto|1
+PLOČNIK|Pot za pešce ob cesti|mesto|1
+AVTOCESTA|Hitra cesta, za katero potrebujemo vinjeto|mesto|1
+PREDOR|Cesta skozi goro, na primer pod Karavankami|mesto|1
+VINJETA|Nalepka za vožnjo po avtocesti|mesto|1
+PROMET|Gost ___ v konici|mesto|1
+VESELJE|Občutek, ko se smejimo|custva|1
+ŽALOST|Nasprotje veselja|custva|1
+STRAH|Občutek pred temo ali nevarnostjo|custva|1
+POGUM|Nasprotje strahu|custva|1
+LJUBEZEN|Najmočnejše čustvo med zaljubljenima|custva|1
+ZAUPANJE|Prepričanje, da se lahko zaneseš na nekoga|custva|2
+UPANJE|Umre zadnje|custva|1
+SPOMIN|Kar ostane v glavi iz preteklosti|custva|1
+SANJE|Kar vidimo v spanju|custva|1
+PRIJATELJ|Pravi ___ se pokaže v nesreči|custva|1
+ZNANJE|___ je moč|custva|1
+MODROST|Lastnost starega in pametnega človeka|custva|1
+LENOBA|Nasprotje pridnosti|custva|1
+POČASI|___ se daleč pride|pregovori|1
+ŽELEZO|Kuj ___, dokler je vroče|pregovori|1
+VRANA|___ vrani ne izkljuje oči|pregovori|1
+BESEDA|Dana ___ velja|pregovori|1
+JUTRI|Kar lahko narediš danes, ne odlašaj na ___|pregovori|1
+NESREČA|___ nikoli ne počiva|pregovori|1
+ČEVLJAR|___, ostani pri svojem kopitu!|pregovori|1
+LAKOTA|___ je najboljši kuhar|pregovori|1
+MOLK|Govoriti je srebro, ___ je zlato|pregovori|1
+PRAZNA|___ vreča ne stoji pokonci|pregovori|1
+LJUBLJANA|Glavno mesto Slovenije|slovenija|1
+MARIBOR|Mesto ob Dravi pod Pohorjem|slovenija|1
+POHORJE|Hribovje nad Mariborom|slovenija|1
+PREKMURJE|Pokrajina onstran Mure|slovenija|1
+GORENJSKA|Pokrajina z Bledom in Bohinjem|slovenija|1
+DOLENJSKA|Pokrajina ob Krki, dom cvička|slovenija|1
+PRIMORSKA|Pokrajina ob morju|slovenija|1
+ŠTAJERSKA|Pokrajina z Mariborom in Celjem|slovenija|1
+KOROŠKA|Pokrajina ob Dravi pod Peco|slovenija|1
+KAMNIK|Mesto pod Veliko planino|slovenija|1
+IDRIJA|Mesto živega srebra in klekljanih čipk|slovenija|1
+VELENJE|Mesto premogovnika in jezera|slovenija|2
+BREŽICE|Mesto ob sotočju Krke in Save|slovenija|2
+PORTOROŽ|Obmorsko letovišče blizu solin|slovenija|1
+SOLINE|Tam pridobivajo morsko sol, na primer Sečoveljske|slovenija|1
+LIPICANEC|Bel konj iz kobilarne na Krasu|slovenija|1
+PRŠUT|Na burji sušena kraška šunka|slovenija|1
+TERAN|Rdeče kraško vino|slovenija|1
+CVIČEK|Rdečkasto dolenjsko vino|slovenija|1
+HARMONIKA|Glasbilo, ki ga raztegujemo in stiskamo|slovenija|1
+KLOPOTEC|Vetrna ropotulja v vinogradu, ki odganja ptice|slovenija|1
+ČEBELNJAK|Hišica s čebeljimi panji|slovenija|2
+RIBNICA|Kraj, znan po suhi robi in lončarstvu|slovenija|2
+ŽLIKROFI|Idrijski ___ (testenine z nadevom)|slovenija|1
+MISLITI|Kar počnejo možgani|glagoli|1
+RAZUMETI|Doumeti, kaj nam kdo pove|glagoli|1
+POTOVATI|Kar počnemo med počitnicami v tujini|glagoli|1
+ODKRITI|Najti nekaj neznanega|glagoli|1
+PLAVATI|Kar počnemo v bazenu|glagoli|1
+POZABITI|Nasprotje zapomniti si|glagoli|1
+ZMAGATI|Biti prvi na tekmi|glagoli|1
+RADOVEDEN|Kdor rad sprašuje in raziskuje|lastnosti|1
+POGUMEN|Ki se ne boji|lastnosti|1
+MARLJIV|Priden pri delu|lastnosti|1
+ZVEST|Pes je ___ prijatelj|lastnosti|1
+SKROMEN|Ki ne zahteva veliko zase|lastnosti|2
+NEVAREN|Ki lahko škodi|lastnosti|1
+DRAGOCEN|Zelo vreden|lastnosti|1
+OGROMEN|Zelo, zelo velik|lastnosti|1
+HRUPEN|Nasprotje tihega|lastnosti|1
+TEMEN|Nasprotje svetlega|lastnosti|1
+MOKER|Nasprotje suhega|lastnosti|1
+PEČENKA|Nedeljska svinjska ___ iz pečice|hrana|1
+GOLAŽ|Gosta mesna jed s papriko|hrana|1
+PALAČINKA|Tanka jed iz testa, namazana z marmelado|hrana|1
+MARMELADA|Namaz iz kuhanega sadja|hrana|1
+ZAČIMBA|Poper ali cimet|hrana|1
+CIMET|Začimba v jabolčnem zavitku|hrana|1
+ZAVITEK|Jabolčni ___ ali štrudelj|hrana|1
+OCVIRKI|Popečeni koščki slanine na žgancih|hrana|1
+KREMŠNITA|Blejska rezina s kremo|hrana|1
+KORUZA|Rumena žitarica za polento|hrana|1
+PŠENICA|Žito za kruh|hrana|1
+JEČMEN|Žito za pivo in ričet|hrana|1
+AJDA|Žito z belimi cvetovi za žgance|hrana|1
+SMUČIŠČE|Proga s sedežnico in vlečnico|sport|1
+LETALNICA|Velikanska skakalnica v Planici|sport|1
+KOŠARKA|Šport z obročem in mrežico|sport|1
+ODBOJKA|Šport z mrežo, kjer žogo odbijamo z rokami|sport|1
+ROKOMET|Šport, v katerem žogo z roko vržemo v gol|sport|1
+KOLESAR|Tekmovalec na Dirki po Franciji|sport|1
+ALPINIST|Pleza na visoke gore|sport|1
+PLEZANJE|Šport na steni z vrvjo|sport|1
+SODNIK|Na tekmi piska in deli kartone|sport|1
+PRVENSTVO|Svetovno ali evropsko tekmovanje|sport|1
+POKAL|Nagrada v obliki čaše za zmagovalca|sport|1
+ŠAHOVNICA|Plošča s 64 polji|sport|1
+KLAVIR|Glasbilo s črnimi in belimi tipkami|glasba|1
+TROBENTA|Pihalo iz medenine|glasba|1
+KONTRABAS|Največje godalo v orkestru|glasba|2
+MELODIJA|Napev, ki si ga zažvižgamo|glasba|1
+KONCERT|Glasbeni nastop pred občinstvom|glasba|1
+"""
+
+# ---------------------------------------------------------------------------------------
+# KNJIŽNI MOLJ (book worm): original clues in the style of Slovene paper crosswords —
+# short knowledge clues about world and Slovene geography, literature, art, music,
+# classical myths, science and the classic crossword animals. 3-9 letters.
+MOLJ = """
+OSLO|Glavno mesto Norveške|zemljepis|1
+RIM|Večno mesto ob Tiberi|zemljepis|1
+PARIZ|Mesto ob Seni z Eifflovim stolpom|zemljepis|1
+DUNAJ|Avstrijska prestolnica|zemljepis|1
+ZAGREB|Hrvaška prestolnica|zemljepis|1
+PRAGA|Češka prestolnica ob Vltavi|zemljepis|1
+MADRID|Španska prestolnica|zemljepis|1
+LIZBONA|Portugalska prestolnica|zemljepis|1
+ATENE|Grška prestolnica z Akropolo|zemljepis|1
+BERLIN|Nemška prestolnica|zemljepis|1
+LONDON|Prestolnica ob Temzi|zemljepis|1
+MOSKVA|Ruska prestolnica s Kremljem|zemljepis|1
+VARŠAVA|Poljska prestolnica ob Visli|zemljepis|1
+KAIRO|Egiptovska prestolnica ob Nilu|zemljepis|1
+LIMA|Perujska prestolnica|zemljepis|2
+TOKIO|Japonska prestolnica|zemljepis|1
+PEKING|Kitajska prestolnica|zemljepis|1
+TIRANA|Albanska prestolnica|zemljepis|2
+SOFIJA|Bolgarska prestolnica|zemljepis|2
+BERN|Švicarska prestolnica|zemljepis|1
+RIGA|Latvijska prestolnica|zemljepis|2
+TALIN|Estonska prestolnica|zemljepis|2
+KIJEV|Ukrajinska prestolnica|zemljepis|1
+BAGDAD|Iraška prestolnica ob Tigrisu|zemljepis|2
+TEHERAN|Iranska prestolnica|zemljepis|2
+HAVANA|Kubanska prestolnica|zemljepis|1
+CANBERRA|Avstralska prestolnica|zemljepis|2
+NAIROBI|Kenijska prestolnica|zemljepis|2
+DAKAR|Senegalska prestolnica, nekoč cilj znanega relija|zemljepis|2
+SANTIAGO|Čilska prestolnica|zemljepis|2
+NIL|Najdaljša afriška reka|zemljepis|1
+DONAVA|Reka skozi Dunaj in Budimpešto|zemljepis|1
+REN|Reka skozi Basel in Köln|zemljepis|1
+VOLGA|Najdaljša evropska reka|zemljepis|1
+TEMZA|Londonska reka|zemljepis|1
+SENA|Pariška reka|zemljepis|1
+TIBERA|Rimska reka|zemljepis|1
+AMAZONKA|Najbolj vodnata reka na svetu|zemljepis|1
+MISISIPI|Velika reka, ki se izliva v Mehiški zaliv|zemljepis|2
+GANGES|Sveta indijska reka|zemljepis|1
+JORDAN|Reka, ki se izliva v Mrtvo morje|zemljepis|2
+ALPE|Gorovje z Mont Blancom in Triglavom|zemljepis|1
+ANDE|Južnoameriško gorovje|zemljepis|1
+HIMALAJA|Gorovje z Mount Everestom|zemljepis|1
+PIRENEJI|Gorovje med Francijo in Španijo|zemljepis|1
+KARPATI|Gorovje v loku čez Slovaško in Romunijo|zemljepis|2
+URAL|Gorovje med Evropo in Azijo|zemljepis|1
+ETNA|Ognjenik na Siciliji|zemljepis|1
+VEZUV|Ognjenik nad Neapljem, ki je zasul Pompeje|zemljepis|1
+SAHARA|Največja vroča puščava|zemljepis|1
+KRETA|Največji grški otok|zemljepis|1
+SICILIJA|Največji sredozemski otok|zemljepis|1
+KORZIKA|Napoleonov rojstni otok|zemljepis|1
+MALTA|Otoška država južno od Sicilije|zemljepis|1
+KRK|Hrvaški otok z mostom do kopnega|zemljepis|2
+ISLANDIJA|Otok gejzirjev in ognjenikov na severu|zemljepis|1
+BALTIK|Morje med Švedsko in Poljsko|zemljepis|2
+NANOS|Planota nad Vipavsko dolino|domovina|1
+SNEŽNIK|Gora nad Ilirsko Bistrico|domovina|1
+STOL|Najvišji vrh Karavank|domovina|2
+GRINTOVEC|Najvišji vrh Kamniško-Savinjskih Alp|domovina|2
+KUM|Najvišji vrh Posavskega hribovja|domovina|2
+VIPAVA|Reka in dolina burje in vina|domovina|1
+SAVINJA|Reka skozi Celje|domovina|1
+KOLPA|Mejna reka ob Beli krajini|domovina|1
+IDRIJCA|Reka skozi Idrijo|domovina|1
+SORA|Reka iz Selške in Poljanske doline|domovina|2
+UNICA|Reka, ki teče skozi Planinsko polje|domovina|2
+PIVKA|Reka, ki ponikne v Postojnsko jamo|domovina|2
+REKA|Ponikalnica, ki teče skozi Škocjanske jame|domovina|2
+PREDJAMA|Grad v skalni steni pri Postojni|domovina|1
+ŠKOCJAN|Kraška vas nad jamami z Unescovega seznama|domovina|2
+ROGLA|Smučišče na Pohorju|domovina|1
+KRVAVEC|Smučišče nad Cerkljami na Gorenjskem|domovina|1
+KANIN|Najvišje smučišče pri nas, nad Bovcem|domovina|1
+BOVEC|Kraj ob Soči pod Kaninom|domovina|1
+KOBARID|Kraj bitke na soški fronti leta 1917|domovina|1
+TOLMIN|Kraj ob Soči med Kobaridom in Mostom na Soči|domovina|2
+VRHNIKA|Cankarjev rojstni kraj|domovina|1
+VRBA|Prešernova rojstna vas|domovina|1
+IZOLA|Obmorsko mesto med Koprom in Piranom|domovina|1
+SEČOVLJE|Kraj s solinami in letališčem|domovina|2
+CANKAR|Pisatelj Hlapca Jerneja|knjizevnost|1
+JURČIČ|Avtor Desetega brata|knjizevnost|1
+LEVSTIK|Avtor Martina Krpana|knjizevnost|1
+TAVČAR|Avtor Visoške kronike|knjizevnost|1
+KERSNIK|Avtor Jare gospode|knjizevnost|2
+KOSOVEL|Kraški pesnik Integralov|knjizevnost|1
+ŽUPANČIČ|Pesnik Cicibana|knjizevnost|1
+GREGORČIČ|Goriški slavček|knjizevnost|1
+AŠKERC|Avtor balade Mutec osojski|knjizevnost|2
+VANDOT|Avtor Kekca|knjizevnost|2
+BEVK|Avtor Kaplana Martina Čedermaca|knjizevnost|2
+JULIJA|Prešernova muza Primic|knjizevnost|1
+SONET|Pesem iz štirinajstih verzov|knjizevnost|1
+KRST|___ pri Savici|knjizevnost|1
+HIMNA|Sedma kitica Zdravljice je naša ___|knjizevnost|1
+MURN|Pesnik slovenske moderne, Josip|knjizevnost|2
+KETTE|Pesnik slovenske moderne, Dragotin|knjizevnost|2
+DALMATIN|Prevajalec Biblije v slovenščino (1584)|knjizevnost|2
+BOHORIČ|Avtor prve slovenske slovnice|knjizevnost|2
+VODNIK|Pesnik, urednik Lublanskih novic|knjizevnost|2
+LINHART|Avtor Županove Micke|knjizevnost|2
+MICKA|Županova ___ (Linhartova komedija)|knjizevnost|1
+RIMA|Glasovno ujemanje koncev verzov|knjizevnost|1
+VERZ|Vrstica v pesmi|knjizevnost|1
+KITICA|Skupina verzov v pesmi|knjizevnost|1
+GROHAR|Slikar Sejalca|umetnost|1
+JAKOPIČ|Slovenski impresionist Rihard|umetnost|1
+KOBILCA|Slikarka Kofetarice|umetnost|1
+PLEČNIK|Arhitekt Tromostovja|umetnost|1
+FRESKA|Slika na mokrem ometu|umetnost|1
+MOZAIK|Slika iz drobnih kamenčkov|umetnost|1
+PORTRET|Slika obraza|umetnost|1
+PALETA|Slikarjeva deščica za barve|umetnost|1
+ČOPIČ|Slikarjevo orodje z dlakami|umetnost|1
+AIDA|Verdijeva opera z Radamesom|glasba|1
+TOSCA|Puccinijeva opera, ki se dogaja v Rimu|glasba|2
+CARMEN|Bizetova opera s toreadorjem|glasba|1
+NABUCCO|Verdijeva opera z zborom sužnjev|glasba|2
+MOZART|Skladatelj Čarobne piščali|glasba|1
+BACH|Skladatelj Brandenburških koncertov|glasba|1
+CHOPIN|Poljski skladatelj nokturnov|glasba|2
+VIOLA|Godalo, nekoliko večje od violine|glasba|1
+OBOA|Lesno pihalo z dvojnim jezičkom|glasba|1
+FAGOT|Nizko lesno pihalo z dvojnim jezičkom|glasba|2
+HARFA|Brenkalo s številnimi strunami, simbol Irske|glasba|1
+CITRE|Ljudsko brenkalo, ki ga položimo na mizo|glasba|1
+ARIJA|Solospev v operi|glasba|1
+TENOR|Visok moški glas|glasba|1
+ALT|Nizek ženski glas|glasba|1
+BAS|Najnižji moški glas|glasba|1
+SOPRAN|Najvišji ženski glas|glasba|1
+DUET|Skladba za dva|glasba|1
+TRIO|Skladba za tri|glasba|1
+KVARTET|Zasedba štirih glasbenikov|glasba|1
+AVSENIK|Ansambel bratov iz Begunj|glasba|1
+ALFA|Prva grška črka|antika|1
+BETA|Druga grška črka|antika|1
+GAMA|Tretja grška črka|antika|1
+DELTA|Četrta grška črka, tudi rečno ustje|antika|1
+SIGMA|Grška črka za vsoto|antika|2
+OMEGA|Zadnja grška črka|antika|1
+ZEUS|Vrhovni grški bog|antika|1
+HERA|Zevsova žena|antika|1
+ATENA|Grška boginja modrosti s sovo|antika|1
+APOLON|Grški bog svetlobe in glasbe|antika|1
+HERMES|Glasnik bogov s krilatimi sandali|antika|1
+AMOR|Rimski bog ljubezni s puščicami|antika|1
+VENERA|Rimska boginja ljubezni, tudi planet|antika|1
+MARS|Rimski bog vojne, tudi rdeči planet|antika|1
+ODIN|Vrhovni nordijski bog|antika|2
+TOR|Nordijski bog groma s kladivom|antika|2
+ODISEJ|Homerjev junak, ki je deset let blodil|antika|1
+AHIL|Junak z ranljivo peto|antika|1
+TROJA|Mesto lesenega konja|antika|1
+SFINGA|Bitje z levjim telesom pri Gizi|antika|1
+KIKLOP|Velikan z enim očesom|antika|1
+MEDUZA|Gorgona, ki s pogledom spremeni v kamen|antika|1
+PEGAZ|Krilati konj|antika|1
+CEZAR|Rimljan, ki je prišel, videl in zmagal|zgodovina|1
+KLEOPATRA|Egipčanska kraljica, Cezarjeva ljubica|zgodovina|1
+FARAON|Vladar starega Egipta|zgodovina|1
+VIKINGI|Severni pomorščaki z zmajevimi ladjami|zgodovina|1
+INKI|Ljudstvo Machu Picchuja|zgodovina|1
+NAPOLEON|Francoski cesar, ustanovitelj Ilirskih provinc|zgodovina|1
+RENESANSA|Obdobje Leonarda in Michelangela|zgodovina|1
+BAROK|Razkošni slog 17. stoletja|zgodovina|1
+GOTIKA|Slog šiljastih lokov in visokih katedral|zgodovina|1
+ROMANIKA|Slog debelih zidov in polkrožnih lokov|zgodovina|2
+SAMO|Vladar prve slovanske plemenske zveze|zgodovina|2
+NATO|Severnoatlantsko obrambno zavezništvo|kratice|1
+UNESCO|Organizacija ZN za izobraževanje, znanost in kulturo|kratice|1
+OZN|Organizacija združenih narodov (kratica)|kratice|1
+NASA|Ameriška vesoljska agencija|kratice|1
+EMU|Avstralski ptič, ki ne leti|zivali|1
+GNU|Afriška antilopa z grivo|zivali|2
+LAMA|Andska žival, tudi tibetanski menih|zivali|1
+JAK|Kosmato tibetansko govedo|zivali|1
+IBIS|Sveti ptič starih Egipčanov|zivali|2
+KONDOR|Andski jastreb|zivali|1
+PUMA|Ameriška velika mačka, kuguar|zivali|1
+JAGUAR|Pegasta južnoameriška velika mačka|zivali|1
+GEPARD|Najhitrejša kopenska žival|zivali|1
+PINGVIN|Ptič, ki plava, a ne leti|zivali|1
+KENGURU|Avstralski skakač z vrečo|zivali|1
+KOALA|Avstralski medvedek, ki je evkaliptus|zivali|1
+BIZON|Ameriško govedo s prerij|zivali|1
+LOS|Največji jelen|zivali|1
+ORKA|Kit ubijalec|zivali|1
+SOM|Brkata sladkovodna riba|zivali|1
+ŠČUKA|Roparska riba z dolgim gobcem|zivali|1
+KRAP|Debela riba iz ribnika|zivali|1
+MOČERIL|Človeška ribica|zivali|1
+GAMS|Divja koza visokih gora|zivali|1
+KOZOROG|Alpski parkljar z velikimi rogovi, tudi ozvezdje|zivali|1
+SVIZEC|Alpski glodavec, ki žvižga|zivali|1
+ČMRLJ|Kosmata brenčeča žuželka, večja od čebele|zivali|1
+KRESNICA|Žuželka, ki ponoči sveti|zivali|1
+PLANIKA|Bela gorska cvetlica, znak planincev|rastline|1
+TELOH|Cvetlica, ki cveti sredi zime|rastline|2
+ZVONČEK|Prvi pomladni beli cvet|rastline|1
+POTONIKA|Cvetlica z velikimi rožnatimi cvetovi|rastline|1
+LOVOR|Sredozemski grm, venec za zmagovalce|rastline|1
+OLJKA|Sredozemsko drevo z zelenimi plodovi|rastline|1
+MACESEN|Iglavec, ki jeseni odvrže iglice|rastline|1
+TISA|Strupen iglavec z rdečimi jagodami|rastline|2
+BUKEV|Najpogostejše listnato drevo v naših gozdovih|rastline|1
+ATOM|Najmanjši delec kemijskega elementa|znanost|1
+NEON|Žlahtni plin v svetlečih napisih|znanost|1
+ARGON|Žlahtni plin v žarnicah|znanost|2
+RADIJ|Element, ki sta ga odkrila zakonca Curie|znanost|2
+URAN|Radioaktivni element, tudi planet|znanost|1
+CINK|Kovina, ki varuje železo pred rjo|znanost|2
+KOSITER|Kovina za spajkanje|znanost|1
+SVINEC|Težka mehka siva kovina|znanost|1
+LITER|Enota za prostornino|znanost|1
+METER|Enota za dolžino|znanost|1
+GRAM|Masa kubičnega centimetra vode|znanost|1
+VOLT|Enota za električno napetost|znanost|1
+AMPER|Enota za električni tok|znanost|1
+HERC|Enota za frekvenco|znanost|2
+KALORIJA|Enota za energijo v hrani|znanost|1
+PRIZMA|Steklo, ki razkloni svetlobo v mavrico|znanost|1
+MARATON|Tek na 42 kilometrov|sport|1
+SLALOM|Smučarska disciplina med količki|sport|1
+BIATLON|Smučarski tek s streljanjem|sport|1
+REGATA|Tekmovanje jadrnic|sport|1
+TENIS|Šport Wimbledona|sport|1
+GOLF|Šport z luknjami in palicami|sport|1
+POLO|Igra na konjih z dolgimi palicami|sport|1
+EVA|Prva žena v Svetem pismu|imena|1
+ADAM|Prvi človek v Svetem pismu|imena|1
+NOE|Graditelj barke|imena|1
+ABEL|Kajnov brat|imena|1
+MOJZES|Prerok z desetimi zapovedmi|imena|1
+JONA|Prerok, ki ga je pogoltnila velika riba|imena|1
+AVE|Latinski pozdrav|tujke|1
+AMEN|Beseda na koncu molitve|tujke|1
+IGLU|Hiša iz snežnih kock|tujke|1
+SAVNA|Finska vroča kopel|tujke|1
+SIESTA|Španski popoldanski počitek|tujke|1
+KIMONO|Japonsko oblačilo s pasom obi|tujke|1
+SARI|Indijsko žensko oblačilo|tujke|1
+SUŠI|Japonska jed iz riža in surove ribe|tujke|1
+PAELJA|Španska jed z rižem in morskimi sadeži|tujke|1
+ARA|Velika pisana papiga|tujke|1
+OAZA|Zelen otok sredi puščave|narava|1
+LAVA|Staljena kamnina iz ognjenika|narava|1
+ATOL|Koralni otok v obliki obroča|narava|1
+FJORD|Ozek morski zaliv na Norveškem|narava|1
+TAJGA|Severni iglasti gozd|narava|1
+TUNDRA|Brezdrevesna severna pokrajina|narava|1
+SAVANA|Afriška travnata pokrajina z redkim drevjem|narava|1
+MONSUN|Veter, ki v Aziji prinaša deževje|narava|1
+CUNAMI|Velikanski val po podmorskem potresu|narava|1
+ORKAN|Najmočnejši vihar|narava|1
+"""
+
 # Mythology keywords per crossword theme. style: None = random (geslo column or mixed crossword),
 # 'geslo' = always a hidden keyword column, 'cross' = everyday words only.
 THEMES = {
@@ -395,36 +885,64 @@ THEMES = {
 
 ALPHA = set('ABCČDEFGHIJKLMNOPRSŠTUVZŽ')
 root = pathlib.Path(__file__).resolve().parent.parent / 'data'
-rows, seen, problems = [], set(), []
-for line in BANK.strip().splitlines():
-    a, c, t, d = [x.strip() for x in line.split('|')]
-    if a in seen: problems.append('duplicate ' + a)
-    seen.add(a)
-    if not set(a) <= ALPHA: problems.append('bad letters ' + a)
-    if not 3 <= len(a) <= 8: problems.append('bad length ' + a)
-    if '___' not in c and a.lower() in c.lower(): problems.append('answer in clue ' + a)
-    rows.append([a, c, t, int(d)])
 
-# every keyword letter needs enough row words for the geslo column style
-for tid, th in THEMES.items():
-    for k, _ in th['keys']:
-        assert set(k) <= ALPHA, k
-        if k in seen: problems.append('keyword also in bank ' + k)
-        easy = th['style'] == 'geslo'
-        for ch in set(k):
-            n = sum(1 for a, _, _, d in rows if ch in a and (not easy or (d == 1 and len(a) <= 5)))
-            if n < 4: problems.append(f'{tid}/{k}: only {n} row words with {ch}')
+# Crossword settings per knowledge level — keep in sync with LEVELS in src/game.js.
+# fin = finisher crosswords, easy = ambush and forced (enemy) crosswords.
+# banks: which clue banks feed the grid; maxLen: longest word; rowMax / X / size: keyword
+# column rows (longest row word, column index, grid width); d: highest difficulty mark.
+LEVELS = {
+  'malcek':  {'fin':  {'banks': ['malcek'], 'maxLen': 7, 'rowMax': 6, 'X': 3, 'size': 9},
+              'easy': {'banks': ['malcek'], 'maxLen': 5, 'rowMax': 5, 'X': 2, 'size': 7, 'd': 1}},
+  'ucenjak': {'fin':  {'banks': ['ucenjak'], 'maxLen': 9, 'rowMax': 8, 'X': 4, 'size': 9},
+              'easy': {'banks': ['malcek'], 'maxLen': 6, 'rowMax': 6, 'X': 2, 'size': 7}},
+  'molj':    {'fin':  {'banks': ['molj', 'ucenjak'], 'maxLen': 9, 'rowMax': 8, 'X': 4, 'size': 9},
+              'easy': {'banks': ['molj', 'ucenjak'], 'maxLen': 6, 'rowMax': 6, 'X': 2, 'size': 7}},
+}
+LENGTHS = {'malcek': (3, 8), 'ucenjak': (4, 9), 'molj': (3, 9)}
+
+problems, banks = [], {}
+for name, text in (('malcek', MALCEK), ('ucenjak', UCENJAK), ('molj', MOLJ)):
+    rows, seen = [], set()
+    lo, hi = LENGTHS[name]
+    for line in text.strip().splitlines():
+        a, c, t, d = [x.strip() for x in line.split('|')]
+        if a in seen: problems.append(f'{name}: duplicate {a}')
+        seen.add(a)
+        if not set(a) <= ALPHA: problems.append(f'{name}: bad letters {a}')
+        if not lo <= len(a) <= hi: problems.append(f'{name}: bad length {a}')
+        if '___' not in c and a.lower() in c.lower(): problems.append(f'{name}: answer in clue {a}')
+        rows.append([a, c, t, int(d)])
+    banks[name] = rows
+
+keys = {k for th in THEMES.values() for k, _ in th['keys']}
+for name, rows in banks.items():
+    for a, *_ in rows:
+        if a in keys: problems.append(f'{name}: keyword also in bank {a}')
+
+# every keyword letter needs enough row words for the keyword column, on every level
+def row_words(cfg, ch):
+    pool = {a for b in cfg['banks'] for a, _, _, d in banks[b] if len(a) <= min(cfg['maxLen'], cfg['rowMax']) and d <= cfg.get('d', 9)}
+    W, X = cfg['size'], cfg['X']
+    return [a for a in pool if any(a[p] == ch and p <= X and len(a) - 1 - p <= W - 1 - X for p in range(len(a)))]
+for lv, conf in LEVELS.items():
+    for tid, th in THEMES.items():
+        kinds = ['easy'] if th['style'] == 'geslo' else ['fin']   # forced crosswords use the easy pool
+        for kind in kinds:
+            for k, _ in th['keys']:
+                for ch in set(k):
+                    n = len(row_words(conf[kind], ch))
+                    if n < 4: problems.append(f'{lv}/{tid}/{k}: only {n} row words with {ch}')
+
+if problems:
+    print('\n'.join(problems)); sys.exit(1)
 
 # words the battle dictionary doesn't know (proper nouns are expected here) — printed for review
 d = json.loads((root / 'dict.json').read_text())
 forms = set()
 for lemma, fs in d.items():
-    forms.add(lemma); forms.update(fs if isinstance(fs, list) else [])
-unknown = [a for a, *_ in rows if a.lower() not in forms]
-
-if problems:
-    print('\n'.join(problems)); sys.exit(1)
-(root / 'clues.json').write_text(json.dumps({'bank': rows, 'themes': THEMES}, ensure_ascii=False, separators=(',', ':')))
+    forms.add(lemma); forms.update(fs)
+(root / 'clues.json').write_text(json.dumps({'banks': banks, 'themes': THEMES}, ensure_ascii=False, separators=(',', ':')))
 from collections import Counter
-print(len(rows), 'clues;', dict(Counter(t for _, _, t, _ in rows)))
-print('not in battle dictionary (check spelling):', ' '.join(unknown))
+for name, rows in banks.items():
+    print(f'{name}: {len(rows)} clues;', dict(Counter(t for _, _, t, _ in rows)))
+    print('  not in battle dictionary:', ' '.join(a for a, *_ in rows if a.lower() not in forms))
