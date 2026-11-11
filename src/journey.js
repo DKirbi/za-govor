@@ -278,12 +278,13 @@ function promptFor(stop) {
   if (stop.kind === 'chest') return { text: 'Ob poti leži zaklenjena skrinja. Odpre jo prava beseda.', actions: [{ label: 'Odpri skrinjo', primary: true, fn: () => go('chest', { id: 'skrinja', stop }) }, { label: 'Pusti jo', fn: () => pass() }] };
   if (stop.kind === 'trap') return { text: 'S pobočja se usuje plaz kamenja!', actions: [{ label: 'Brani se z besedami', primary: true, fn: () => go('trap', { id: 'plaz', stop }) }, ...skip] };
   if (stop.kind === 'well') {
-    const hurt = living().some(k => S.heroes[k].hp < S.heroes[k].maxHp);
-    return { text: hurt ? 'Vodnjak s hladno, čisto vodo. Tu se junaki pozdravijo.' : 'Vodnjak s hladno, čisto vodo. Nihče ni ranjen, a požirek ne škodi.',
+    const hurt = S.heroes.some(st => st.down || st.hp < st.maxHp), fallen = S.heroes.some(st => st.down);
+    return { text: fallen ? 'Vodnjak s hladno, čisto vodo. Tu se junaki pozdravijo in kdor je obležal, spet vstane.' : hurt ? 'Vodnjak s hladno, čisto vodo. Tu se junaki pozdravijo.' : 'Vodnjak s hladno, čisto vodo. Nihče ni ranjen, a požirek ne škodi.',
       actions: [{ label: 'Pij iz vodnjaka', primary: true, fn: () => {
-        let got = 0; living().forEach(k => { const st = S.heroes[k]; got += st.maxHp - st.hp; st.hp = st.maxHp; });
+        let got = 0; const up = [];
+        S.heroes.forEach((st, k) => { if (st.down) { st.down = false; st.hp = 0; up.push(HEROES[k].name); } got += st.maxHp - st.hp; st.hp = st.maxHp; });
         stop.done = stop.passed = true; sfx('heal');
-        R.prompt = { text: got ? `Voda zaceli rane: +${got} zdravja. Kdor je obležal, ga zbudi le mrtva voda.` : 'Voda je dobra. Naprej!', actions: [{ label: 'Naprej ▶', primary: true, fn: () => { R.prompt = null; R.walking = true; renderTravelPanel(); } }] };
+        R.prompt = { text: got ? `Voda zaceli rane: +${got} zdravja.` + (up.length ? ` Spet na nogah: ${up.join(', ')}.` : '') : 'Voda je dobra. Naprej!', actions: [{ label: 'Naprej ▶', primary: true, fn: () => { R.prompt = null; R.walking = true; renderTravelPanel(); } }] };
         go('travel');
       } }, { label: 'Pojdi mimo', fn: () => pass() }] };
   }

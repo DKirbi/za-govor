@@ -1024,7 +1024,7 @@ function renderHeroMoment(arg) {
   const line = kind === 'freed' ? L.thanks || L.meet : kind === 'meet' ? L.meet : hs && hs.down ? '…' : L.after;
   const wrap = h('div', { class: 'hm', style: { '--c': ch.c } },
     h('div', {}, h('div', { class: 'kind' }, HM_KIND[kind]), h('h2', {}, ch.name, h('small', {}, ch.sub)),
-      hs ? h('div', { class: 'hstat' }, hs.down ? 'Padel — počiva do konca poti.' : [`Raven ${hs.lvl} od 3 · zdravje ${hs.hp}/${hs.maxHp}`, hs.leveled ? h('b', {}, ' · nova raven!') : null,
+      hs ? h('div', { class: 'hstat' }, hs.down ? 'Obležal. Zbudi ga vodnjak, junak z zdravilno močjo ali mrtva voda.' : [`Raven ${hs.lvl} od 3 · zdravje ${hs.hp}/${hs.maxHp}`, hs.leveled ? h('b', {}, ' · nova raven!') : null,
         hs.lvl < 3 ? ` · do naslednje ravni še ${LV_XP[hs.lvl] - hs.xp} XP` : ' · dolge besede zdaj štejejo največ']) : null),
     arg.ids.length > 1 ? h('div', { class: 'hm-tabs' }, arg.ids.map((hid, k) => { const c2 = CHARS.find(c => c.id === hid);
       return h('button', { class: 'btn small' + (k === arg.sel ? ' on' : ''), style: { '--c': c2.c }, onclick: () => { arg.sel = k; mountShell(); renderHeroMoment(arg); } }, h('i', { style: { 'background-image': `url(${SPRITES[hid]})` } }), c2.name); })) : null,
@@ -1833,7 +1833,7 @@ function hurtParty(amount, src, all) {
 }
 function heroFalls(k) {
   const st = S.heroes[k]; st.down = true; st.hp = 0; delete B.sleep[k];
-  log(`${HEROES[k].name} pade in počiva do konca poti.`); fb(`${HEROES[k].name}: zdravja je zmanjkalo. Te črke so ugasnile.`, 'err');
+  log(`${HEROES[k].name} obleži, dokler ga ne obudi vodnjak, junak ali napoj.`); fb(`${HEROES[k].name}: zdravja je zmanjkalo. Te črke so ugasnile.`, 'err');
   setTimeout(() => { if (B && S.battle === B) { renderParty(); renderPuzzle(); renderSide(); } }, 350);
 }
 
