@@ -604,3 +604,23 @@ body.mobile .choices.three { grid-template-columns: 1fr; }
 .cell.typed.rev { background: #22324c; color: #d6e4ff; }
 .curclue .revbtn { margin-left: auto; border-color: #8fb3ff; color: #b9cff7; }
 .curclue .revbtn + .kbbtn { margin-left: 0; }
+
+/* Phone battle: the whole letter grid stays above the sticky action bar without scrolling.
+   The battle fills the space under the top bar and only the scene gives way (240 → 170 px);
+   on shorter phones it stops at 170 px and the page scrolls as before. */
+body.mobile #app:has(.battle) { padding-bottom: 0; }
+body.mobile .battle { display: flex; flex-direction: column; max-height: calc(100dvh - var(--battle-top, 57px)); }
+body.mobile .battle > * { flex-shrink: 0; }
+body.mobile .battle > .scene { flex-shrink: 1; min-height: 170px; }
+/* the tip sits over the sky, under the actors and cards, and lets taps through */
+.scene > .coach { position: absolute; top: 8px; left: 8px; right: 8px; pointer-events: none;
+  font-size: 12px; line-height: 1.35; padding: 6px 9px; background: rgba(22, 30, 52, .92); border: 1px solid #34466e; }
+/* while the tip covers the sky, the dashed frame alone marks the target */
+body.mobile .scene.coaching .foewrap .tg { visibility: hidden; }
+/* feedback covers the word-count line for its 3 s instead of adding a row; proposals stay on one line */
+body.mobile .wordbar .props, body.mobile .wordbar .fb { grid-row: 2; }
+body.mobile .wordbar .fb { z-index: 1; display: flex; align-items: center; align-self: stretch; background: var(--panel); }
+body.mobile .wordbar .fb:empty { visibility: hidden; }
+body.mobile .props { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+body.mobile .props::-webkit-scrollbar { display: none; }
+body.mobile .props > * { flex-shrink: 0; }

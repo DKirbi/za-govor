@@ -999,12 +999,17 @@ function startBattle(node) {
 }
 
 function buildBattleDom() {
-  SCR.append(h('div', { class: 'battle' },
+  // On a phone the coach tip floats over the empty sky of the scene instead of taking a row,
+  // so the letter grid keeps its place when the tip appears or goes away.
+  const coach = h('div', { class: 'coach', ref: el => UI.coach = el });
+  let battle;
+  SCR.append(battle = h('div', { class: 'battle' },
     h('div', { class: 'bhead' },
       h('div', { class: 't' }, B.node.title, h('small', {}, B.node.sub)),
       h('div', { class: 'meta', ref: el => UI.meta = el }),
       h('button', { class: 'btn small', onclick: () => togglePause() }, 'Premor')),
     h('div', { class: 'scene' + (NODE_BG[B.node.id] ? ' hasbg' : ''), style: NODE_BG[B.node.id] ? { 'background-image': `linear-gradient(rgba(14,16,26,.36), rgba(14,16,26,.16)), url(${BG[NODE_BG[B.node.id]]})` } : {}, ref: el => UI.scene = el },
+      S.mobile ? coach : null,   // first, so actors, the target marker and cards paint over it
       h('div', { class: 'party', ref: el => UI.party = el }),
       h('div', { class: 'partyhp', ref: el => UI.partyhp = el }),
       h('div', { class: 'enemies', ref: el => UI.enemies = el }),
@@ -1016,11 +1021,13 @@ function buildBattleDom() {
       h('div', { class: 'chips', ref: el => UI.chips = el }),
       h('div', { class: 'props', ref: el => UI.props = el }),
       h('div', { class: 'fb', ref: el => UI.fb = el }),
-      h('div', { class: 'coach', ref: el => UI.coach = el })),
+      S.mobile ? null : coach),
     h('div', { class: 'board' },
       h('div', { class: 'puzzle', ref: el => UI.puzzle = el }),
       h('aside', { class: 'side', ref: el => UI.side = el })),
     h('div', { class: 'log', ref: el => UI.log = el })));
+  // the phone layout sizes the battle to the space below the top bar (see .battle in game.css)
+  battle.style.setProperty('--battle-top', Math.round(battle.getBoundingClientRect().top + scrollY) + 'px');
   renderMeta(); renderParty(); renderEnemies(); renderPuzzle(); renderSide(); renderWord(); renderCoach(); renderLog();
 }
 
@@ -1146,6 +1153,7 @@ function renderLog() { if (UI.log) { UI.log.innerHTML = ''; B.logLines.forEach(l
 function renderCoach() {
   const tip = LV().coach ? (B.def.tips || []).find(t => B.words < t.until) : null;
   UI.coach.style.display = tip ? '' : 'none';
+  if (UI.scene) UI.scene.classList.toggle('coaching', !!tip && S.mobile);
   if (tip) UI.coach.textContent = 'Namig: ' + (S.mobile && tip.m ? tip.m : tip.text);
 }
 
