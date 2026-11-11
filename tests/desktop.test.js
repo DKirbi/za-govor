@@ -126,7 +126,9 @@ run(async () => {
   const word = await page.evaluate(ch => [...window.__ZG.WORDS].find(w => w.includes(ch) && w.length === 5), rocks[0]);
   for (const ch of word) await page.keyboard.type(ch);
   await page.keyboard.press('Enter'); await sleep(300);
-  check(await page.evaluate(() => window.__ZG.S.ev.broken >= 1), 'a word with the rock\'s letter breaks it', `${rocks[0]} → ${word}`);
+  const slide = await page.evaluate(() => { const E = window.__ZG.S.ev; return { broken: E.broken, missed: E.rocks.filter(r => r.state === 'hit').length, dmg: E.dmg, done: E.done, n: E.rocks.length }; });
+  check(slide.broken >= 1, 'a word with the rock\'s letter breaks it', `${rocks[0]} → ${word}`);
+  check(slide.done && slide.broken + slide.missed === slide.n && slide.dmg === slide.missed * 4, 'one word ends the rock slide; the rocks it does not name graze the party for half damage', JSON.stringify(slide));
   await shot('desktop-05-rock-slide');
 
   check(errors.length === 0, 'no page or console errors', errors.join(' | '));
