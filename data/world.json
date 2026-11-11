@@ -48,8 +48,8 @@
     { "id": "praprotno-seme", "name": "Praprotno seme", "kind": "relic", "price": 30, "text": "En namig več v vsaki bitki.", "icon": ["pouch", "#4f8a3a", "#2f5f44"] },
     { "id": "pisanica", "name": "Belokranjska pisanica", "kind": "relic", "price": 30, "text": "Pri skrinjah in plazovih imaš polovico več časa.", "icon": ["egg", "#b8322f", "#1d1410"] },
 
-    { "id": "ziva-voda", "name": "Živa voda", "kind": "use", "price": 40, "where": "both", "text": "Najbolj ranjenemu junaku povrne vse zdravje.", "icon": ["flask", "#4fb3d9", "#2f7a9a"] },
-    { "id": "mrtva-voda", "name": "Mrtva voda", "kind": "use", "price": 70, "where": "both", "text": "Obudi padlega junaka s polovico zdravja.", "icon": ["flask", "#6a5a8a", "#3a2a4a"] },
+    { "id": "ziva-voda", "name": "Živa voda", "kind": "use", "price": 40, "where": "road", "auto": true, "text": "Junak, ki v bitki pade pod tretjino zdravja, jo popije sam: +60 % zdravja. Na poti jo lahko daš najbolj ranjenemu.", "icon": ["flask", "#4fb3d9", "#2f7a9a"] },
+    { "id": "mrtva-voda", "name": "Mrtva voda", "kind": "use", "price": 70, "where": "both", "text": "Obudi junaka, ki je obležal, s polovico zdravja.", "icon": ["flask", "#6a5a8a", "#3a2a4a"] },
     { "id": "perunova-medica", "name": "Perunova medica", "kind": "use", "price": 25, "where": "battle", "text": "Naslednje tri besede udarijo 50 % močneje.", "icon": ["mug", "#e9a93f", "#a8761c"] },
     { "id": "triglavov-napoj", "name": "Triglavov napoj", "kind": "use", "price": 35, "where": "battle", "text": "Takoj napolni zagovor.", "icon": ["flask", "#e9b93f", "#a8761c"] },
     { "id": "vesnin-venec", "name": "Vesnin venec", "kind": "use", "price": 20, "where": "battle", "text": "Ščit družine +15.", "icon": ["wreath", "#6fae4a", "#f0a0c8"] },

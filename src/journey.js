@@ -42,19 +42,21 @@ function randomItem(kind) {
   const pool = WORLD.items.filter(it => it.kind === k && !R.relics.includes(it.id));
   return pool.length ? pick(pool) : pick(WORLD.items.filter(it => it.kind === 'use'));
 }
-const bagCount = inBattle => S.run ? Object.entries(S.run.bag).reduce((a, [id, n]) => a + (n > 0 && (inBattle || ITEMS[id].where === 'both') ? n : 0), 0) : 0;
+// can this item be used by hand right now? (Živa voda is drunk automatically in battle)
+const usable = (it, inBattle) => inBattle ? it.where !== 'road' : it.where !== 'battle';
+const bagCount = inBattle => S.run ? Object.entries(S.run.bag).reduce((a, [id, n]) => a + (n > 0 && (!inBattle || usable(ITEMS[id], true)) ? n : 0), 0) : 0;
 
 // ------------------------------------------------------------ potions, poisons and other things you use up
 // Returns a line of text describing what happened, or null if the item could not be used now.
 function useItem(id) {
   const R = S.run, it = ITEMS[id]; if (!R || !it || !(R.bag[id] > 0)) return null;
   const inB = !!B && S.screen === 'battle' && !B.over;
-  if (it.where === 'battle' && !inB) return null;
+  if (!usable(it, inB)) return null;
   const t = inB ? cwTarget() : null, foes = inB ? B.enemies.filter(e => e.hp > 0) : [];
   let msg = null;
   if (id === 'ziva-voda') {
     const k = living().filter(i => S.heroes[i].hp < S.heroes[i].maxHp).sort((a, b) => S.heroes[a].hp / S.heroes[a].maxHp - S.heroes[b].hp / S.heroes[b].maxHp)[0];
-    if (k != null) { S.heroes[k].hp = S.heroes[k].maxHp; msg = `Živa voda: ${HEROES[k].name} je spet pri polni moči.`; }
+    if (k != null) { const st = S.heroes[k], got = Math.min(st.maxHp - st.hp, Math.round(st.maxHp * POTION_HEAL)); st.hp += got; msg = `Živa voda: ${HEROES[k].name} +${got} zdravja.`; }
   } else if (id === 'mrtva-voda') {
     const k = S.heroes.findIndex(x => x.down);
     if (k >= 0) { const st = S.heroes[k]; st.down = false; st.hp = Math.max(1, Math.round(st.maxHp * 0.5)); msg = `Mrtva voda: ${HEROES[k].name} spet vstane.`; }
@@ -79,12 +81,12 @@ function openBag() {
   if (inB && B.cw) return;
   const was = inB ? B.paused : false; if (inB) B.paused = true;
   const close = () => { ov.remove(); S.bagEl = null; S.overlayKey = null; if (inB && B) B.paused = was; if (S.screen === 'travel') renderTravelPanel(); };
-  const useRow = id => { const it = ITEMS[id], ok = inB || it.where === 'both';
+  const useRow = id => { const it = ITEMS[id], ok = usable(it, inB);
     return h('div', { class: 'itemrow' }, itemIcon(id), h('div', {}, h('b', {}, it.name, R.bag[id] > 1 ? ` ×${R.bag[id]}` : ''), h('span', {}, it.text)),
-      h('button', { class: 'btn small', disabled: !ok, title: ok ? '' : 'Uporabno le v bitki', onclick: () => {
+      h('button', { class: 'btn small', disabled: !ok, title: ok ? '' : it.auto ? 'Junak jo popije sam, ko mu zmanjkuje zdravja' : 'Uporabno le v bitki', onclick: () => {
         if (inB) { close(); if (!useItem(id)) fb(`${it.name}: zdaj ne bi pomagalo.`, 'warn'); }
         else { const m = useItem(id); note.textContent = m || `${it.name}: zdaj ne bi pomagalo.`; if (m) { close(); openBag(); S.bagEl.querySelector('.bagnote').textContent = m; } }
-      } }, ok ? 'Uporabi' : 'v bitki')); };
+      } }, ok ? 'Uporabi' : it.auto ? 'samodejno' : 'v bitki')); };
   const uses = Object.keys(R.bag).filter(id => R.bag[id] > 0), note = h('p', { class: 'bagnote muted' });
   const ov = h('div', { class: 'overlay', onclick: e => { if (e.target === ov) close(); } }, h('div', { class: 'dialog bag' },
     h('h2', {}, 'Torba', h('span', { class: 'goldtag' }, h('i', { class: 'coin' }), R.gold)),

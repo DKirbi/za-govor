@@ -845,11 +845,23 @@ const partyGod = () => HEROES.findIndex(x => x.god);
 const living = () => S.heroes.map((st, k) => k).filter(k => !S.heroes[k].down);
 // attack multiplier of one hero for a word of this length
 const heroMult = (k, len) => { const st = S.heroes[k], hr = HEROES[k]; return LV_ATK[st.lvl - 1] * (1 + LV_LONG[st.lvl - 1] * Math.max(0, len - 4)) * (hr.god ? GOD_ATK[hr.id] || GOD_ATK_DEFAULT : 1); };
-function healParty(amount) {            // heals the most hurt living hero first; returns what was actually healed
+// Healing by heroes and charms is partial: it never lifts a hero above HEAL_CAP of their health.
+// Full health comes from wells (and from the potion Živa voda, which a hero drinks when badly hurt).
+const HEAL_CAP = 0.7, POTION_AT = 0.3, POTION_HEAL = 0.6;
+function healParty(amount, cap = 1) {   // heals the most hurt living hero first; returns what was actually healed
   let left = Math.round(amount), got = 0;
   const order = living().sort((a, b) => S.heroes[a].hp / S.heroes[a].maxHp - S.heroes[b].hp / S.heroes[b].maxHp);
-  for (const k of order) { const st = S.heroes[k], g = Math.min(left, st.maxHp - st.hp); st.hp += g; left -= g; got += g; if (left <= 0) break; }
+  for (const k of order) { const st = S.heroes[k], g = Math.max(0, Math.min(left, Math.floor(st.maxHp * cap) - st.hp)); st.hp += g; left -= g; got += g; if (left <= 0) break; }
   return got;
+}
+// a badly hurt hero drinks Živa voda by themselves; the flask is used up
+function autoPotion(k) {
+  const R = S.run, st = S.heroes[k];
+  if (!R || !(R.bag['ziva-voda'] > 0) || st.down || st.hp <= 0 || st.hp > st.maxHp * POTION_AT) return false;
+  const got = Math.min(st.maxHp - st.hp, Math.round(st.maxHp * POTION_HEAL));
+  st.hp += got; R.bag['ziva-voda']--; sfx('heal');
+  if (B && UI.heroEls && UI.heroEls[k]) { floatOn(UI.heroEls[k], `Živa voda +${got}`, 'heal'); log(`${HEROES[k].name} popije živo vodo (+${got}).`); renderSide(); }
+  return true;
 }
 function reviveHero(k) {
   const st = S.heroes[k]; st.down = false; st.hp = Math.max(1, Math.round(st.maxHp * 0.4));
@@ -1695,7 +1707,7 @@ function heroAct(a, w) {
     return had;
   };
   const heal = m => {
-    const amount = Math.round(m * p), got = healParty(amount);
+    const amount = Math.round(m * p), got = healParty(amount, HEAL_CAP);
     const over = Math.max(0, Math.min(30 - B.shield, Math.round((amount - got) / 2))); B.shield += over;   // overheal turns into shield (cap 30)
     renderPartyHp();
     if (got) floatOn(UI.party, `+${got}`, 'heal');
@@ -1711,12 +1723,12 @@ function heroAct(a, w) {
     case 'smith': { const d = hit(3); card.value = `−${d} · ščit +${shield(2.5)}`; break; }            // Svarog: hit + shield
     case 'guard': { const d = hit(2.6); card.value = `−${d} · ščit +${shield(3.5)}`; break; }          // Matjaž: smaller hit, bigger shield
     case 'heal': {           // Mokoš: heal, tier 2+ cleanses, tier 3 lifts one fallen hero once per battle
-      heal(4);
+      heal(3);
       if (a.tier === 3 && !B.revived && revive()) B.revived = true;
       if (a.tier >= 2 && cleanse()) card.extra = card.extra || 'očisti črke in zbudi junake';
       break; }
     case 'bloom': {          // Zeleni Jurij: small heals, tier 2+ unlocks letters, tier 3 revives once per journey
-      heal(2.6);
+      heal(2);
       if (a.tier === 3 && !(S.run || S).jurijUsed && revive()) (S.run || S).jurijUsed = true;
       if (a.tier >= 2 && cleanse()) card.extra = card.extra || 'odklene črke';
       break; }
@@ -1812,7 +1824,7 @@ function hurtParty(amount, src, all) {
       const st = S.heroes[k], real = Math.min(st.hp, d); st.hp -= real; a += real;
       floatOn(UI.heroEls[k], `−${real}`, 'dmg'); shakeEl(UI.heroEls[k]);
       if (st.hp <= 0 && has('zlatorogova-roza') && !S.run.rozaUsed) { S.run.rozaUsed = true; st.hp = 1; floatOn(UI.heroEls[k], 'Zlatorogova roža', 'heal'); log(`Zlatorogova roža reši junaka ${HEROES[k].name}.`); }
-      if (st.hp <= 0) heroFalls(k);
+      if (st.hp <= 0) heroFalls(k); else autoPotion(k);
     });
   }
   renderPartyHp();
@@ -2334,9 +2346,9 @@ function cwEntrySolved(e, hidden = 0, aided = false) {
     const card = { tier: 2, c: hero.c, name: hero.name, move: fx.move, word, art: hero.id };
     attackAnim(UI.heroEls[hk], 2, UI.scene);
     if (C.id === 'mokos') {
-      const heal = Math.round(1.5 * len * lv * pw), got = healParty(heal);
+      const heal = Math.round(1.5 * len * lv * pw), got = healParty(heal, HEAL_CAP);
       renderPartyHp(); if (got) floatOn(UI.party, `+${got}`, 'heal');
-      card.value = got ? `+${got} zdravja` : 'zdravje je polno';
+      card.value = got ? `+${got} zdravja` : 'več ne zaceli — do vodnjaka';
     } else if (t) {
       card.value = `−${damageEnemy(t, 3 * len * lv * pw)}`;
       if (C.id === 'kres') { applyBurn(t, 1.5); card.extra = 'cilj gori'; }
@@ -2366,7 +2378,7 @@ function cwComplete() {
     if (C.id === 'perun') alive.forEach(e => { shown = Math.max(shown, damageEnemy(e, power * 0.8)); });
     else if (C.id === 'kres') { alive.forEach(e => { shown = Math.max(shown, damageEnemy(e, power * 0.6)); applyBurn(e, 3); }); }
     else if (C.id === 'mokos') {
-      const got = healParty(Math.round(S.maxHp * 0.25)); renderPartyHp(); if (got) floatOn(UI.party, `+${got}`, 'heal');
+      const got = healParty(Math.round(S.maxHp * 0.25), HEAL_CAP); renderPartyHp(); if (got) floatOn(UI.party, `+${got}`, 'heal');
       B.grid.forEach(x => { x.lockUntil = 0; x.lockWords = 0; x.flood = false; }); B.sleep = {};
       if (t) shown = damageEnemy(t, power * 0.7);
     } else if (C.id === 'triglav') {
