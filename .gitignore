@@ -1,0 +1,17 @@
+# Node (test tooling)
+node_modules/
+npm-debug.log*
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Test screenshots and scratch output
+test-output/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
