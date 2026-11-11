@@ -19,7 +19,7 @@ run(async () => {
   check(style === 'geslo', 'a finisher can hide the god\'s name in a gold column');
   check(await page.evaluate(() => document.querySelectorAll('.cell.gk').length === 5), 'the gold column has one cell per letter of PERUN');
   const fillers = await page.evaluate(() => window.__ZG.B.cw.D.entries.filter(e => !e.geslo).map(e => e.answer));
-  const bank = await page.evaluate(() => window.__ZG.CLUES.bank.map(b => b[0]));
+  const bank = await page.evaluate(() => window.__ZG.CLUES.banks.malcek.map(b => b[0]));
   check(fillers.every(a => bank.includes(a)), 'every row is an everyday word from the clue bank', fillers.join(', '));
 
   // solve one row, then type the keyword into the gold column

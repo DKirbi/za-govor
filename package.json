@@ -10,6 +10,7 @@
     "test:phone": "node tests/phone.test.js",
     "test:crosswords": "node tests/crossword-generator.test.js",
     "test:keyword": "node tests/keyword.test.js",
+    "test:levels": "node tests/levels.test.js",
     "screenshots": "node tools/readme-shots.js"
   },
   "devDependencies": {
