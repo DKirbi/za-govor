@@ -2511,7 +2511,7 @@ function letterKey(e) {
 // ============================================================ chest event (timed)
 // Any real word built from the letters earns a partial reward (longer word, bigger reward).
 // The hidden word opens the chest and earns the big reward.
-const CHEST_XP_PER_LETTER = 3, CHEST_XP_WIN = 50;
+const CHEST_XP_WIN = 50;
 function startChest(node) {
   const item = pick(CHESTS);
   let letters = shuffle([...item.w]);
@@ -2523,13 +2523,12 @@ function startChest(node) {
 }
 function renderChest() {
   const E = S.ev; SCR.innerHTML = '';
-  const partial = E.found.reduce((s, f) => s + f.xp, 0);
   const guess = E.sel.map(i => E.letters[i].ch).join('');
   SCR.append(h('div', { class: 'event' },
     h('div', { class: 'bhead' }, h('div', { class: 't' }, 'Zaklenjena skrinja', h('small', {}, 'dogodek na čas'))),
     h('div', { class: 'panel' },
       h('div', { class: 'chestbox' }, objEl('skrinja', E.done && E.win ? 1 : 0, 'big'),
-        h('div', {}, h('div', {}, 'Iz črk sestavi besedo in jo pošlji. Vsaka prava beseda prinese delno nagrado (daljša beseda, večja nagrada). Skrita beseda odpre skrinjo.'),
+        h('div', {}, h('div', {}, 'Iz črk sestavi besedo in jo pošlji. Imaš en poskus: beseda iz vseh črk odpre skrinjo, krajša prava beseda jo le priškrne in prinese del nagrade (daljša beseda, večji del).'),
           h('div', { style: { color: 'var(--gold)', 'margin-top': '6px' } }, 'Namig za skrito besedo: ', E.item.clue))),
       h('div', { class: 'timer', style: { margin: '14px 0 4px' } }, h('i', { ref: el => UI.evTimer = el, style: { width: clamp(100 * E.time / E.timeMax, 0, 100) + '%' } })),
       h('div', { class: 'sendrow' },
@@ -2543,8 +2542,7 @@ function renderChest() {
         h('button', { class: 'btn small', onclick: chestBack }, '⌫ Briši'),
         h('button', { class: 'btn small', onclick: chestClear }, 'Počisti ', h('kbd', {}, 'Esc')),
         h('button', { class: 'btn small', onclick: () => { E.letters = shuffle(E.letters.map((l, i) => ({ ...l, i }))); chestRemap(); } }, 'Premešaj')),
-      E.found.length ? h('div', { class: 'found' }, h('span', { class: 'muted' }, `Delne nagrade (+${partial} XP): `),
-        E.found.map(f => h('span', { class: 'prop' }, UP(f.w), h('span', { class: 'muted' }, ` +${f.xp}`)))) : null)));
+      null)));
 }
 function chestRemap() {
   const E = S.ev;
@@ -2572,19 +2570,19 @@ function chestSubmit() {
   const E = S.ev; if (E.done) return;
   const guess = E.sel.map(i => E.letters[i].ch).join('');
   if (guess.length < MINW()) { E.msg = `Beseda mora imeti vsaj ${MINW()} črke.`; E.msgKind = 'warn'; renderChest(); return; }
-  if (guess === E.item.w) {
-    E.done = true; E.win = true; S.meterBonus = 0.5; gainXp(CHEST_XP_WIN);
-    const partial = E.found.reduce((s, f) => s + f.xp, 0);
+  const total = E.item.w.length;
+  if (guess === E.item.w || (guess.length === total && WORDS.has(guess))) {
+    E.done = true; E.win = true; S.meterBonus = 0.5; gainXp(CHEST_XP_WIN, null, true);
     const loot = S.run ? randomItem() : null, gold = S.run ? gainGold(15 + rnd(11)) : 0;
     if (loot) { giveItem(loot.id); E.loot = loot; }
-    E.msg = `Skrinja se odpre: ${UP(E.item.w)}! +${CHEST_XP_WIN} XP${partial ? ` (skupaj z delnimi +${CHEST_XP_WIN + partial} XP)` : ''}` + (gold ? `, +${gold} zlatnikov` : '') + (loot ? `, v njej je ${loot.name}` : '') + '. Zagovor v naslednji bitki začne napolnjen do polovice.';
+    E.msg = `Skrinja se odpre: ${UP(guess)}! Vsak junak +${CHEST_XP_WIN} XP` + (gold ? `, +${gold} zlatnikov` : '') + (loot ? `, v njej je ${loot.name}` : '') + '. Zagovor v naslednji bitki začne napolnjen do polovice.';
     E.msgKind = 'ok';
-  } else if (E.found.some(f => f.w === guess)) {
-    E.msg = `${UP(guess)} je že najdena.`; E.msgKind = 'warn';
   } else if (WORDS.has(guess)) {
-    const xp = CHEST_XP_PER_LETTER * guess.length; gainXp(xp);
-    E.found.push({ w: guess, xp });
-    E.msg = `${UP(guess)} je prava beseda — delna nagrada +${xp} XP. Skrinja ostaja zaprta.`; E.msgKind = 'ok';
+    // a real word that does not use every letter ends the chest with part of the reward
+    const share = guess.length / total, xp = Math.round(CHEST_XP_WIN * share * 0.6), gold = S.run ? gainGold(Math.round(12 * share)) : 0;
+    E.done = true; E.win = false; E.partial = { w: guess, xp, gold }; gainXp(xp, null, true);
+    E.msg = `${UP(guess)} je prava beseda, a ne iz vseh črk (skrita je bila ${UP(E.item.w)}). Skrinja se le priškrne: vsak junak +${xp} XP` + (gold ? `, +${gold} zlatnikov` : '') + '.';
+    E.msgKind = 'warn';
   } else {
     E.msg = `»${UP(guess)}« ni beseda.`; E.msgKind = 'err';
   }
@@ -2597,19 +2595,21 @@ function chestTick(dt) {
   if (UI.evTimer) UI.evTimer.style.width = clamp(100 * E.time / E.timeMax, 0, 100) + '%';
   if (E.time <= 0) {
     E.done = true; E.win = false;
-    const partial = E.found.reduce((s, f) => s + f.xp, 0);
-    E.msg = `Ključavnica se je zataknila. Skrita beseda je bila ${UP(E.item.w)}.` + (partial ? ` Delne nagrade: +${partial} XP.` : '');
-    E.msgKind = partial ? 'warn' : 'err';
+    E.msg = `Ključavnica se je zataknila. Skrita beseda je bila ${UP(E.item.w)}.`; E.msgKind = 'err';
     renderChest();
   }
 }
 
 // ============================================================ trap event (timed)
+// One wave of rocks whose letters all come from one real word, so a word that breaks every
+// rock exists. You get one word: the rocks it names break, the others graze the party.
+const TRAP_HIT = 8, TRAP_GRAZE = 4, TRAP_XP = 8, TRAP_GOLD = 3;
 function startTrap(node) {
   const real = S.mode === 'real';
-  const letters = shuffle(['a', 'r', 'k', 'e', 'v', 'o', 'l', 't']).slice(0, 5).concat([pick(['č', 'š', 'ž'])]);
-  S.ev = { node, kind: 'trap', time: 0, fall: (real ? 8 : 16) * (has('pisanica') ? 1.5 : 1), gap: real ? 3 : 6, used: new Set(), broken: 0, hits: 0, dmg: 0, done: false,
-    rocks: letters.map((ch, i) => ({ ch, lane: [12, 30, 48, 66, 84, 22][i], spawn: 1 + i * (real ? 3 : 6), y: -60, state: 'wait', el: null })) };
+  const pool = [...WORDS].filter(w => w.length >= 5 && w.length <= 7 && new Set(w).size >= 4);
+  const letters = shuffle([...new Set(pick(pool))]).slice(0, 4);
+  S.ev = { node, kind: 'trap', time: 0, fall: (real ? 16 : 32) * (has('pisanica') ? 1.5 : 1), used: new Set(), broken: 0, hits: 0, dmg: 0, done: false, word: '',
+    rocks: letters.map((ch, i) => ({ ch, lane: [14, 38, 62, 86][i], spawn: 0.5 + i * 0.3, y: -60, state: 'wait', el: null })) };
   renderTrap();
 }
 function renderTrap() {
@@ -2617,7 +2617,7 @@ function renderTrap() {
   SCR.append(h('div', { class: 'event' },
     h('div', { class: 'bhead' }, h('div', { class: 't' }, 'Plaz kamenja', h('small', {}, 'dogodek na čas')),
       h('div', { class: 'meta' }, `Družina ${S.partyHp}/${S.maxHp}`)),
-    h('div', { class: 'panel' }, 'Vsaka skala nosi črko. Vpiši besedo, ki vsebuje to črko, in jo pošlji, preden skala pade. Dolga beseda lahko razbije več skal hkrati.'),
+    h('div', { class: 'panel' }, 'Vsaka skala nosi črko. Imaš eno besedo: skale, katerih črke so v njej, se razbijejo, druge te oplazijo. Beseda z vsemi črkami razbije ves plaz. Če ne pošlješ nobene, skale padejo s polno močjo.'),
     h('div', { class: 'lanes', ref: el => UI.lanes = el }, h('div', { class: 'ground' })),
     h('div', { class: 'panel' },
       h('div', { class: 'sendrow' },
@@ -2649,18 +2649,19 @@ function trapSubmit() {
   if (typed.length < MINW()) { trapFb(`Beseda mora imeti vsaj ${MINW()} črke.`, 'warn'); return; }
   let cands = WORDS.has(typed) ? [typed] : [];
   if (!cands.length) { trapFb(`»${UP(typed)}« ni v slovarju.`, 'err'); return; }
-  cands = cands.filter(w => !E.used.has(w));
-  if (!cands.length) { trapFb('Ta beseda je že uporabljena.', 'warn'); return; }
-  const falling = E.rocks.filter(r => r.state === 'fall');
-  const breaks = w => falling.filter(r => w.includes(r.ch)).length;
-  cands.sort((a, b) => breaks(b) - breaks(a));
-  const w = cands[0]; E.used.add(w);
-  const hit = falling.filter(r => w.includes(r.ch));
-  if (!hit.length) { trapFb(`${UP(w)} — nobena skala nima teh črk.`, 'warn'); return; }
+  const w = cands[0], open = E.rocks.filter(r => r.state === 'wait' || r.state === 'fall');
+  const hit = open.filter(r => w.includes(r.ch)), miss = open.filter(r => !w.includes(r.ch));
   hit.forEach(r => { r.state = 'broken'; if (r.el) r.el.classList.add('broken'); });
-  E.broken += hit.length; gainXp(10 * hit.length);
-  trapFb(`${UP(w)} razbije ${hit.length === 1 ? 'skalo' : hit.length + ' skale'}!`, 'ok'); renderTrapStat();
-  trapMaybeEnd();
+  miss.forEach(r => { r.state = 'hit'; if (r.el) r.el.classList.add('hit'); });
+  E.broken += hit.length; E.word = w;
+  // partial damage for the rocks the word did not name
+  const d = miss.length * TRAP_GRAZE; if (d) { S.partyHp = Math.max(1, S.partyHp - d); E.dmg += d; E.hits += miss.length; }
+  E.xp = TRAP_XP * hit.length; E.gold = S.run && hit.length ? gainGold(TRAP_GOLD * hit.length) : 0;
+  if (E.xp) gainXp(E.xp, null, true);
+  trapFb(miss.length ? `${UP(w)} razbije ${hit.length} od ${E.rocks.length} skal; ostale te oplazijo (−${d}).` : `${UP(w)} razbije ves plaz!`, hit.length ? 'ok' : 'err');
+  renderTrapStat();
+  const m = $('.event .bhead .meta'); if (m) m.textContent = `Družina ${S.partyHp}/${S.maxHp}`;
+  E.done = true; trapShowEnd();
 }
 function trapTick(dt) {
   const E = S.ev; if (!E || E.done || !UI.lanes) return;
@@ -2678,7 +2679,7 @@ function trapTick(dt) {
       r.el.style.top = (-60 + (H + 60) * prog) + 'px';
       if (prog >= 1) {
         r.state = 'hit'; r.el.classList.add('hit'); E.hits++;
-        const d = 8; S.partyHp = Math.max(1, S.partyHp - d); E.dmg += d;
+        const d = TRAP_HIT; S.partyHp = Math.max(1, S.partyHp - d); E.dmg += d;
         trapFb(`Skala s črko ${UP(r.ch)} te zadene (−${d}).`, 'err'); renderTrapStat();
         $('.event .bhead .meta').textContent = `Družina ${S.partyHp}/${S.maxHp}`;
         trapMaybeEnd();
@@ -2695,7 +2696,7 @@ function trapMaybeEnd() {
 function trapShowEnd() {
   const E = S.ev; UI.trapEnd.innerHTML = '';
   if (UI.trapInput) UI.trapInput.blur();
-  UI.trapEnd.append(h('p', {}, `Razbite skale: ${E.broken}/${E.rocks.length} · prejeta škoda: ${E.dmg}. Rane ostanejo do naslednjega vodnjaka.`),
+  UI.trapEnd.append(h('p', {}, `Razbite skale: ${E.broken}/${E.rocks.length} · prejeta škoda: ${E.dmg}.` + (E.xp ? ` Vsak junak +${E.xp} XP` + (E.gold ? `, +${E.gold} zlatnikov.` : '.') : '') + (E.dmg ? ' Rane ostanejo do naslednjega vodnjaka.' : '')),
     h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')));
 }
 function trapKey(e) {
@@ -2709,7 +2710,7 @@ function trapKey(e) {
 
 function finishEvent() {
   const stop = S.ev && S.ev.node && S.ev.node.stop;
-  if (stop) { stop.passed = true; stop.done = S.ev.kind === 'chest' ? !!S.ev.win : true; }
+  if (stop) { stop.passed = true; stop.done = S.ev.kind === 'chest' ? !!(S.ev.win || S.ev.partial) : true; }
   if (S.run) S.run.prompt = null;
   S.ev = null; go(S.run ? 'travel' : 'title');
 }
