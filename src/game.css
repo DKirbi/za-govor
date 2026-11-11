@@ -198,7 +198,7 @@ h1, h2, h3 { margin: 0; }
 .cwhead .k.lock { background: var(--danger); color: #2a0b0b; }
 .cwhead .k.ambush { background: var(--water); color: #08202b; }
 .cwhead h3 { font-size: 15px; }
-.cwhead .sp { flex: 1; }
+.cwhead .grow { flex: 1; }   /* not .sp: that class is the sprite layer (absolute, inset 0) */
 .timer { height: 6px; background: #0f1015; border-radius: 3px; overflow: hidden; margin: 0 0 10px; }
 .timer i { display: block; height: 100%; background: var(--danger); }
 .cwbody { display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-start; }

@@ -204,7 +204,7 @@ h1, h2, h3 { margin: 0; }
 .cwhead .k.lock { background: var(--danger); color: #2a0b0b; }
 .cwhead .k.ambush { background: var(--water); color: #08202b; }
 .cwhead h3 { font-size: 15px; }
-.cwhead .sp { flex: 1; }
+.cwhead .grow { flex: 1; }   /* not .sp: that class is the sprite layer (absolute, inset 0) */
 .timer { height: 6px; background: #0f1015; border-radius: 3px; overflow: hidden; margin: 0 0 10px; }
 .timer i { display: block; height: 100%; background: var(--danger); }
 .cwbody { display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-start; }
@@ -2535,7 +2535,7 @@ function renderCrossword() {
   const btn = C.kind === 'finisher' ? h('button', { class: 'btn small', onclick: () => { closeCrossword(); fb('Zagovor prekinjen — moč ostane shranjena.', 'warn'); } }, 'Prekliči ', h('kbd', {}, 'Esc'))
     : C.kind === 'ambush' ? h('button', { class: 'btn small', onclick: () => cwFail() }, 'Preskoči')
     : C.timer === Infinity ? h('button', { class: 'btn small', onclick: () => cwFail() }, 'Predaj se (prejmi udarec)') : null;
-  UI.puzzle.append(h('div', { class: 'cwhead' }, h('span', { class: 'k ' + C.kind }, label), h('h3', {}, head), h('span', { class: 'sp' }), btn));
+  UI.puzzle.append(h('div', { class: 'cwhead' }, h('span', { class: 'k ' + C.kind }, label), h('h3', {}, head), h('span', { class: 'grow' }), btn));
   UI.cwTimer = null;
   if (C.timer !== Infinity) UI.puzzle.append(h('div', { class: 'timer' }, h('i', { ref: el => UI.cwTimer = el, style: { width: clamp(100 * C.timer / C.timerMax, 0, 100) + '%' } })));
 
