@@ -8,7 +8,7 @@
 .title-stage + .mainmenu { position: relative; z-index: 1; margin-top: -56px; padding-top: 0; }
 body.mobile .title-stage + .mainmenu { margin-top: -40px; }
 .title-stage * { image-rendering: pixelated; image-rendering: crisp-edges; image-rendering: pixelated; }
-.ts-frame { position: absolute; left: 50%; top: 0; width: calc(480 * var(--u)); height: calc(160 * var(--u)); margin-left: calc(-240 * var(--u)); }
+.ts-frame { position: absolute; left: 50%; top: var(--sat-px, 0px); width: calc(480 * var(--u)); height: calc(160 * var(--u)); margin-left: calc(-240 * var(--u)); }
 .ts-frame.placed { left: var(--fx); margin-left: 0; }
 .ts-art { position: absolute; inset: 0; }
 .ts-l { position: absolute; inset: 0; background-repeat: no-repeat; background-size: calc(480 * var(--u)) calc(160 * var(--u)); }
