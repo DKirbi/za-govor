@@ -32,8 +32,8 @@ run(async () => {
   const ctx = await openGame();
   const { page, errors, shot } = ctx;
 
-  // a fresh game: Krpan, Zeleni Jurij and Kurent can start; the other twelve are silhouettes
-  await page.keyboard.press('Enter'); await sleep(200);
+  // a fresh game: Krpan, Zeleni Jurij and Kurent can start; the other twelve are silhouettes (menu → Nova pot → hero)
+  await page.keyboard.press('Enter'); await sleep(200); await page.keyboard.press('Enter'); await sleep(200);
   const cards = await page.evaluate(() => ({ open: [...document.querySelectorAll('button.pickcard b')].map(b => b.textContent), locked: document.querySelectorAll('.pickcard.locked').length,
     shades: document.querySelectorAll('.pickcard.locked i.shade').length, names: [...document.querySelectorAll('.pickcard.locked b')].every(b => b.textContent === '???') }));
   check(cards.open.join() === 'Martin Krpan,Zeleni Jurij,Kurent' && cards.locked === 12 && cards.shades === 12 && cards.names, 'a fresh game offers Krpan, Zeleni Jurij and Kurent; the other twelve are nameless silhouettes', JSON.stringify(cards));
@@ -153,7 +153,7 @@ run(async () => {
   await page.evaluate(() => [...document.querySelectorAll('.hm .row .btn')].find(b => /Kurent/.test(b.textContent)).click()); await sleep(300);
   s = await state(page);
   check(s.party.join() === 'erazem,vida,stribog,krpan', 'Lepa Vida takes the fallen Kurent\'s place', s.party.join());
-  await page.evaluate(() => { const Z = window.__ZG; Z.S.testMode = false; Z.S.pickIds = null; Z.go('title'); }); await page.keyboard.press('Enter'); await sleep(200);
+  await page.evaluate(() => { const Z = window.__ZG; Z.S.testMode = false; Z.S.pickIds = null; Z.go('title'); Z.go('newrun'); }); await page.keyboard.press('Enter'); await sleep(200);
   const again = await page.evaluate(() => ({ open: document.querySelectorAll('button.pickcard').length, known: window.__ZG.UNLOCKED.size, locked: document.querySelectorAll('.pickcard.locked').length }));
   check(again.open === again.known && again.open > 3 && again.open + again.locked === 15, 'the next journey can start with anyone met so far', JSON.stringify(again));
   await page.keyboard.press('Escape'); await sleep(150);

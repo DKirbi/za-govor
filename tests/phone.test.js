@@ -171,11 +171,12 @@ run(async () => {
     Z.go('battle', Z.NODES[0]); await wait(200);
     out.pause = [window.zgBack(), Z.G.paused]; out.resume = [window.zgBack(), Z.G.paused];
     Z.go('gallery'); await wait(100); out.gallery = [window.zgBack(), Z.S.screen];
+    out.heroes = [window.zgBack(), Z.S.screen];
     out.title = window.zgBack();
     return out;
   });
-  check(back.pause[1] === true && back.resume[1] === false && back.gallery[1] === 'title' && back.title === 'exit',
-    'Android back: pauses a battle, resumes it, steps back to the start screen and only exits from there', JSON.stringify(back));
+  check(back.pause[1] === true && back.resume[1] === false && back.gallery[1] === 'heroes' && back.heroes[1] === 'title' && back.title === 'exit',
+    'Android back: pauses a battle, resumes it, steps back page by page to the start screen and only exits from there', JSON.stringify(back));
 
   check(errors.length === 0, 'no page or console errors', errors.join(' | '));
   return ctx;
