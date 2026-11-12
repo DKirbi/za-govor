@@ -1254,7 +1254,7 @@ function renderSide() {
   const full = B.meter >= METER_MAX;
   UI.side.innerHTML = '';
   if (S.mobile) {
-    if (B.cw) return;   // the crossword brings its own keyboard
+    if (B.cw) { UI.side.append(cwKeyboard()); return; }   // the in-game Slovene keyboard (src/mobile.js)
     UI.side.append(
       h('div', { class: 'actionbar' },
         h('button', { class: 'btn', onclick: () => meshBackspace() }, '⌫ Briši'),
@@ -1493,7 +1493,7 @@ function renderWord() {
   if (!UI.word) return;
   UI.word.innerHTML = ''; UI.chips.innerHTML = '';
   if (B.cw) {
-    UI.word.className = 'word'; UI.word.append(h('span', { class: 'ph' }, S.mobile ? 'Križanka je odprta — tapni mrežo in tipkaj.' : 'Križanka je odprta — tipkaj v polja.'));
+    UI.word.className = 'word'; UI.word.append(h('span', { class: 'ph' }, S.mobile ? 'Križanka je odprta — tipkaj s tipkami spodaj.' : 'Križanka je odprta — tipkaj v polja.'));
     if (UI.send) UI.send.style.visibility = 'hidden';
     renderProposals(); return;
   }
@@ -2205,7 +2205,7 @@ function renderCrossword() {
     C.cellEls.set(key, el); grid.append(el);
   }
   C.input = h('input', { class: 'nativein', type: 'text', autocapitalize: 'none', autocomplete: 'off', autocorrect: 'off', spellcheck: 'false',
-    inputmode: 'text', enterkeyhint: 'next', 'aria-label': 'Vnos črk v križanko' });
+    inputmode: S.mobile ? 'none' : 'text', enterkeyhint: 'next', 'aria-label': 'Vnos črk v križanko' });   // phones: the in-game keyboard types, the system one stays closed
   bindLetterInput(C.input, ch => { if (B.cw === C) cwType(ch); }, () => { if (B.cw === C) cwBackspace(); });
   C.input.addEventListener('keydown', e => {
     if (B.cw !== C) return;
@@ -2252,7 +2252,7 @@ function cwPaint() {
   C.banner.append(h('b', {}, curE.geslo ? '★ Geslo' : `${curE.num} ${curE.dir === 'A' ? 'vodoravno' : 'navpično'}`), ` ${curE.clue}` + (LV().showLen ? ` (${curE.answer.length})` : ''));
   if (C.reveals > 0 && !C.solved.has(C.cur.e)) C.banner.append(h('button', { class: 'kbbtn revbtn', title: 'Razkrij eno črko te besede (beseda nato udari s pol moči)',
     ...keepCwFocus, onclick: e => { e.preventDefault(); cwReveal(); } }, `Razkrij črko · ${C.reveals}`));
-  if (!C.focused) C.banner.append(h('button', { class: 'kbbtn', onclick: e => { e.preventDefault(); focusCwInput(); } }, S.mobile ? 'Tapni za tipkovnico' : 'Klikni za tipkanje'));
+  if (!C.focused && !S.mobile) C.banner.append(h('button', { class: 'kbbtn', onclick: e => { e.preventDefault(); focusCwInput(); } }, S.mobile ? 'Tapni za tipkovnico' : 'Klikni za tipkanje'));
 }
 function cwSelect(k) { B.cw.cur = { e: k, p: 0 }; cwPaint(); }
 // Tip: reveal one letter of the current entry (a few per crossword, depending on the level).
@@ -2639,13 +2639,16 @@ function renderTrap() {
     h('div', { class: 'lanes', ref: el => UI.lanes = el }, h('div', { class: 'ground' })),
     h('div', { class: 'panel' },
       h('div', { class: 'sendrow' },
-        h('input', { class: 'wordin', type: 'text', ref: el => UI.trapInput = el, placeholder: S.mobile ? 'Tapni tukaj in vpiši besedo' : 'Vpiši besedo …',
+        h('input', { class: 'wordin', type: 'text', ref: el => UI.trapInput = el, placeholder: S.mobile ? 'Vpiši besedo s tipkami spodaj' : 'Vpiši besedo …',
+          readonly: S.mobile, tabindex: S.mobile ? -1 : null, inputmode: S.mobile ? 'none' : null,
           autocapitalize: 'none', autocomplete: 'off', autocorrect: 'off', spellcheck: 'false', enterkeyhint: 'send', 'aria-label': 'Beseda za razbijanje skal',
           onkeydown: e => { if (e.key === 'Enter') { e.preventDefault(); trapSubmit(); } } }),
-        h('button', { class: 'btn primary send ready', onclick: () => { trapSubmit(); if (UI.trapInput) UI.trapInput.focus(); } }, 'Pošlji ', h('kbd', {}, 'Enter'))),
+        h('button', { class: 'btn primary send ready', onclick: () => { trapSubmit(); if (UI.trapInput && !S.mobile) UI.trapInput.focus(); } }, 'Pošlji ', h('kbd', {}, 'Enter'))),
       h('div', { class: 'fb', ref: el => UI.trapFb = el, style: { 'margin-top': '6px' } }),
       h('div', { class: 'muted', ref: el => UI.trapStat = el, style: { 'font-size': '12.5px', 'margin-top': '4px' } }),
       h('div', { ref: el => UI.trapEnd = el }))));
+  UI.trapKb = null;
+  if (S.mobile && !E.done) SCR.firstChild.append(UI.trapKb = trapKeyboard());
   E.rocks.forEach(r => {
     r.el = null;
     if (r.state === 'fall') { r.el = h('div', { class: 'rock', style: { left: r.lane + '%', top: '-60px', 'background-image': `url(${ART.skala})` } }, r.ch); UI.lanes.append(r.el); }
@@ -2714,6 +2717,7 @@ function trapMaybeEnd() {
 function trapShowEnd() {
   const E = S.ev; UI.trapEnd.innerHTML = '';
   if (UI.trapInput) UI.trapInput.blur();
+  if (UI.trapKb) { UI.trapKb.remove(); UI.trapKb = null; }
   UI.trapEnd.append(h('p', {}, `Razbite skale: ${E.broken}/${E.rocks.length} · prejeta škoda: ${E.dmg}.` + (E.xp ? ` Vsak junak +${E.xp} XP` + (E.gold ? `, +${E.gold} zlatnikov.` : '.') : '') + (E.dmg ? ' Rane ostanejo do naslednjega vodnjaka.' : '')),
     h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')));
 }

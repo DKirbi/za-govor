@@ -32,7 +32,7 @@ function dropFocus() {
 function refocusPuzzle(always) {
   if (!(always || G.hadFocus || !S.mobile)) return;
   if (S.screen === 'battle' && B && B.cw) focusCwInput();
-  else if (S.screen === 'trap' && S.ev && !S.ev.done && UI.trapInput) UI.trapInput.focus();
+  else if (S.screen === 'trap' && S.ev && !S.ev.done && UI.trapInput && !S.mobile) UI.trapInput.focus();
 }
 
 // ------------------------------------------------------------ pause
@@ -138,9 +138,9 @@ function tutCross(kind) {
     : `Rdeča črta nad križanko je čas (${secs} s). Ko poteče, te opazijo in bitka se nadaljuje v mreži črk.`;
   return { title: { finisher: 'Zagovor: križanka', lock: 'Zaklepanje: križanka', ambush: 'Zaseda: križanka' }[kind], lead, fig: figCross(), calm: kind === 'finisher' || !secs, time,
     steps: [
-      S.mobile ? ['Tapni mrežo, da se odpre tipkovnica. Rumeno polje kaže opis označene besede.'] : ['Rumeno polje kaže opis označene besede. Vpiši odgovor.'],
+      S.mobile ? ['Rumeno polje kaže opis označene besede. Odgovor vpiši s tipkovnico pod križanko.'] : ['Rumeno polje kaže opis označene besede. Vpiši odgovor.'],
       ['Prava beseda pozeleni in takoj sproži napad. Črne črke pomenijo, da beseda še ni prava.'],
-      S.mobile ? ['Tapni drugo besedo v mreži, da jo izbereš. Gumb »Razkrij črko« pokaže eno črko.'] : [K('Tab'), ' skoči na naslednjo besedo, ', K('?'), ' razkrije eno črko (število je omejeno).'],
+      S.mobile ? ['Tipka Naprej skoči na naslednjo besedo; izbereš jo lahko tudi s tapom v mreži. Gumb »Razkrij črko« pokaže eno črko.'] : [K('Tab'), ' skoči na naslednjo besedo, ', K('?'), ' razkrije eno črko (število je omejeno).'],
       geslo ? ['Zlat stolpec skriva geslo. Če ga uganeš, je križanka rešena takoj.'] : null] };
 }
 const TUT = {
@@ -168,7 +168,7 @@ const TUT = {
     time: `Skale padajo ${Math.round(S.ev.fall)} s. Šteje prva prava beseda; če ne pošlješ nobene, skale udarijo s polno močjo.`,
     steps: [
       ['Poglej črke na skalah.'],
-      [S.mobile ? 'Vpiši eno besedo in pritisni Pošlji.' : 'Vpiši eno besedo in jo pošlji.', ' Vsebuje naj čim več teh črk; v besedi so lahko kjerkoli.'],
+      [S.mobile ? 'Vpiši eno besedo s tipkami spodaj in pritisni Pošlji.' : 'Vpiši eno besedo in jo pošlji.', ' Vsebuje naj čim več teh črk; v besedi so lahko kjerkoli.'],
       ['Skale s črkami iz besede se razbijejo. Ostale te oplazijo.']] }),
 };
 function showTut(kind, force) {

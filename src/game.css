@@ -290,13 +290,17 @@ h1, h2, h3 { margin: 0; }
 .touch-help { display: none; }
 
 /* ---------- On-screen keyboard ---------- */
-.vkbd { display: grid; gap: 6px; margin: 10px 0; user-select: none; }
+.vkbd { display: grid; gap: 6px; margin: 0; user-select: none; -webkit-user-select: none; }
 .vrow { display: flex; gap: 4px; justify-content: center; }
-.vkey { flex: 1 1 0; max-width: 40px; height: 44px; border-radius: 7px; border: 1px solid var(--line); background: var(--panel2);
-  font-size: 17px; font-weight: 700; text-transform: uppercase; cursor: pointer; touch-action: manipulation; padding: 0; }
-.vkey:active { background: var(--line); }
-.vkey.wide { max-width: 70px; flex-grow: 1.6; font-size: 14px; text-transform: none; }
-.vkey.primary { background: var(--gold); color: #1d1608; border-color: var(--gold); }
+.vkey { flex: 1 1 0; min-width: 0; max-width: 44px; height: 46px; border-radius: 7px; border: 1px solid var(--line); background: var(--panel2); color: var(--ink);
+  font: inherit; font-size: 18px; font-weight: 700; text-transform: uppercase; cursor: pointer; touch-action: manipulation; padding: 0; }
+.vkey:active { background: var(--gold); color: #1d1608; transform: translateY(1px); }
+.vkey.wide { max-width: 110px; flex-grow: 2.2; font-size: 14px; text-transform: none; }
+.vkey.back { font-size: 20px; }
+.vkey.primary { background: var(--gold); color: #1d1608; border-color: var(--gold); font-weight: 800; }
+/* rock slide: the keyboard stays at the thumb while the rocks fall above */
+.event > .vkbd { position: sticky; bottom: 0; z-index: 20; background: var(--bg); padding: 8px 0 6px; }
+body.mobile .wordin[readonly] { pointer-events: none; }
 
 /* ---------- Mobile mode (portrait phone layout; on desktop it previews at phone width) ---------- */
 body.mobile { --tile-size: calc((min(100vw, 430px) - 20px - 26px - 30px) / 6); --cell: 30px; }
