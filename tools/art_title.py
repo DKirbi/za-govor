@@ -113,8 +113,8 @@ def paint_twinkle(seed):
         x, y = rnd.randrange(150, W - 8), rnd.randrange(3, 56)
         c = rgb(rnd.choice(['#ffffff', '#fff3c8', '#d8e0ff']))
         im.putpixel((x, y), c)
-        if rnd.random() < .45:  # a few bigger ones get a cross
-            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)): im.putpixel((x + dx, y + dy), c[:3] + (150,))
+        if rnd.random() < .25:  # a few bigger ones get a faint cross
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)): im.putpixel((x + dx, y + dy), c[:3] + (80,))
     return im
 
 
@@ -243,7 +243,7 @@ def paint_shimmer(frame):
     return im
 
 
-KRES = (298, 121)  # where the fire sits on the near shore
+KRES = (240, 123)  # the fire, in the middle under Triglav and the wordmark, where the path ends
 
 
 def ground_y(x):
@@ -271,10 +271,11 @@ def paint_near():
         else:
             d.point((x, y), fill=rgb(rnd.choice(['#e8c26a', '#d97a9a', '#9db0f0', '#f4ecd8'])))
     # path from the bottom up to the shore, narrowing with distance
-    for y in range(H - 1, 120, -1):
-        t = (H - y) / (H - 120)
-        cx = 250 + 22 * math.sin(t * 2.6 + .4) + 30 * t
-        hw = 13 * (1 - t) + 2
+    end = KRES[1] + 4
+    for y in range(H - 1, end, -1):
+        t = (H - y) / (H - end)
+        cx = KRES[0] + (1 - t) * (30 + 14 * math.sin(t * 4.2))
+        hw = 13 * (1 - t) + 3
         for x in range(int(cx - hw), int(cx + hw) + 1):
             col = '#6c5a4c' if abs(x - cx) < hw - 1.5 else '#4e4038'
             if (x * 7 + y * 3) % 11 == 0: col = '#86705a'
@@ -468,8 +469,11 @@ TINY = {
     'v': ['.....', '.....', '#...#', '#...#', '.#.#.', '.#.#.', '..#..'],
     'k': ['#...', '#...', '#..#', '#.#.', '##..', '#.#.', '#..#'],
     'm': ['.....', '.....', '####.', '#.#.#', '#.#.#', '#.#.#', '#.#.#'],
+    't': ['.#..', '.#..', '###.', '.#..', '.#..', '.#..', '..##'],
+    'j': ['..#', '...', '..#', '..#', '..#', '..#', '..#', '#.#', '.#.'],
+    'B': ['###.', '#..#', '#..#', '###.', '#..#', '#..#', '###.'],
 }
-TAGLINE = 'besedna igra s slovanskimi bogovi'
+TAGLINE = 'Besedna igra s slovansko mitologijo'
 
 
 def ribbon():

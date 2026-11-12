@@ -32,34 +32,36 @@
   background: radial-gradient(closest-side, rgba(255,214,120,.42), rgba(255,170,80,.16) 55%, transparent 100%); }
 
 /* ---- motion */
-.ts-tw.a { animation: tsTwinkle 3.4s steps(1) infinite; }
-.ts-tw.b { animation: tsTwinkle 4.7s steps(1) infinite; --off: 1.9; }
-@keyframes tsTwinkle { 0%, 100% { opacity: 1 } 30% { opacity: .35 } 45% { opacity: .8 } 70% { opacity: .2 } }
-.ts-clouds { animation: tsDriftL 400s steps(480) infinite; }
-.ts-mist { animation: tsDriftR 260s steps(480) infinite; }
+/* the stars only breathe: two sets, slow and out of step */
+.ts-tw.a { animation: tsTwinkle 9s ease-in-out infinite; }
+.ts-tw.b { animation: tsTwinkle 13s ease-in-out infinite; --off: 5.3; }
+@keyframes tsTwinkle { 0%, 100% { opacity: .9 } 50% { opacity: .45 } }
+/* clouds and mist creep a pixel every few seconds; both layers tile every 480 art px, so the loop has no seam */
+.ts-clouds { animation: tsDriftL 1800s steps(480) infinite; }
+.ts-mist { animation: tsDriftR 1400s steps(480) infinite; }
 @keyframes tsDriftL { from { background-position-x: 0 } to { background-position-x: calc(-480 * var(--u)) } }
 @keyframes tsDriftR { from { background-position-x: 0 } to { background-position-x: calc(480 * var(--u)) } }
-.ts-shimmer { animation: tsShimmer 1.8s steps(1) infinite; }
-@keyframes tsShimmer { 0% { background-position-x: 0 } 50% { background-position-x: calc(-480 * var(--u)) } }
-.ts-flame { animation: tsFlame .48s steps(3) infinite; }
+/* light on the water: the two frames fade slowly into each other */
+.ts-shimmer { animation: tsWaterA 8s ease-in-out infinite; }
+.ts-shimmer.b { background-position-x: calc(-480 * var(--u)); animation-name: tsWaterB; }
+@keyframes tsWaterA { 0%, 100% { opacity: 1 } 50% { opacity: .25 } }
+@keyframes tsWaterB { 0%, 100% { opacity: .1 } 50% { opacity: .9 } }
+.ts-flame { animation: tsFlame .9s steps(3) infinite; }
 @keyframes tsFlame { from { background-position-x: 0 } to { background-position-x: calc(-36 * var(--u)) } }
-.ts-glow { animation: tsGlow 1.9s ease-in-out infinite; }
-@keyframes tsGlow { 0%, 100% { opacity: .75; transform: scale(1) } 35% { opacity: 1; transform: scale(1.06) } 60% { opacity: .82 } }
-/* the wordmark hovers: one art pixel at a time, the ribbon a beat behind */
-.ts-logo { animation: tsHover 3.6s steps(1) infinite; }
-.ts-ribbon { animation: tsHover 3.6s steps(1) infinite; --off: -.3; }
-@keyframes tsHover { 0%, 100% { transform: translateY(0) } 20% { transform: translateY(calc(-1 * var(--u))) } 40%, 60% { transform: translateY(calc(-2 * var(--u))) } 80% { transform: translateY(calc(-1 * var(--u))) } }
-.ts-aura { animation: tsAura 3.6s ease-in-out infinite; }
-@keyframes tsAura { 0%, 100% { opacity: .55; transform: scale(.94) } 50% { opacity: 1; transform: scale(1.05) } }
-/* sparks and embers rise one whole art pixel per step; fading and the one-pixel sway run as separate animations */
-.ts-spark, .ts-ember { animation: tsUp var(--d) steps(var(--rise)) infinite, tsFade var(--d) linear infinite, tsSwayR var(--d) steps(1) infinite; }
-.ts-spark.sw-l, .ts-ember.sw-l { animation-name: tsUp, tsFade, tsSwayL; }
+.ts-glow { animation: tsGlow 3.2s ease-in-out infinite; }
+@keyframes tsGlow { 0%, 100% { opacity: .8; transform: scale(1) } 40% { opacity: 1; transform: scale(1.04) } 65% { opacity: .86 } }
+/* the wordmark and ribbon stand still; only the warm glow behind them breathes */
+.ts-aura { animation: tsAura 8s ease-in-out infinite; }
+@keyframes tsAura { 0%, 100% { opacity: .65; transform: scale(.97) } 50% { opacity: 1; transform: scale(1.03) } }
+/* sparks rise one whole art pixel per step, slowly; fading and the one-pixel sway run as separate animations */
+.ts-spark, .ts-ember, .ts-rise { animation: tsUp var(--d) steps(var(--rise)) infinite, tsFade var(--d) linear infinite, tsSwayR var(--d) steps(1) infinite; }
+.ts-spark.sw-l, .ts-ember.sw-l, .ts-rise.sw-l { animation-name: tsUp, tsFade, tsSwayL; }
 @keyframes tsUp { from { transform: translateY(0) } to { transform: translateY(calc(var(--rise) * var(--u) * -1)) } }
 @keyframes tsFade { 0% { opacity: 0 } 12% { opacity: 1 } 75% { opacity: .9 } 100% { opacity: 0 } }
 @keyframes tsSwayR { 0%, 100% { translate: 0 0 } 35% { translate: var(--u) 0 } 70% { translate: 0 0 } }
 @keyframes tsSwayL { 0%, 100% { translate: 0 0 } 35% { translate: calc(-1 * var(--u)) 0 } 70% { translate: 0 0 } }
 /* fireflies hop between whole pixels and blink */
-.ts-fly { animation: tsFly0 var(--d) steps(1) infinite, tsBlink var(--d) linear infinite; }
+.ts-fly { animation: tsFly0 var(--d) steps(1) infinite, tsBlink var(--d) ease-in-out infinite; }
 .ts-fly.fp1 { animation-name: tsFly1, tsBlink; } .ts-fly.fp2 { animation-name: tsFly2, tsBlink; }
 @keyframes tsBlink { 0%, 100% { opacity: 0 } 15% { opacity: 1 } 40% { opacity: .25 } 60% { opacity: 1 } 85% { opacity: .1 } }
 @keyframes tsFly0 { 0%, 100% { transform: translate(0, 0) } 10% { transform: translate(var(--u), 0) } 20% { transform: translate(calc(2 * var(--u)), calc(-1 * var(--u))) }

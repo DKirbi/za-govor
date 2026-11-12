@@ -13,7 +13,7 @@ const measure = page => page.evaluate(() => {
     logo: logo.complete && logo.naturalWidth > 0, logoW: logo.getBoundingClientRect().width, natW: logo.naturalWidth, ribbon: rib.complete && rib.naturalWidth > 0,
     h1: (st.querySelector('h1') || {}).textContent, sparks: st.querySelectorAll('.ts-spark').length, vh: innerHeight };
 });
-const sparkY = page => page.evaluate(() => [...document.querySelectorAll('.ts-spark')].slice(0, 6).map(e => new DOMMatrix(getComputedStyle(e).transform).f));
+const sparkY = page => page.evaluate(() => [...document.querySelectorAll('.ts-rise, .ts-ember')].slice(0, 8).map(e => new DOMMatrix(getComputedStyle(e).transform).f));
 
 run(async () => {
   // desktop
@@ -23,14 +23,18 @@ run(async () => {
   check(m && m.h1 === 'Za govor!', 'the start screen has the "Za govor!" heading', m && m.h1);
   check(await page.evaluate(() => document.title.startsWith('Za govor!')), 'the browser tab says Za govor!');
   check(m.logo && m.ribbon, 'the wordmark and the ribbon are drawn');
+  const still1 = await page.evaluate(() => [...document.querySelectorAll('.ts-logo, .ts-ribbon')].map(e => getComputedStyle(e).animationName + ' ' + e.getBoundingClientRect().top));
+  await sleep(1200);
+  const still2 = await page.evaluate(() => [...document.querySelectorAll('.ts-logo, .ts-ribbon')].map(e => getComputedStyle(e).animationName + ' ' + e.getBoundingClientRect().top));
+  check(still1.every(x => x.startsWith('none ')) && still1.join() === still2.join(), 'the wordmark and the ribbon stand still', JSON.stringify([still1, still2]));
   check(Number.isInteger(m.s) && m.s === 3, 'the scene is drawn at a whole-number scale (3× at 1280 px)', 'scale ' + m.s);
   check(m.logoW === m.natW * m.s, 'the wordmark has square pixels at the same scale', `${m.logoW} = ${m.natW} × ${m.s}`);
   check(m.left === 0 && m.width === m.clientW && m.scrollW <= m.clientW, 'the scene spans the window without a sideways scrollbar', JSON.stringify([m.left, m.width, m.clientW, m.scrollW]));
   check(Math.abs(m.top - m.barBottom) < 1, 'the scene starts right under the top bar', `${m.top} vs ${m.barBottom}`);
   check(m.frameW >= m.width && Number.isInteger(m.frameLeft), 'the scene covers the width and sits on a whole pixel', JSON.stringify([m.frameLeft, m.frameW]));
   check(m.height <= m.vh * 0.72 + 1, 'the scene leaves room for the menu below', `${m.height} of ${m.vh}`);
-  const y1 = await sparkY(page); await sleep(500); const y2 = await sparkY(page);
-  check(y1.some((y, i) => y !== y2[i]), 'sparks rise from the wordmark', JSON.stringify([y1, y2]));
+  const y1 = await sparkY(page); await sleep(1500); const y2 = await sparkY(page);
+  check(y1.some((y, i) => y !== y2[i]), 'sparks rise from the fire towards the wordmark', JSON.stringify([y1, y2]));
   check(y2.every(y => Math.abs(y / m.s - Math.round(y / m.s)) < 1e-6), 'sparks move in whole art pixels', JSON.stringify(y2));
   // a re-render (changing a setting rebuilds the start screen) keeps the sparks where they were
   const before = await sparkY(page);
@@ -54,8 +58,8 @@ run(async () => {
   ({ page, errors } = ctx);
   await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]); await sleep(100);
   const still = await page.evaluate(() => ({ logo: getComputedStyle(document.querySelector('.ts-logo')).animationName,
-    clouds: getComputedStyle(document.querySelector('.ts-clouds')).animationName, sparks: getComputedStyle(document.querySelector('.ts-spark')).display }));
-  check(still.logo === 'none' && still.clouds === 'none' && still.sparks === 'none', 'with reduced motion nothing moves', JSON.stringify(still));
+    clouds: getComputedStyle(document.querySelector('.ts-clouds')).animationName, flame: getComputedStyle(document.querySelector('.ts-flame')).animationName, sparks: getComputedStyle(document.querySelector('.ts-spark')).display }));
+  check(still.flame === 'none' && still.clouds === 'none' && still.sparks === 'none', 'with reduced motion nothing moves', JSON.stringify(still));
   await ctx.browser.close();
 
   // phone

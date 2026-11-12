@@ -4,7 +4,9 @@
 // - Pixels stay square: the scene is drawn at a whole-number scale (--s) picked from the width it has to fill.
 // - It spans the full window (in phone mode, the full phone column) and fades into the dark page at the bottom,
 //   so the menu underneath keeps its contrast.
-// - Everything that moves is CSS (transform, opacity, background-position), stepped one art pixel at a time.
+// - The wordmark and ribbon stand still. The scene moves slowly: the fire, embers carried up towards the
+//   wordmark, barely drifting clouds, breathing stars and water. All CSS (transform, opacity, background-position);
+//   whatever travels moves one whole art pixel per step.
 //   Delays come from one clock (--t), so rebuilding the start screen does not restart the sparks mid-flight.
 // - prefers-reduced-motion shows the still picture.
 const TS_PARTS = (() => {
@@ -13,18 +15,22 @@ const TS_PARTS = (() => {
   const pick = arr => arr[Math.floor(rnd() * arr.length)];
   const M = TITLE_META, lw = M.logo[0], lx = (M.w - lw) / 2, ly = M.logoY + M.logo[1];
   const out = [];
-  // sparks rising from the wordmark, like the motes around a hero's spirit
-  for (let i = 0; i < 28; i++) out.push({ k: 'spark', x: Math.round(lx + 6 + rnd() * (lw - 12)), y: Math.round(ly - 4 - rnd() * 8),
-    rise: 16 + Math.round(rnd() * 20), d: 2.6 + rnd() * 2.8, off: rnd() * 6, c: pick(['#fff4c8', '#ffd45e', '#ffbf3f', '#f8a032', '#ffffff']), sw: rnd() < .5 ? 'l' : 'r', big: rnd() < .18 });
-  // sparks from the kres
-  for (let i = 0; i < 10; i++) out.push({ k: 'ember', x: M.kres[0] - 3 + Math.round(rnd() * 6), y: M.kres[1] - 10,
-    rise: 14 + Math.round(rnd() * 18), d: 1.3 + rnd() * 1.5, off: rnd() * 3, c: pick(['#ffe58a', '#f6a13a', '#e0502a']), sw: rnd() < .5 ? 'l' : 'r' });
+  const gauss = () => (rnd() + rnd() + rnd() - 1.5) / 1.5;  // -1..1, most near 0
+  // embers from the kres, which sits in the middle right under the wordmark
+  for (let i = 0; i < 9; i++) out.push({ k: 'ember', x: M.kres[0] - 3 + Math.round(rnd() * 6), y: M.kres[1] - 10,
+    rise: 14 + Math.round(rnd() * 16), d: 2.6 + rnd() * 1.8, off: rnd() * 5, c: pick(['#ffe58a', '#f6a13a', '#e0502a']), sw: rnd() < .5 ? 'l' : 'r' });
+  // the same sparks carried higher: they leave the fire's column, rise past Triglav and fade behind the wordmark
+  for (let i = 0; i < 12; i++) out.push({ k: 'rise', x: Math.round(M.kres[0] + gauss() * 34), y: Math.round(98 - rnd() * 22),
+    rise: 34 + Math.round(rnd() * 16), d: 6 + rnd() * 4, off: rnd() * 10, c: pick(['#ffe58a', '#ffd45e', '#f8a032', '#fff4c8']), sw: rnd() < .5 ? 'l' : 'r' });
+  // a few motes around the letters themselves
+  for (let i = 0; i < 8; i++) out.push({ k: 'spark', x: Math.round(lx + 6 + rnd() * (lw - 12)), y: Math.round(ly - 2 - rnd() * 8),
+    rise: 10 + Math.round(rnd() * 10), d: 5 + rnd() * 3, off: rnd() * 8, c: pick(['#fff4c8', '#ffd45e', '#ffffff']), sw: rnd() < .5 ? 'l' : 'r' });
   // fireflies over the meadow
-  for (let i = 0; i < 11; i++) out.push({ k: 'fly', x: 16 + Math.round(rnd() * (M.w - 32)), y: 116 + Math.round(rnd() * 20),
-    d: 5 + rnd() * 5, off: rnd() * 10, c: pick(['#e4f58a', '#f6f2a6', '#c8f07a']), path: Math.floor(rnd() * 3) });
+  for (let i = 0; i < 9; i++) out.push({ k: 'fly', x: 16 + Math.round(rnd() * (M.w - 32)), y: 118 + Math.round(rnd() * 18),
+    d: 9 + rnd() * 6, off: rnd() * 15, c: pick(['#e4f58a', '#f6f2a6', '#c8f07a']), path: Math.floor(rnd() * 3) });
   // linden leaves drifting down from the crown on the left
-  for (let i = 0; i < 4; i++) out.push({ k: 'leaf', x: 30 + Math.round(rnd() * 100), y: 30 + Math.round(rnd() * 30),
-    d: 10 + rnd() * 6, off: rnd() * 16, c: pick(['#6f7c46', '#b8a85a', '#4f7048']) });
+  for (let i = 0; i < 3; i++) out.push({ k: 'leaf', x: 30 + Math.round(rnd() * 100), y: 30 + Math.round(rnd() * 30),
+    d: 14 + rnd() * 6, off: rnd() * 20, c: pick(['#6f7c46', '#b8a85a', '#4f7048']) });
   return out;
 })();
 
@@ -36,7 +42,7 @@ function titleStage() {
     style: { '--x': p.x, '--y': p.y, '--rise': p.rise || 0, '--d': p.d.toFixed(2) + 's', '--off': p.off.toFixed(2), background: p.c } }));
   const art = h('div', { class: 'ts-art', 'aria-hidden': 'true' },
     lay('ts-sky', A.sky), lay('ts-tw a', A.twA), lay('ts-tw b', A.twB), lay('ts-clouds', A.clouds), lay('ts-far', A.far),
-    lay('ts-mist', A.mist), lay('ts-mid', A.mid), lay('ts-shimmer', A.shimmer), lay('ts-near', A.near),
+    lay('ts-mist', A.mist), lay('ts-mid', A.mid), lay('ts-shimmer', A.shimmer), lay('ts-shimmer b', A.shimmer), lay('ts-near', A.near),
     h('div', { class: 'ts-glow', style: { '--x': M.kres[0], '--y': M.kres[1] } }),
     h('div', { class: 'ts-flame', style: { '--x': M.kres[0] - 6, '--y': M.kres[1] - 13, 'background-image': `url(${A.flame})` } }),
     ...parts.filter((p, i) => TS_PARTS[i].k !== 'spark'));
@@ -49,7 +55,7 @@ function titleStage() {
     h('div', { class: 'ts-frame' }, art, mark),
     h('div', { class: 'ts-fade' }),
     h('h1', { class: 'sr-only' }, 'Za govor!'),
-    h('p', { class: 'sr-only' }, 'Besedna igra s slovanskimi bogovi'));
+    h('p', { class: 'sr-only' }, 'Besedna igra s slovansko mitologijo'));
   queueMicrotask(layoutTitleStage);
   return st;
 }
