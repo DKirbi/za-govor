@@ -29,6 +29,7 @@ full game is planned in Godot 4.7 for Windows, macOS, Linux, Android and iOS —
 
 ## Contents
 - [Play the prototype](#play-the-prototype)
+- [Phone and Android](#phone-and-android)
 - [How it plays](#how-it-plays)
 - [Controls](#controls)
 - [Build from source](#build-from-source)
@@ -215,11 +216,37 @@ after you play words.
 
 Malček is the game as it was before the levels were added.
 
+## Phone and Android
+*Mobilni prikaz* (on by itself on touch screens) is the phone version of the game:
+
+- **No Pošlji in the letter mesh.** Lift your finger after a drag, or tap the last letter
+  again; a string that is not a word lets go of its letters. A tap on a proposal plays it.
+  The chest, the rock slide and darts keep *Pošlji*, because they take one deliberate word.
+- **In-game Slovene keyboard** for crosswords and the rock slide: the 25 letters in their
+  QWERTZ places with Č, Š, Ž as plain keys. The phone's own keyboard stays closed, so the
+  screen never jumps, nothing autocorrects, and every phone behaves the same.
+- **Premor** is a labelled button in the top bar; the game also pauses when it goes to the
+  background, and the Android back button pauses instead of closing the game.
+- Thumb-size targets (40 px and up), secondary text at least 12 px with 4.5:1 contrast,
+  safe areas for notches and gesture bars, light haptics on Android.
+
+**Android test app.** Every push to `main` or `android-expansion` builds a debug APK with
+GitHub Actions (*Actions → Android test APK → Artifacts → za-govor-debug-apk*). Unzip it,
+open the `.apk` on the phone and allow installing from that source; later builds install
+over it. The app is the same `dist/index.html` wrapped with Capacitor 8 (portrait, target
+SDK 36). To build it yourself you need Node 22+, JDK 21 and Android Studio:
+
+```sh
+npm install
+npm run android:apk     # -> android/app/build/outputs/apk/debug/app-debug.apk
+npm run android:open    # or open the project in Android Studio
+```
+
 ## Controls
 | Action | Keyboard | Mouse / touch |
 | --- | --- | --- |
 | Make a word | Type it; the path is found for you. Č, Š, Ž must be typed as themselves (a Slovene keyboard layout), c/s/z never stand in for them | Drag across tiles, or tap them one by one |
-| Send the word | `Enter` | *Pošlji* |
+| Send the word | `Enter` | Lift the finger after a drag, or tap the last letter again (*Pošlji* on desktop, and in chest, rock slide and darts) |
 | Clear the word | `Delete` | *Počisti* |
 | Pause (battle, crosswords, chest, rock slide, darts) | `Esc` | *Premor* in the top bar |
 | Remove the last letter | `Backspace` | *Briši* |
@@ -227,7 +254,8 @@ Malček is the game as it was before the levels were added.
 | Hint / reshuffle / look into the bag | `1` / `2` / `3` | *Namig* / *Premešaj* / *Torba* |
 | Walk on the road, confirm a stop | `→` or `Enter` (`Esc` = walk past, `T` = bag) | *Naprej* and the buttons of the stop |
 | Crossword: reveal a letter | `?` | *Razkrij črko* |
-| Crossword: next entry, move | `Enter` or `Tab`, arrow keys | Tap a cell or a clue; the phone keyboard opens |
+| Crossword: next entry, move | `Enter` or `Tab`, arrow keys | Tap a cell or a clue; type on the in-game keyboard, *Naprej* for the next word |
+| Android back button | — | Pauses a puzzle, closes a panel, steps back to the start screen; leaves the app only from there |
 
 ## Build from source
 `dist/index.html` is built from the files in `src/` and `data/` by a small Python script
@@ -269,7 +297,7 @@ CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 | `tests/crossword-generator.test.js` | 4,200 generated crosswords on all three levels: no letter clashes or stray letters, connected grids, everything fits 9×9, only that level's clue banks, short words in enemy crosswords, the gold column spells the keyword |
 | `tests/levels.test.js` | Each knowledge level: chosen and saved on the title screen, hints and proposals, word count and coaching tips, shortest word, crossword bank, letter counts, revealed letters (and half power), mouse clicks reaching the crossword |
 | `tests/keyword.test.js` | Guessing the keyword early ends the crossword and fires the zagovor; in Povodni mož's whirlpool *urska* with a plain s stays black and *urška* breaks it |
-| `tests/phone.test.js` | On a 390×844 touch screen: *Pošlji* is visible and works, wrong entries stay black, correct ones turn green and fire, phone-keyboard composition input, chest partial rewards, rock slide input |
+| `tests/phone.test.js` | On a 390×844 touch screen: the mesh sends without *Pošlji* (second tap, lifted drag, non-words clear), the in-game keyboard types crosswords and the rock slide with the system keyboard closed, wrong entries stay black and correct ones fire, chest partial rewards, darts fit 360 px, *Premor*, and the Android back button |
 | `tests/journey.test.js` | The road: choosing the first hero, walking to a stop, one enemy for one hero, no healing after a battle, a hero joining, the chest's gold and item, the well, the pedlar, using a potion, the bag pausing the battle, the shrine and the one-god rule, swapping with a full party, all 45 hero moves, the dragon and the ending |
 | `tests/desktop.test.js` | A keyboard playthrough: c/s/z are not accepted for č/š/ž, first battle, result and hero screens, chest, finisher, Lintvern's letter lock and forced crossword, ambush, rock slide, and no console errors anywhere |
 
@@ -286,8 +314,12 @@ za-govor/
 │   ├── game.js               # battles, crosswords, chest, rock slide, heroes (no framework)
 │   ├── journey.js            # the road: regions, stops, party, items, pedlar, bag, darts
 │   ├── playtest.js           # pause, puzzle intros, fullscreen, fit to screen
+│   ├── mobile.js             # phone specifics: in-game keyboard, haptics, Android back button
 │   ├── art-extra.js          # generated pixel art (tools/art_extra.py)
 │   └── game.css              # styles, desktop and phone layouts
+├── android/                  # Capacitor 8 Android project (npm run android:open)
+├── capacitor.config.json     # app id, name, webDir: dist
+├── .github/workflows/        # android-apk.yml: debug APK on every push
 ├── data/
 │   ├── dict.json             # battle word list: 9,867 base words → 46,094 forms
 │   ├── clues.json            # crossword clue banks per knowledge level, mythology keywords
@@ -327,10 +359,12 @@ za-govor/
   most crossings, rejecting any placement that would touch other letters side by side,
   overlap in the same direction or leave the 9×9 box; keep the best of up to 24 attempts
   and number entries in reading order. Each puzzle takes about 10 ms.
-- **Phone keyboard input.** Crossword cells are typed through a hidden `<input>` inside
-  the grid's `<label>`, so tapping the grid opens the native keyboard. The field keeps a
-  zero-width sentinel and diffs each `input` event against the previous value, which copes
-  with autocorrect, swipe typing, IME composition and Backspace.
+- **Phone keyboard input.** On phones crosswords and the rock slide are typed on an
+  in-game keyboard (`src/mobile.js`); the hidden crossword `<input>` gets
+  `inputmode="none"` so the system keyboard stays closed. A hardware keyboard still types.
+  On desktop the hidden field keeps a zero-width sentinel and diffs each `input` event
+  against the previous value, which copes with autocorrect, swipe typing, IME composition
+  and Backspace.
 - **Art.** Pixel sprites (48×48, bosses 64×64, two frames each) and backgrounds are PNG
   sheets embedded as data URIs; the painted folk-art cards are SVG built in JavaScript,
   one painting per hero per attack size. Cards appear above the attacker inside the scene,
@@ -367,8 +401,8 @@ za-govor/
 
 ## Roadmap
 1. **Playtest the prototype** — the one gate that can kill the project is whether the
-   Slovene grid is fun. Host it (GitHub Pages or itch.io) as an installable web app so
-   testers can play it on phones and tablets.
+   Slovene grid is fun. Testers on Android install the debug APK from GitHub Actions;
+   others open `dist/index.html` or a hosted copy.
 2. **Move the rules into shared data files** that the prototype and the Godot game both read.
 3. **Build the Godot 4.7 game** (GDScript, Compatibility renderer, 640×360 pixel base) with
    one adaptive layout: portrait on phones, landscape on tablets and desktop.

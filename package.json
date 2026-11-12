@@ -2,7 +2,7 @@
   "name": "za-govor",
   "version": "0.1.0",
   "private": true,
-  "description": "Za govor — a Slovene word-puzzle RPG with Slavic mythology. Browser prototype of the mini-games.",
+  "description": "Za govor — a Slovene word-puzzle RPG with Slavic mythology. Browser prototype of the mini-games, also wrapped as an Android test app (Capacitor).",
   "scripts": {
     "build": "python3 build.py",
     "test": "node tests/run-all.js",
@@ -12,12 +12,20 @@
     "test:keyword": "node tests/keyword.test.js",
     "test:levels": "node tests/levels.test.js",
     "test:journey": "node tests/journey.test.js",
-    "screenshots": "node tools/readme-shots.js"
+    "screenshots": "node tools/readme-shots.js",
+    "android:sync": "python3 build.py && cap sync android",
+    "android:open": "cap open android",
+    "android:apk": "npm run android:sync && cd android && ./gradlew assembleDebug"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.6.0",
     "puppeteer-core": "^23.11.1"
   },
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/core": "^8.6.0"
   }
 }
