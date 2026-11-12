@@ -26,12 +26,7 @@ const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 const num = x => (Math.round(x * 100) / 100).toString().replace('.', ',');   // Slovene decimal comma
 const UP = s => s.toUpperCase();
 
-// ============================================================ word data
-const DICT = JSON.parse($('#dict').textContent);
-const WORDS = new Set(), LEMMA = new Map();
-for (const [lem, forms] of Object.entries(DICT)) for (const f of forms) { WORDS.add(f); LEMMA.set(f, lem); }
-const TRIE = {};
-for (const w of WORDS) { let n = TRIE; for (const ch of w) n = n[ch] || (n[ch] = {}); n.$ = 1; }
+/*__LEXICON__*/
 
 // Letter bag = Slovene Scrabble distribution (98 letters, no Q W X Y)
 const BAG = 'e'.repeat(11) + 'a'.repeat(10) + 'i'.repeat(9) + 'o'.repeat(8) + 'n'.repeat(7) + 'r'.repeat(6) + 's'.repeat(6) +
@@ -1408,24 +1403,27 @@ function findPath(typed) {
   return best;
 }
 
-// All dictionary words currently reachable in the mesh (for hints + solvability)
+// Suggested words currently reachable in the mesh (for hints, proposals' word count and
+// solvability). The walk only follows letters that can still lead to a suggested word.
 function allWords(limit = 400) {
   const minW = MINW();
   const out = new Map();
   const used = new Array(ROWS * COLS).fill(false);
-  function dfs(i, node, word, path) {
-    if (node.$ && word.length >= minW && !out.has(word)) out.set(word, path.slice());
+  function dfs(i, st, word, path) {
+    if (word.length >= minW && LEX.end(st) === 2 && !out.has(word)) out.set(word, path.slice());
     if (out.size >= limit || word.length >= 9) return;
     for (const n of neighbors(i)) {
       const t = B.grid[n];
-      if (used[n] || isLocked(t) || !node[t.ch]) continue;
-      used[n] = true; path.push(n); dfs(n, node[t.ch], word + t.ch, path); path.pop(); used[n] = false;
+      if (used[n] || isLocked(t)) continue;
+      const nx = LEX.step(st, t.ch, true); if (nx < 0) continue;
+      used[n] = true; path.push(n); dfs(n, nx, word + t.ch, path); path.pop(); used[n] = false;
     }
   }
   for (let i = 0; i < ROWS * COLS; i++) {
     const t = B.grid[i];
-    if (isLocked(t) || !TRIE[t.ch]) continue;
-    used[i] = true; dfs(i, TRIE[t.ch], t.ch, [i]); used[i] = false;
+    if (isLocked(t)) continue;
+    const st = LEX.step(LEX.ROOT, t.ch, true); if (st < 0) continue;
+    used[i] = true; dfs(i, st, t.ch, [i]); used[i] = false;
   }
   return out;
 }
@@ -1526,20 +1524,21 @@ function renderWord() {
 // ------------------------------------------------------------ word proposals
 // Words that continue the current path in the mesh, strongest first.
 function extensions(path, limit = 300) {
-  let node = TRIE;
-  for (const i of path) { node = node[B.grid[i].ch]; if (!node) return []; }
+  let st = LEX.ROOT;
+  for (const i of path) { st = LEX.step(st, B.grid[i].ch, true); if (st < 0) return []; }
   const out = [], used = new Array(ROWS * COLS).fill(false), w0 = pathWord(path);
   path.forEach(i => { used[i] = true; });
-  (function dfs(i, nd, word, p) {
+  (function dfs(i, s, word, p) {
     if (out.length >= limit) return;
-    if (nd.$ && word.length >= MINW() && word.length > w0.length) out.push([word, p.slice()]);
+    if (word.length >= MINW() && word.length > w0.length && LEX.end(s) === 2) out.push([word, p.slice()]);
     if (word.length >= 9) return;
     for (const n of neighbors(i)) {
       const t = B.grid[n];
-      if (used[n] || isLocked(t) || !nd[t.ch]) continue;
-      used[n] = true; p.push(n); dfs(n, nd[t.ch], word + t.ch, p); p.pop(); used[n] = false;
+      if (used[n] || isLocked(t)) continue;
+      const nx = LEX.step(s, t.ch, true); if (nx < 0) continue;
+      used[n] = true; p.push(n); dfs(n, nx, word + t.ch, p); p.pop(); used[n] = false;
     }
-  })(path[path.length - 1], node, w0, path.slice());
+  })(path[path.length - 1], st, w0, path.slice());
   return out;
 }
 function gridWordCount() {
@@ -2635,7 +2634,7 @@ function chestTick(dt) {
 const TRAP_HIT = 8, TRAP_GRAZE = 4, TRAP_XP = 8, TRAP_GOLD = 3;
 function startTrap(node) {
   const real = S.mode === 'real';
-  const pool = [...WORDS].filter(w => w.length >= 5 && w.length <= 7 && new Set(w).size >= 4);
+  const pool = LEX.suggestedWords(5, 7).filter(w => new Set(w).size >= 4);
   const letters = shuffle([...new Set(pick(pool))]).slice(0, 4);
   S.ev = { node, kind: 'trap', time: 0, fall: (real ? 16 : 32) * (has('pisanica') ? 1.5 : 1), used: new Set(), broken: 0, hits: 0, dmg: 0, done: false, word: '',
     rocks: letters.map((ch, i) => ({ ch, lane: [14, 38, 62, 86][i], spawn: 0.5 + i * 0.3, y: -60, state: 'wait', el: null })) };
@@ -2795,6 +2794,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 

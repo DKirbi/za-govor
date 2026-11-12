@@ -429,7 +429,7 @@ function renderGalleryExtras(wrap) {
 const DART_COLS = 6, DART_ROWS = 3, DART_DMG = 3, DART_XP = 7, DART_GOLD = 2, DART_STRIKE = 4;
 let DART_WORDS = null;
 function startDarts(node) {
-  if (!DART_WORDS) DART_WORDS = [...new Set(LEMMA.values())].filter(w => w.length === DART_COLS && WORDS.has(w));
+  if (!DART_WORDS) DART_WORDS = LEX.suggestedWords(DART_COLS, DART_COLS).filter(w => LEX.lemma(w) === w);   // base forms only
   const word = pick(DART_WORDS), t = (S.mode === 'real' ? 35 : 70) * (has('pisanica') ? 1.5 : 1);
   const cols = [...word].map(ch => { const col = [ch]; while (col.length < DART_ROWS) { const x = BAG[rnd(BAG.length)]; if (!col.includes(x)) col.push(x); } return shuffle(col); });
   S.ev = { node, kind: 'darts', word, cols, sel: [], time: t, timeMax: t, done: false, msg: '', msgKind: '' };
