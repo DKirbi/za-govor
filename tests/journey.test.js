@@ -32,10 +32,12 @@ run(async () => {
   const ctx = await openGame();
   const { page, errors, shot } = ctx;
 
-  // the first journey: only Martin Krpan can start, two places on the start screen are still locked
+  // a fresh game: Krpan, Zeleni Jurij and Kurent can start; the other twelve are silhouettes
   await page.keyboard.press('Enter'); await sleep(200);
-  const cards = await page.evaluate(() => ({ open: document.querySelectorAll('button.pickcard').length, locked: document.querySelectorAll('.pickcard.locked').length, name: (document.querySelector('button.pickcard b') || {}).textContent }));
-  check(cards.open === 1 && cards.locked === 2 && cards.name === 'Martin Krpan', 'the first journey can only start with Martin Krpan', JSON.stringify(cards));
+  const cards = await page.evaluate(() => ({ open: [...document.querySelectorAll('button.pickcard b')].map(b => b.textContent), locked: document.querySelectorAll('.pickcard.locked').length,
+    shades: document.querySelectorAll('.pickcard.locked i.shade').length, names: [...document.querySelectorAll('.pickcard.locked b')].every(b => b.textContent === '???') }));
+  check(cards.open.join() === 'Martin Krpan,Zeleni Jurij,Kurent' && cards.locked === 12 && cards.shades === 12 && cards.names, 'a fresh game offers Krpan, Zeleni Jurij and Kurent; the other twelve are nameless silhouettes', JSON.stringify(cards));
+  await shot('journey-00-start');
   await page.keyboard.press('Enter'); await sleep(300);
   let s = await state(page);
   check(s.screen === 'travel' && s.party.join() === 'krpan' && s.ri === 0, 'the journey starts at Ptuj with one hero', JSON.stringify(s.party));
@@ -63,7 +65,7 @@ run(async () => {
   await page.keyboard.press('Enter'); await sleep(400);
   s = await state(page);
   const met = await page.evaluate(() => { const Z = window.__ZG, id = Z.HEROES[1] && Z.HEROES[1].id; return { id, god: id && Z.ROSTER[id].god, unlocked: Z.UNLOCKED.has(id), stored: localStorage.getItem('zg-unlocked') || '' }; });
-  check(s.party.length === 2 && s.party[0] === 'krpan' && met.id !== 'krpan' && !met.god, 'a random folk hero joins the party at Ptuj', s.party.join());
+  check(s.party.length === 2 && s.party[0] === 'krpan' && !['krpan', 'jurij', 'kurent'].includes(met.id) && !met.god, 'a random folk hero not yet known joins the party at Ptuj', s.party.join());
   check(met.unlocked && met.stored.includes(met.id), 'meeting a hero unlocks them as a starter (remembered in the browser)', met.stored);
 
   // third stop: the chest gives gold and an item
@@ -109,14 +111,14 @@ run(async () => {
   await page.keyboard.press('Escape'); await sleep(300);
 
   // a battle with two enemies; a potion from the bag is used up
-  await page.evaluate(() => window.__ZG.giveItem('perunova-medica'));
+  await page.evaluate(() => { const Z = window.__ZG; Z.S.run.bag = {}; Z.giveItem('perunova-medica'); });
   await walk(page); await page.keyboard.press('Enter'); await sleep(800);
-  const n0 = await page.evaluate(() => window.__ZG.S.run.bag['perunova-medica']);
-  const used = await page.evaluate(() => window.__ZG.useItem('perunova-medica'));
+  await sleep(900);
   const n1 = await page.evaluate(() => ({ left: window.__ZG.S.run.bag['perunova-medica'], boost: window.__ZG.B.boost, foes: window.__ZG.B.enemies.length }));
-  check(!!used && n1.left === n0 - 1 && n1.boost === 3 && n1.foes === 2, 'Perunova medica is used up and strengthens the next three words', JSON.stringify(n1));
+  check(n1.left === 0 && n1.boost === 3 && n1.foes === 2, 'Perunova medica is drunk by itself when the battle starts', JSON.stringify(n1));
+  check(await page.evaluate(() => { const Z = window.__ZG; Z.giveItem('mrtva-voda'); const st = Z.S.heroes[1]; st.down = true; st.hp = 0; Z.autoItems('tick'); return !st.down && st.hp > 0 && !(Z.S.run.bag['mrtva-voda'] > 0); }), 'Mrtva voda raises a fallen hero by itself');
   await page.keyboard.press('3'); await sleep(250);
-  check(await page.evaluate(() => !!document.querySelector('.dialog.bag') && window.__ZG.B.paused), 'key 3 opens the bag and pauses the battle');
+  check(await page.evaluate(() => !!document.querySelector('.dialog.bag') && window.__ZG.B.paused && !document.querySelector('.dialog.bag .itemrow .btn')), 'key 3 shows the bag and pauses the battle; nothing in it is used by hand');
   await shot('journey-05-bag');
   await page.keyboard.press('Escape'); await sleep(200);
   const pre = await state(page), foeXp = await page.evaluate(() => window.__ZG.B.enemies.map(e => e.xp));
@@ -137,7 +139,7 @@ run(async () => {
   s = await state(page);
   const gods = await page.evaluate(() => window.__ZG.HEROES.filter(h => h.god).length);
   check(s.party.length === 3 && gods === 1, 'one god travels with the party', s.party.join());
-  check(await page.evaluate(() => [...window.__ZG.UNLOCKED].every(id => !window.__ZG.ROSTER[id].god)), 'gods are never unlocked as starters');
+  check(await page.evaluate(() => [...window.__ZG.UNLOCKED].filter(id => window.__ZG.ROSTER[id].god).length) === 3, 'the three gods met at the shrine are known from now on');
   const blessing = await page.evaluate(() => { const Z = window.__ZG, st = Z.S.run.stops.find(x => x.kind === 'god'); st.passed = st.done = false; Z.S.run.prompt = null; Z.go('travel'); return Z.S.run.prompt && Z.S.run.prompt.actions.length; });
   check(blessing === 1 && /blagoslov/.test((await state(page)).prompt), 'with a god in the party the shrine only gives a blessing');
 
@@ -152,13 +154,48 @@ run(async () => {
   s = await state(page);
   check(s.party.join() === 'erazem,vida,stribog,krpan', 'Lepa Vida takes the fallen Kurent\'s place', s.party.join());
   await page.evaluate(() => { const Z = window.__ZG; Z.S.testMode = false; Z.S.pickIds = null; Z.go('title'); }); await page.keyboard.press('Enter'); await sleep(200);
-  const again = await page.evaluate(() => ({ open: document.querySelectorAll('button.pickcard').length, gods: [...document.querySelectorAll('button.pickcard span')].filter(x => x.textContent === 'bog').length }));
-  check(again.open === 3 && again.gods === 0, 'the next journey offers three folk heroes to start with, no gods', JSON.stringify(again));
+  const again = await page.evaluate(() => ({ open: document.querySelectorAll('button.pickcard').length, known: window.__ZG.UNLOCKED.size, locked: document.querySelectorAll('.pickcard.locked').length }));
+  check(again.open === again.known && again.open > 3 && again.open + again.locked === 15, 'the next journey can start with anyone met so far', JSON.stringify(again));
   await page.keyboard.press('Escape'); await sleep(150);
 
   // the last region ends with the dragon
   const last = await page.evaluate(() => { const W = window.__ZG.WORLD.regions; const r = W[W.length - 1]; return { id: r.id, boss: r.boss, last: r.stops[r.stops.length - 1] }; });
   check(last.id === 'grad' && last.last === 'boss' && last.boss.join() === 'lintvern', 'the road ends at Ljubljana castle with Lintvern');
+
+  // darts: one letter from each column, left to right
+  await page.evaluate(() => { const Z = window.__ZG; Z.S.heroes.forEach(h => { h.down = false; h.hp = h.maxHp; }); Z.go('darts', { id: 'puscice' }); }); await sleep(250);
+  let d = await page.evaluate(() => { const E = window.__ZG.S.ev; return { word: E.word, cols: E.cols.length, rows: E.cols[0].length, ok: [...E.word].every((ch, c) => E.cols[c].includes(ch)) }; });
+  check(d.cols === 6 && d.rows === 3 && d.ok, 'the dart wall has six columns of three letters and hides a word', d.word);
+  await page.evaluate(() => document.querySelectorAll('.dartcol')[2].querySelector('.tile').click());
+  check(await page.evaluate(() => window.__ZG.S.ev.sel.length) === 0, 'a column cannot be taken before the ones to its left');
+  for (const ch of d.word) await page.evaluate(c => document.dispatchEvent(new KeyboardEvent('keydown', { key: c, bubbles: true, cancelable: true })), ch);
+  await shot('journey-06b-darts');
+  await page.keyboard.press('Enter'); await sleep(250);
+  d = await page.evaluate(() => { const Z = window.__ZG, E = Z.S.ev; return { done: E.done, turned: E.turned, dmg: E.dmg, strike: Z.S.strike }; });
+  check(d.done && d.turned === 6 && d.dmg === 0 && d.strike === 24, 'the whole word turns every dart: no damage, and an opening strike for the next battle', JSON.stringify(d));
+  // a shorter real word turns some darts, a word that does not exist turns none
+  const short = await page.evaluate(() => { const Z = window.__ZG;
+    for (let t = 0; t < 60; t++) { Z.go('darts', { id: 'puscice' }); const E = Z.S.ev;
+      for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) for (let c = 0; c < 3; c++) for (let e = 0; e < 3; e++) { const w = E.cols[0][a] + E.cols[1][b] + E.cols[2][c] + E.cols[3][e]; if (Z.WORDS.has(w)) { E.sel = [a, b, c, e]; return w; } } }
+    return null; });
+  if (check(short, 'a four-letter word can be found in some dart wall')) {
+    const hp0 = await page.evaluate(() => window.__ZG.S.maxHp);   // a level gained from the darts may raise health, so compare with the ceiling
+    await page.keyboard.press('Enter'); await sleep(250);
+    d = await page.evaluate(() => { const Z = window.__ZG, E = Z.S.ev; return { turned: E.turned, dmg: E.dmg, hp: Z.S.partyHp, strike: Z.S.strike, done: E.done }; });
+    check(d.done && d.turned === 4 && d.dmg === 6 && d.strike === 16, 'sending a shorter word early turns four darts; the other two hit the party', `${short} ${JSON.stringify(d)}`);
+  }
+  const wrong = await page.evaluate(() => { const Z = window.__ZG; Z.S.heroes.forEach(h => { h.hp = h.maxHp; }); Z.S.strike = 0;
+    for (let t = 0; t < 60; t++) { Z.go('darts', { id: 'puscice' }); const E = Z.S.ev, w = E.cols.slice(0, 4).map(c => c[0]).join(''); if (!Z.WORDS.has(w)) { E.sel = [0, 0, 0, 0]; return w; } } return null; });
+  await page.keyboard.press('Enter'); await sleep(250);
+  d = await page.evaluate(() => { const Z = window.__ZG, E = Z.S.ev; return { turned: E.turned, dmg: E.dmg, strike: Z.S.strike }; });
+  check(wrong && d.turned === 0 && d.dmg === 18 && d.strike === 0, 'a word that does not exist can be sent too: every dart hits the party', `${wrong} ${JSON.stringify(d)}`);
+  // healers strike as well as heal
+  const healer = await page.evaluate(async () => { const Z = window.__ZG; Z.resetRun(); Z.S.mode = 'calm'; Z.setParty(['jurij']); Z.go('battle', Z.NODES[2]);
+    const w = [...Z.allWords().keys()].find(x => x.length >= 4), path = Z.findPath(w); path.forEach((i, n) => { Z.B.grid[i].owner = n < 1 ? 0 : -1; });
+    const hp0 = Z.B.enemies[0].hp; Z.B.target = 0; Z.B.path = path; Z.B.typed = w;
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true })); await new Promise(r => setTimeout(r, 400));
+    return hp0 - Z.B.enemies[0].hp; });
+  check(healer > 0, 'Zeleni Jurij alone can hurt an enemy', `−${healer}`);
 
   // every hero's three moves run without errors (tier 1, 2 and 3 for each of the fifteen)
   const kits = await page.evaluate(async () => {
@@ -182,7 +219,7 @@ run(async () => {
   check(kits === 45, 'all 45 hero moves (15 heroes × 3 tiers) were played', String(kits));
 
   // the dragon at the castle ends the journey
-  await page.evaluate(() => { const Z = window.__ZG; Z.S.testMode = true; Z.S.mode = 'real'; Z.newRun('krpan'); Z.go('travel'); for (let i = 0; i < 80 && Z.S.run.ri < Z.WORLD.regions.length - 1; i++) Z.travelAct('skip'); Z.travelAct('skip'); Z.travelAct('skip'); });
+  await page.evaluate(() => { const Z = window.__ZG; Z.S.testMode = true; Z.S.mode = 'real'; Z.newRun('krpan'); Z.go('travel'); for (let i = 0; i < 80 && Z.S.run.ri < Z.WORLD.regions.length - 1; i++) Z.travelAct('skip'); Z.travelAct('skip'); Z.travelAct('skip'); Z.travelAct('skip'); });
   await sleep(200); await walk(page);
   s = await state(page);
   check(s.ri === 9 && /Lintvern/.test(s.prompt || ''), 'the last stop is Lintvern', s.prompt);
