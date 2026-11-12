@@ -1,4 +1,4 @@
-# Za govor — journey and progression design (updated 12 Nov 2026)
+# Za govor — journey and progression design (updated 13 Nov 2026, v0.9.0)
 
 Prototype: https://claude.ai/artifact/NTdMnud7X8Um2p38G1fVnb
 
@@ -6,21 +6,22 @@ This replaces the earlier "three starters and cursed-god bosses" proposal. Every
 
 ## Status at a glance
 - **Decided by the user (11 Nov):** the 2D side-scrolling journey is the point of the game; the levels are places in Slovenia visited one after another, with no level list; the dragon at Ljubljana castle is the final battle; healing happens only at special places such as wells; the player starts with one character; four is the most in a party; only one god per play, and gods are stronger; Erasmus of Lueg (Erazem Predjamski) is a new character and more should be explored; all characters are unlocked; there are items with mythical Slavic names; merchants sell potions, poisons and attack boosts; traps, chests and wells have their own sprites; the web prototype is expanded for fast testing and Godot stays the end goal.
+- **13 Nov, v0.9.0 (built, "skill expansion and fixes"):** XP only from beaten enemies; levels 1–9, each with a skill point; three skills per hero, learned and upgraded three times at wells, shrines and pedlars (section 4); three heroes per journey, favouring the hero of each place; only a hero who joins is unlocked; the shrine's prayer, blessing and trial (section 2a); darts that only hurt.
 - **12 Nov (built):** the darts event (*Puščice v zidu*), the start screen with silhouettes and three known starters, attacks for the healers, every potion used automatically.
 - **Evening fixes (built):** partial healing outside wells, automatic potions, wells raise the fallen, gold and XP from every enemy, one-word chests and rock slides with partial outcomes, Krpan as the first starter with unlocks.
 - **Built:** the journey (ten regions, 48 stops), choosing the first hero, meeting and swapping heroes, the shrine with one god, wells, the pedlar, gold, 23 items, random regional enemies, sprites for every stop, four new heroes, battle abilities for all fifteen heroes.
-- **Parked:** cursed gods as bosses (section 7 of the old design). Gods are simply powerful companions now.
+- **Back, in a new form (13 Nov):** cursed gods as bosses. A god you pray to at the shrine helps for three battles, then has to be beaten (section 2a).
 - **Not balance-tested:** the journey runs end to end in automated tests, but nobody has played it through for difficulty.
 
 ## 1. The journey
 One road, walked left to right. The party stands still and the world scrolls past; the background pans slowly across the landmark of the region. Walking stops at every stop and a prompt offers what can be done there. A signpost at the end of each region leads to the next.
 
-| # | Region | Landmark in the background | Hero of the place (lore; heroes now appear at random) | Stops | Enemies |
+| # | Region | Landmark in the background | Hero of the place (6× more likely to wait there) | Stops | Enemies |
 | --- | --- | --- | --- | --- | --- |
 | 1 | Ptuj | castle above the snowy town | Kurent | battle, hero, chest, battle | Škrat, Vešča |
 | 2 | Peca | King Matjaž's cave | Kralj Matjaž | battle, rock slide, hero, well, battle | Perkmandeljc, Škrat, Pesjan |
 | 3 | Triglav | the three peaks | Ajdovska deklica | battle, rock slide, hero, pedlar, battle | Pesjan, Perkmandeljc, Vešča |
-| 4 | Bled | island church, castle on the cliff | Kresnik (fallback) | battle, chest, **shrine**, well, battle | Vodna vila, Vešča, Škrat |
+| 4 | Bled | island church, castle on the cliff | — (Kresnik has no home and turns up anywhere) | battle, chest, **shrine**, well, battle | Vodna vila, Vešča, Škrat |
 | 5 | Trnovski gozd | moonlit forest | Martin Krpan | battle, chest, hero, battle | Mora, Volkodlak, Vešča |
 | 6 | Piranske soline | salt pans, Piran at sunset | Lepa Vida | battle, pedlar, hero, well, battle | Vodna vila, Pesjan, Mora |
 | 7 | Predjamski grad | the castle in the cliff | Erazem Predjamski | battle, rock slide, hero, chest, ambush | Zmajev mladič, Perkmandeljc, Volkodlak |
@@ -30,18 +31,23 @@ One road, walked left to right. The party stands still and the world scrolls pas
 
 - **Random enemies:** each battle draws its enemies from the region's pool. One enemy while the party is a single hero, two after that. The very first fight is always one Škrat with the tutorial tips.
 - **Scaling:** enemy health +10 % and attack +6 % per region (bosses are fixed).
-- **Hero stops are random:** any folk hero you have not met on this journey may stand there, not only the hero of the place; if none is left, the stop becomes a well.
+- **Three heroes per journey (13 Nov):** a hero always waits at Ptuj; two more regions with a hero stop are picked at random and the other hero stops are left out, so one journey never meets everyone. At a hero stop the hero of the place is six times as likely as anyone else, and heroes not yet unlocked twice as likely; if nobody is left, the stop becomes a well.
 - **Data:** regions, stop order, enemy pools and items live in `data/world.json`, so the Godot game can read the same file.
 
 ## 2. Party rules
 - **Start screen:** all fifteen characters are shown. On a fresh game only **Martin Krpan, Zeleni Jurij and Kurent** are known and can start; the other twelve are nameless silhouettes. You pick one.
-- **Meeting unlocks:** a character you meet on the road becomes known (remembered in the browser) and can start a later journey. That currently includes the three gods who offer themselves at the shrine. (Test mode shows everyone.)
-- **Heroes are met at random:** each hero stop holds a random folk hero you have not met on this journey, preferring ones not yet unlocked.
+- **Joining unlocks (13 Nov):** a hero is unlocked for later journeys only when they join the party; greeting them and walking on leaves them unknown, so a full party has to choose whom to leave. A god is unlocked by beating them in the shrine's trial. (Test mode shows everyone.)
 - **At most four** travel together. A fifth can only take somebody's place; a hero who has fallen can be left behind this way ("Zapusti").
-- **One god per journey.** At the shrine on Bled three random gods offer themselves and one may join.
-- **A hero who joins** arrives at the party's average level.
+- **One god per journey.** A god joins only if you beat them in an earlier journey's trial; then they can join at a shrine.
+- **A hero who joins** brings half the party's average experience (and the skill points of the levels it gives); they know only skill 1.
 - **Gods are stronger:** attack ×1.35 (Veles ×1.5) and about a quarter more health than folk heroes.
 - **Letter mesh:** the share of coloured tiles grows with the party (30 % with one hero, 46 %, 56 %, 62 % with four).
+
+## 2a. The shrine: prayer, blessing, trial (13 Nov)
+- At the shrine on Bled three random gods are caught in a curse. **Pray to one** and for the **next three battles** the god fights beside you: a blow on every enemy when each battle starts (6 + 2 per region), and every word ×1.15. The battle header shows "blagoslov: *god* (*battles left*)".
+- **After the third battle** the curse turns the god against you: the cursed god (their own sprite, tinted) is fought at once, with their first and third skill as attacks (90 + 12 health per region).
+- **Win:** the curse breaks, the god thanks you ("Urok je zlomljen") and is **unlocked** for later journeys. **Lose:** the party withdraws, the god stays cursed and the journey goes on.
+- A god beaten in an earlier journey can also simply **join** at a shrine (still one god at a time).
 
 ## 3. Health, falling and healing
 - Every hero has their own health bar. **Health does not come back after a battle.**
@@ -63,19 +69,25 @@ One road, walked left to right. The party stands still and the world scrolls pas
 - After a lost battle the prototype still lets you try again from the state before the fight; "Konec poti" ends the run.
 
 ## 3a. Rewards
-- **Every defeated enemy** drops gold at once (4 + a share of its XP) and gives its full XP to every hero still standing.
-- **Chest (one word):** the hidden word, or any real word from all the letters, opens it: 50 XP for every hero, 15–25 gold, one item, and a half-full zagovor in the next battle. A real word that leaves letters unused ends the chest with a share of the reward (XP and gold in proportion to the letters used, no item). Running out of time gives nothing.
-- **Rock slide (one word):** the rocks whose letters are in the word break (8 XP for every hero and 3 gold per rock); the others graze the party for half damage (4 each). A word with every letter breaks the whole slide. If no word is sent, every rock lands with full force (8 each).
+- **Experience comes only from beaten enemies (13 Nov):** every defeated enemy drops gold at once (4 + a share of its XP) and gives its full XP to every hero still standing. Words, crosswords, chests, rock slides and darts give no XP.
+- **Chest (one word):** the hidden word, or any real word from all the letters, opens it: 15–25 gold, one item, and a half-full zagovor in the next battle. A real word that leaves letters unused ends the chest with a share of the gold (no item). Running out of time gives nothing.
+- **Rock slide (one word):** the rocks whose letters are in the word break (3 gold per rock); the others graze the party for half damage (4 each). A word with every letter breaks the whole slide. If no word is sent, every rock lands with full force (8 each).
 
 ## 3b. Darts: *Puščice v zidu* (new mini-event)
 - A wall of letters: **six columns of three letters**. Take one letter from each column, strictly left to right, and send the word. 35 s (70 s in calm mode).
-- A hidden six-letter word always exists, but **you may send early**: a real word of 3–5 letters counts for that many darts. **A word that does not exist can be sent too** — then every dart misses.
-- Each letter of a real word turns one dart: 7 XP for every hero, 2 gold, and **4 damage to every enemy at the start of the next battle** (so the full word opens the next fight with −24 to each enemy). Darts that are not turned hit the party for 3 each.
+- A hidden six-letter word always exists, but **you may send early**: a real word of 3–5 letters stops that many darts. **A word that does not exist can be sent too** — then no dart is stopped.
+- **The darts only hurt (13 Nov):** each letter of a real word stops one dart; the others fly at the heroes one at a time, spread over the party, each hit shown on its hero (3 damage, +1 every two regions). A word from every column still lets one dart graze (half damage). Darts never knock a hero out, and they do nothing for the next battle; there is no reward.
+- While the wall waits, it only warns: *Puščice se izstrelijo – pripravi se na umik!* The rules are in the intro (two rows of letters, so it fits a phone) and in the pause.
 - Like the chest and the rock slide it has a *Kako se igra* intro with a solved example, and Esc pauses it (Delete clears the letters).
 - On the road it stands in Trnovski gozd, at Predjamski grad and before the dragon. It has its own sprite (a wall with dart holes).
 
-## 4. Levels (unchanged)
-Three levels per hero: level 2 at 50 XP, level 3 at 140 XP; health ×1.25 / ×1.6, attack ×1.15 / ×1.3, and long words add 4 % / 10 % per letter beyond the fourth.
+## 4. Levels, skill points and skills (13 Nov)
+- **Levels 1–9** at 0, 60, 140, 240, 360, 500, 660, 840 and 1050 XP. Each level adds 8 % health and 4 % attack, a little extra for long words (up to +10 % per letter beyond the fourth at level 9), and **one skill point**.
+- **Three skills per hero.** A word with one, two or three of the hero's letters fires skill 1, 2 or 3 — if the hero knows it; otherwise the strongest skill they know below it, with +15 % for every letter beyond it. Skill 1 is known from the start.
+- **Spending points** (*Veščine*, at a well, a shrine or a pedlar): learning skill 2 (after 1) or skill 3 (after 2) costs one point; after that **every skill can be upgraded three times**, one point each. The upgrades are fixed per skill and bought in order (`SKILL_UPS` in `src/skills.js`): *Moč* (+25 % power), *Kritični udarec* (30 % chance to hit double), *Na vse* (also hits every other enemy), *Zdravljenje* (heals the party a little), *Ščit*, *Omama* (stun), *Ogenj* (burn), *Oslabitev* (the target hits 1 weaker).
+- To max out one hero takes 11 points; a journey gives the starting hero about 8, so every journey asks which skills to grow.
+- **Where to see it:** the *Veščine* button on every hero screen lists the three skills, their upgrades and the XP to the next level. On the card, known skills are filled, the others outlined, with a star per upgrade. Tapping the hero plays the skills they know, one after another.
+- **Outside a journey** (practice battles, the gallery, the codex) every skill is known and nothing is upgraded.
 
 ## 5. Roster — all playable
 | | Hero | Health | What they do | Moves (1 → 3 tiles) |
@@ -161,7 +173,7 @@ On the name *Perun's Hammer*: in the sources Perun's weapon is an axe (and the t
 - Sprite sheets are plain PNG frames (idle | attack), ready for `AnimatedSprite2D`.
 
 ## 10. Still to decide
-1. Gods as starters: a god met at the shrine is now unlocked like anyone else. Keep, or should gods never start?
+1. Gods as starters: a god beaten in the shrine's trial is unlocked like anyone else, so they can also start a journey. Keep, or should gods never start?
 2. Left out for now, as in the original game: a tool belt for choosing potions by hand, and more potions (slow time and others).
 3. Journey length: ten regions and 19 battles is long for one sitting. Save points, or a shorter road?
 4. Should a hero you leave behind be met again later, or are they gone (as now)?
