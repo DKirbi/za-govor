@@ -279,6 +279,22 @@ def svetisce(f):
     return c.outline()
 
 
+def puscice(f):
+    c = Cv(48)
+    st, st2, hi = '#8f8a7c', '#6a665c', '#bdb9ac'
+    c.r(22, 6, 45, 45, st); c.r(22, 6, 45, 7, hi)
+    for y, off in ((14, 0), (22, 6), (30, 0), (38, 6)):
+        c.l([(22, y), (45, y)], st2)
+        for x in range(26 + off, 45, 12): c.l([(x, y - 7), (x, y)], st2)
+    for i, y in enumerate((12, 22, 32)):
+        c.r(24, y - 1, 27, y + 2, '#1d1410')                         # the holes the darts fly from
+        x = 6 + (i * 5 + (4 if f else 0)) % 12
+        c.l([(x, y), (x + 13, y)], '#7a4d2a'); c.p([(x - 3, y), (x, y - 2), (x, y + 2)], '#d5dde3')
+        c.p([(x + 13, y), (x + 16, y - 2), (x + 16, y + 2)], '#b8322f')
+    c.dots([(30, 44), (36, 43), (41, 44)], '#4f8a3a')
+    return c.outline()
+
+
 def kazipot(f):
     c = Cv(32)
     c.r(15, 8, 16, 30, '#7a4d2a')
@@ -764,7 +780,7 @@ def road():
 
 
 HEROES = {'erazem': erazem, 'klepec': klepec, 'vida': vida, 'ajda': ajda, 'krosnjar': krosnjar}
-OBJECTS = {'skrinja': skrinja, 'vodnjak': vodnjak, 'plaz': plaz, 'svetisce': svetisce, 'kazipot': kazipot}
+OBJECTS = {'skrinja': skrinja, 'vodnjak': vodnjak, 'plaz': plaz, 'svetisce': svetisce, 'kazipot': kazipot, 'puscice': puscice}
 BGS = {'ptuj': bg_ptuj, 'peca': bg_peca, 'triglav': bg_triglav, 'bled': bg_bled, 'piran': bg_piran, 'predjama': bg_predjama}
 
 
