@@ -290,13 +290,17 @@ h1, h2, h3 { margin: 0; }
 .touch-help { display: none; }
 
 /* ---------- On-screen keyboard ---------- */
-.vkbd { display: grid; gap: 6px; margin: 10px 0; user-select: none; }
+.vkbd { display: grid; gap: 6px; margin: 0; user-select: none; -webkit-user-select: none; }
 .vrow { display: flex; gap: 4px; justify-content: center; }
-.vkey { flex: 1 1 0; max-width: 40px; height: 44px; border-radius: 7px; border: 1px solid var(--line); background: var(--panel2);
-  font-size: 17px; font-weight: 700; text-transform: uppercase; cursor: pointer; touch-action: manipulation; padding: 0; }
-.vkey:active { background: var(--line); }
-.vkey.wide { max-width: 70px; flex-grow: 1.6; font-size: 14px; text-transform: none; }
-.vkey.primary { background: var(--gold); color: #1d1608; border-color: var(--gold); }
+.vkey { flex: 1 1 0; min-width: 0; max-width: 44px; height: 46px; border-radius: 7px; border: 1px solid var(--line); background: var(--panel2); color: var(--ink);
+  font: inherit; font-size: 18px; font-weight: 700; text-transform: uppercase; cursor: pointer; touch-action: manipulation; padding: 0; }
+.vkey:active { background: var(--gold); color: #1d1608; transform: translateY(1px); }
+.vkey.wide { max-width: 110px; flex-grow: 2.2; font-size: 14px; text-transform: none; }
+.vkey.back { font-size: 20px; }
+.vkey.primary { background: var(--gold); color: #1d1608; border-color: var(--gold); font-weight: 800; }
+/* rock slide: the keyboard stays at the thumb while the rocks fall above */
+.event > .vkbd { position: sticky; bottom: 0; z-index: 20; background: var(--bg); padding: 8px 0 6px; }
+body.mobile .wordin[readonly] { pointer-events: none; }
 
 /* ---------- Mobile mode (portrait phone layout; on desktop it previews at phone width) ---------- */
 body.mobile { --tile-size: calc((min(100vw, 430px) - 20px - 26px - 30px) / 6); --cell: 30px; }
@@ -339,10 +343,11 @@ body.mobile .clues { min-width: 0; font-size: 13px; }
 body.mobile .lanes { height: 230px; }
 body.mobile .rock { width: 46px; height: 46px; margin-left: -23px; font-size: 20px; }
 body.mobile .letters .tile { --tile-size: 46px; }
-.actionbar { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 8px; }
-.actionbar .btn { padding: 13px 6px; font-size: 15px; }
-.actionbar2 { display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 8px; }
-.actionbar2 .btn { padding: 11px 6px; font-size: 13.5px; position: relative; overflow: hidden; }
+/* phones: one bar of thumb buttons under the mesh (sending needs no button: lift the finger) */
+.actionbar2 { display: flex; gap: 8px; }
+.actionbar2 .btn { flex: 1 1 0; min-width: 0; min-height: 48px; padding: 8px 4px; font-size: 14px; position: relative; overflow: hidden; }
+.actionbar2 .zgbtn { flex-grow: 1.7; }
+.btn.clr { width: 44px; height: 44px; padding: 0; border-radius: 50%; font-size: 16px; align-self: center; color: var(--dim); }
 .zgbtn .fill { position: absolute; left: 0; top: 0; bottom: 0; background: color-mix(in srgb, var(--gold) 28%, transparent); }
 .zgbtn span { position: relative; }
 
@@ -748,6 +753,16 @@ body.held .puzzle, body.held .wordbar, body.held .event .panel, body.held .lanes
 .tb-btn.on { border-color: var(--gold); color: var(--gold); }
 body.mobile .tb-btn .lbl, body.mobile .tb-btn kbd { display: none; }
 body.mobile .tb-btn { padding: 6px 8px; }
+/* phones: the pause is a labelled thumb-size button, not a bare icon; the sound and view
+   switches shrink to icon + state so it fits beside them (from 360 px wide) */
+body.mobile .tb-btn.tb-pause { min-height: 40px; padding: 6px 12px; gap: 6px; font-size: 14px; font-weight: 700;
+  border-color: var(--gold); color: var(--gold); background: color-mix(in srgb, var(--gold) 12%, var(--panel2)); }
+body.mobile .tb-btn.tb-pause .lbl { display: inline; }
+body.mobile .tb-btn.tb-pause svg { width: 13px; height: 13px; }
+body.mobile .topbar .tb-sound { font-size: 15px; gap: 4px; padding: 6px 8px; min-height: 40px; } body.mobile .tb-sound .lbl { display: none; }
+body.mobile .topbar .tb-mobile { min-height: 40px; padding: 6px 8px; }
+@media (max-width: 374px) { body.mobile .tb-logo { font-size: 15px; } body.mobile .topbar { gap: 5px; }
+  body.mobile .tb-btn.tb-pause { padding: 6px 9px; } body.mobile .topbar .tb-sound, body.mobile .topbar .tb-mobile { padding: 6px 6px; } }
 body.mobile .topbar { gap: 6px; }
 
 .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 95; width: max-content; max-width: min(560px, 92vw);
@@ -823,3 +838,37 @@ body.tight .side .box.keys { display: none; }   /* short windows: the key legend
 .tut-fig .dartcols { gap: 3px; margin: 0 0 8px; justify-content: flex-start; }
 .tut-fig .dartcol { padding: 3px; gap: 3px; border-width: 1px; }
 .tut-fig .dartcol .tile, body.mobile .tut-fig .dartcol .tile { --tile-size: 30px; font-size: 15px; }
+
+/* ---------- Phone pass (android-expansion): fit, safe areas, touch targets, readable text ---------- */
+/* Darts: all columns share the phone's width, however many letters the word has */
+body.mobile .dartcols { gap: 4px; margin: 12px 0; }
+body.mobile .dartcol { flex: 1 1 0; min-width: 0; max-width: 62px; padding: 4px; gap: 5px; }
+body.mobile .dartcol .tile { --tile-size: auto; width: 100%; height: auto; aspect-ratio: 1; font-size: clamp(17px, 5.4vw, 24px); }
+body.mobile .event { margin: 6px 0; gap: 10px; min-width: 0; }
+body.mobile .event .panel { padding: 12px; min-width: 0; }
+body.mobile .event .bhead { flex-wrap: wrap; row-gap: 2px; }
+body.mobile .sendrow { flex-wrap: nowrap; }
+body.mobile .sendrow .guess { min-width: 0; gap: 3px; }
+body.mobile .sendrow .guess .lt { flex: 1 1 0; min-width: 0; max-width: 36px; width: auto; font-size: 19px; }
+body.mobile .chestbox { gap: 10px; align-items: flex-start; font-size: 13.5px; line-height: 1.4; }
+/* Edge-to-edge screens (notch, gesture bar): content keeps clear of the system areas.
+   The Android app (Capacitor 8) injects --safe-area-inset-* because WebViews before 140 report env() wrongly;
+   browsers fall back to env(), and without viewport-fit=cover both are 0. */
+:root { --sat: var(--safe-area-inset-top, env(safe-area-inset-top, 0px)); --sab: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  --sal: var(--safe-area-inset-left, env(safe-area-inset-left, 0px)); --sar: var(--safe-area-inset-right, env(safe-area-inset-right, 0px)); }
+body.mobile #app { padding-left: max(10px, var(--sal)); padding-right: max(10px, var(--sar)); padding-bottom: max(18px, var(--sab)); }
+body.mobile .topbar { padding-top: max(8px, var(--sat)); }
+body.mobile .side, body.mobile .event > .vkbd { padding-bottom: max(6px, var(--sab)); }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body.mobile { overscroll-behavior-y: contain; -webkit-tap-highlight-color: transparent; }
+/* Touch targets: nothing you must hit under time pressure is smaller than 40 px */
+body.mobile .btn.small:not(.tb-btn):not(.tb-sound):not(.tb-mobile) { min-height: 40px; padding: 8px 12px; font-size: 13.5px; }
+body.mobile .prop { min-height: 36px; padding: 6px 12px; font-size: 13.5px; }
+body.mobile .prop-x { min-width: 36px; min-height: 36px; font-size: 20px; }
+body.mobile .kbbtn { min-height: 36px; padding: 6px 12px; font-size: 13px; }
+body.mobile .clue { padding-top: 5px; padding-bottom: 5px; }
+/* Readable text: secondary text is at least 12 px and passes 4.5:1 on the dark panels */
+body.mobile { --faint: #8d897f; }
+body.mobile .bhead .meta, body.mobile .chip, body.mobile .partyhp { font-size: 12px; }
+body.mobile .muted { color: #b3ad9f; }
+@media (prefers-contrast: more) { :root { --dim: #cfc9bb; --faint: #a9a498; --line: #5a6074; } }

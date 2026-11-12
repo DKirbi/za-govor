@@ -1,0 +1,56 @@
+# Builds an installable Android test APK of the prototype on every push.
+# Download it from the run's "Artifacts" section (za-govor-debug-apk), unzip, open the .apk on the
+# phone and allow installing from that source. The fixed debug key (android/app/za-govor-debug.keystore)
+# lets each new APK install over the previous one.
+name: Android test APK
+
+on:
+  push:
+    branches: [main, android-expansion]
+    paths-ignore: ['docs/**', '**/*.md']
+  pull_request:
+    paths-ignore: ['docs/**', '**/*.md']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22          # Capacitor 8 CLI needs Node 22+
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'        # Capacitor 8 compiles with Java 21
+          cache: gradle
+
+      # The Android SDK comes preinstalled on GitHub's Ubuntu runners (ANDROID_HOME is set).
+
+      - name: Install
+        run: npm ci
+
+      - name: Build the prototype and copy it into the app
+        run: npm run android:sync
+
+      - name: Build the debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: za-govor-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30

@@ -2,7 +2,8 @@
 <html lang="sl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#121318">
 <title>Za govor — prototip mini iger</title>
 <style>
 /* ---------- Tokens ---------- */
@@ -296,13 +297,17 @@ h1, h2, h3 { margin: 0; }
 .touch-help { display: none; }
 
 /* ---------- On-screen keyboard ---------- */
-.vkbd { display: grid; gap: 6px; margin: 10px 0; user-select: none; }
+.vkbd { display: grid; gap: 6px; margin: 0; user-select: none; -webkit-user-select: none; }
 .vrow { display: flex; gap: 4px; justify-content: center; }
-.vkey { flex: 1 1 0; max-width: 40px; height: 44px; border-radius: 7px; border: 1px solid var(--line); background: var(--panel2);
-  font-size: 17px; font-weight: 700; text-transform: uppercase; cursor: pointer; touch-action: manipulation; padding: 0; }
-.vkey:active { background: var(--line); }
-.vkey.wide { max-width: 70px; flex-grow: 1.6; font-size: 14px; text-transform: none; }
-.vkey.primary { background: var(--gold); color: #1d1608; border-color: var(--gold); }
+.vkey { flex: 1 1 0; min-width: 0; max-width: 44px; height: 46px; border-radius: 7px; border: 1px solid var(--line); background: var(--panel2); color: var(--ink);
+  font: inherit; font-size: 18px; font-weight: 700; text-transform: uppercase; cursor: pointer; touch-action: manipulation; padding: 0; }
+.vkey:active { background: var(--gold); color: #1d1608; transform: translateY(1px); }
+.vkey.wide { max-width: 110px; flex-grow: 2.2; font-size: 14px; text-transform: none; }
+.vkey.back { font-size: 20px; }
+.vkey.primary { background: var(--gold); color: #1d1608; border-color: var(--gold); font-weight: 800; }
+/* rock slide: the keyboard stays at the thumb while the rocks fall above */
+.event > .vkbd { position: sticky; bottom: 0; z-index: 20; background: var(--bg); padding: 8px 0 6px; }
+body.mobile .wordin[readonly] { pointer-events: none; }
 
 /* ---------- Mobile mode (portrait phone layout; on desktop it previews at phone width) ---------- */
 body.mobile { --tile-size: calc((min(100vw, 430px) - 20px - 26px - 30px) / 6); --cell: 30px; }
@@ -345,10 +350,11 @@ body.mobile .clues { min-width: 0; font-size: 13px; }
 body.mobile .lanes { height: 230px; }
 body.mobile .rock { width: 46px; height: 46px; margin-left: -23px; font-size: 20px; }
 body.mobile .letters .tile { --tile-size: 46px; }
-.actionbar { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 8px; }
-.actionbar .btn { padding: 13px 6px; font-size: 15px; }
-.actionbar2 { display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 8px; }
-.actionbar2 .btn { padding: 11px 6px; font-size: 13.5px; position: relative; overflow: hidden; }
+/* phones: one bar of thumb buttons under the mesh (sending needs no button: lift the finger) */
+.actionbar2 { display: flex; gap: 8px; }
+.actionbar2 .btn { flex: 1 1 0; min-width: 0; min-height: 48px; padding: 8px 4px; font-size: 14px; position: relative; overflow: hidden; }
+.actionbar2 .zgbtn { flex-grow: 1.7; }
+.btn.clr { width: 44px; height: 44px; padding: 0; border-radius: 50%; font-size: 16px; align-self: center; color: var(--dim); }
 .zgbtn .fill { position: absolute; left: 0; top: 0; bottom: 0; background: color-mix(in srgb, var(--gold) 28%, transparent); }
 .zgbtn span { position: relative; }
 
@@ -754,6 +760,16 @@ body.held .puzzle, body.held .wordbar, body.held .event .panel, body.held .lanes
 .tb-btn.on { border-color: var(--gold); color: var(--gold); }
 body.mobile .tb-btn .lbl, body.mobile .tb-btn kbd { display: none; }
 body.mobile .tb-btn { padding: 6px 8px; }
+/* phones: the pause is a labelled thumb-size button, not a bare icon; the sound and view
+   switches shrink to icon + state so it fits beside them (from 360 px wide) */
+body.mobile .tb-btn.tb-pause { min-height: 40px; padding: 6px 12px; gap: 6px; font-size: 14px; font-weight: 700;
+  border-color: var(--gold); color: var(--gold); background: color-mix(in srgb, var(--gold) 12%, var(--panel2)); }
+body.mobile .tb-btn.tb-pause .lbl { display: inline; }
+body.mobile .tb-btn.tb-pause svg { width: 13px; height: 13px; }
+body.mobile .topbar .tb-sound { font-size: 15px; gap: 4px; padding: 6px 8px; min-height: 40px; } body.mobile .tb-sound .lbl { display: none; }
+body.mobile .topbar .tb-mobile { min-height: 40px; padding: 6px 8px; }
+@media (max-width: 374px) { body.mobile .tb-logo { font-size: 15px; } body.mobile .topbar { gap: 5px; }
+  body.mobile .tb-btn.tb-pause { padding: 6px 9px; } body.mobile .topbar .tb-sound, body.mobile .topbar .tb-mobile { padding: 6px 6px; } }
 body.mobile .topbar { gap: 6px; }
 
 .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 95; width: max-content; max-width: min(560px, 92vw);
@@ -829,6 +845,40 @@ body.tight .side .box.keys { display: none; }   /* short windows: the key legend
 .tut-fig .dartcols { gap: 3px; margin: 0 0 8px; justify-content: flex-start; }
 .tut-fig .dartcol { padding: 3px; gap: 3px; border-width: 1px; }
 .tut-fig .dartcol .tile, body.mobile .tut-fig .dartcol .tile { --tile-size: 30px; font-size: 15px; }
+
+/* ---------- Phone pass (android-expansion): fit, safe areas, touch targets, readable text ---------- */
+/* Darts: all columns share the phone's width, however many letters the word has */
+body.mobile .dartcols { gap: 4px; margin: 12px 0; }
+body.mobile .dartcol { flex: 1 1 0; min-width: 0; max-width: 62px; padding: 4px; gap: 5px; }
+body.mobile .dartcol .tile { --tile-size: auto; width: 100%; height: auto; aspect-ratio: 1; font-size: clamp(17px, 5.4vw, 24px); }
+body.mobile .event { margin: 6px 0; gap: 10px; min-width: 0; }
+body.mobile .event .panel { padding: 12px; min-width: 0; }
+body.mobile .event .bhead { flex-wrap: wrap; row-gap: 2px; }
+body.mobile .sendrow { flex-wrap: nowrap; }
+body.mobile .sendrow .guess { min-width: 0; gap: 3px; }
+body.mobile .sendrow .guess .lt { flex: 1 1 0; min-width: 0; max-width: 36px; width: auto; font-size: 19px; }
+body.mobile .chestbox { gap: 10px; align-items: flex-start; font-size: 13.5px; line-height: 1.4; }
+/* Edge-to-edge screens (notch, gesture bar): content keeps clear of the system areas.
+   The Android app (Capacitor 8) injects --safe-area-inset-* because WebViews before 140 report env() wrongly;
+   browsers fall back to env(), and without viewport-fit=cover both are 0. */
+:root { --sat: var(--safe-area-inset-top, env(safe-area-inset-top, 0px)); --sab: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  --sal: var(--safe-area-inset-left, env(safe-area-inset-left, 0px)); --sar: var(--safe-area-inset-right, env(safe-area-inset-right, 0px)); }
+body.mobile #app { padding-left: max(10px, var(--sal)); padding-right: max(10px, var(--sar)); padding-bottom: max(18px, var(--sab)); }
+body.mobile .topbar { padding-top: max(8px, var(--sat)); }
+body.mobile .side, body.mobile .event > .vkbd { padding-bottom: max(6px, var(--sab)); }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body.mobile { overscroll-behavior-y: contain; -webkit-tap-highlight-color: transparent; }
+/* Touch targets: nothing you must hit under time pressure is smaller than 40 px */
+body.mobile .btn.small:not(.tb-btn):not(.tb-sound):not(.tb-mobile) { min-height: 40px; padding: 8px 12px; font-size: 13.5px; }
+body.mobile .prop { min-height: 36px; padding: 6px 12px; font-size: 13.5px; }
+body.mobile .prop-x { min-width: 36px; min-height: 36px; font-size: 20px; }
+body.mobile .kbbtn { min-height: 36px; padding: 6px 12px; font-size: 13px; }
+body.mobile .clue { padding-top: 5px; padding-bottom: 5px; }
+/* Readable text: secondary text is at least 12 px and passes 4.5:1 on the dark panels */
+body.mobile { --faint: #8d897f; }
+body.mobile .bhead .meta, body.mobile .chip, body.mobile .partyhp { font-size: 12px; }
+body.mobile .muted { color: #b3ad9f; }
+@media (prefers-contrast: more) { :root { --dim: #cfc9bb; --faint: #a9a498; --line: #5a6074; } }
 </style>
 </head>
 <body>
@@ -1649,7 +1699,7 @@ const NODES = [
     teach: 'Mreža črk, barve junakov, moč napada, izbira cilja.',
     battle: { enemies: ['skrat', 'skrat'], finishers: ['perun'], meterStart: 0, tips: [
       { until: 1, text: 'Vpiši besedo na tipkovnici ali vleci z miško čez sosednje črke, nato pritisni Pošlji ali Enter.',
-        m: 'Vleci s prstom čez sosednje črke ali jih tapkaj eno za drugo, nato pritisni Pošlji.' },
+        m: 'Vleci s prstom čez sosednje črke in spusti: beseda se pošlje sama. Če črke tapkaš, na koncu še enkrat tapni zadnjo.' },
       { until: 3, text: 'Barvne črke sprožijo junake: več črk iste barve pomeni močnejši napad. Daljša beseda pomeni večji množitelj.' },
       { until: 5, text: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Klikni sovražnika ali uporabi ←/→ za izbiro cilja.',
         m: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Tapni sovražnika, da ga izbereš za cilj.' },
@@ -1810,7 +1860,7 @@ function renderTopbar() {
     S.mobile ? null : h('button', { class: 'btn small tb-btn tb-fs' + (isFs() ? ' on' : ''), 'aria-pressed': isFs() ? 'true' : 'false', title: 'Celozaslonski način', 'aria-label': 'Celozaslonski način', onclick: toggleFullscreen },
       tbIcon(isFs() ? 'M5 1v4H1v1.6h5.6V1zM9 13V9h4V7.4H7.4V13zM1 9h4v4h1.6V7.4H1zM13 5H9V1H7.4v5.6H13z' : 'M1 1h5v1.6H2.6V6H1zM13 13H8v-1.6h3.4V8H13zM1 13V8h1.6v3.4H6V13zM13 1v5h-1.6V2.6H8V1z'), h('span', { class: 'lbl' }, isFs() ? 'Zapri cel zaslon' : 'Cel zaslon')),
     h('button', { class: 'btn small tb-sound' + (SOUND_ON ? ' on' : ''), 'aria-pressed': SOUND_ON ? 'true' : 'false', title: 'Zvočni učinki', 'aria-label': 'Zvočni učinki', onclick: toggleSound },
-      '♪ Zvok', h('span', { class: 'pill' }, SOUND_ON ? 'VKLOP' : 'IZKLOP')),
+      h('span', { class: 'tb-note', 'aria-hidden': 'true' }, '♪'), h('span', { class: 'lbl' }, 'Zvok'), h('span', { class: 'pill' }, SOUND_ON ? 'VKLOP' : 'IZKLOP')),
     h('button', { class: 'btn small tb-mobile' + (S.mobile ? ' on' : ''), 'aria-pressed': S.mobile ? 'true' : 'false',
       title: 'Preklopi med mobilnim in namiznim prikazom', onclick: toggleMobile },
       h('span', { class: 'phone' }), 'Mobilni prikaz', h('span', { class: 'pill' }, S.mobile ? 'VKLOP' : 'IZKLOP')));
@@ -1869,7 +1919,7 @@ function renderTitle() {
     h('div', { class: 'row', style: { 'justify-content': 'flex-start', 'flex-wrap': 'wrap' } },
       h('button', { class: 'btn primary', onclick: () => go('pick') }, 'Nova pot'), h('span', { class: 'muted', style: { 'align-self': 'center' } }, h('kbd', {}, 'Enter')),
       S.run ? h('button', { class: 'btn', onclick: () => go('travel') }, `Nadaljuj pot (${WORLD.regions[S.run.ri].name})`) : null),
-    h('div', { class: 'touch-help' }, 'Na telefonu: vleci ali tapkaj po sosednjih črkah, nato pritisni Pošlji. Tapni predlog, da ga izbereš. Pri križanki tapni mrežo in odpre se tipkovnica telefona.'),
+    h('div', { class: 'touch-help' }, 'Na telefonu: vleci po sosednjih črkah in spusti, beseda se pošlje sama (pri tapkanju še enkrat tapni zadnjo črko). Tap na predlog ga pošlje. Križanke in plaz tipkaš s slovensko tipkovnico v igri.'),
     h('div', { class: 'controls-help' },
       h('span', {}, h('kbd', {}, 'a–ž')), h('span', {}, 'tipkaj besedo; pot v mreži se poišče sama'),
       h('span', {}, 'miška'), h('span', {}, 'vleci čez sosednje črke ali klikaj eno za drugo (klik na zadnjo potrdi)'),
@@ -2038,6 +2088,7 @@ function buildBattleDom() {
   // On a phone the coach tip floats over the empty sky of the scene instead of taking a row,
   // so the letter grid keeps its place when the tip appears or goes away.
   const coach = h('div', { class: 'coach', ref: el => UI.coach = el });
+  UI.send = UI.clr = null;
   let battle;
   SCR.append(battle = h('div', { class: 'battle' },
     h('div', { class: 'bhead' },
@@ -2052,7 +2103,9 @@ function buildBattleDom() {
       h('div', { class: 'floats', ref: el => UI.floats = el })),
     h('div', { class: 'wordbar' },
       h('div', { class: 'word', ref: el => UI.word = el }),
-      h('button', { class: 'btn send', ref: el => UI.send = el, onclick: () => submitWord(), title: 'Pošlji izbrano besedo' }, 'Pošlji ', h('kbd', {}, 'Enter')),
+      // Phones have no Pošlji in the mesh: lifting the finger sends the word (or a second tap on its last letter).
+      S.mobile ? h('button', { class: 'btn clr', ref: el => UI.clr = el, onclick: () => clearWord(), 'aria-label': 'Počisti besedo', title: 'Počisti besedo' }, '✕')
+        : h('button', { class: 'btn send', ref: el => UI.send = el, onclick: () => submitWord(), title: 'Pošlji izbrano besedo' }, 'Pošlji ', h('kbd', {}, 'Enter')),
       h('div', { class: 'chips', ref: el => UI.chips = el }),
       h('div', { class: 'props', ref: el => UI.props = el }),
       h('div', { class: 'fb', ref: el => UI.fb = el }),
@@ -2139,12 +2192,8 @@ function renderSide() {
   const full = B.meter >= METER_MAX;
   UI.side.innerHTML = '';
   if (S.mobile) {
-    if (B.cw) return;   // the crossword brings its own keyboard
+    if (B.cw) { UI.side.append(cwKeyboard()); return; }   // the in-game Slovene keyboard (src/mobile.js)
     UI.side.append(
-      h('div', { class: 'actionbar' },
-        h('button', { class: 'btn', onclick: () => meshBackspace() }, '⌫ Briši'),
-        h('button', { class: 'btn', onclick: () => clearWord() }, 'Počisti'),
-        h('button', { class: 'btn primary', onclick: () => submitWord() }, 'Pošlji')),
       h('div', { class: 'actionbar2' },
         h('button', { class: 'btn zgbtn' + (full ? ' primary' : ''), disabled: !full, onclick: openFinisher },
           full ? null : h('i', { class: 'fill', style: { width: (100 * B.meter / METER_MAX) + '%' } }),
@@ -2378,15 +2427,17 @@ function renderWord() {
   if (!UI.word) return;
   UI.word.innerHTML = ''; UI.chips.innerHTML = '';
   if (B.cw) {
-    UI.word.className = 'word'; UI.word.append(h('span', { class: 'ph' }, S.mobile ? 'Križanka je odprta — tapni mrežo in tipkaj.' : 'Križanka je odprta — tipkaj v polja.'));
+    UI.word.className = 'word'; UI.word.append(h('span', { class: 'ph' }, S.mobile ? 'Križanka je odprta — tipkaj s tipkami spodaj.' : 'Križanka je odprta — tipkaj v polja.'));
     if (UI.send) UI.send.style.visibility = 'hidden';
+    if (UI.clr) UI.clr.style.visibility = 'hidden';
     renderProposals(); return;
   }
   const shown = B.path.length ? pathWord(B.path) : B.typed;
   const valid = B.path.length >= MINW() && WORDS.has(pathWord(B.path));
   if (UI.send) { UI.send.style.visibility = ''; UI.send.disabled = !B.path.length; UI.send.classList.toggle('ready', valid); }
+  if (UI.clr) UI.clr.style.visibility = shown ? '' : 'hidden';
   UI.word.className = 'word' + (valid ? ' valid' : '') + (B.nopath && B.typed ? ' nopath' : '');
-  if (!shown) UI.word.append(h('span', { class: 'ph' }, S.mobile ? 'Vleci ali tapkaj po črkah …' : 'Tipkaj ali vleci čez črke …'));
+  if (!shown) UI.word.append(h('span', { class: 'ph' }, S.mobile ? 'Vleci čez črke in spusti …' : 'Tipkaj ali vleci čez črke …'));
   for (const ch of shown) UI.word.append(h('span', { class: 'lt' }, ch));
   if (B.nopath && B.typed) UI.chips.append(h('span', { class: 'chip', style: { '--c': 'var(--danger)' } }, 'ni poti v mreži'));
   if (B.path.length) {
@@ -2450,8 +2501,9 @@ function renderProposals() {
     return;
   }
   UI.props.append(h('span', { class: 'muted' }, 'Predlogi:'));
-  list.forEach(([w, { p }]) => UI.props.append(h('button', { class: 'prop', title: 'Izberi to besedo',
-    onclick: () => { B.path = p.slice(); B.typed = w; B.nopath = false; renderSelection(); } },
+  list.forEach(([w, { p }]) => UI.props.append(h('button', { class: 'prop', title: S.mobile ? 'Pošlji to besedo' : 'Izberi to besedo',
+    onclick: () => { B.path = p.slice(); B.typed = w; B.nopath = false; renderSelection();
+      if (S.mobile) { const b = B, key = p.join(); setTimeout(() => { if (B === b && B.path.join() === key) submitWord(); }, 380); } } },
     UP(w), h('span', { class: 'dots' }, p.filter(i => ownerActive(B.grid[i])).map(i => h('i', { style: { '--c': HEROES[B.grid[i].owner].c } }))))));
   UI.props.append(h('button', { class: 'prop-x', title: 'Skrij predloge', onclick: () => { S.suggest = false; renderProposals(); fb('Predlogi so skriti. Vklopiš jih na začetnem zaslonu.', 'warn'); } }, '×'));
 }
@@ -2527,7 +2579,11 @@ function submitWord() {
   if (!B.path.length) { if (B.typed) fb(`Za »${UP(B.typed)}« ni poti v mreži.`, 'err'); return; }
   const w = pathWord(B.path);
   if (w.length < MINW()) { fb(`Beseda mora imeti vsaj ${MINW()} črke.`, 'warn'); return; }
-  if (!WORDS.has(w)) { fb(`»${UP(w)}« ni v slovarju.`, 'err'); shakeEl(UI.word); return; }
+  if (!WORDS.has(w)) {
+    fb(`»${UP(w)}« ni v slovarju.`, 'err'); shakeEl(UI.word);
+    if (S.mobile) { const b = B, p = B.path.join(); setTimeout(() => { if (B === b && !B.over && B.path.join() === p) clearWord(); }, 650); }
+    return;
+  }
   resolveWord(w, B.path.slice());
 }
 
@@ -3090,7 +3146,7 @@ function renderCrossword() {
     C.cellEls.set(key, el); grid.append(el);
   }
   C.input = h('input', { class: 'nativein', type: 'text', autocapitalize: 'none', autocomplete: 'off', autocorrect: 'off', spellcheck: 'false',
-    inputmode: 'text', enterkeyhint: 'next', 'aria-label': 'Vnos črk v križanko' });
+    inputmode: S.mobile ? 'none' : 'text', enterkeyhint: 'next', 'aria-label': 'Vnos črk v križanko' });   // phones: the in-game keyboard types, the system one stays closed
   bindLetterInput(C.input, ch => { if (B.cw === C) cwType(ch); }, () => { if (B.cw === C) cwBackspace(); });
   C.input.addEventListener('keydown', e => {
     if (B.cw !== C) return;
@@ -3137,7 +3193,7 @@ function cwPaint() {
   C.banner.append(h('b', {}, curE.geslo ? '★ Geslo' : `${curE.num} ${curE.dir === 'A' ? 'vodoravno' : 'navpično'}`), ` ${curE.clue}` + (LV().showLen ? ` (${curE.answer.length})` : ''));
   if (C.reveals > 0 && !C.solved.has(C.cur.e)) C.banner.append(h('button', { class: 'kbbtn revbtn', title: 'Razkrij eno črko te besede (beseda nato udari s pol moči)',
     ...keepCwFocus, onclick: e => { e.preventDefault(); cwReveal(); } }, `Razkrij črko · ${C.reveals}`));
-  if (!C.focused) C.banner.append(h('button', { class: 'kbbtn', onclick: e => { e.preventDefault(); focusCwInput(); } }, S.mobile ? 'Tapni za tipkovnico' : 'Klikni za tipkanje'));
+  if (!C.focused && !S.mobile) C.banner.append(h('button', { class: 'kbbtn', onclick: e => { e.preventDefault(); focusCwInput(); } }, S.mobile ? 'Tapni za tipkovnico' : 'Klikni za tipkanje'));
 }
 function cwSelect(k) { B.cw.cur = { e: k, p: 0 }; cwPaint(); }
 // Tip: reveal one letter of the current entry (a few per crossword, depending on the level).
@@ -3524,13 +3580,16 @@ function renderTrap() {
     h('div', { class: 'lanes', ref: el => UI.lanes = el }, h('div', { class: 'ground' })),
     h('div', { class: 'panel' },
       h('div', { class: 'sendrow' },
-        h('input', { class: 'wordin', type: 'text', ref: el => UI.trapInput = el, placeholder: S.mobile ? 'Tapni tukaj in vpiši besedo' : 'Vpiši besedo …',
+        h('input', { class: 'wordin', type: 'text', ref: el => UI.trapInput = el, placeholder: S.mobile ? 'Vpiši besedo s tipkami spodaj' : 'Vpiši besedo …',
+          readonly: S.mobile, tabindex: S.mobile ? -1 : null, inputmode: S.mobile ? 'none' : null,
           autocapitalize: 'none', autocomplete: 'off', autocorrect: 'off', spellcheck: 'false', enterkeyhint: 'send', 'aria-label': 'Beseda za razbijanje skal',
           onkeydown: e => { if (e.key === 'Enter') { e.preventDefault(); trapSubmit(); } } }),
-        h('button', { class: 'btn primary send ready', onclick: () => { trapSubmit(); if (UI.trapInput) UI.trapInput.focus(); } }, 'Pošlji ', h('kbd', {}, 'Enter'))),
+        h('button', { class: 'btn primary send ready', onclick: () => { trapSubmit(); if (UI.trapInput && !S.mobile) UI.trapInput.focus(); } }, 'Pošlji ', h('kbd', {}, 'Enter'))),
       h('div', { class: 'fb', ref: el => UI.trapFb = el, style: { 'margin-top': '6px' } }),
       h('div', { class: 'muted', ref: el => UI.trapStat = el, style: { 'font-size': '12.5px', 'margin-top': '4px' } }),
       h('div', { ref: el => UI.trapEnd = el }))));
+  UI.trapKb = null;
+  if (S.mobile && !E.done) SCR.firstChild.append(UI.trapKb = trapKeyboard());
   E.rocks.forEach(r => {
     r.el = null;
     if (r.state === 'fall') { r.el = h('div', { class: 'rock', style: { left: r.lane + '%', top: '-60px', 'background-image': `url(${ART.skala})` } }, r.ch); UI.lanes.append(r.el); }
@@ -3599,6 +3658,7 @@ function trapMaybeEnd() {
 function trapShowEnd() {
   const E = S.ev; UI.trapEnd.innerHTML = '';
   if (UI.trapInput) UI.trapInput.blur();
+  if (UI.trapKb) { UI.trapKb.remove(); UI.trapKb = null; }
   UI.trapEnd.append(h('p', {}, `Razbite skale: ${E.broken}/${E.rocks.length} · prejeta škoda: ${E.dmg}.` + (E.xp ? ` Vsak junak +${E.xp} XP` + (E.gold ? `, +${E.gold} zlatnikov.` : '.') : '') + (E.dmg ? ' Rane ostanejo do naslednjega vodnjaka.' : '')),
     h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')));
 }
@@ -4158,7 +4218,7 @@ function dropFocus() {
 function refocusPuzzle(always) {
   if (!(always || G.hadFocus || !S.mobile)) return;
   if (S.screen === 'battle' && B && B.cw) focusCwInput();
-  else if (S.screen === 'trap' && S.ev && !S.ev.done && UI.trapInput) UI.trapInput.focus();
+  else if (S.screen === 'trap' && S.ev && !S.ev.done && UI.trapInput && !S.mobile) UI.trapInput.focus();
 }
 
 // ------------------------------------------------------------ pause
@@ -4264,17 +4324,17 @@ function tutCross(kind) {
     : `Rdeča črta nad križanko je čas (${secs} s). Ko poteče, te opazijo in bitka se nadaljuje v mreži črk.`;
   return { title: { finisher: 'Zagovor: križanka', lock: 'Zaklepanje: križanka', ambush: 'Zaseda: križanka' }[kind], lead, fig: figCross(), calm: kind === 'finisher' || !secs, time,
     steps: [
-      S.mobile ? ['Tapni mrežo, da se odpre tipkovnica. Rumeno polje kaže opis označene besede.'] : ['Rumeno polje kaže opis označene besede. Vpiši odgovor.'],
+      S.mobile ? ['Rumeno polje kaže opis označene besede. Odgovor vpiši s tipkovnico pod križanko.'] : ['Rumeno polje kaže opis označene besede. Vpiši odgovor.'],
       ['Prava beseda pozeleni in takoj sproži napad. Črne črke pomenijo, da beseda še ni prava.'],
-      S.mobile ? ['Tapni drugo besedo v mreži, da jo izbereš. Gumb »Razkrij črko« pokaže eno črko.'] : [K('Tab'), ' skoči na naslednjo besedo, ', K('?'), ' razkrije eno črko (število je omejeno).'],
+      S.mobile ? ['Tipka Naprej skoči na naslednjo besedo; izbereš jo lahko tudi s tapom v mreži. Gumb »Razkrij črko« pokaže eno črko.'] : [K('Tab'), ' skoči na naslednjo besedo, ', K('?'), ' razkrije eno črko (število je omejeno).'],
       geslo ? ['Zlat stolpec skriva geslo. Če ga uganeš, je križanka rešena takoj.'] : null] };
 }
 const TUT = {
   mesh: () => ({ title: 'Mreža črk', lead: 'Iz sosednjih črk sestavi slovensko besedo. Vsaka beseda je napad na sovražnika.', fig: figMesh(), calm: S.mode !== 'real',
     time: S.mode === 'real' ? 'Sovražniki napadajo sproti. Ko sovražnik zažari, sledi udarec, zato so hitre besede vredne več kot popolne.' : 'V mirnem načinu sovražniki počakajo na tvojo besedo.',
     steps: [
-      S.mobile ? ['Vleci ali tapkaj po sosednjih črkah, tudi poševno.'] : ['Tipkaj besedo; pot po sosednjih črkah se poišče sama. Lahko tudi vlečeš z miško.'],
-      S.mobile ? [`Pritisni Pošlji. Beseda ima vsaj ${MINW()} črke; daljša udari močneje.`] : [K('Enter'), ` pošlje besedo. Imeti mora vsaj ${MINW()} črke; daljša udari močneje.`],
+      S.mobile ? ['Vleci s prstom po sosednjih črkah, tudi poševno.'] : ['Tipkaj besedo; pot po sosednjih črkah se poišče sama. Lahko tudi vlečeš z miško.'],
+      S.mobile ? [`Spusti prst in beseda se pošlje. Imeti mora vsaj ${MINW()} črke; daljša udari močneje. Pri tapkanju še enkrat tapni zadnjo črko.`] : [K('Enter'), ` pošlje besedo. Imeti mora vsaj ${MINW()} črke; daljša udari močneje.`],
       ['Barvne črke pripadajo junakom: ko jih uporabiš, napade junak te barve.'],
       S.mobile ? ['Vsaka črka polni zagovor. Ko je poln, gumb Izreci zagovor odpre križanko za mogočen udarec.'] : ['Vsaka črka polni zagovor. Ko je poln, ', K('presledek'), ' odpre križanko za mogočen udarec.']] }),
   finisher: () => tutCross('finisher'), lock: () => tutCross('lock'), ambush: () => tutCross('ambush'),
@@ -4294,7 +4354,7 @@ const TUT = {
     time: `Skale padajo ${Math.round(S.ev.fall)} s. Šteje prva prava beseda; če ne pošlješ nobene, skale udarijo s polno močjo.`,
     steps: [
       ['Poglej črke na skalah.'],
-      [S.mobile ? 'Vpiši eno besedo in pritisni Pošlji.' : 'Vpiši eno besedo in jo pošlji.', ' Vsebuje naj čim več teh črk; v besedi so lahko kjerkoli.'],
+      [S.mobile ? 'Vpiši eno besedo s tipkami spodaj in pritisni Pošlji.' : 'Vpiši eno besedo in jo pošlji.', ' Vsebuje naj čim več teh črk; v besedi so lahko kjerkoli.'],
       ['Skale s črkami iz besede se razbijejo. Ostale te oplazijo.']] }),
 };
 function showTut(kind, force) {
@@ -4391,6 +4451,56 @@ if (window.ResizeObserver) new ResizeObserver(() => {
 }).observe(app);
 window.addEventListener('resize', fitSoon);
 for (const ev of ['fullscreenchange', 'webkitfullscreenchange']) document.addEventListener(ev, () => { syncTopbar(); fitSoon(); });
+// ============================================================ phone specifics ("Mobilni prikaz")
+// Everything a phone or tablet needs beyond the layout: an in-game Slovene keyboard, so
+// crosswords and the rock slide never depend on the system keyboard (it covers half the
+// screen, autocorrects, hides Č Š Ž behind a long press and behaves differently on every
+// phone — and it is the weak spot of every game-engine export to Android), plus light
+// haptics and a pause when the app goes to the background.
+
+// The 25 letters of the Slovene alphabet in their QWERTZ places; Š, Ž and Č are plain keys.
+const VK_ROWS = ['ertzuiopšž', 'asdfghjklč', 'cvbnm'];
+function buzz(pattern) { if (S.mobile && navigator.vibrate) { try { navigator.vibrate(pattern); } catch (e) { /* not allowed here */ } } }
+// onChar(letter), onBack(); extra = { label, fn } adds one wide action key (next word, …)
+function vkbd({ onChar, onBack, extra }) {
+  const key = (label, fn, cls, aria) => h('button', { class: 'vkey' + (cls ? ' ' + cls : ''), type: 'button', 'aria-label': aria,
+    onpointerdown: e => e.preventDefault(),   // keys never take focus from the puzzle
+    onclick: e => { e.preventDefault(); if (held()) return; buzz(8); fn(); } }, label);
+  return h('div', { class: 'vkbd', role: 'group', 'aria-label': 'Slovenska tipkovnica' },
+    VK_ROWS.map((row, r) => h('div', { class: 'vrow' },
+      [...row].map(ch => key(ch, () => onChar(ch), '', 'črka ' + ch.toUpperCase())),
+      r === 2 ? key('⌫', onBack, 'wide back', 'Briši črko') : null,
+      r === 2 && extra ? key(extra.label, extra.fn, 'wide primary') : null)));
+}
+const cwKeyboard = () => vkbd({
+  onChar: ch => { if (B && B.cw) cwType(ch); },
+  onBack: () => { if (B && B.cw) cwBackspace(); },
+  extra: { label: 'Naprej ▸', fn: () => { if (B && B.cw) cwNext(); } } });
+const TRAP_MAX = 12;
+const trapKeyboard = () => vkbd({
+  onChar: ch => { const f = UI.trapInput; if (f && f.value.length < TRAP_MAX) f.value += ch; },
+  onBack: () => { const f = UI.trapInput; if (f) f.value = f.value.slice(0, -1); } });
+
+// A phone app that goes to the background (call, notification, home button) pauses itself.
+document.addEventListener('visibilitychange', () => { if (document.hidden && !held()) setPause(true); });
+
+// The Android app's back button (android/app/src/main/java/.../MainActivity.java) asks the game
+// what to do. It answers 'exit' only on the start screen; everywhere else back pauses a running
+// puzzle, resumes from the pause, closes an open panel or steps back to the start screen.
+window.zgBack = () => {
+  try {
+    if (G.tut) { closeTut(); return 'ok'; }
+    if (G.paused) { setPause(false); return 'ok'; }
+    if (S.overlayKey) { S.overlayKey(new KeyboardEvent('keydown', { key: 'Escape' })); return 'ok'; }
+    if (pausable()) { setPause(true); return 'ok'; }
+    if (S.screen === 'title') return 'exit';
+    if (S.ev && S.ev.done && (S.screen === 'chest' || S.screen === 'trap' || S.screen === 'darts')) { finishEvent(); return 'ok'; }
+    if (S.screen === 'result' || S.screen === 'hero') return 'ok';   // these move on with their own button
+    if (S.screen === 'ending') resetRun();
+    go('title');
+    return 'ok';
+  } catch (err) { console.error(err); return 'ok'; }
+};
 
 // ============================================================ global input + loop
 document.addEventListener('keydown', e => {

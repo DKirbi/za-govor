@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Za govor</string>
+    <string name="title_activity_main">Za govor</string>
+    <string name="package_name">com.dkirbi.zagovor</string>
+    <string name="custom_url_scheme">com.dkirbi.zagovor</string>
+</resources>

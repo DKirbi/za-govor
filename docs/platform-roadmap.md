@@ -37,8 +37,13 @@ binary DAWG; a full form list would be too big for low-end phones.
 
 ## 5. Three kinds of input
 - **Keyboard and mouse:** typing with a Slovene keyboard layout; č, š, ž are deliberate letters, c/s/z never stand in for them (players without the layout click tiles).
-- **Touch:** drag across tiles; crosswords use the native keyboard (proven in the
-  prototype); move the grid up when the keyboard opens.
+- **Touch:** drag across tiles and lift to send (no send button in the mesh); crosswords
+  and the rock slide use an **in-game Slovene keyboard** (QWERTZ, Č Š Ž as plain keys), not
+  the system keyboard. Decided 12 Nov 2026: the system keyboard covers half the screen,
+  autocorrects, hides Č Š Ž behind a long press, and is the weakest part of Godot's
+  Android export (LineEdit + virtual keyboard). The prototype's phone mode already works
+  this way, so the Godot version copies a tested design.
+- **Android back button:** pauses, closes a panel, steps back; exits only from the start screen.
 - **Controller (Steam Deck):** d-pad over the mesh, buttons for select / undo / send; for
   crosswords open Steam's on-screen keyboard or provide a controller-only letter picker.
   Deck Verified requires a default controller configuration that reaches everything.
@@ -53,6 +58,12 @@ binary DAWG; a full form list would be too big for low-end phones.
 | Android phones + tablets | Google Play Console account | New apps must target Android 16 (API 36); new personal accounts need a closed test with 12 testers opted in for 14 continuous days |
 | iPhone + iPad | A Mac with Xcode, same Apple membership | TestFlight for testers, then App Review |
 | Web demo | itch.io page | GDScript + Compatibility renderer only |
+
+## 6a. Android testing now (12 Nov 2026)
+The browser prototype is wrapped with Capacitor 8 (`android/`, target SDK 36, portrait)
+and GitHub Actions builds a debug APK on every push. That is the test channel until the
+Godot build exists. For testers beyond a sideloaded APK: Google Play internal testing
+needs a Play Console account, a release key and an AAB (`./gradlew bundleRelease`).
 
 ## 7. Automate builds
 Every push builds Windows, Linux, Android and web on Linux runners and macOS / iOS on a
