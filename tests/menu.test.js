@@ -108,7 +108,7 @@ run(async () => {
     tabs: [...document.querySelectorAll('.car-tab')].map(t => t.textContent), count: document.querySelector('.car-count').textContent,
     hidden: [...document.querySelectorAll('.car-slide')].map(s => s.getAttribute('aria-hidden') === 'true') }));
   check(/tipkovnica/.test(ht.tag) && ht.kbd > 15 && ht.groups.includes('Mreža črk') && ht.groups.includes('Križanka'), 'the desktop gets keyboard and mouse controls, grouped by puzzle', JSON.stringify(ht.groups));
-  check(ht.slides === 5 && ht.tabs.join() === 'Mreža,Križanka,Skrinja,Puščice,Plaz' && ht.count === '1 / 5' && ht.hidden.join() === 'false,true,true,true,true', 'the five puzzles are a carousel with one slide in view', JSON.stringify(ht));
+  check(ht.slides === 5 && ht.tabs.join() === 'Mreža,Križanka,Skrinja,Konice,Plaz' && ht.count === '1 / 5' && ht.hidden.join() === 'false,true,true,true,true', 'the five puzzles are a carousel with one slide in view', JSON.stringify(ht));
   await shot('menu-04-howto');
   await page.click('.car-nav .car-btn:last-child'); await sleep(700);
   await page.keyboard.press('ArrowRight'); await sleep(700);

@@ -386,6 +386,7 @@ def svetisce(f):
 
 
 def puscice(f):
+    # Past s konicami: a stone wall with three slots; broad iron spikes push out of them and pull back
     c = Cv(48)
     st, st2, hi = '#8f8a7c', '#6a665c', '#bdb9ac'
     c.r(22, 6, 45, 45, st); c.r(22, 6, 45, 7, hi)
@@ -393,10 +394,10 @@ def puscice(f):
         c.l([(22, y), (45, y)], st2)
         for x in range(26 + off, 45, 12): c.l([(x, y - 7), (x, y)], st2)
     for i, y in enumerate((12, 22, 32)):
-        c.r(24, y - 1, 27, y + 2, '#1d1410')                         # the holes the darts fly from
-        x = 6 + (i * 5 + (4 if f else 0)) % 12
-        c.l([(x, y), (x + 13, y)], '#7a4d2a'); c.p([(x - 3, y), (x, y - 2), (x, y + 2)], '#d5dde3')
-        c.p([(x + 13, y), (x + 16, y - 2), (x + 16, y + 2)], '#b8322f')
+        c.r(24, y - 2, 27, y + 2, '#1d1410')                                # the slot the spikes come out of
+        out = 45 if (i + f) % 2 == 0 else 40                                 # frames alternate: out, then pulled back
+        c.p([(27, y - 4), (out, y), (27, y + 4)], '#9aa3ad')                 # iron spike, broad at the base
+        c.l([(28, y - 2), (out - 3, y)], '#e3e8ed')                          # highlight on the metal
     c.dots([(30, 44), (36, 43), (41, 44)], '#4f8a3a')
     return c.outline()
 
