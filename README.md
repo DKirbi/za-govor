@@ -6,8 +6,8 @@ your heroes attack, solve crosswords to speak a *zagovor* (a folk charm), and fi
 creatures of Slovene folklore on the way to the dragon. The game is
 inspired by [Words for Evil](https://store.steampowered.com/app/335790/Words_for_Evil/)
 (Chromosphere Games / Dylan Loney, 2014) and exists to show how rich and playful the
-Slovene language is. The game says so itself: on the start screen, after the final battle,
-and on its *Zasluge* (credits) screen.
+Slovene language is. The game says so itself: on its *O igri* page (*Navdih* and *Zasluge*)
+and after the final battle.
 
 > **Slovensko:** *Za govor* je besedna igra s prvinami igre vlog v slovenščini. Junaki iz
 > slovanske mitologije se bojujejo z besedami: iz mreže črk sestavljaš besede, rešuješ
@@ -55,6 +55,14 @@ The interface is in Slovene. On a phone or tablet the *Mobilni prikaz* layout sw
 by itself; the switch in the top bar changes it at any time.
 
 ## How it plays
+**The start screen is a short menu:** *Nadaljuj pot* (while a journey is under way, with the
+region it stopped in), *Nova pot*, *Dosežki in junaki*, *Kako igrati* and *O igri*. Every
+page under it has **← Nazaj na glavni meni** at the top; `Esc` and the Android back button
+do the same. *Nova pot* is where the difficulty is chosen (see
+[Two difficulty choices](#two-difficulty-choices)), then the first hero. *Kako igrati* lists
+the controls of the current device (keyboard and mouse, or touch) and shows every puzzle in a
+carousel; *O igri* holds the description, the credits and *Prijavi manjkajočo besedo*.
+
 The game is **one side-scrolling journey** through places in Slovenia. You choose one hero
 and walk; the road stops you at enemies, chests, rock slides, wells, pedlars and other
 heroes. There is no level list — the road leads from region to region, and the dragon at
@@ -94,8 +102,8 @@ Ljubljana castle is the last battle.
   it with a solved example and the clock waits until you press *Začni*. `Esc` pauses any
   timed screen; while paused the letters are blurred. *Cel zaslon* in the top bar goes
   fullscreen, and on desktop the game scales so the scene and the puzzle fit the window.
-- **Test mode** (a switch on the start screen) starts with 200 gold and lets you skip stops
-  and regions.
+- **Test mode** (a developer switch on *Nova pot*) starts with 200 gold, offers every hero
+  and lets you skip stops and regions.
 
 ### Battles: the letter mesh
 - A 5×6 grid of Slovene letters (Scrabble letter distribution, balanced vowels). Chain
@@ -140,9 +148,10 @@ journey).
 | **Veles** (god) | Hardest hits, poison | Kačji pik → Medvedja šapa → Korenine sveta |
 
 Each hero has their own health bar and levels up to level 3 (more health, stronger
-attacks, extra power for long words). The gallery (*Liki, predmeti in ozadja* on the start
-screen) shows every hero with sprites, cards and backstory, the road objects, all items and
-the ten backgrounds.
+attacks, extra power for long words). *Dosežki in junaki* lists every hero: the ones you
+have met open their card and backstory, the others are silhouettes. A developer link there
+opens the full gallery with sprites, cards, road objects, all items and the ten backgrounds.
+Achievements have their place on the same page but none exist yet.
 
 ### Enemies
 Enemies attack in real time, telegraphed by a glowing wind-up. Their strongest moves
@@ -202,11 +211,15 @@ everyone).
 - **Bag:** `T` on the road, `3` in a battle. It only shows what you carry; the heroes use it themselves.
 
 ### Two difficulty choices
+Both are chosen on *Nova pot*, before the first hero, and hold for the whole journey: the
+choices only count once the journey starts, so looking at *Nova pot* in the middle of a
+journey changes nothing. The last choices are remembered for the next journey.
+
 **Pace** (*Težavnost*): **real-time** (recommended) has no countdown — enemies attack at
 their own pace and wear the party down; **calm mode** (*mirni način*) only lets enemies act
-after you play words.
+after you play words (they strike every few moves).
 
-**Knowledge** (*Znanje*), chosen below the pace and remembered between visits:
+**Knowledge** (*Znanje*), chosen below the pace, each with its own pixel figure:
 
 | | Malček (baby) | Učenjak (scholar) | Knjižni molj (book worm) |
 | --- | --- | --- | --- |
@@ -253,7 +266,7 @@ so players will meet real Slovene words it does not know. The game helps catch t
   mesh, the chest, the rock slide and darts. The first rejection of a visit says where to
   report it.
 - **Prijavi besedo** in the pause window (`Esc` / *Premor*) and **Prijavi manjkajočo
-  besedo** on the start screen list those words; one tap reports a word, with an optional
+  besedo** on *O igri* list those words; one tap reports a word, with an optional
   note (meaning, dialect). A word can also be typed. Words the game already knows are not sent.
 - **Reports go to a Google Form**, whose answers land in a spreadsheet, with an e-mail per
   answer. They carry only the word, where it was turned down, the note, and the level,
@@ -280,6 +293,7 @@ Confirmed words go into `data/allow.json` (lemma → forms); then rebuild the wo
 ## Controls
 | Action | Keyboard | Mouse / touch |
 | --- | --- | --- |
+| Start menu | `↑` `↓` and `Enter`; `Esc` goes back from any page under it | Tap; *← Nazaj na glavni meni* at the top of every page |
 | Make a word | Type it; the path is found for you. Č, Š, Ž must be typed as themselves (a Slovene keyboard layout), c/s/z never stand in for them | Drag across tiles, or tap them one by one |
 | Send the word | `Enter` | Lift the finger after a drag, or tap the last letter again (*Pošlji* on desktop, and in chest, rock slide and darts) |
 | Clear the word | `Delete` | *Počisti* |
@@ -290,7 +304,7 @@ Confirmed words go into `data/allow.json` (lemma → forms); then rebuild the wo
 | Walk on the road, confirm a stop | `→` or `Enter` (`Esc` = walk past, `T` = bag) | *Naprej* and the buttons of the stop |
 | Crossword: reveal a letter | `?` | *Razkrij črko* |
 | Crossword: next entry, move | `Enter` or `Tab`, arrow keys | Tap a cell or a clue; type on the in-game keyboard, *Naprej* for the next word |
-| Android back button | — | Pauses a puzzle, closes a panel, steps back to the start screen; leaves the app only from there |
+| Android back button | — | Pauses a puzzle, closes a panel, steps back (hero choice → *Nova pot* → menu); leaves the app only from the menu |
 
 ## Build from source
 `dist/index.html` is built from the files in `src/` and `data/` by a small Python script
@@ -334,18 +348,19 @@ The tests open the built page in headless Chrome and play it through a test hook
 ```sh
 npm install
 python3 build.py
-npm test                                  # all nine test files
+npm test                                  # all ten test files
 CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 ```
 
 | File | What it checks |
 | --- | --- |
 | `tests/crossword-generator.test.js` | 4,200 generated crosswords on all three levels: no letter clashes or stray letters, connected grids, everything fits 9×9, only that level's clue banks, short words in enemy crosswords, the gold column spells the keyword |
-| `tests/levels.test.js` | Each knowledge level: chosen and saved on the title screen, hints and proposals, word count and coaching tips, shortest word, crossword bank, letter counts, revealed letters (and half power), mouse clicks reaching the crossword |
+| `tests/levels.test.js` | Each knowledge level: chosen on *Nova pot* and saved when the journey starts, hints and proposals, word count and coaching tips, shortest word, crossword bank, letter counts, revealed letters (and half power), mouse clicks reaching the crossword |
 | `tests/keyword.test.js` | Guessing the keyword early ends the crossword and fires the zagovor; in Povodni mož's whirlpool *urska* with a plain s stays black and *urška* breaks it |
 | `tests/phone.test.js` | On a 390×844 touch screen: the mesh sends without *Pošlji* (second tap, lifted drag, non-words clear), the in-game keyboard types crosswords and the rock slide with the system keyboard closed, wrong entries stay black and correct ones fire, chest partial rewards, darts fit 360 px, *Premor*, and the Android back button |
-| `tests/credits.test.js` | Words for Evil is credited on the start screen, the *Zasluge* screen (with every source and a Steam link) and the ending; the line fits a 360 px phone; Esc and the Android back button leave the credits |
-| `tests/report.test.js` | *Prijavi besedo*: rejected words are remembered (mesh, chest), the pause screen and start screen list them, one tap posts word, place, note and level to the Google Form (intercepted), typing works while paused, known words are not sent, the queue waits without a form and goes out once there is one, lists survive a reload, the panel fits a 360 px phone; *jasa* and base forms are accepted |
+| `tests/menu.test.js` | The start menu: items with and without a journey, `↑` `↓` `Enter` `Esc`, *← Nazaj na glavni meni* on every page; *Nova pot* copy, figures, *Predlogi besed* under Malček only, explanations on by default, test mode as a developer option, choices that only count once the journey starts; *Kako igrati* controls per device and the puzzle carousel (buttons, keys, tabs, swipe); heroes and their cards; no *Nadaljuj pot* after the ending; phone fit and the Android back button |
+| `tests/credits.test.js` | Words for Evil is credited on *O igri* (*Navdih*, then *Zasluge* with every source and a Steam link) and on the ending, whose link opens *O igri* at *Navdih*; the line fits a 360 px phone; Esc and the Android back button leave the credits |
+| `tests/report.test.js` | *Prijavi besedo*: rejected words are remembered (mesh, chest), the pause screen and *O igri* list them, one tap posts word, place, note and level to the Google Form (intercepted), typing works while paused, known words are not sent, the queue waits without a form and goes out once there is one, lists survive a reload, the panel fits a 360 px phone; *jasa* and base forms are accepted |
 | `tests/journey.test.js` | The road: choosing the first hero, walking to a stop, one enemy for one hero, no healing after a battle, a hero joining, the chest's gold and item, the well, the pedlar, using a potion, the bag pausing the battle, the shrine and the one-god rule, swapping with a full party, all 45 hero moves, the dragon and the ending |
 | `tests/lexicon.test.js` | The word list in the browser: over a million forms accepted and a common part suggested, the 217-word coverage set accepted and its non-words (Croatian, English, made up) refused, the reported words (*jasa*, *loj*, *runa*, *seks*) and *ritem*/*ritual*/*riti*, vulgar words accepted but never suggested, mythology names, *deny.json*, non-standard forms, base forms (*ljudje* → *človek*), headwords Sloleks lacks (*zborišča*, *sedemkotnik*), and at 4× slower CPU a mesh walk under 50 ms and a lookup under 20 µs |
 | `tests/desktop.test.js` | A keyboard playthrough: c/s/z are not accepted for č/š/ž, first battle, result and hero screens, chest, finisher, Lintvern's letter lock and forced crossword, ambush, rock slide, and no console errors anywhere |
@@ -364,8 +379,9 @@ za-govor/
 │   ├── journey.js            # the road: regions, stops, party, items, pedlar, bag, darts
 │   ├── playtest.js           # pause, puzzle intros, fullscreen, fit to screen
 │   ├── mobile.js             # phone specifics: in-game keyboard, haptics, Android back button
-│   ├── credits.js            # Zasluge: the Words for Evil credit and every source
+│   ├── credits.js            # Navdih and Zasluge: the Words for Evil credit and every source
 │   ├── report.js             # Prijavi besedo: rejected words, reports to a Google Form
+│   ├── menu.js               # the start menu and its pages: Nova pot, Dosežki in junaki, Kako igrati, O igri
 │   ├── art-extra.js          # generated pixel art (tools/art_extra.py)
 │   └── game.css              # styles, desktop and phone layouts
 ├── android/                  # Capacitor 8 Android project (npm run android:open)
@@ -387,7 +403,7 @@ za-govor/
 │   ├── xref_sources.py       # cross-reference: what each dictionary has that the game does not accept
 │   ├── check_reports.py      # checks the words players reported (CSV from the form's Sheet)
 │   ├── cluebank.py           # the three clue banks; validates and builds data/clues.json
-│   ├── art_extra.py          # draws the new heroes, road objects, item icons and backgrounds (needs Pillow)
+│   ├── art_extra.py          # draws the new heroes, road objects, item icons, backgrounds and knowledge-level figures (needs Pillow)
 │   └── readme-shots.js       # regenerates docs/images/
 ├── tests/                    # headless Chrome tests (puppeteer-core)
 └── docs/
