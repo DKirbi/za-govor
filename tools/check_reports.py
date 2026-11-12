@@ -2,26 +2,28 @@
 
     python3 tools/check_reports.py responses.csv                  # CSV downloaded from the form's Sheet
     python3 tools/check_reports.py jasa jase kozolček             # or words straight on the command line
-    python3 tools/check_reports.py responses.csv --lexicon sloleks-forms.txt --lexicon hunspell-forms.txt
+    python3 tools/check_reports.py responses.csv --lexicon hunspell-forms.txt   # extra word lists to look in
 
 For every reported word (counted once per report, case-insensitive) it prints how often it was
 reported, where it was turned down, any notes, and its status:
 
-  v igri          the game accepts it now (added since, or a misreport)
-  v <lexicon>     not in the game, but found in a word list given with --lexicon (one word per line),
-                  for example the forms extracted from Sloleks: a safe candidate for data/allow.json
+  v igri          the game accepts it now (added since, or a misreport); its base form is shown
+  v <lexicon>     not in the game, but found in a word list given with --lexicon (one word per line)
   manjka          found nowhere: check it by hand on Fran.si (the link is printed)
 
-Reviewed words go into data/allow.json (lemma: [forms]); then run tools/build_dict.py and build.py.
+The game's list is data/lexicon.bin (all of Sloleks 3.1, plus Franček and thesaurus headwords
+that Sloleks lacks), so most reports should be "v igri"
+or "manjka". Reviewed words go into data/allow.json (lemma: [forms]); then run
+tools/build_lexicon.py and build.py.
 """
 import csv, json, pathlib, sys, collections, urllib.parse
+from lexicon import Lexicon
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 LETTERS = set('abcčdefghijklmnoprsštuvzž')
 
 def game_words():
-    d = json.loads((ROOT / 'data' / 'dict.json').read_text(encoding='utf-8'))
-    return {f for forms in d.values() for f in forms}
+    return Lexicon.load(ROOT / 'data' / 'lexicon.bin')
 
 def clean(w):
     w = (w or '').strip().lower()
@@ -59,16 +61,16 @@ def main(argv):
     order = sorted(seen.items(), key=lambda kv: (-kv[1]['n'], kv[0]))
     status = {}
     for w, _ in order:
-        if w in game: status[w] = 'v igri'
+        if w in game: status[w] = 'v igri' + ('' if game.lemma(w) == w else f' ({game.lemma(w)})')
         else: status[w] = next((f'v {name}' for name, words in lexicons if w in words), 'manjka')
     print(f'{len(order)} reported words ({sum(e["n"] for _, e in order)} reports)\n')
     for w, e in order:
         where = ', '.join(f'{k} {v}×' if v > 1 else k for k, v in e['where'].most_common())
-        print(f'{w:<16} {e["n"]:>3}×  {status[w]:<14} {where}')
+        print(f'{w:<16} {e["n"]:>3}×  {status[w]:<22} {where}')
         for n in e['notes'][:3]: print(f'{"":>22}opomba: {n}')
         if status[w] == 'manjka': print(f'{"":>22}https://fran.si/iskanje?View=1&Query={urllib.parse.quote(w)}')
     if skipped: print(f'\nskipped (not one Slovene word): {", ".join(repr(s) for s in skipped[:20])}')
-    todo = [w for w, _ in order if status[w] != 'v igri']
+    todo = [w for w, _ in order if not status[w].startswith('v igri')]
     if todo:
         print('\nCandidates for data/allow.json (add every form you confirm):')
         print(json.dumps({w: [w] for w in todo}, ensure_ascii=False, indent=2))
