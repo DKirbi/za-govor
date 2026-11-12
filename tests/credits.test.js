@@ -21,7 +21,7 @@ run(async () => {
   check(/Words for Evil/.test(cr.text) && /Chromosphere Games/.test(cr.text) && /Dylan Loney/.test(cr.text) && /2014/.test(cr.text), 'the credits name Words for Evil, Chromosphere Games, Dylan Loney and 2014');
   check(/ni uradno povezana/.test(cr.text), 'the credits say Za govor is not officially connected to its authors');
   check(cr.link && cr.newTab, 'the credits link to Words for Evil on Steam in a new tab');
-  check(['simplemma', 'wordfreq', 'ZzFX', 'Capacitor', 'Monike Kropej'].every(s => cr.text.includes(s)), 'the credits list the word list, sound, Android wrapper and folklore sources');
+  check(['Sloleks 3.1', 'CC BY-SA 4.0', 'Franček', 'Tezavra sodobne slovenščine', 'ZzFX', 'Capacitor', 'Monike Kropej'].every(s => cr.text.includes(s)), 'the credits list the word list (Sloleks, Franček, thesaurus), sound, Android wrapper and folklore sources');
   await shot('credits-02-screen');
   await page.keyboard.press('Escape'); await sleep(150);
   check(await page.evaluate(() => window.__ZG.S.screen) === 'title', 'Esc goes back to the start screen');

@@ -1,0 +1,15 @@
+{
+  "_about": "Hand-picked coverage set from the 11 Nov 2026 dictionary exploration: valid Slovene words of mixed rarity (incl. inflected and dual forms) and non-words (Croatian, English, made up). tools/build_lexicon.py reports coverage on it; tests/lexicon.test.js asserts it. ritaš moved to valid on 12 Nov 2026: it is a form of ritati (to kick).",
+  "valid": {
+    "user reports": "loj loja lojem runo runa runom rune runami seks seksa jasa",
+    "blocked by prefix": "ritem ritma ritmu ritual rituala riti rijem rije ritaš",
+    "food": "žganci žgancev štrukelj štruklji štruklje kaša kaše jota jote kremšnita kremšnite krvavica krvavice pečenica gibanica gibanice skuta skute burek bureka satje satja vosek voska medica",
+    "farm & craft": "kozolec kozolca kozolci brana brane motika motiko srp srpa cepec cepca jerbas jerbasa kolovrat kolovrata preja preje panj panja smola smole konoplja",
+    "nature": "brinje bezeg bezga jelša jelše leska leske lešnik lešniki macesen macesna jasa jase poseka soteska soteske brlog brloga jazbec jazbeca dihur dihurja polh polha polhi srnjak gams gamsa kozorog kozoroga šoja šoje žolna žolne detel detla krokar krokarja čuk čuka kragulj sulec sulca postrv postrvi ščuka ščuke krap krapa močerad močerada modras modrasa belouška oven ovna",
+    "verbs": "plesti pletem plete presti predem prede žeti žanjem orati orjem orje sejati sejem cvreti cvrem krasti kradem gristi grizem tolči tolčem vreči vržem leči ležem tepsti tepem česati češem klati koljem gnesti gnetem mesti metem pekel",
+    "adjectives": "bridek bridka krotek krotka srdit srdita čemeren čemerna potuhnjen prebrisan zvit zvita kosmat kosmata",
+    "folklore": "vila vile rojenica rojenice sojenica sojenice vedomec vedomca škrat škratje kurent kurenta korant koranta mora more kresnik kresnika kres kresovanje pust pusta maškara maškare zagovor zagovora urok uroka čarovnica čarovnice vrag vraga hudič hudiča palček palčka velikan velikana",
+    "dual forms": "volkova hišama rokama nogama očesi ušesi"
+  },
+  "invalid": "lojk gramba sekso brlat grumpa tramd kuća nešto lijepa djevojka mlijeko sutra house because the"
+}

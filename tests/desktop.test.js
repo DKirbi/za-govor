@@ -123,7 +123,7 @@ run(async () => {
   // Rock slide: type a word containing a falling rock's letter
   await page.evaluate(() => window.__ZG.go('trap', window.__ZG.NODES[3])); await sleep(4200);
   const rocks = await page.evaluate(() => window.__ZG.S.ev.rocks.filter(r => r.state === 'fall').map(r => r.ch));
-  const word = await page.evaluate(ch => [...window.__ZG.WORDS].find(w => w.includes(ch) && w.length === 5), rocks[0]);
+  const word = await page.evaluate(ch => window.__ZG.LEX.suggestedWords(5, 5).find(w => w.includes(ch)), rocks[0]);
   for (const ch of word) await page.keyboard.type(ch);
   await page.keyboard.press('Enter'); await sleep(300);
   const slide = await page.evaluate(() => { const E = window.__ZG.S.ev; return { broken: E.broken, missed: E.rocks.filter(r => r.state === 'hit').length, dmg: E.dmg, done: E.done, n: E.rocks.length }; });
