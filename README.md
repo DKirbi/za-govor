@@ -1,4 +1,6 @@
-# Za govor
+# Za govor!
+
+<p><img src="docs/images/title.gif" alt="Title screen: the gold pixel wordmark Za govor! with a red heart as the dot, a ribbon reading besedna igra s slovanskimi bogovi, hovering over Triglav at dusk; a lake with an island church, a linden, a kozolec and a bonfire; sparks rise from the letters" width="720"></p>
 
 **A Slovene word-puzzle RPG with heroes from Slavic mythology and Slovene folklore.** Walk
 across Slovenia from Ptuj to Ljubljana castle, chain letters into Slovene words to make
@@ -9,12 +11,12 @@ inspired by [Words for Evil](https://store.steampowered.com/app/335790/Words_for
 Slovene language is. The game says so itself: on the start screen, after the final battle,
 and on its *Zasluge* (credits) screen.
 
-> **Slovensko:** *Za govor* je besedna igra s prvinami igre vlog v slovenščini. Junaki iz
+> **Slovensko:** *Za govor!* je besedna igra s prvinami igre vlog v slovenščini. Junaki iz
 > slovanske mitologije se bojujejo z besedami: iz mreže črk sestavljaš besede, rešuješ
 > križanke in odpiraš skrinje. Igra želi pokazati, kako bogata in igriva je slovenščina.
 
 The name is a play on words: read as one word, *zagovor* is a spoken charm; read as two,
-*za govor* means "for speech".
+*za govor* means "for speech". The exclamation mark makes it a call: speak up, in Slovene.
 
 **Status:** playable browser prototype of the whole journey and all the mini-games (one page, no install). The
 full game is planned in Godot 4.7 for Windows, macOS, Linux, Android and iOS — see
@@ -306,6 +308,7 @@ The generated data files are committed, so this is all you need. To regenerate t
 python3 tools/build_lexicon.py ~/Downloads/SlovenianResource   # word list -> data/lexicon.bin (~1.5 min the first time)
 python3 tools/xref_sources.py ~/Downloads/SlovenianResource    # what each dictionary has that the game does not accept
 python3 tools/cluebank.py     # crossword clues   -> data/clues.json (validates every clue on every level)
+python3 tools/art_title.py    # title scene       -> src/art-title.js (--preview writes test-output/title-scene.png)
 python3 build.py
 ```
 
@@ -334,7 +337,7 @@ The tests open the built page in headless Chrome and play it through a test hook
 ```sh
 npm install
 python3 build.py
-npm test                                  # all nine test files
+npm test                                  # all ten test files
 CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 ```
 
@@ -348,6 +351,7 @@ CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 | `tests/report.test.js` | *Prijavi besedo*: rejected words are remembered (mesh, chest), the pause screen and start screen list them, one tap posts word, place, note and level to the Google Form (intercepted), typing works while paused, known words are not sent, the queue waits without a form and goes out once there is one, lists survive a reload, the panel fits a 360 px phone; *jasa* and base forms are accepted |
 | `tests/journey.test.js` | The road: choosing the first hero, walking to a stop, one enemy for one hero, no healing after a battle, a hero joining, the chest's gold and item, the well, the pedlar, using a potion, the bag pausing the battle, the shrine and the one-god rule, swapping with a full party, all 45 hero moves, the dragon and the ending |
 | `tests/lexicon.test.js` | The word list in the browser: over a million forms accepted and a common part suggested, the 217-word coverage set accepted and its non-words (Croatian, English, made up) refused, the reported words (*jasa*, *loj*, *runa*, *seks*) and *ritem*/*ritual*/*riti*, vulgar words accepted but never suggested, mythology names, *deny.json*, non-standard forms, base forms (*ljudje* → *človek*), headwords Sloleks lacks (*zborišča*, *sedemkotnik*), and at 4× slower CPU a mesh walk under 50 ms and a lookup under 20 µs |
+| `tests/title.test.js` | The title scene: the *Za govor!* heading and tab title, whole-number scaling (3× at 1280 px, 4× at 1920, 2× on a phone), square wordmark pixels, full width with no sideways scrolling (also at an odd width), right under the top bar, room left for the menu, sparks rising in whole art pixels and not restarting when the start screen is rebuilt, a still picture with reduced motion |
 | `tests/desktop.test.js` | A keyboard playthrough: c/s/z are not accepted for č/š/ž, first battle, result and hero screens, chest, finisher, Lintvern's letter lock and forced crossword, ambush, rock slide, and no console errors anywhere |
 
 Screenshots from each run land in `test-output/` (ignored by git).
@@ -367,6 +371,9 @@ za-govor/
 │   ├── credits.js            # Zasluge: the Words for Evil credit and every source
 │   ├── report.js             # Prijavi besedo: rejected words, reports to a Google Form
 │   ├── art-extra.js          # generated pixel art (tools/art_extra.py)
+│   ├── art-title.js          # generated title art: scene layers, wordmark, ribbon (tools/art_title.py)
+│   ├── title.js              # the title scene: whole-pixel scaling, sparks, fireflies, layout
+│   ├── title.css             # the title scene's layers and motion
 │   └── game.css              # styles, desktop and phone layouts
 ├── android/                  # Capacitor 8 Android project (npm run android:open)
 ├── capacitor.config.json     # app id, name, webDir: dist
@@ -388,6 +395,7 @@ za-govor/
 │   ├── check_reports.py      # checks the words players reported (CSV from the form's Sheet)
 │   ├── cluebank.py           # the three clue banks; validates and builds data/clues.json
 │   ├── art_extra.py          # draws the new heroes, road objects, item icons and backgrounds (needs Pillow)
+│   ├── art_title.py          # draws the title scene, the Za govor! wordmark and its ribbon (needs Pillow)
 │   └── readme-shots.js       # regenerates docs/images/
 ├── tests/                    # headless Chrome tests (puppeteer-core)
 └── docs/

@@ -1,4 +1,4 @@
-# Za govor — concept summary (updated 12 Nov 2026)
+# Za govor! — concept summary (updated 12 Nov 2026)
 
 Full concept doc: https://claude.ai/artifact/SNNktnteBoppi5M4PMkzFF
 Playable UX prototype (browser; all party heroes and enemies have sprites, cards and sound): https://claude.ai/artifact/NTdMnud7X8Um2p38G1fVnb
@@ -64,6 +64,13 @@ Playable UX prototype (browser; all party heroes and enemies have sprites, cards
 - **Enemy sprites** (face the party; lunge towards it when they attack): Škrat (small, red cap, white beard, pickaxe, bites), Mora (floating, long black hair, glowing eyes, reaching claws), Volkodlak (grey werewolf, red eyes, torn trousers, claw swipe), Vodna vila (teal hair with a water lily, dress turning into a wave), Povodni mož (64×64 boss: green, scaly, water-weed beard, fin ears), Lintvern (64×64 boss: green dragon, red wings, arrow tail, fire breath).
 - **Hero cards:** Mokoš: Kapljica (bust, one drop, carnation) → Vir (spring, wheat, tree) → Materina roka (rainbow, wheat, cow, painted beehive). Kresnik: Žerjavica (bust at dusk) → Plamen (bonfire at night) → Kresni ogenj (midsummer night: bonfire, burning wheel rolling downhill, fern flower).
 - **Enemy cards:** dark frame with a white lace-dot border; one painting for the plain attack and a second for the special move: Škrat (Ugriz only), Mora (Dušenje / Uspavanka — she sits on the sleeper's chest), Volkodlak (Zobje / howling at the full moon when he feeds on a repeated word), Vodna vila (Val / Poplava with letter tiles washed away), Povodni mož (Objem vode / Vrtinec with letters in a whirlpool), Lintvern (tail strike before Ljubljana castle / Ognjeni dih with the castle burning).
+
+## Title and name (12 Nov 2026)
+- **Name:** *Za govor!*, with an exclamation mark (tab title, start screen, credits, Android app name). In running Slovene text it is set in italics: *Za govor!* je nastal …
+- **Wordmark:** hand-drawn pixel letters (149 × 39 art px): gold-to-ember bands, a white top edge, a 3 px dark-ember extrusion, dark outline; the dot of the exclamation mark is a red lect heart. Under it a parchment ribbon with its own tiny pixel font: *besedna igra s slovanskimi bogovi*.
+- **Scene** (480 × 160, reference: the Evoland title): dusk over a Slovene valley. Triglav in the middle with the sun setting behind it, the Julian Alps, a lake with an island church, a linden framing the left, a kozolec (toplar) on the right, a kres (bonfire) with two people on the shore, stars and a crescent moon.
+- **Motion:** the wordmark hovers in one-pixel steps with a warm aura, sparks rise from the letters (like the motes around a hero's spirit), embers from the kres, fireflies, falling linden leaves, drifting clouds and mist, twinkling stars, light on the water. Everything moves in whole art pixels; reduced motion shows a still picture.
+- **Layout:** full window width at a whole-number scale (2× phone, 3× at 1280 px, 4× at 1920 px), never taller than ~72% of the screen; the bottom fades into the dark page so the menu below keeps its contrast. Self-contained (`titleStage()` in `src/title.js`), so the redesigned start menu can sit under it.
 
 ## Audio (11 Nov 2026)
 - **What Words for Evil used:** its credits list music by Kevin MacLeod (incompetech.com) — calm royalty-free tracks; no separate sound-effects credit is listed. Reviews describe the soundtrack as calm, changing with the region.
