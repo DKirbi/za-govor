@@ -147,8 +147,8 @@ const TUT = {
   mesh: () => ({ title: 'Mreža črk', lead: 'Iz sosednjih črk sestavi slovensko besedo. Vsaka beseda je napad na sovražnika.', fig: figMesh(), calm: S.mode !== 'real',
     time: S.mode === 'real' ? 'Sovražniki napadajo sproti. Ko sovražnik zažari, sledi udarec, zato so hitre besede vredne več kot popolne.' : 'V mirnem načinu sovražniki počakajo na tvojo besedo.',
     steps: [
-      S.mobile ? ['Vleci ali tapkaj po sosednjih črkah, tudi poševno.'] : ['Tipkaj besedo; pot po sosednjih črkah se poišče sama. Lahko tudi vlečeš z miško.'],
-      S.mobile ? [`Pritisni Pošlji. Beseda ima vsaj ${MINW()} črke; daljša udari močneje.`] : [K('Enter'), ` pošlje besedo. Imeti mora vsaj ${MINW()} črke; daljša udari močneje.`],
+      S.mobile ? ['Vleci s prstom po sosednjih črkah, tudi poševno.'] : ['Tipkaj besedo; pot po sosednjih črkah se poišče sama. Lahko tudi vlečeš z miško.'],
+      S.mobile ? [`Spusti prst in beseda se pošlje. Imeti mora vsaj ${MINW()} črke; daljša udari močneje. Pri tapkanju še enkrat tapni zadnjo črko.`] : [K('Enter'), ` pošlje besedo. Imeti mora vsaj ${MINW()} črke; daljša udari močneje.`],
       ['Barvne črke pripadajo junakom: ko jih uporabiš, napade junak te barve.'],
       S.mobile ? ['Vsaka črka polni zagovor. Ko je poln, gumb Izreci zagovor odpre križanko za mogočen udarec.'] : ['Vsaka črka polni zagovor. Ko je poln, ', K('presledek'), ' odpre križanko za mogočen udarec.']] }),
   finisher: () => tutCross('finisher'), lock: () => tutCross('lock'), ambush: () => tutCross('ambush'),

@@ -764,7 +764,7 @@ const NODES = [
     teach: 'Mreža črk, barve junakov, moč napada, izbira cilja.',
     battle: { enemies: ['skrat', 'skrat'], finishers: ['perun'], meterStart: 0, tips: [
       { until: 1, text: 'Vpiši besedo na tipkovnici ali vleci z miško čez sosednje črke, nato pritisni Pošlji ali Enter.',
-        m: 'Vleci s prstom čez sosednje črke ali jih tapkaj eno za drugo, nato pritisni Pošlji.' },
+        m: 'Vleci s prstom čez sosednje črke in spusti: beseda se pošlje sama. Če črke tapkaš, na koncu še enkrat tapni zadnjo.' },
       { until: 3, text: 'Barvne črke sprožijo junake: več črk iste barve pomeni močnejši napad. Daljša beseda pomeni večji množitelj.' },
       { until: 5, text: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Klikni sovražnika ali uporabi ←/→ za izbiro cilja.',
         m: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Tapni sovražnika, da ga izbereš za cilj.' },
@@ -984,7 +984,7 @@ function renderTitle() {
     h('div', { class: 'row', style: { 'justify-content': 'flex-start', 'flex-wrap': 'wrap' } },
       h('button', { class: 'btn primary', onclick: () => go('pick') }, 'Nova pot'), h('span', { class: 'muted', style: { 'align-self': 'center' } }, h('kbd', {}, 'Enter')),
       S.run ? h('button', { class: 'btn', onclick: () => go('travel') }, `Nadaljuj pot (${WORLD.regions[S.run.ri].name})`) : null),
-    h('div', { class: 'touch-help' }, 'Na telefonu: vleci ali tapkaj po sosednjih črkah, nato pritisni Pošlji. Tapni predlog, da ga izbereš. Pri križanki tapni mrežo in odpre se tipkovnica telefona.'),
+    h('div', { class: 'touch-help' }, 'Na telefonu: vleci po sosednjih črkah in spusti, beseda se pošlje sama (pri tapkanju še enkrat tapni zadnjo črko). Tap na predlog ga pošlje. Križanke in plaz tipkaš s slovensko tipkovnico v igri.'),
     h('div', { class: 'controls-help' },
       h('span', {}, h('kbd', {}, 'a–ž')), h('span', {}, 'tipkaj besedo; pot v mreži se poišče sama'),
       h('span', {}, 'miška'), h('span', {}, 'vleci čez sosednje črke ali klikaj eno za drugo (klik na zadnjo potrdi)'),
@@ -1153,6 +1153,7 @@ function buildBattleDom() {
   // On a phone the coach tip floats over the empty sky of the scene instead of taking a row,
   // so the letter grid keeps its place when the tip appears or goes away.
   const coach = h('div', { class: 'coach', ref: el => UI.coach = el });
+  UI.send = UI.clr = null;
   let battle;
   SCR.append(battle = h('div', { class: 'battle' },
     h('div', { class: 'bhead' },
@@ -1167,7 +1168,9 @@ function buildBattleDom() {
       h('div', { class: 'floats', ref: el => UI.floats = el })),
     h('div', { class: 'wordbar' },
       h('div', { class: 'word', ref: el => UI.word = el }),
-      h('button', { class: 'btn send', ref: el => UI.send = el, onclick: () => submitWord(), title: 'Pošlji izbrano besedo' }, 'Pošlji ', h('kbd', {}, 'Enter')),
+      // Phones have no Pošlji in the mesh: lifting the finger sends the word (or a second tap on its last letter).
+      S.mobile ? h('button', { class: 'btn clr', ref: el => UI.clr = el, onclick: () => clearWord(), 'aria-label': 'Počisti besedo', title: 'Počisti besedo' }, '✕')
+        : h('button', { class: 'btn send', ref: el => UI.send = el, onclick: () => submitWord(), title: 'Pošlji izbrano besedo' }, 'Pošlji ', h('kbd', {}, 'Enter')),
       h('div', { class: 'chips', ref: el => UI.chips = el }),
       h('div', { class: 'props', ref: el => UI.props = el }),
       h('div', { class: 'fb', ref: el => UI.fb = el }),
@@ -1256,10 +1259,6 @@ function renderSide() {
   if (S.mobile) {
     if (B.cw) { UI.side.append(cwKeyboard()); return; }   // the in-game Slovene keyboard (src/mobile.js)
     UI.side.append(
-      h('div', { class: 'actionbar' },
-        h('button', { class: 'btn', onclick: () => meshBackspace() }, '⌫ Briši'),
-        h('button', { class: 'btn', onclick: () => clearWord() }, 'Počisti'),
-        h('button', { class: 'btn primary', onclick: () => submitWord() }, 'Pošlji')),
       h('div', { class: 'actionbar2' },
         h('button', { class: 'btn zgbtn' + (full ? ' primary' : ''), disabled: !full, onclick: openFinisher },
           full ? null : h('i', { class: 'fill', style: { width: (100 * B.meter / METER_MAX) + '%' } }),
@@ -1495,13 +1494,15 @@ function renderWord() {
   if (B.cw) {
     UI.word.className = 'word'; UI.word.append(h('span', { class: 'ph' }, S.mobile ? 'Križanka je odprta — tipkaj s tipkami spodaj.' : 'Križanka je odprta — tipkaj v polja.'));
     if (UI.send) UI.send.style.visibility = 'hidden';
+    if (UI.clr) UI.clr.style.visibility = 'hidden';
     renderProposals(); return;
   }
   const shown = B.path.length ? pathWord(B.path) : B.typed;
   const valid = B.path.length >= MINW() && WORDS.has(pathWord(B.path));
   if (UI.send) { UI.send.style.visibility = ''; UI.send.disabled = !B.path.length; UI.send.classList.toggle('ready', valid); }
+  if (UI.clr) UI.clr.style.visibility = shown ? '' : 'hidden';
   UI.word.className = 'word' + (valid ? ' valid' : '') + (B.nopath && B.typed ? ' nopath' : '');
-  if (!shown) UI.word.append(h('span', { class: 'ph' }, S.mobile ? 'Vleci ali tapkaj po črkah …' : 'Tipkaj ali vleci čez črke …'));
+  if (!shown) UI.word.append(h('span', { class: 'ph' }, S.mobile ? 'Vleci čez črke in spusti …' : 'Tipkaj ali vleci čez črke …'));
   for (const ch of shown) UI.word.append(h('span', { class: 'lt' }, ch));
   if (B.nopath && B.typed) UI.chips.append(h('span', { class: 'chip', style: { '--c': 'var(--danger)' } }, 'ni poti v mreži'));
   if (B.path.length) {
@@ -1565,8 +1566,9 @@ function renderProposals() {
     return;
   }
   UI.props.append(h('span', { class: 'muted' }, 'Predlogi:'));
-  list.forEach(([w, { p }]) => UI.props.append(h('button', { class: 'prop', title: 'Izberi to besedo',
-    onclick: () => { B.path = p.slice(); B.typed = w; B.nopath = false; renderSelection(); } },
+  list.forEach(([w, { p }]) => UI.props.append(h('button', { class: 'prop', title: S.mobile ? 'Pošlji to besedo' : 'Izberi to besedo',
+    onclick: () => { B.path = p.slice(); B.typed = w; B.nopath = false; renderSelection();
+      if (S.mobile) { const b = B, key = p.join(); setTimeout(() => { if (B === b && B.path.join() === key) submitWord(); }, 380); } } },
     UP(w), h('span', { class: 'dots' }, p.filter(i => ownerActive(B.grid[i])).map(i => h('i', { style: { '--c': HEROES[B.grid[i].owner].c } }))))));
   UI.props.append(h('button', { class: 'prop-x', title: 'Skrij predloge', onclick: () => { S.suggest = false; renderProposals(); fb('Predlogi so skriti. Vklopiš jih na začetnem zaslonu.', 'warn'); } }, '×'));
 }
@@ -1642,7 +1644,11 @@ function submitWord() {
   if (!B.path.length) { if (B.typed) fb(`Za »${UP(B.typed)}« ni poti v mreži.`, 'err'); return; }
   const w = pathWord(B.path);
   if (w.length < MINW()) { fb(`Beseda mora imeti vsaj ${MINW()} črke.`, 'warn'); return; }
-  if (!WORDS.has(w)) { fb(`»${UP(w)}« ni v slovarju.`, 'err'); shakeEl(UI.word); return; }
+  if (!WORDS.has(w)) {
+    fb(`»${UP(w)}« ni v slovarju.`, 'err'); shakeEl(UI.word);
+    if (S.mobile) { const b = B, p = B.path.join(); setTimeout(() => { if (B === b && !B.over && B.path.join() === p) clearWord(); }, 650); }
+    return;
+  }
   resolveWord(w, B.path.slice());
 }
 
