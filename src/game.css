@@ -145,6 +145,7 @@ h1, h2, h3 { margin: 0; }
 .word.nopath .lt { background: color-mix(in srgb, var(--danger) 30%, var(--panel2)); }
 .word .ph { color: var(--faint); }
 .chips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.chip b { font-size: 10px; font-weight: 800; letter-spacing: .04em; margin-right: 4px; text-transform: uppercase; }
 .chip { font-size: 12px; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--c, var(--line)); color: var(--c, var(--dim)); white-space: nowrap; }
 .fb { grid-column: 1 / -1; font-size: 13px; min-height: 18px; color: var(--dim); }
 .fb.ok { color: var(--good); } .fb.warn { color: var(--gold); } .fb.err { color: var(--danger); }
@@ -550,7 +551,12 @@ body.mobile .gbg { grid-template-columns: 1fr; }
 .face.front .plate { padding: 8px 12px; display: grid; gap: 4px; align-content: center; }
 .face.front .plate b { font-size: 20px; } .face.front .plate span { font-size: 12.5px; }
 .face.front .mv { display: flex; gap: 6px; flex-wrap: wrap; font-family: system-ui, sans-serif; font-size: 11px; }
-.face.front .mv em { font-style: normal; border: 1px solid #2a1a12; border-radius: 99px; padding: 0 7px; background: #fff7; }
+.face.front .mv { display: flex; flex-wrap: wrap; gap: 6px; }
+/* the card's skills: filled when the hero knows them, outlined (dashed, faint) when not yet; a star per upgrade */
+.face.front .mv em { font-style: normal; border: 1.5px solid #2a1a12; border-radius: 99px; padding: 3px 11px; line-height: 1.3; }
+.face.front .mv em.on { background: #2a1a12; color: #f6efdc; }
+.face.front .mv em.off { background: transparent; color: #6b5a3e; border-style: dashed; border-color: #8a7658; }
+.face.front .mv em i { font-style: normal; color: #f4c552; margin-left: 4px; font-size: .85em; letter-spacing: -1px; }
 .face.rear { transform: rotateY(180deg); padding: 14px 16px; overflow: auto; color: #2a1a12;
   background: repeating-linear-gradient(0deg, #d9b98a 0 3px, #d3b282 3px 4px, #dcbd90 4px 9px), #d9b98a; }
 .face.rear h4 { font-size: 16px; margin: 0 0 6px; border-bottom: 2px solid #7d1f25; padding-bottom: 4px; display: flex; justify-content: space-between; align-items: baseline; }
@@ -611,6 +617,19 @@ body.mobile .wordbar .fb:empty { visibility: hidden; }
 body.mobile .props { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
 body.mobile .props::-webkit-scrollbar { display: none; }
 body.mobile .props > * { flex-shrink: 0; }
+/* The word bar keeps one height whatever is selected, so nothing under it moves while you drag:
+   long words shrink their letters instead of wrapping, and the proposals and the attack chips each
+   stay on one line (scrollable sideways), with the chip row reserved even when it is empty. */
+.word { flex-wrap: nowrap; min-width: 0; overflow: hidden; }
+.word .lt { width: auto; flex: 0 1 30px; min-width: 15px; }
+body.mobile .word .lt { flex-basis: 26px; }
+.props, .wordbar .chips { flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+.props::-webkit-scrollbar, .wordbar .chips::-webkit-scrollbar { display: none; }
+.props > *, .wordbar .chips > * { flex-shrink: 0; }
+.wordbar .chips { min-height: 22px; }
+body.mobile .wordbar .chips { min-height: 24px; }
+/* more chips than fit: the row fades at the right edge and scrolls */
+.wordbar .chips { -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); mask-image: linear-gradient(90deg, #000 88%, transparent); padding-right: 18px; }
 
 /* ============================================================ journey: travel screen, first hero, items */
 .icon { display: inline-block; width: 32px; height: 32px; background-size: 100% 100%; image-rendering: pixelated; flex: none; vertical-align: middle; }
@@ -824,6 +843,36 @@ body.tight .side .box.keys { display: none; }   /* short windows: the key legend
 .tut-fig .dartcols { gap: 3px; margin: 0 0 8px; justify-content: flex-start; }
 .tut-fig .dartcol { padding: 3px; gap: 3px; border-width: 1px; }
 .tut-fig .dartcol .tile, body.mobile .tut-fig .dartcol .tile { --tile-size: 30px; font-size: 15px; }
+
+/* ---------- Darts: a warning instead of the rules, and the party taking the hits ---------- */
+.dart-warn { font-size: 16px; font-weight: 700; color: var(--gold); line-height: 1.35; }
+.dart-warn.done { color: var(--dim); font-weight: 600; }
+.darts .chestbox { align-items: center; }
+.dartparty { display: flex; justify-content: center; gap: 14px; margin-top: 12px; padding: 10px 8px 6px; border-radius: var(--radius); background: var(--bg2); border: 1px solid var(--line); }
+.dp-hero { position: relative; display: grid; justify-items: center; gap: 3px; min-width: 64px; }
+.dp-hero .hero.spr { --px: 1.5px; }
+.dp-hero .hpbar { width: 64px; }
+.dp-hero .hpbar i { background: var(--good); transition: width .25s; }
+.dp-hero .hpnum { font-size: 11.5px; color: var(--dim); }
+.dp-hero.isdown { opacity: .5; }
+.dp-hero.hurt .hero.spr { animation: dpHurt .38s steps(2) 1; }
+@keyframes dpHurt { 0%, 100% { transform: none; filter: none; } 30% { transform: translateX(-3px); filter: brightness(2) saturate(0); } 60% { transform: translateX(3px); } }
+.dp-dmg { position: absolute; top: -4px; left: 50%; transform: translateX(-50%); font-weight: 800; font-size: 16px; color: var(--danger); text-shadow: 0 1px 0 #000;
+  pointer-events: none; animation: dpDmg 1.1s ease-out forwards; }
+@keyframes dpDmg { from { opacity: 1; transform: translate(-50%, 0); } to { opacity: 0; transform: translate(-50%, -26px); } }
+.event.darts { position: relative; }
+.dart-fly { position: absolute; left: 0; top: 0; width: 22px; height: 3px; margin: -1.5px 0 0 -11px; border-radius: 2px; pointer-events: none; z-index: 5;
+  background: linear-gradient(90deg, #c9a878 0 70%, #d5dde3 70%); box-shadow: -4px 0 0 -1px #cf3a40; }
+body.mobile .dartparty { gap: 6px; padding: 8px 4px 4px; }
+body.mobile .dp-hero { min-width: 0; flex: 1; }
+body.mobile .dp-hero .hpbar { width: 100%; max-width: 70px; }
+@media (prefers-reduced-motion: reduce) { .dp-hero.hurt .hero.spr, .dp-dmg { animation: none; } }
+
+/* ---------- Puzzle intros on a phone: clear of the status and navigation bars, Začni always in reach ---------- */
+body.mobile .overlay { padding: max(8px, var(--sat)) 0 max(8px, var(--sab)); box-sizing: border-box; }
+body.mobile .tutdlg { max-height: 100%; }
+.tut-foot { position: sticky; bottom: 0; z-index: 2; margin: 14px -22px -20px; padding: 12px 22px 16px; background: var(--panel); border-top: 1px solid var(--line); }
+body.mobile .tut-foot { bottom: 0; margin: 12px -14px -16px; padding: 10px 14px 14px; }
 
 /* ---------- Phone pass (android-expansion): fit, safe areas, touch targets, readable text ---------- */
 /* Darts: all columns share the phone's width, however many letters the word has */
@@ -1057,3 +1106,53 @@ body.mobile .car-slide { padding: 14px 14px 16px; }
 .about .credit-sec h3 { font-size: 15px; margin-bottom: 6px; }
 .about .rp-open { min-height: 44px; }
 .hm > .crumbs { margin: 0; }
+
+/* ---------- Hero screens: tap the hero for a skill, the Veščine button ---------- */
+.spirit-hit { position: relative; z-index: 1; border: 0; padding: 0; background: none; cursor: pointer; border-radius: 12px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.spirit-hit:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+.spirit .cards { z-index: 3; }
+.skillbtn { position: absolute; top: 8px; right: 8px; z-index: 4; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; background: color-mix(in srgb, var(--panel) 85%, transparent); }
+.skillbtn .i { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid currentColor; font: italic 700 12px/1 Georgia, serif; }
+.ptsbadge { min-width: 18px; height: 18px; padding: 0 5px; border-radius: 99px; display: inline-grid; place-items: center; background: var(--gold); color: #1d1608; font-size: 11px; font-weight: 800; }
+.spirit-tip { position: absolute; left: 0; right: 0; bottom: 4px; text-align: center; font-size: 11px; color: var(--faint); pointer-events: none; z-index: 1; }
+body.mobile .skillbtn { min-height: 40px; padding: 6px 12px; }
+
+/* ---------- Skills: the list (hero screens, Veščine) ---------- */
+.skills { display: grid; gap: 10px; }
+.sk-sum { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; font-size: 13.5px; color: var(--dim); }
+.sk-sum b { color: var(--ink); }
+.sk-pts { padding: 2px 10px; border-radius: 99px; border: 1px solid var(--line); }
+.sk-pts.on { border-color: var(--gold); color: var(--gold); font-weight: 700; }
+.sk { border: 1px solid var(--line); border-left: 3px solid var(--c); border-radius: 10px; padding: 10px 12px; background: var(--panel2); }
+.sk.off { border-left-style: dashed; background: transparent; }
+.sk-head { display: flex; align-items: center; gap: 8px; }
+.sk-head b { font-size: 15px; }
+.sk.off .sk-head b { color: var(--dim); }
+.sk-dots { display: inline-flex; gap: 2px; }
+.sk-dots i { width: 8px; height: 8px; border-radius: 2px; background: var(--c); }
+.sk.off .sk-dots i { background: transparent; box-shadow: inset 0 0 0 1.5px var(--c); }
+.sk-state { margin-left: auto; font-size: 11.5px; color: var(--dim); }
+.sk-text { margin: 4px 0 6px; font-size: 13.5px; line-height: 1.45; }
+.sk-ups { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; font-size: 12.5px; color: var(--faint); }
+.sk-ups li { position: relative; padding-left: 17px; line-height: 1.4; }
+.sk-ups li i { position: absolute; left: 1px; top: .42em; width: 8px; height: 8px; transform: rotate(45deg); border: 1.5px solid var(--faint); }
+.sk-ups li.on { color: var(--ink); }
+.sk-ups li.on i { background: var(--gold); border-color: var(--gold); }
+.sk-ups li b { font-weight: 700; }
+.sk-act { margin-top: 8px; display: flex; justify-content: flex-end; }
+.sk-act .btn { display: inline-flex; align-items: center; gap: 8px; }
+.sk-act .cost { font-size: 11px; font-weight: 600; opacity: .8; }
+.dialog.skilldlg { width: min(560px, 94vw); max-height: 92vh; max-height: 92dvh; overflow: auto; }
+.skilldlg h2 { font-size: 20px; margin-bottom: 10px; }
+.sk-where { font-size: 12.5px; margin: 10px 0 0; }
+/* Veščine */
+.train-hero { display: grid; grid-template-columns: 180px 1fr; gap: 16px; align-items: start; margin-top: 12px; }
+.spirit.small { height: 190px; }
+.spirit.small .hero.spr { --px: 3px; }
+.spirit.small::before { width: 140px; height: 140px; margin-left: -70px; }
+.hm-tabs .btn .ptsbadge { margin-left: 2px; }
+body.mobile .train-hero { grid-template-columns: 1fr; gap: 10px; }
+body.mobile .spirit.small { height: 150px; }
+body.mobile .spirit.small .hero.spr { --px: 2px; }
+@media (max-width: 640px) { .train-hero { grid-template-columns: 1fr; } }
+.page .skills section.sk { margin-top: 0; }

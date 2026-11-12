@@ -139,13 +139,13 @@ function figTrap() {
 }
 function figDarts() {
   const wall = (cols, sel) => h('div', { class: 'dartcols' }, cols.map((col, c) => h('div', { class: 'dartcol' }, [...col].map((ch, r) => h('div', { class: 'tile' + (sel[c] === r ? ' sel' : '') }, ch)))));
-  const cols = ['kso', 'ermu', 'eauo', 'spjk', 'aten', 'rvlm'].map(x => x.slice(0, 3));
+  const cols = ['kso', 'ermu', 'eauo', 'spjk', 'aten', 'rvlm'].map(x => x.slice(0, 2));   // two rows are enough to show it: the picture stays short
   return [
     wall(cols, [0, 1, 1, 0, 0, 0]),
-    h('div', { class: 'tut-res part' }, h('b', {}, 'KRASAR'), ' ni beseda: če jo pošlješ, poletijo vse puščice nate.'),
+    h('div', { class: 'tut-res part' }, h('b', {}, 'KRASAR'), ' ni beseda: vseh šest puščic poleti v družino.'),
     h('div', { class: 'tut-sep' }),
     wall(cols, [0, 1, 1, 0]),
-    h('div', { class: 'tut-res part' }, h('b', {}, 'KRAS'), ' — prava beseda iz prvih štirih stolpcev: štiri puščice se obrnejo, dve te zadeneta.')];
+    h('div', { class: 'tut-res part' }, h('b', {}, 'KRAS'), ' — prava beseda iz prvih štirih stolpcev: štiri puščice ustavi, dve zadeneta družino.')];
 }
 function tutCross(kind) {
   const real = S.mode === 'real', C = B && B.cw, geslo = !!(C && C.D && C.D.style === 'geslo'), secs = C && C.timerMax !== Infinity ? Math.round(C.timerMax) : 0;
@@ -184,8 +184,8 @@ const TUT = {
     time: `Rdeča črta je čas${evSecs('timeMax')}. Ko poteče, poletijo vse puščice nate.`,
     steps: [
       S.mobile ? ['Tapni eno črko v prvem stolpcu, nato v drugem in tako naprej.'] : ['Tipkaj črke ali klikaj nanje: najprej prvi stolpec, nato drugi in tako naprej.'],
-      ['Besedo lahko pošlješ, še preden prideš do zadnjega stolpca. Vsaka črka prave besede obrne eno puščico proti sovražnikom naslednje bitke.'],
-      ['Puščice, ki ostanejo, zadenejo družino. Beseda, ki ne obstaja, ne obrne nobene.']] }),
+      ['Besedo lahko pošlješ, še preden prideš do zadnjega stolpca. Vsaka črka prave besede ustavi eno puščico.'],
+      ['Puščice, ki ostanejo, zadenejo junake. Beseda iz vseh stolpcev jih ustavi skoraj vse, ena te le oplazi; beseda, ki ne obstaja, ne ustavi nobene.']] }),
   trap: () => ({ title: 'Plaz kamenja', lead: 'S pobočja padajo skale. Vsaka nosi črko in ena sama beseda jih lahko razbije.', fig: figTrap(),
     time: `Skale padajo ${S.ev ? Math.round(S.ev.fall) + ' s' : 'nekaj sekund'}. Šteje prva prava beseda; če ne pošlješ nobene, skale udarijo s polno močjo.`,
     steps: [
