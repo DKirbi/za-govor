@@ -50,6 +50,7 @@ function setPause(on) {
       h('div', { class: 'pause-actions' },
         h('button', { class: 'btn primary', ref: el => first = el, onclick: () => setPause(false) }, 'Nadaljuj ', h('kbd', {}, 'Esc')),
         h('button', { class: 'btn', onclick: () => showTut(curTutKind(), true) }, 'Kako se igra'),
+        reportButton(),
         S.mobile ? null : h('button', { class: 'btn', onclick: toggleFullscreen }, 'Cel zaslon: vklop / izklop')),
       h('label', { class: 'volrow' }, 'Glasnost',
         h('input', { type: 'range', min: 0, max: 100, step: 5, value: Math.round(VOLUME * 100), 'aria-label': 'Glasnost zvočnih učinkov',
@@ -210,6 +211,8 @@ function closeTut() {
 window.addEventListener('keydown', e => {
   if (G.tut || G.paused) {
     const onControl = e.target && e.target.closest && e.target.closest('.overlay button, .overlay input');
+    // text fields in the pause window (Prijavi besedo) type normally; only Esc still resumes
+    if (onControl && isTextInput(e.target) && e.key !== 'Escape') return;
     if (e.key === 'Escape' || (!onControl && (e.key === 'Enter' || e.key === ' '))) { e.preventDefault(); if (G.tut) closeTut(); else setPause(false); }
     e.stopImmediatePropagation();
     return;
