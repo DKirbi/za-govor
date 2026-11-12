@@ -36,10 +36,13 @@ function chromePath() {
 
 const PHONE = { viewport: { width: 390, height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true }, userAgent: 'Mozilla/5.0 (Linux; Android 14) Mobile' };
 
+// every browser a test opens, so a crashed test still closes them and the process exits
+const OPEN = [];
 async function openGame({ phone = false, width = 1100, height = 1000, intros = false } = {}) {
   if (!fs.existsSync(path.resolve(__dirname, '../dist/index.html'))) throw new Error('dist/index.html missing — run `python3 build.py` first.');
   fs.mkdirSync(OUT_DIR, { recursive: true });
   const browser = await puppeteer.launch({ executablePath: chromePath(), headless: 'new', args: ['--no-sandbox'] });
+  OPEN.push(browser);
   const page = await browser.newPage();
   if (phone) await page.emulate(PHONE); else await page.setViewport({ width, height });
   const errors = [];
@@ -70,7 +73,8 @@ function runner(title) {
     } catch (e) {
       check(false, 'test crashed', e.stack || String(e));
     } finally {
-      if (ctx && ctx.browser) await ctx.browser.close();
+      if (ctx && ctx.browser && !OPEN.includes(ctx.browser)) await ctx.browser.close();
+      await Promise.all(OPEN.splice(0).map(b => b.close().catch(() => {})));
     }
     const failed = results.filter(r => !r.ok);
     console.log(failed.length ? `  ${failed.length} of ${results.length} checks failed\n` : `  all ${results.length} checks passed\n`);
