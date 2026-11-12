@@ -6,6 +6,7 @@
 Needs Pillow. Everything is drawn with hard-edged primitives on small grids and gets a
 dark outline, to match the sprites already in src/game.js:
   heroes   48x48, two frames side by side (idle | attack), facing right
+  levels   48x48, two frames (at rest | chosen): the knowledge-level figures on Nova pot
   objects  48x48 or 32x32, two frames (state A | state B)
   icons    16x16, one frame, drawn as text grids
   backgrounds 384x120, ground from y = 76
@@ -213,6 +214,111 @@ def krosnjar(f):
     else:
         c.p([(29, 22), (33, 22), (38, 16), (35, 13)], '#6b7f4a'); c.r(36, 11, 39, 14, SK)
         c.e(38, 5, 45, 12, '#e2c98a'); c.e(40, 7, 43, 10, '#b89a5a')            # holds up a sieve
+    return c.outline()
+
+
+# ------------------------------------------------------------------ knowledge levels (Nova pot)
+# One figure per knowledge level, 48x48, two frames: at rest | chosen (the card shows frame 2
+# while its level is selected). Letters on slates and pages use a 3x5 pixel font.
+GLYPH = {'A': ('.#.', '#.#', '###', '#.#', '#.#'), 'B': ('##.', '#.#', '##.', '#.#', '##.'),
+         'C': ('.##', '#..', '#..', '#..', '.##'), 'S': ('.##', '#..', '.#.', '..#', '##.'),
+         'Z': ('###', '..#', '.#.', '#..', '###')}
+
+
+def glyph(c, x, y, ch, col):
+    """A letter 3 wide and 5 tall at (x, y); Č Š Ž get their caron in the two rows above."""
+    base = {'Č': 'C', 'Š': 'S', 'Ž': 'Z'}.get(ch, ch)
+    for j, row in enumerate(GLYPH[base]):
+        for i, v in enumerate(row):
+            if v == '#': c.px(x + i, y + j, col)
+    if base != ch: c.px(x, y - 2, col); c.px(x + 2, y - 2, col); c.px(x + 1, y - 1, col)
+
+
+def lv_malcek(f):
+    """Malček: a little one in a knitted cap with a school slate (ABC, then Č)."""
+    c = Cv(48)
+    pants, cap, hair, wood, slate = '#3f5f8f', RED, '#7a4a26', '#9a6a3a', '#2f3a36'
+    c.r(17, 38, 20, 43, pants); c.r(24, 38, 27, 43, pants)
+    c.r(16, 43, 21, 45, '#5a3a22'); c.r(23, 43, 28, 45, '#5a3a22')
+    c.r(15, 28, 29, 38, WH); c.r(15, 35, 29, 38, pants)
+    c.r(17, 28, 18, 35, RED); c.r(26, 28, 27, 35, RED)                       # braces
+    c.e(12, 8, 32, 28, SK)                                                    # a big head
+    c.p([(13, 17), (15, 12), (29, 12), (31, 17), (27, 15), (17, 15)], hair)
+    c.p([(12, 15), (14, 7), (22, 4), (30, 7), (32, 15)], cap)                # knitted cap
+    c.r(12, 13, 32, 15, WH); c.dots([(14, 9), (18, 7), (22, 6), (26, 7), (30, 9)], '#e2665a')
+    c.e(19, 0, 25, 5, WH)                                                     # pompom
+    face(c, cx=22, y=19)
+    if f == 0:
+        c.r(20, 24, 23, 24, '#a8402f')
+        c.r(11, 29, 14, 35, WH); c.r(11, 35, 14, 37, SK)
+        c.r(31, 27, 44, 38, wood); c.r(32, 28, 43, 37, slate)                 # slate held low
+        glyph(c, 33, 30, 'A', WH); glyph(c, 37, 30, 'B', WH); glyph(c, 41, 30, 'C', WH)
+        c.r(29, 30, 32, 33, SK)
+    else:
+        c.r(20, 23, 23, 25, '#7a2a22'); c.r(21, 25, 22, 25, '#e2665a')         # open, happy mouth
+        c.p([(13, 29), (16, 29), (11, 22), (8, 23)], WH); c.r(7, 19, 10, 22, SK)   # waving
+        c.p([(28, 29), (31, 29), (36, 21), (33, 20)], WH); c.r(33, 17, 36, 20, SK)
+        c.r(31, 6, 44, 17, wood); c.r(32, 7, 43, 16, slate)                   # slate held up high: Č!
+        glyph(c, 36, 10, 'Č', GOLD)
+        c.dots([(45, 2), (44, 3), (46, 3), (45, 4), (5, 9), (4, 10), (6, 10), (5, 11), (38, 21)], GOLD)
+    return c.outline()
+
+
+def lv_ucenjak(f):
+    """Učenjak: a scholar in a dark gown and cap, round spectacles, book and quill."""
+    c = Cv(48)
+    robe, robe2, cap, hair, rim, lens = '#2c3550', '#1f2640', '#1d1d24', '#c9c4b8', '#3a2a1a', '#cfe3ea'
+    c.p([(12, 46), (15, 21), (29, 21), (32, 46)], robe)
+    c.r(21, 23, 23, 46, GOLD); c.r(12, 45, 32, 46, robe2)
+    c.e(14, 6, 30, 21, SK)
+    c.r(14, 9, 15, 16, hair); c.r(29, 9, 30, 16, hair)
+    c.p([(16, 16), (28, 16), (27, 21), (22, 25), (17, 21)], hair)             # beard
+    c.r(19, 17, 25, 17, '#8a6a50')
+    for x0 in (16, 24):                                                        # round spectacles
+        c.r(x0, 11, x0 + 4, 14, rim); c.r(x0 + 1, 12, x0 + 3, 13, lens); c.px(x0 + 2, 13, '#1d1410')
+    c.r(21, 12, 23, 12, rim)
+    c.p([(10, 5), (22, 1), (34, 5), (22, 8)], cap); c.r(15, 5, 29, 8, cap)     # square cap
+    c.l([(22, 4), (32, 6), (32, 11)], GOLD); c.r(31, 11, 33, 13, GOLD)         # tassel
+    c.r(9, 23, 14, 31, robe); c.r(9, 31, 13, 33, SK)
+    c.r(3, 26, 16, 35, '#8f2330'); c.r(4, 27, 15, 34, '#efe6d1'); c.r(9, 27, 10, 34, '#c9b88f')   # open book
+    for y in (29, 31, 33): c.r(5, y, 8, y, '#9a8a6a'); c.r(11, y, 14, y, '#9a8a6a')
+    if f == 0:
+        c.r(30, 23, 34, 31, robe); c.r(31, 31, 34, 33, SK)
+        c.l([(33, 33), (39, 19)], '#efe6d1'); c.p([(36, 25), (41, 15), (42, 21)], WH)     # quill
+    else:
+        c.p([(29, 22), (33, 22), (38, 15), (35, 12)], robe); c.r(36, 10, 39, 13, SK)
+        c.l([(38, 12), (43, 2)], '#efe6d1'); c.p([(40, 8), (45, 0), (46, 5)], WH)
+        glyph(c, 40, 20, 'Š', GOLD); glyph(c, 41, 30, 'A', '#e9d9a8')          # letters he conjures
+        c.dots([(37, 26), (44, 26), (39, 37)], GOLD)
+    return c.outline()
+
+
+def lv_molj(f):
+    """Knjižni molj: a bespectacled bookworm on a stack of books; chosen, it bites a page."""
+    c = Cv(48)
+    worm, worm2, belly, rim, page = '#86c35e', '#5a9a3f', '#c8e6a0', '#2a2117', '#efe6d1'
+    c.r(4, 39, 40, 45, '#3f6fa8'); c.r(8, 40, 40, 44, page); c.r(8, 42, 40, 42, '#cfc4a8')          # bottom book
+    c.r(4, 40, 7, 44, '#3f6fa8'); c.r(4, 41, 7, 41, GOLD); c.r(4, 43, 7, 43, GOLD)
+    c.r(8, 33, 43, 39, '#4f8a3a'); c.r(8, 34, 39, 38, page); c.r(8, 36, 39, 36, '#cfc4a8')            # middle book
+    c.r(40, 34, 43, 38, '#4f8a3a'); c.r(40, 35, 43, 35, GOLD)
+    c.r(6, 27, 38, 33, RED); c.r(10, 28, 38, 32, page); c.r(10, 30, 38, 30, '#cfc4a8')                # top book
+    c.r(6, 28, 9, 32, RED); c.r(6, 29, 9, 29, GOLD); c.r(6, 31, 9, 31, GOLD)
+    c.e(21, 25, 29, 29, '#5a3a22')                                                                    # its burrow
+    segs = [(25, 26), (24, 22), (25, 18)] if f == 0 else [(25, 26), (23, 22), (23, 17), (25, 13)]
+    for x, y in segs: c.e(x - 3, y - 3, x + 3, y + 3, worm); c.px(x - 1, y + 2, worm2); c.px(x + 1, y + 2, worm2)
+    hx, hy = (28, 11) if f == 0 else (29, 7)
+    c.e(hx - 6, hy - 5, hx + 6, hy + 5, worm); c.r(hx - 4, hy + 3, hx + 3, hy + 4, belly)
+    for dx in (-5, 1):                                                         # big round spectacles
+        c.r(hx + dx, hy - 3, hx + dx + 4, hy + 1, rim); c.r(hx + dx + 1, hy - 2, hx + dx + 3, hy, '#dff0f6'); c.px(hx + dx + 2, hy - 1, '#1d1410')
+    c.r(hx - 1, hy - 2, hx + 1, hy - 2, rim)
+    if f == 0:
+        c.r(hx - 1, hy + 3, hx + 2, hy + 3, '#2f5a22')
+    else:
+        c.p([(hx + 4, hy + 2), (hx + 15, hy + 1), (hx + 16, hy + 12), (hx + 6, hy + 12)], page)          # a bitten page
+        c.px(hx + 6, hy + 2, '#5a3a22'); c.px(hx + 5, hy + 3, '#5a3a22')
+        glyph(c, hx + 8, hy + 5, 'Ž', '#3a2a1a')
+        c.dots([(hx + 13, hy + 5), (hx + 13, hy + 7), (hx + 12, hy + 9)], '#9a8a6a')
+        c.dots([(8, 20), (12, 15), (40, 26), (44, 22)], GOLD)                   # crumbs of letters
     return c.outline()
 
 
@@ -781,13 +887,14 @@ def road():
 
 HEROES = {'erazem': erazem, 'klepec': klepec, 'vida': vida, 'ajda': ajda, 'krosnjar': krosnjar}
 OBJECTS = {'skrinja': skrinja, 'vodnjak': vodnjak, 'plaz': plaz, 'svetisce': svetisce, 'kazipot': kazipot, 'puscice': puscice}
+LEVEL_ART = {'lv-malcek': lv_malcek, 'lv-ucenjak': lv_ucenjak, 'lv-molj': lv_molj}
 BGS = {'ptuj': bg_ptuj, 'peca': bg_peca, 'triglav': bg_triglav, 'bled': bg_bled, 'piran': bg_piran, 'predjama': bg_predjama}
 
 
 def main():
     world = json.loads((ROOT / 'data/world.json').read_text(encoding='utf-8'))
     sprites, sizes = {}, {}
-    for k, fn in {**HEROES, **OBJECTS}.items():
+    for k, fn in {**HEROES, **OBJECTS, **LEVEL_ART}.items():
         fr = [fn(0), fn(1)]; sprites[k] = uri(sheet(fr)); sizes[k] = fr[0].w
     icons = {it['id']: uri(icon(*it['icon']).im) for it in world['items']}
     extra = {'skala': uri(skala(0).im), 'zlatnik': uri(zlatnik(0).im), 'road': uri(road())}
@@ -802,10 +909,10 @@ def main():
     print('wrote src/art-extra.js,', len(js) // 1024, 'KB')
     if '--preview' in sys.argv:
         out = ROOT / 'test-output'; out.mkdir(exist_ok=True)
-        fr = [fn(f) for fn in list(HEROES.values()) + list(OBJECTS.values()) for f in (0, 1)]
-        im = Image.new('RGBA', (48 * 10, 48 * 2 + 20), (60, 70, 90, 255))
+        fr = [fn(f) for fn in list(HEROES.values()) + list(OBJECTS.values()) + list(LEVEL_ART.values()) for f in (0, 1)]
+        im = Image.new('RGBA', (48 * 10, 48 * 3 + 20), (60, 70, 90, 255))
         for i, f in enumerate(fr): im.alpha_composite(f.im, ((i % 10) * 48, (i // 10) * 48))
-        for i, it in enumerate(world['items']): im.alpha_composite(icon(*it['icon']).im, (i * 18 + 2, 98))
+        for i, it in enumerate(world['items']): im.alpha_composite(icon(*it['icon']).im, (i * 18 + 2, 146))
         im.resize((im.width * 4, im.height * 4), Image.NEAREST).save(out / 'art-sprites.png')
         b = Image.new('RGB', (W * 2, H * 3))
         for i, fn in enumerate(BGS.values()): b.paste(fn(), ((i % 2) * W, (i // 2) * H))

@@ -39,9 +39,11 @@ run(async () => {
   const ctx = await openGame();
   const { page, errors, shot } = ctx;
 
-  // title → choose the first hero → the road (the journey itself is covered by journey.test.js)
+  // menu → Nova pot → choose the first hero → the road (the journey itself is covered by journey.test.js)
   await page.keyboard.press('Enter'); await sleep(200);
-  check((await state(page)).screen === 'pick', 'Enter on the title screen opens the choice of the first hero');
+  check((await state(page)).screen === 'newrun', 'Enter on the start screen opens Nova pot (the first menu item on a fresh game)');
+  await page.keyboard.press('Enter'); await sleep(200);
+  check((await state(page)).screen === 'pick', 'Enter on Nova pot opens the choice of the first hero');
   await page.keyboard.press('Enter'); await sleep(300);
   check((await state(page)).screen === 'travel', 'Enter again starts the journey');
 
@@ -123,7 +125,7 @@ run(async () => {
   // Rock slide: type a word containing a falling rock's letter
   await page.evaluate(() => window.__ZG.go('trap', window.__ZG.NODES[3])); await sleep(4200);
   const rocks = await page.evaluate(() => window.__ZG.S.ev.rocks.filter(r => r.state === 'fall').map(r => r.ch));
-  const word = await page.evaluate(ch => [...window.__ZG.WORDS].find(w => w.includes(ch) && w.length === 5), rocks[0]);
+  const word = await page.evaluate(ch => window.__ZG.LEX.suggestedWords(5, 5).find(w => w.includes(ch)), rocks[0]);
   for (const ch of word) await page.keyboard.type(ch);
   await page.keyboard.press('Enter'); await sleep(300);
   const slide = await page.evaluate(() => { const E = window.__ZG.S.ev; return { broken: E.broken, missed: E.rocks.filter(r => r.state === 'hit').length, dmg: E.dmg, done: E.done, n: E.rocks.length }; });

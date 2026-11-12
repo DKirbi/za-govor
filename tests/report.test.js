@@ -1,4 +1,4 @@
-// Prijavi besedo: rejected words are remembered, the pause screen and the start screen list them,
+// Prijavi besedo: rejected words are remembered, the pause screen and O igri list them,
 // one tap reports a word to the Google Form (captured here, nothing leaves the machine), typing
 // in the panel works while paused, unsent reports wait in a queue, and the list survives a reload.
 const { openGame, runner, sleep } = require('./harness');
@@ -57,8 +57,8 @@ run(async () => {
   await shot('report-02-sent');
 
   // 4. a typed word, sent with Enter, does not resume the game; a word the game knows is not sent
-  await page.click('.report .rp-word'); await page.keyboard.type('kozolček'); await page.keyboard.press('Enter'); await sleep(400);
-  check(posts.length === 2 && posts[1].body['entry.11'] === 'kozolček' && posts[1].body['entry.22'] === 'vpisana' && await page.evaluate(() => window.__ZG.G.paused),
+  await page.click('.report .rp-word'); await page.keyboard.type('pehtrančnica'); await page.keyboard.press('Enter'); await sleep(400);
+  check(posts.length === 2 && posts[1].body['entry.11'] === 'pehtrančnica' && posts[1].body['entry.22'] === 'vpisana' && await page.evaluate(() => window.__ZG.G.paused),
     'a typed word goes out with Enter and the game stays paused', JSON.stringify(posts[1] && posts[1].body));
   await page.click('.report .rp-word'); await page.keyboard.type('volk'); await page.keyboard.press('Enter'); await sleep(300);
   check(posts.length === 2 && /že v slovarju/.test(await page.evaluate(() => document.querySelector('.report .fb').textContent)), 'a word the game already knows is not sent');
@@ -82,17 +82,18 @@ run(async () => {
 
   // 7. without a form, reports wait in a queue and the list can be copied; once a form exists they go out
   await configure('');
-  await page.evaluate(() => window.__ZG.go('title')); await sleep(200);
-  const tbtn = await page.evaluate(() => { const b = document.querySelector('.title-links .rp-open'); return b ? b.textContent : null; });
-  check(tbtn && /Prijavi manjkajočo besedo/.test(tbtn), 'the start screen has Prijavi manjkajočo besedo', tbtn);
-  await page.click('.title-links .rp-open'); await sleep(150);
+  await page.evaluate(() => window.__ZG.go('about')); await sleep(200);
+  const tbtn = await page.evaluate(() => { const b = document.querySelector('.about .rp-open'); return b ? b.textContent : null; });
+  check(tbtn && /Prijavi manjkajočo besedo/.test(tbtn), 'O igri has Prijavi manjkajočo besedo', tbtn);
+  await page.click('.about .rp-open'); await sleep(150);
   await page.evaluate(w => [...document.querySelectorAll('.report .rejlist .prop')].find(c => c.textContent.startsWith(w.toUpperCase())).click(), cbad); await sleep(300);
   const queued = await page.evaluate(() => ({ status: document.querySelector('.report .fb').textContent, copy: [...document.querySelectorAll('.report .btn')].some(b => /Kopiraj seznam/.test(b.textContent)),
     unsent: window.__ZG.REPORTS.filter(r => !r.sent).length }));
   check(posts.length === 2 && /ni nastavljeno/.test(queued.status) && queued.copy && queued.unsent === 1, 'with no form set up the report waits on the device and the list can be copied', JSON.stringify(queued));
-  await shot('report-03-title-queued');
+  await shot('report-03-about-queued');
   await page.keyboard.press('Escape'); await sleep(100);
-  check(await page.evaluate(() => !document.querySelector('.report')), 'Esc closes the window on the start screen');
+  const closed = await page.evaluate(() => ({ gone: !document.querySelector('.report'), screen: window.__ZG.S.screen, focus: document.activeElement && document.activeElement.classList.contains('rp-open') }));
+  check(closed.gone && closed.screen === 'about' && closed.focus, 'Esc closes the window and stays on O igri, back on its button', JSON.stringify(closed));
   await configure(FORM);
   await page.evaluate(() => window.__ZG.flushReports()); await sleep(300);
   check(posts.length === 3 && posts[2].body['entry.11'] === cbad && posts[2].body['entry.22'] === 'skrinja' && await page.evaluate(() => window.__ZG.REPORTS.every(r => r.sent)), 'queued reports go out once the form is set up', JSON.stringify(posts[2] && posts[2].body));
@@ -105,8 +106,8 @@ run(async () => {
   // 9. on a phone the panel fits, with thumb-size fields and chips
   await page.setViewport({ width: 360, height: 780, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
   await page.evaluate(() => { localStorage.setItem('zg-mobile', '1'); }); await page.reload(); await page.waitForFunction(() => !!window.__ZG); await sleep(300);
-  await page.evaluate(() => { const Z = window.__ZG; Z.noteRejected('jasja', 'mreza'); Z.go('title'); }); await sleep(150);
-  await page.evaluate(() => document.querySelector('.title-links .rp-open').click()); await sleep(200);
+  await page.evaluate(() => { const Z = window.__ZG; Z.noteRejected('jasja', 'mreza'); Z.go('about'); }); await sleep(150);
+  await page.evaluate(() => document.querySelector('.about .rp-open').click()); await sleep(200);
   const ph = await page.evaluate(() => { const d = document.querySelector('.reportdlg').getBoundingClientRect(), i = document.querySelector('.report .rp-word').getBoundingClientRect(), c = document.querySelector('.report .rejlist .prop').getBoundingClientRect();
     return { right: Math.round(d.right), vw: innerWidth, wide: document.documentElement.scrollWidth, inputH: Math.round(i.height), chipH: Math.round(c.height) }; });
   check(ph.right <= ph.vw && ph.wide <= ph.vw && ph.inputH >= 44 && ph.chipH >= 40, 'on a 360 px phone the panel fits, fields are 44 px and chips 40 px tall', JSON.stringify(ph));

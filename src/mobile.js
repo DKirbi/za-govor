@@ -33,7 +33,8 @@ document.addEventListener('visibilitychange', () => { if (document.hidden && !he
 
 // The Android app's back button (android/app/src/main/java/.../MainActivity.java) asks the game
 // what to do. It answers 'exit' only on the start screen; everywhere else back pauses a running
-// puzzle, resumes from the pause, closes an open panel or steps back to the start screen.
+// puzzle, resumes from the pause, closes an open panel or steps back (to Nova pot from the hero
+// choice, to Dosežki in junaki from a hero card, otherwise to the start screen).
 window.zgBack = () => {
   try {
     if (G.tut) { closeTut(); return 'ok'; }
@@ -42,6 +43,9 @@ window.zgBack = () => {
     if (pausable()) { setPause(true); return 'ok'; }
     if (S.screen === 'title') return 'exit';
     if (S.ev && S.ev.done && (S.screen === 'chest' || S.screen === 'trap' || S.screen === 'darts')) { finishEvent(); return 'ok'; }
+    if (S.screen === 'pick') { go('newrun'); return 'ok'; }                  // the hero choice is a step of Nova pot
+    if (S.screen === 'gallery') { go('heroes'); return 'ok'; }
+    if (S.screen === 'hero' && S.heroArg && S.heroArg.kind === 'codex') { S.heroArg.next(); return 'ok'; }
     if (S.screen === 'result' || S.screen === 'hero') return 'ok';   // these move on with their own button
     if (S.screen === 'ending') resetRun();
     go('title');

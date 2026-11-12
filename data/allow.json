@@ -1,4 +1,4 @@
 {
-  "_about": "Words players reported as missing, checked by hand (Fran.si) and added on top of the generated list. lemma: [forms]. tools/build_dict.py merges this file.",
+  "_about": "Words players reported as missing, checked by hand (Fran.si) and added on top of the generated list. lemma: [forms]. tools/build_lexicon.py merges this file into data/lexicon.bin.",
   "jasa": ["jasa", "jase", "jasi", "jaso", "jas", "jasama", "jasah", "jasam", "jasami"]
 }

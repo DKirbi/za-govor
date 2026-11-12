@@ -148,10 +148,14 @@ function openReportInPause() {
   }, 'Nazaj na premor'));
   const first = dlg.querySelector('.rejlist .prop, .rp-word'); if (first) first.focus({ preventScroll: true });
 }
-// on the start screen ("Nastavitve"): the same panel in its own window
+// on O igri: the same panel in its own window; closing it refreshes the count on the button
 function openReportWindow() {
   if (S.bagEl) return;
-  const close = () => { ov.remove(); S.bagEl = null; S.overlayKey = null; if (S.screen === 'title') go('title'); };
+  const close = () => {
+    ov.remove(); S.bagEl = null; S.overlayKey = null;
+    const b = SCR && SCR.querySelector('.rp-open');
+    if (b) { const nb = reportButton(openReportWindow, 'Prijavi manjkajočo besedo'); b.replaceWith(nb); nb.focus({ preventScroll: true }); }
+  };
   const ov = h('div', { class: 'overlay', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Prijavi manjkajočo besedo' },
     h('div', { class: 'dialog reportdlg' }, reportPanel(close, 'Zapri')));
   document.body.append(ov); S.bagEl = ov;

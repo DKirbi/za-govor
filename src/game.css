@@ -58,7 +58,6 @@ h1, h2, h3 { margin: 0; }
 .badge { font-size: 11px; font-weight: 700; background: var(--gold); color: #1d1608; border-radius: 99px; padding: 1px 8px; }
 .toggle { display: flex; gap: 10px; align-items: center; margin: 8px 0; cursor: pointer; color: var(--dim); }
 .toggle input { width: 16px; height: 16px; accent-color: var(--gold); }
-.controls-help { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; margin-top: 18px; color: var(--dim); font-size: 13px; }
 
 /* ---------- Map ---------- */
 .mapwrap { max-width: 720px; margin: 10px auto; }
@@ -287,7 +286,6 @@ h1, h2, h3 { margin: 0; }
 .prop .dots { display: inline-flex; gap: 2px; }
 .prop .dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
 .prop-x { background: none; border: 0; color: var(--faint); font-size: 16px; cursor: pointer; padding: 0 4px; }
-.touch-help { display: none; }
 
 /* ---------- On-screen keyboard ---------- */
 .vkbd { display: grid; gap: 6px; margin: 0; user-select: none; -webkit-user-select: none; }
@@ -308,8 +306,6 @@ body.mobile #app { max-width: 430px; padding: 0 10px 18px; }
 body.mobile .btn { touch-action: manipulation; }
 body.mobile .logo { font-size: 40px; }
 body.mobile .choices { grid-template-columns: 1fr; }
-body.mobile .controls-help { display: none; }
-body.mobile .touch-help { display: block; margin-top: 14px; color: var(--dim); font-size: 13px; line-height: 1.45; }
 body.mobile .node { grid-template-columns: 30px 1fr; padding: 10px; }
 body.mobile .node > .muted { display: none; }
 body.mobile .bhead .t { font-size: 16px; }
@@ -873,19 +869,14 @@ body.mobile .bhead .meta, body.mobile .chip, body.mobile .partyhp { font-size: 1
 body.mobile .muted { color: #b3ad9f; }
 @media (prefers-contrast: more) { :root { --dim: #cfc9bb; --faint: #a9a498; --line: #5a6074; } }
 
-/* ---------- Credits: the Words for Evil line (start screen, ending) and the Zasluge screen ---------- */
+/* ---------- Credits: the Words for Evil line on the ending (Navdih and Zasluge are on O igri) ---------- */
 .inspired { margin: 8px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--dim); }
 .inspired i { color: var(--ink); font-style: italic; }
 .linkbtn { background: none; border: 0; padding: 2px 0; margin-left: 2px; font: inherit; color: var(--gold); text-decoration: underline;
   text-underline-offset: 3px; cursor: pointer; }
 .linkbtn:hover, .linkbtn:focus-visible { color: var(--ink); }
 .ending .thanks { margin: 18px 0 0; font-size: 15px; }
-.credits section { margin: 18px 0 0; }
-.credits h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .07em; color: var(--gold); margin-bottom: 6px; }
-.credits p { margin: 0 0 8px; line-height: 1.55; color: var(--ink); max-width: 62ch; }
-.credits a { color: var(--gold); text-underline-offset: 3px; }
-.credits a:focus-visible, .linkbtn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 2px; }
-body.mobile .credits p { font-size: 14px; }
+.linkbtn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 2px; }
 /* a 36 px tap area that does not push the sentence's lines apart */
 body.mobile .linkbtn { min-height: 36px; padding: 0; margin: -9px 0 -9px 2px; vertical-align: baseline; }
 
@@ -906,8 +897,161 @@ body.mobile .linkbtn { min-height: 36px; padding: 0; margin: -9px 0 -9px 2px; ve
 .reportrow input:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
 .report .rp-count { font-size: 13px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .rp-open .pill { margin-left: 6px; font-size: 11px; font-weight: 800; padding: 1px 7px; border-radius: 99px; background: var(--gold); color: #1d1608; }
-.title-links { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 12px 0 4px; }
-.title-links .muted { font-size: 13px; }
 body.mobile .reportrow { grid-template-columns: 1fr; }
 body.mobile .reportrow input { min-height: 44px; font-size: 16px; }   /* 16 px keeps phones from zooming into the field */
 body.mobile .rejlist .prop { min-height: 40px; }
+
+/* ---------- Main menu (start screen) ---------- */
+.menu { display: flex; flex-direction: column; align-items: center; min-height: calc(100vh - 92px); min-height: calc(100dvh - 92px);
+  padding: clamp(20px, 7vh, 80px) 0 clamp(20px, 6vh, 56px); }
+.menu-logo { font-size: clamp(52px, 8.5vw, 80px); line-height: 1; text-align: center; }
+.menu-rule { width: 144px; margin: 20px auto 0; }
+.mainmenu { width: 100%; margin: auto 0; padding-top: clamp(24px, 6vh, 64px); }
+.mainmenu ul { list-style: none; margin: 0; padding: 0; display: grid; justify-items: center; gap: clamp(2px, 1.4vh, 12px); }
+.mm-item { position: relative; display: grid; justify-items: center; min-height: 56px; padding: 8px 46px; border: 0; border-radius: 12px; background: none;
+  color: var(--gold); font-size: clamp(26px, 3.4vw, 36px); font-weight: 800; line-height: 1.15; cursor: pointer;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: color .12s, background-color .12s; }
+.mm-sub { margin-top: 2px; font-size: .62em; font-weight: 500; color: #b39a62; }
+/* the item you are on gets a folk diamond on each side */
+.mm-item::before, .mm-item::after { content: ''; position: absolute; top: calc(8px + .575em - 5px); width: 10px; height: 10px; background: var(--gold);
+  transform: rotate(45deg) scale(0); transition: transform .14s ease-out; }
+.mm-item::before { left: 16px; } .mm-item::after { right: 16px; }
+.mm-item:focus-visible { outline: none; color: var(--ink); background: color-mix(in srgb, var(--gold) 9%, transparent); }
+.mm-item:focus-visible::before, .mm-item:focus-visible::after { transform: rotate(45deg) scale(1); }
+.mm-item:focus-visible .mm-sub { color: var(--gold); }
+@media (hover: hover) {
+  .mm-item:hover { color: var(--ink); }
+  .mm-item:hover::before, .mm-item:hover::after { transform: rotate(45deg) scale(1); }
+  .mm-item:hover .mm-sub { color: var(--gold); }
+}
+.mm-item:active { transform: translateY(1px); }
+body.mobile .menu { padding-top: 32px; }
+body.mobile .menu-logo { font-size: 54px; }
+body.mobile .mm-item { width: min(100%, 340px); min-height: 60px; font-size: 28px; }
+
+/* ---------- Pages under the menu: the way back, headings, sections ---------- */
+.page { max-width: 760px; margin: 0 auto 56px; }
+.page.setup { margin-bottom: 0; }
+.crumbs { margin: 2px 0 6px; }
+.crumb { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 14px 6px 6px; margin-left: -6px; border: 0; border-radius: 8px;
+  background: none; color: var(--dim); font-size: 15px; font-weight: 600; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.crumb .arr { color: var(--gold); font-size: 20px; line-height: 1; transition: transform .12s; }
+.crumb:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; color: var(--ink); }
+@media (hover: hover) { .crumb:hover { color: var(--ink); } .crumb:hover .arr { transform: translateX(-3px); } }
+.page-h1 { font-size: clamp(28px, 4vw, 38px); font-weight: 800; letter-spacing: .01em; margin: 4px 0 12px; }
+.page-h1:focus { outline: none; }
+.page .lead { font-size: 16px; line-height: 1.55; max-width: 62ch; margin: 0 0 10px; }
+.page p { line-height: 1.55; max-width: 66ch; }
+.page section { margin-top: 36px; }
+.page section[id] { scroll-margin-top: 64px; }
+.page h2 { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 0 0 12px; font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); }
+.page .tag { padding: 2px 9px; border: 1px solid var(--line); border-radius: 99px; background: var(--bg2); color: var(--dim);
+  font-size: 11px; font-weight: 700; letter-spacing: .02em; text-transform: none; }
+.page .sec-lead { margin: -4px 0 14px; font-size: 13.5px; }
+.page a { color: var(--gold); text-underline-offset: 3px; }
+.page a:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 2px; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.devbox { position: relative; margin-top: 16px; padding: 14px 14px 6px; border: 1px dashed var(--line); border-radius: 8px; }
+.devtag { position: absolute; top: -10px; left: 12px; padding: 1px 8px; border: 1px dashed var(--line); border-radius: 99px; background: var(--bg);
+  color: var(--dim); font-size: 10.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.empty { padding: 14px 16px; border: 1px dashed var(--line); border-radius: var(--radius); background: var(--bg2); color: var(--dim); }
+.empty b { color: var(--ink); }
+
+/* ---------- Nova pot: pace, knowledge, options ---------- */
+.setup h2 { font-size: 20px; letter-spacing: .01em; text-transform: none; color: var(--ink); }
+.setup .set-block { margin-top: 24px; }
+.setup .set-block + .set-block { margin-top: 32px; padding-top: 28px; border-top: 1px solid var(--line); }   /* two separate choices */
+.setup .choices { margin: 0; gap: 12px; }
+.setup .choice { position: relative; display: block; padding: 14px 46px 14px 16px; transition: border-color .12s, background-color .12s; }
+.setup .choice input { position: absolute; width: 1px; height: 1px; margin: 0; opacity: 0; pointer-events: none; }
+.setup .choice.on { background: color-mix(in srgb, var(--gold) 7%, var(--panel)); }
+.setup .choice:has(input:focus-visible) { outline: 2px solid var(--ink); outline-offset: 3px; }
+@media (hover: hover) { .setup .choice:not(.on):hover { border-color: var(--dim); } }
+.setup .choice h3 { font-size: 16px; flex-wrap: wrap; }
+.setup .choice p { font-size: 14px; }
+.tick { position: absolute; top: 14px; right: 14px; width: 20px; height: 20px; border: 2px solid var(--line); border-radius: 50%; background: var(--bg2); }
+.choice.on .tick { border-color: var(--gold); background: radial-gradient(circle, var(--gold) 0 4.5px, var(--bg2) 5.5px); }
+.lv-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 12px; }
+.lv-grid > .choice { grid-row: 1; display: grid; justify-items: center; align-content: start; text-align: center; padding: 16px 12px; }
+.lv-grid > .choice h3 { justify-content: center; margin-top: 8px; }
+.lv-grid > .choice p { margin-top: 4px; }
+.lv-art { position: relative; width: 96px; height: 96px; --px: 2px; }
+.lv-art::before { content: ''; position: absolute; left: 20%; right: 20%; bottom: -2px; height: 8px; border-radius: 50%; background: #000; opacity: .35; }
+.lv-art .sp { animation: none; }
+.lv-grid > .choice:not(.on) .lv-art { filter: saturate(.5) brightness(.8); }
+.choice.on .lv-art .sp { background-position: 100% 0; animation: bob 1.2s steps(1) infinite; }
+/* Predlogi besed: a tray under Malček, shown while Malček is chosen */
+.lv-grid > .subopt { grid-row: 2; grid-column: 1; }
+.lv-grid > .choice.on:has(+ .subopt:not([hidden])) { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.subopt { padding: 2px 14px 4px; border: 2px solid var(--gold); border-top: 0; border-radius: 0 0 var(--radius) var(--radius); background: color-mix(in srgb, var(--gold) 5%, var(--bg2)); }
+.subopt[hidden] { display: none; }
+.set-opts { display: grid; gap: 2px; margin-top: 28px; }
+.setup .toggle { align-items: flex-start; min-height: 44px; margin: 0; padding: 10px 0; color: var(--ink); }
+.setup .toggle input { flex: none; width: 20px; height: 20px; margin: 1px 0 0; }
+.setup .toggle > span { display: grid; gap: 2px; font-size: 15px; font-weight: 600; }
+.setup .toggle small { font-size: 13px; font-weight: 400; line-height: 1.4; color: var(--dim); }
+.setup .note { margin: 24px 0 0; }
+/* the next step stays in reach while the choices scroll: a bar at the bottom of the window */
+.cta-row { position: sticky; bottom: 0; z-index: 5; display: flex; align-items: center; gap: 12px; margin-top: 16px; padding: 20px 0 16px;
+  background: linear-gradient(to bottom, transparent, var(--bg) 22px); }
+.btn.cta { min-height: 48px; padding: 12px 24px; border-radius: 10px; font-size: 16px; }
+@media (max-width: 640px) {
+  .lv-grid { grid-template-columns: 1fr; row-gap: 10px; }
+  .lv-grid > .choice, .lv-grid > .subopt { grid-row: auto; grid-column: auto; }
+  .lv-grid > .subopt { margin-top: -10px; }
+}
+body.mobile .lv-grid { grid-template-columns: 1fr; row-gap: 10px; }
+body.mobile .lv-grid > .choice, body.mobile .lv-grid > .subopt { grid-row: auto; grid-column: auto; }
+body.mobile .lv-grid > .subopt { margin-top: -10px; }
+body.mobile .lv-grid > .choice { grid-template-columns: 64px 1fr; justify-items: start; align-items: center; column-gap: 14px; text-align: left; padding: 10px 46px 10px 12px; }
+body.mobile .lv-grid > .choice h3 { margin: 0; align-self: end; }
+body.mobile .lv-grid > .choice p { margin: 2px 0 0; align-self: start; }
+body.mobile .lv-art { grid-row: span 2; width: 64px; height: 64px; --px: 1px; }
+body.mobile .tick { top: 50%; margin-top: -10px; }
+body.mobile .cta-row { margin: 16px -10px 0; padding: 20px 10px calc(12px + env(safe-area-inset-bottom)); }
+body.mobile .btn.cta { flex: 1; min-height: 52px; font-size: 17px; }
+
+/* ---------- Kako igrati: controls and the puzzle carousel ---------- */
+.ctl-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.page .ctl-group { margin: 0; padding: 12px 14px 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg2); }
+.ctl-group h3 { font-size: 14px; margin-bottom: 8px; }
+.ctl { display: grid; grid-template-columns: max-content 1fr; gap: 7px 12px; margin: 0; align-items: baseline; font-size: 13.5px; }
+.ctl dt { white-space: nowrap; }
+.ctl dt b { color: var(--ink); }
+.ctl dd { margin: 0; color: var(--dim); line-height: 1.4; }
+@media (max-width: 700px) { .ctl-groups { grid-template-columns: 1fr; } }
+body.mobile .ctl-groups { grid-template-columns: 1fr; }
+body.mobile .ctl { font-size: 14px; }
+.car-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.car-tab { min-height: 40px; padding: 6px 14px; border: 1px solid var(--line); border-radius: 99px; background: var(--bg2); color: var(--dim);
+  font-weight: 700; cursor: pointer; touch-action: manipulation; }
+.car-tab[aria-current="true"] { border-color: var(--gold); background: var(--gold); color: #1d1608; }
+.car-tab:focus-visible, .car-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+@media (hover: hover) { .car-tab:not([aria-current="true"]):hover { border-color: var(--dim); color: var(--ink); } }
+.car-track { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: 100%; column-gap: 16px; overflow-x: auto; overflow-y: hidden;
+  align-items: start; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; transition: height .2s ease-out; }
+.car-track::-webkit-scrollbar { display: none; }
+.car-slide { min-width: 0; padding: 18px 20px 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel);
+  scroll-snap-align: start; scroll-snap-stop: always; }
+.car-slide h3 { font-size: 20px; margin-bottom: 4px; }
+.car-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+.car-btn { min-width: 44px; min-height: 44px; }
+.car-count { color: var(--dim); font-weight: 700; font-variant-numeric: tabular-nums; }
+.tut-time.info { border-color: var(--line); background: var(--bg2); color: var(--ink); }
+body.mobile .car-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-right: -10px; padding-right: 10px; }
+body.mobile .car-tabs::-webkit-scrollbar { display: none; }
+body.mobile .car-tab { flex: none; }
+body.mobile .car-slide { padding: 14px 14px 16px; }
+@media (prefers-reduced-motion: reduce) { .choice.on .lv-art .sp { animation: none; } .mm-item::before, .mm-item::after, .crumb .arr, .car-track { transition: none; } }
+
+/* ---------- Dosežki in junaki, O igri ---------- */
+.heroes .herogrid { list-style: none; margin: 0; padding: 0; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); }
+.herogrid li { display: grid; }
+.herogrid .pickcard { width: 100%; padding: 10px 6px; }
+.herogrid button.pickcard:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+@media (hover: hover) { .herogrid button.pickcard:hover { border-color: var(--c); } }
+.heroes .devbox { margin-top: 40px; padding: 18px 14px 14px; }
+.about .credit-sec { margin-top: 18px; }
+.about .credit-sec h3 { font-size: 15px; margin-bottom: 6px; }
+.about .rp-open { min-height: 44px; }
+.hm > .crumbs { margin: 0; }

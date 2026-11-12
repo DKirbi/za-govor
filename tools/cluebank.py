@@ -305,7 +305,7 @@ SEKIRA|Z njo cepimo drva|predmeti|1
 KLADIVO|Z njim zabijamo žeblje|predmeti|1
 ŽEBELJ|Zabijemo ga s kladivom|predmeti|1
 VRV|Z njo kaj zvežemo|predmeti|1
-PODKOVA|Prinaša srečo nad vrati|predmeti|1
+PODKEV|Prinaša srečo nad vrati|predmeti|1
 DAN|Ima 24 ur|cas|1
 NOČ|Nasprotje dneva|cas|1
 JUTRO|Del dneva po zori|cas|1
@@ -937,10 +937,9 @@ if problems:
     print('\n'.join(problems)); sys.exit(1)
 
 # words the battle dictionary doesn't know (proper nouns are expected here) — printed for review
-d = json.loads((root / 'dict.json').read_text())
-forms = set()
-for lemma, fs in d.items():
-    forms.add(lemma); forms.update(fs)
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from lexicon import Lexicon
+forms = Lexicon.load(root / 'lexicon.bin')
 (root / 'clues.json').write_text(json.dumps({'banks': banks, 'themes': THEMES}, ensure_ascii=False, separators=(',', ':')))
 from collections import Counter
 for name, rows in banks.items():

@@ -111,9 +111,9 @@ run(async () => {
   // 3. Chest: one word. A shorter real word ends it with a partial reward, the hidden word opens it
   await page.evaluate(() => window.__ZG.go('chest', window.__ZG.NODES[1])); await sleep(300);
   const chest = await page.evaluate(() => {
-    const E = window.__ZG.S.ev, letters = E.letters.map(l => l.ch), W = window.__ZG.WORDS;
+    const E = window.__ZG.S.ev, letters = E.letters.map(l => l.ch), W = window.__ZG.LEX.suggestedWords(3, E.item.w.length - 1);
     const can = w => { const pool = letters.slice(); for (const c of w) { const i = pool.indexOf(c); if (i < 0) return false; pool.splice(i, 1); } return true; };
-    const partial = [...W].filter(w => w.length >= 3 && w.length < E.item.w.length && w !== E.item.w && can(w)).sort((a, b) => b.length - a.length)[0];
+    const partial = W.filter(w => w !== E.item.w && can(w)).sort((a, b) => b.length - a.length)[0];
     return { answer: E.item.w, partial };
   });
   const tapWord = async w => {
@@ -138,7 +138,7 @@ run(async () => {
   // 4. Rock slide: typed on the in-game keyboard, sent with Pošlji
   await page.evaluate(() => window.__ZG.go('trap', window.__ZG.NODES[3])); await sleep(1600);
   const rock = await page.evaluate(() => window.__ZG.S.ev.rocks.find(r => r.state === 'fall').ch);
-  const tw = await page.evaluate(c => [...window.__ZG.WORDS].find(x => x.includes(c) && x.length === 5), rock);
+  const tw = await page.evaluate(c => window.__ZG.LEX.suggestedWords(5, 5).find(x => x.includes(c)), rock);
   const trapKb = await page.evaluate(() => { const kb = document.querySelector('.event > .vkbd'), r = kb && kb.getBoundingClientRect(); return { keys: kb ? kb.querySelectorAll('.vkey').length : 0, onScreen: !!r && r.bottom <= innerHeight + 1, readonly: document.querySelector('.wordin').readOnly }; });
   check(trapKb.keys === 26 && trapKb.onScreen && trapKb.readonly, 'the rock slide shows the in-game keyboard and keeps the system keyboard closed', JSON.stringify(trapKb));
   for (const ch of tw) { await page.evaluate(c => [...document.querySelectorAll('.vkbd .vkey')].find(k => k.textContent === c).click(), ch); await sleep(25); }
@@ -171,11 +171,12 @@ run(async () => {
     Z.go('battle', Z.NODES[0]); await wait(200);
     out.pause = [window.zgBack(), Z.G.paused]; out.resume = [window.zgBack(), Z.G.paused];
     Z.go('gallery'); await wait(100); out.gallery = [window.zgBack(), Z.S.screen];
+    out.heroes = [window.zgBack(), Z.S.screen];
     out.title = window.zgBack();
     return out;
   });
-  check(back.pause[1] === true && back.resume[1] === false && back.gallery[1] === 'title' && back.title === 'exit',
-    'Android back: pauses a battle, resumes it, steps back to the start screen and only exits from there', JSON.stringify(back));
+  check(back.pause[1] === true && back.resume[1] === false && back.gallery[1] === 'heroes' && back.heroes[1] === 'title' && back.title === 'exit',
+    'Android back: pauses a battle, resumes it, steps back page by page to the start screen and only exits from there', JSON.stringify(back));
 
   check(errors.length === 0, 'no page or console errors', errors.join(' | '));
   return ctx;

@@ -1,0 +1,89 @@
+
+/* ---------- Title scene: "Za govor!" over a dusk landscape (src/title.js, art from tools/art_title.py) ----------
+   Sizes are in art pixels times --s, the whole-number scale; animations move one art pixel per step. */
+.sr-only { position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.title-stage { --u: calc(var(--s) * 1px); position: relative; overflow: hidden; margin-bottom: 6px; background: #141836; isolation: isolate;
+  align-self: flex-start; flex-shrink: 0; }  /* in a centring flex column, title.js places it */
+/* the main menu starts inside the faded bottom of the scene */
+.title-stage + .mainmenu { position: relative; z-index: 1; margin-top: -56px; padding-top: 0; }
+body.mobile .title-stage + .mainmenu { margin-top: -40px; }
+.title-stage * { image-rendering: pixelated; image-rendering: crisp-edges; image-rendering: pixelated; }
+.ts-frame { position: absolute; left: 50%; top: 0; width: calc(480 * var(--u)); height: calc(160 * var(--u)); margin-left: calc(-240 * var(--u)); }
+.ts-frame.placed { left: var(--fx); margin-left: 0; }
+.ts-art { position: absolute; inset: 0; }
+.ts-l { position: absolute; inset: 0; background-repeat: no-repeat; background-size: calc(480 * var(--u)) calc(160 * var(--u)); }
+.ts-clouds, .ts-mist { background-repeat: repeat-x; }
+.ts-shimmer { background-size: calc(960 * var(--u)) calc(160 * var(--u)); }
+/* the fade into the dark menu below */
+.ts-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 38%; pointer-events: none;
+  background: linear-gradient(180deg, rgba(18,19,24,0) 0%, rgba(18,19,24,.55) 45%, rgba(18,19,24,.9) 78%, var(--bg) 100%); }
+
+/* placing things by art coordinates */
+.ts-p, .ts-flame, .ts-glow { position: absolute; left: calc(var(--x) * var(--u)); top: calc(var(--y) * var(--u)); }
+.ts-p { width: var(--u); height: var(--u); opacity: 0; }
+.ts-p.big { width: calc(2 * var(--u)); height: calc(2 * var(--u)); }
+.ts-flame { width: calc(12 * var(--u)); height: calc(14 * var(--u)); background-size: calc(36 * var(--u)) calc(14 * var(--u)); }
+.ts-glow { width: calc(64 * var(--u)); height: calc(36 * var(--u)); margin: calc(-24 * var(--u)) 0 0 calc(-32 * var(--u)); border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255,190,90,.38), rgba(255,140,60,.12) 60%, transparent); mix-blend-mode: screen; }
+
+/* the wordmark and ribbon, centred over Triglav */
+.ts-mark { position: absolute; left: 0; right: 0; top: 0; height: 100%; }
+.ts-logo, .ts-ribbon { position: absolute; left: 50%; display: block; max-width: none; user-select: none; -webkit-user-drag: none; }
+.ts-logo { top: calc(var(--ly) * var(--u)); width: calc(var(--lw) * var(--u)); height: calc(var(--lh) * var(--u)); margin-left: calc(var(--lw) * var(--u) / -2); }
+.ts-ribbon { top: calc(var(--ry) * var(--u)); width: calc(var(--rw) * var(--u)); height: calc(var(--rh) * var(--u)); margin-left: calc(var(--rw) * var(--u) / -2); }
+.ts-aura { position: absolute; left: 50%; top: calc((var(--ly) - 10) * var(--u)); width: calc((var(--lw) + 70) * var(--u)); height: calc((var(--lh) + 34) * var(--u));
+  margin-left: calc((var(--lw) + 70) * var(--u) / -2); border-radius: 50%; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(255,214,120,.42), rgba(255,170,80,.16) 55%, transparent 100%); }
+
+/* ---- motion */
+/* the stars only breathe: two sets, slow and out of step */
+.ts-tw.a { animation: tsTwinkle 9s ease-in-out infinite; }
+.ts-tw.b { animation: tsTwinkle 13s ease-in-out infinite; --off: 5.3; }
+@keyframes tsTwinkle { 0%, 100% { opacity: .9 } 50% { opacity: .45 } }
+/* clouds and mist creep a pixel every few seconds; both layers tile every 480 art px, so the loop has no seam */
+.ts-clouds { animation: tsDriftL 1800s steps(480) infinite; }
+.ts-mist { animation: tsDriftR 1400s steps(480) infinite; }
+@keyframes tsDriftL { from { background-position-x: 0 } to { background-position-x: calc(-480 * var(--u)) } }
+@keyframes tsDriftR { from { background-position-x: 0 } to { background-position-x: calc(480 * var(--u)) } }
+/* light on the water: the two frames fade slowly into each other */
+.ts-shimmer { animation: tsWaterA 8s ease-in-out infinite; }
+.ts-shimmer.b { background-position-x: calc(-480 * var(--u)); animation-name: tsWaterB; }
+@keyframes tsWaterA { 0%, 100% { opacity: 1 } 50% { opacity: .25 } }
+@keyframes tsWaterB { 0%, 100% { opacity: .1 } 50% { opacity: .9 } }
+.ts-flame { animation: tsFlame .9s steps(3) infinite; }
+@keyframes tsFlame { from { background-position-x: 0 } to { background-position-x: calc(-36 * var(--u)) } }
+.ts-glow { animation: tsGlow 3.2s ease-in-out infinite; }
+@keyframes tsGlow { 0%, 100% { opacity: .8; transform: scale(1) } 40% { opacity: 1; transform: scale(1.04) } 65% { opacity: .86 } }
+/* the wordmark and ribbon stand still; only the warm glow behind them breathes */
+.ts-aura { animation: tsAura 8s ease-in-out infinite; }
+@keyframes tsAura { 0%, 100% { opacity: .65; transform: scale(.97) } 50% { opacity: 1; transform: scale(1.03) } }
+/* sparks rise one whole art pixel per step, slowly; fading and the one-pixel sway run as separate animations */
+.ts-spark, .ts-ember, .ts-rise { animation: tsUp var(--d) steps(var(--rise)) infinite, tsFade var(--d) linear infinite, tsSwayR var(--d) steps(1) infinite; }
+.ts-spark.sw-l, .ts-ember.sw-l, .ts-rise.sw-l { animation-name: tsUp, tsFade, tsSwayL; }
+@keyframes tsUp { from { transform: translateY(0) } to { transform: translateY(calc(var(--rise) * var(--u) * -1)) } }
+@keyframes tsFade { 0% { opacity: 0 } 12% { opacity: 1 } 75% { opacity: .9 } 100% { opacity: 0 } }
+@keyframes tsSwayR { 0%, 100% { translate: 0 0 } 35% { translate: var(--u) 0 } 70% { translate: 0 0 } }
+@keyframes tsSwayL { 0%, 100% { translate: 0 0 } 35% { translate: calc(-1 * var(--u)) 0 } 70% { translate: 0 0 } }
+/* fireflies hop between whole pixels and blink */
+.ts-fly { animation: tsFly0 var(--d) steps(1) infinite, tsBlink var(--d) ease-in-out infinite; }
+.ts-fly.fp1 { animation-name: tsFly1, tsBlink; } .ts-fly.fp2 { animation-name: tsFly2, tsBlink; }
+@keyframes tsBlink { 0%, 100% { opacity: 0 } 15% { opacity: 1 } 40% { opacity: .25 } 60% { opacity: 1 } 85% { opacity: .1 } }
+@keyframes tsFly0 { 0%, 100% { transform: translate(0, 0) } 10% { transform: translate(var(--u), 0) } 20% { transform: translate(calc(2 * var(--u)), calc(-1 * var(--u))) }
+  30% { transform: translate(calc(3 * var(--u)), calc(-1 * var(--u))) } 40% { transform: translate(calc(4 * var(--u)), calc(-2 * var(--u))) } 50% { transform: translate(calc(5 * var(--u)), calc(-3 * var(--u))) }
+  60% { transform: translate(calc(5 * var(--u)), calc(-4 * var(--u))) } 70% { transform: translate(calc(4 * var(--u)), calc(-4 * var(--u))) } 80% { transform: translate(calc(3 * var(--u)), calc(-3 * var(--u))) } 90% { transform: translate(calc(1 * var(--u)), calc(-1 * var(--u))) } }
+@keyframes tsFly1 { 0%, 100% { transform: translate(0, 0) } 12% { transform: translate(calc(-1 * var(--u)), calc(-1 * var(--u))) } 25% { transform: translate(calc(-2 * var(--u)), calc(-2 * var(--u))) }
+  37% { transform: translate(calc(-3 * var(--u)), calc(-2 * var(--u))) } 50% { transform: translate(calc(-4 * var(--u)), calc(-1 * var(--u))) } 62% { transform: translate(calc(-3 * var(--u)), 0) }
+  75% { transform: translate(calc(-2 * var(--u)), var(--u)) } 87% { transform: translate(calc(-1 * var(--u)), var(--u)) } }
+@keyframes tsFly2 { 0%, 100% { transform: translate(0, 0) } 14% { transform: translate(var(--u), calc(-1 * var(--u))) } 28% { transform: translate(var(--u), calc(-2 * var(--u))) }
+  42% { transform: translate(calc(2 * var(--u)), calc(-3 * var(--u))) } 57% { transform: translate(calc(3 * var(--u)), calc(-3 * var(--u))) } 71% { transform: translate(calc(4 * var(--u)), calc(-2 * var(--u))) }
+  85% { transform: translate(calc(2 * var(--u)), calc(-1 * var(--u))) } }
+/* linden leaves: fall a pixel per step, drift right on the wind */
+.ts-leaf { width: calc(2 * var(--u)); animation: tsFall var(--d) steps(74) infinite, tsFade var(--d) linear infinite, tsWind var(--d) steps(30) infinite; }
+@keyframes tsFall { from { transform: translateY(0) } to { transform: translateY(calc(74 * var(--u))) } }
+@keyframes tsWind { from { translate: 0 0 } to { translate: calc(30 * var(--u)) 0 } }
+/* every delay is offset by the shared clock --t, so a re-render of the start screen keeps the phase */
+.title-stage .ts-art > *, .title-stage .ts-mark > * { animation-delay: calc((var(--off, 0) + var(--t, 0)) * -1s); }
+@media (prefers-reduced-motion: reduce) {
+  .title-stage *, .title-stage .ts-p { animation: none !important; }
+  .ts-p { display: none; }
+}

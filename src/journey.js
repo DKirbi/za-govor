@@ -20,7 +20,7 @@ function unlock(id) {
   UNLOCKED.add(id); try { localStorage.setItem('zg-unlocked', JSON.stringify([...UNLOCKED])); } catch (e) { /* no storage */ }
   return true;
 }
-const canStart = id => S.testMode || UNLOCKED.has(id);
+const canStart = id => setupVal('testMode') || UNLOCKED.has(id);   // the test mode chosen on Nova pot counts already
 const starterChoices = () => CHARS.filter(c => canStart(c.id)).map(c => c.id);
 
 // backstories of the four heroes added with the journey
@@ -144,7 +144,7 @@ function renderPick() {
   const locked = CHARS.length - ids.length;
   SCR.append(h('div', { class: 'pick' },
     h('div', { class: 'logo', style: { 'font-size': '30px' } }, 'Kdo gre na pot?'),
-    h('p', { class: 'lead' }, 'Izberi enega junaka. Na začetku so znani trije: Martin Krpan, Zeleni Jurij in Kurent. Drugi so še sence — ko koga srečaš na poti, ga spoznaš in naslednjič lahko začneš tudi z njim.' + (locked ? ` Še neznanih: ${locked}.` : ' Spoznal si vse.') + (S.testMode ? ' (Preizkusni način: na izbiro so vsi.)' : '')),
+    h('p', { class: 'lead' }, 'Izberi enega junaka. Na začetku so znani trije: Martin Krpan, Zeleni Jurij in Kurent. Drugi so še sence — ko koga srečaš na poti, ga spoznaš in naslednjič lahko začneš tudi z njim.' + (locked ? ` Še neznanih: ${locked}.` : ' Spoznal si vse.') + (setupVal('testMode') ? ' (Preizkusni način: na izbiro so vsi.)' : '')),
     h('div', { class: 'pickgrid' }, CHARS.map(c => { const i = ids.indexOf(c.id);
       return i < 0 ? h('div', { class: 'pickcard locked', title: 'Še neznan: srečaš ga na poti' }, h('i', { class: 'shade', style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, '???'), h('span', {}, 'še neznan'))
         : h('button', { class: 'pickcard' + (i === S.pickSel ? ' on' : '') + (isGod(c.id) ? ' god' : ''), style: { '--c': c.c }, 'aria-pressed': i === S.pickSel ? 'true' : 'false',
@@ -162,15 +162,15 @@ function renderPick() {
           h('div', {}, 'Njegove besede (×1,5)'), h('div', {}, K.domain.slice(0, 5).join(', ') + ' …')),
         h('div', { class: 'row', style: { 'justify-content': 'flex-start' } },
           h('button', { class: 'btn primary', onclick: startJourney }, 'Na pot ', h('kbd', {}, 'Enter')),
-          h('button', { class: 'btn', onclick: () => go('title') }, 'Nazaj'))))));
+          h('button', { class: 'btn', onclick: () => go('newrun') }, 'Nazaj'))))));
 }
 function pickKey(e) {
   const d = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0;
   if (d) { e.preventDefault(); const n = starterChoices().length; S.pickSel = (S.pickSel + d + n) % n; sfx('sel'); mountShell(); renderPick(); }
   else if (e.key === 'Enter') { e.preventDefault(); startJourney(); }
-  else if (e.key === 'Escape') go('title');
+  else if (e.key === 'Escape') go('newrun');
 }
-function startJourney() { const ids = starterChoices(); newRun(ids[clamp(S.pickSel, 0, ids.length - 1)]); S.pickSel = 0; go('travel'); }
+function startJourney() { const ids = starterChoices(), id = ids[clamp(S.pickSel, 0, ids.length - 1)]; applySetup(); newRun(id); S.pickSel = 0; go('travel'); }
 
 // ------------------------------------------------------------ a run and its regions
 function newRun(starterId) {
@@ -245,7 +245,7 @@ function renderTravel() {
     h('div', { class: 'bhead' },
       h('div', { class: 't' }, reg.name, h('small', {}, `pokrajina ${R.ri + 1} od ${WORLD.regions.length}`)),
       h('div', { class: 'regdots', title: 'Pot do Ljubljanskega gradu' }, WORLD.regions.map((r, i) => h('i', { class: i < R.ri ? 'done' : i === R.ri ? 'on' : '', title: r.name }))),
-      h('button', { class: 'btn small', onclick: () => go('title') }, 'Nastavitve')),
+      h('button', { class: 'btn small', onclick: () => go('title') }, 'Meni')),
     h('p', { class: 'tv-intro' }, reg.intro),
     scene,
     h('div', { class: 'tv-prompt', ref: el => T.prompt = el }),
@@ -395,6 +395,7 @@ function openShop(stop) {
 // ------------------------------------------------------------ the end of the road
 function renderEnding() {
   const R = S.run || { battles: 0, words: 0, gold: 0, relics: [] };
+  R.over = true;   // a finished journey cannot be continued from the menu
   SCR.append(h('div', { class: 'title ending' },
     h('div', { class: 'logo' }, 'Ljubljana je rešena'),
     h('div', { class: 'tagline' }, 'Lintvern je premagan. Z grajskega stolpa se vidi vsa pot, ki si jo prehodil — od Ptuja do sem.'),
@@ -429,7 +430,7 @@ function renderGalleryExtras(wrap) {
 const DART_COLS = 6, DART_ROWS = 3, DART_DMG = 3, DART_XP = 7, DART_GOLD = 2, DART_STRIKE = 4;
 let DART_WORDS = null;
 function startDarts(node) {
-  if (!DART_WORDS) DART_WORDS = [...new Set(LEMMA.values())].filter(w => w.length === DART_COLS && WORDS.has(w));
+  if (!DART_WORDS) DART_WORDS = LEX.suggestedWords(DART_COLS, DART_COLS).filter(w => LEX.lemma(w) === w);   // base forms only
   const word = pick(DART_WORDS), t = (S.mode === 'real' ? 35 : 70) * (has('pisanica') ? 1.5 : 1);
   const cols = [...word].map(ch => { const col = [ch]; while (col.length < DART_ROWS) { const x = BAG[rnd(BAG.length)]; if (!col.includes(x)) col.push(x); } return shuffle(col); });
   S.ev = { node, kind: 'darts', word, cols, sel: [], time: t, timeMax: t, done: false, msg: '', msgKind: '' };
