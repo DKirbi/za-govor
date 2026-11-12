@@ -29,6 +29,13 @@ run(async () => {
   await page.setViewport({ width: 360, height: 780, isMobile: true, hasTouch: true, deviceScaleFactor: 2 }); await sleep(300);
   check(await covered() === 0, 'the whole letter grid is tappable without scrolling (360×780)');
   await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 2 }); await sleep(300);
+  // a long word with letters of every hero: the word bar keeps its height, so the grid under the finger stays put
+  const shift = await page.evaluate(() => { const Z = window.__ZG, B = Z.B, top = () => Math.round(document.querySelector('.mesh').getBoundingClientRect().top);
+    const t0 = top(), bar0 = document.querySelector('.wordbar').offsetHeight, w = [...Z.allWords().keys()].sort((a, b) => b.length - a.length)[0], p = Z.findPath(w);
+    p.forEach((i, n) => { B.grid[i].owner = n % Z.HEROES.length; }); B.path = p; B.typed = w; Z.renderWordForTest();
+    const r = { w, before: t0, after: top(), bar: [bar0, document.querySelector('.wordbar').offsetHeight], chips: document.querySelectorAll('.wordbar .chip').length };
+    B.path = []; B.typed = ''; Z.renderWordForTest(); return r; });
+  check(shift.before === shift.after && shift.bar[0] === shift.bar[1] && shift.chips >= 3, 'selecting a long word of several heroes moves nothing: the word bar keeps its height', JSON.stringify(shift));
   const [word, tiles] = await page.evaluate(() => [...window.__ZG.allWords().entries()].find(([w]) => w.length >= 4));
   const tapTile = async i => { const [x, y] = await center(page, '.mesh .tile', i); await page.touchscreen.tap(x, y); await sleep(50); };
   check(await page.evaluate(() => !document.querySelector('.wordbar .btn.send') && !document.querySelector('.actionbar')), 'the mesh has no Pošlji button on a phone');
@@ -131,7 +138,7 @@ run(async () => {
     await tapWord(chest.partial);
     await page.tap('.sendrow .btn.send'); await sleep(200);
     const part = await page.evaluate(() => { const E = window.__ZG.S.ev; return { done: E.done, win: E.win, partial: E.partial }; });
-    check(part.done && !part.win && part.partial && part.partial.xp > 0 && part.partial.xp < 50, 'a real word that does not use every letter ends the chest with a partial reward', JSON.stringify(part));
+    check(part.done && !part.win && part.partial && part.partial.share > 0 && part.partial.share < 1, 'a real word that does not use every letter ends the chest with a partial reward (part of the gold, no item)', JSON.stringify(part));
     await page.evaluate(() => { const Z = window.__ZG; Z.go('chest', Z.NODES[1]); }); await sleep(300);
     chest.answer = await page.evaluate(() => window.__ZG.S.ev.item.w);
   }
