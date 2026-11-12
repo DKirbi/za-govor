@@ -1,0 +1,30 @@
+{
+  "_about": "Lemmas taken out of the accepted list. Exact lemma match; a form that also belongs to a Slovene lemma stays. Add a lemma here when a player shows that the game accepts a foreign word.",
+  "_lemmas": "Words that Sloleks generated automatically from the Gigafida corpus but that are not Slovene (Croatian or English text in the corpus).",
+  "lemmas": [
+    "djevojka", "nešto", "grump", "daska", "majmun", "hvatati", "zajednica", "obarati", "dopremiti",
+    "vratolomija", "samoinicijativno", "ožujski"
+  ],
+  "_foreign_headwords": "Franček and Thesaurus of Modern Slovene headwords that are English or French words in their original spelling (citation forms), usually with an adapted Slovene spelling in common use (džip, šik, sef, suvenir, žanr, burbon). Reviewed 12 Nov 2026 from the headwords Sloleks lacks that an English dictionary also knows (347 from Franček, 114 from the thesaurus); Slovene homographs (gem, drum, turn, glisten, skunks, slut, omen, dost, rift) and loans used as they are (allegro, burger, diesel, zoo, atrium, viking) stay accepted. Thesaurus words tagged as foreign (X) are skipped by the build.",
+  "foreign_headwords": [
+    "adviser", "air", "ale", "angst", "anthem", "apart", "bagging", "basic", "basketball", "beagle",
+    "beefsteak", "beige", "blazer", "blizzard", "bobtail", "bomber", "border", "bottleneck", "bourbon",
+    "breeder", "brougham", "buffet", "business", "camp", "capon", "caravan", "carport", "chanson",
+    "charter", "chat", "chic", "chiffon", "chintz", "ciao", "clearing", "clerics", "cockpit",
+    "collage", "college", "color", "comp", "consulting", "controlling", "cookie", "cop", "corner",
+    "cornflakes", "coupe", "cracker", "cracking", "crepe", "croupier", "dancing", "dauphin",
+    "debriefing", "decoupage", "delete", "delimiter", "demimonde", "deport", "depot", "desktop",
+    "digest", "dope", "dozen", "dreadnought", "eagle", "engineering", "factoring", "fair", "falcon",
+    "feeling", "financier", "flush", "free", "fuhrer", "gazebo", "genre", "ghetto", "girl", "glamour",
+    "gloss", "groom", "hacker", "hall", "hedging", "hertz", "hot", "house", "inch", "inline",
+    "insider", "jabot", "jeep", "jingle", "jogger", "journal", "juice", "junkers", "junkie", "lasagna",
+    "lasting", "leader", "life", "loser", "lotion", "lunch", "mademoiselle", "marijuana", "mariner",
+    "melange", "message", "metier", "mirage", "mohair", "motto", "muffin", "nacho", "notebook",
+    "nougat", "off", "offline", "offside", "outlet", "overdose", "popcorn", "pouf", "puck", "restart",
+    "resume", "revival", "roadie", "safe", "sample", "scrabble", "sealskin", "shake", "shaker",
+    "shift", "shopping", "shorts", "shuttle", "smash", "snorkel", "source", "souvenir", "sovereign",
+    "speed", "spitfire", "spleen", "sponsor", "spring", "spurt", "stick", "straight", "streamer",
+    "stretch", "tattoo", "tee", "timer", "topspin", "trivia", "vaudeville", "vendetta", "voodoo",
+    "zeppelin"
+  ]
+}
