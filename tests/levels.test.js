@@ -1,4 +1,4 @@
-// Knowledge levels (Malček, Učenjak, Knjižni molj): chosen on the title screen and saved;
+// Knowledge levels (Malček, Učenjak, Knjižni molj): chosen on Nova pot, saved when the journey starts;
 // each sets the letter-mesh tips, the shortest word, crossword banks and crossword tips.
 const { openGame, runner, sleep, typeText } = require('./harness');
 const { check, run } = runner('Knowledge levels (Malček, Učenjak, Knjižni molj)');
@@ -13,20 +13,22 @@ run(async () => {
   const ctx = await openGame();
   const { page, errors, shot } = ctx;
 
-  check(await page.evaluate(() => document.querySelectorAll('.choices.three .choice').length === 3), 'the title screen offers three knowledge levels under the pace choice');
+  await page.evaluate(() => window.__ZG.go('newrun')); await sleep(150);
+  check(await page.evaluate(() => document.querySelectorAll('.lv-grid .choice').length === 3), 'Nova pot offers three knowledge levels under the pace choice');
   check(await page.evaluate(() => window.__ZG.S.know === 'malcek'), 'Malček is the default');
 
   for (const [level, ex] of Object.entries(EXPECT)) {
     const name = await page.evaluate(l => window.__ZG.LEVELS[l].name, level);
-    // choose the level on the title screen
-    await page.evaluate(() => window.__ZG.go('title')); await sleep(150);
-    await page.evaluate(n => [...document.querySelectorAll('.choices.three .choice')].find(b => b.querySelector('h3').textContent === n).click(), name);
-    await sleep(150);
-    const saved = await page.evaluate(() => ({ know: window.__ZG.S.know, stored: localStorage.getItem('zg-know'),
-      toggle: [...document.querySelectorAll('.toggle')].some(t => t.textContent.includes('Predlogi besed')) }));
-    check(saved.know === level && saved.stored === level, `${name}: choosing it on the title screen saves it`);
-    check(saved.toggle === ex.proposals, `${name}: word-proposal switch ${ex.proposals ? 'shown' : 'hidden'} on the title screen`);
-    if (level === 'molj') await shot('levels-title');
+    // choose the level on Nova pot; it counts (and is saved) once the journey starts
+    await page.evaluate(() => { window.__ZG.go('title'); window.__ZG.go('newrun'); }); await sleep(150);
+    await page.click(`.lv-grid .choice[data-id="${level}"]`); await sleep(150);
+    const shown = await page.evaluate(() => [...document.querySelectorAll('.subopt')].some(t => !t.hidden && t.textContent.includes('Predlogi besed')));
+    check(shown === ex.proposals, `${name}: word-proposal switch ${ex.proposals ? 'shown under it' : 'hidden'} on Nova pot`);
+    if (level === 'molj') await shot('levels-newrun');
+    await page.click('.cta-row .cta'); await sleep(150);
+    await page.keyboard.press('Enter'); await sleep(300);
+    const saved = await page.evaluate(() => ({ screen: window.__ZG.S.screen, know: window.__ZG.S.know, stored: localStorage.getItem('zg-know') }));
+    check(saved.screen === 'travel' && saved.know === level && saved.stored === level, `${name}: starting a journey with it saves it`, JSON.stringify(saved));
 
     // letter mesh tips
     await page.evaluate(() => { window.__ZG.S.mode = 'calm'; window.__ZG.go('battle', window.__ZG.NODES[2]); }); await sleep(600);

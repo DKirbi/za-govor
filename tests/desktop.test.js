@@ -39,9 +39,11 @@ run(async () => {
   const ctx = await openGame();
   const { page, errors, shot } = ctx;
 
-  // title → choose the first hero → the road (the journey itself is covered by journey.test.js)
+  // menu → Nova pot → choose the first hero → the road (the journey itself is covered by journey.test.js)
   await page.keyboard.press('Enter'); await sleep(200);
-  check((await state(page)).screen === 'pick', 'Enter on the title screen opens the choice of the first hero');
+  check((await state(page)).screen === 'newrun', 'Enter on the start screen opens Nova pot (the first menu item on a fresh game)');
+  await page.keyboard.press('Enter'); await sleep(200);
+  check((await state(page)).screen === 'pick', 'Enter on Nova pot opens the choice of the first hero');
   await page.keyboard.press('Enter'); await sleep(300);
   check((await state(page)).screen === 'travel', 'Enter again starts the journey');
 

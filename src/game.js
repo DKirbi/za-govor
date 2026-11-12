@@ -881,10 +881,12 @@ const S = {
     else if (d < 0) { const k = living().sort((a, b) => this.heroes[b].hp - this.heroes[a].hp)[0]; if (k != null) this.heroes[k].hp = Math.max(1, this.heroes[k].hp + d); }
   },
   get level() { const l = living(); return l.length ? Math.round(l.reduce((a, k) => a + this.heroes[k].lvl, 0) / l.length) : 1; },
-  screen: 'title', mode: 'real',
+  screen: 'title',
   know: (() => { try { const v = localStorage.getItem('zg-know'); if (LEVELS[v]) return v; } catch (e) { /* no storage */ } return 'malcek'; })(),
   xp: 0, meterBonus: 0,
-  battle: null, ev: null, suggest: true, tutOn: true,
+  mode: (() => { try { const v = localStorage.getItem('zg-mode'); if (v === 'real' || v === 'calm') return v; } catch (e) { /* no storage */ } return 'real'; })(),
+  battle: null, ev: null, suggest: true, menuSel: null, setup: null,
+  tutOn: (() => { try { return localStorage.getItem('zg-tutorials') !== '0'; } catch (e) { return true; } })(),
   mobile: (() => { try { const v = localStorage.getItem('zg-mobile'); if (v != null) return v === '1'; } catch (e) { /* no storage */ }
     const coarse = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches);
     const touchPhone = (navigator.maxTouchPoints || 0) > 0 && Math.min(screen.width, screen.height) < 820;
@@ -901,11 +903,16 @@ const app = $('#app');
 let SCR = null;   // current screen container (below the top bar)
 function mountShell() { app.innerHTML = ''; app.append(renderTopbar(), SCR = h('div', { id: 'screen' })); }
 function go(screen, arg) {
+  const prev = S.screen;
   S.screen = screen;
-  if (screen === 'title') S.pickIds = null;
+  if (screen === 'title') {
+    S.pickIds = null; S.setup = null;                            // leaving Nova pot for the menu drops its unsaved choices
+    if (!MENU_PAGES[prev] && prev !== 'title') S.menuSel = null;   // back from a page: its item; from the road: the first item
+  }
   if (screen !== 'battle') { S.battle = null; B = null; }
   mountShell();
-  ({ title: renderTitle, pick: renderPick, travel: renderTravel, ending: renderEnding, battle: startBattle, chest: startChest, trap: startTrap, darts: startDarts, gallery: renderGallery, credits: renderCredits, hero: renderHeroMoment })[screen](arg);
+  ({ title: renderTitle, newrun: renderNewRun, howto: renderHowto, about: renderAbout, heroes: renderHeroes, pick: renderPick, travel: renderTravel, ending: renderEnding,
+    battle: startBattle, chest: startChest, trap: startTrap, darts: startDarts, gallery: renderGallery, hero: renderHeroMoment })[screen](arg);
   window.scrollTo(0, 0);
   fitScreen();
 }
@@ -941,60 +948,16 @@ function toggleMobile() {
   else if (scr === 'pick') renderPick();
   else if (scr === 'ending') renderEnding();
   else if (scr === 'gallery') renderGallery();
-  else if (scr === 'credits') renderCredits();
   else if (scr === 'hero') renderHeroMoment();
+  else if (scr === 'newrun') renderNewRun();
+  else if (scr === 'howto') renderHowto();
+  else if (scr === 'about') renderAbout();
+  else if (scr === 'heroes') renderHeroes();
   else renderTitle();
   fitScreen();
 }
 
-// ============================================================ title
-function renderTitle() {
-  const choice = (mode, title, text, badge) => h('button', { class: 'choice' + (S.mode === mode ? ' on' : ''),
-    onclick: () => { S.mode = mode; go('title'); } },
-    h('h3', {}, title, badge ? h('span', { class: 'badge' }, badge) : null), h('p', {}, text));
-  const know = (id, text) => h('button', { class: 'choice' + (S.know === id ? ' on' : ''),
-    onclick: () => { S.know = id; try { localStorage.setItem('zg-know', id); } catch (e) { /* no storage */ } go('title'); } },
-    h('h3', {}, LEVELS[id].name), h('p', {}, text));
-  SCR.append(h('div', { class: 'title' },
-    titleStage(),
-    inspiredLine(),
-    h('div', { class: 'folk-rule' }),
-    h('div', { class: 'note' }, 'Novo: pot po Sloveniji. Začneš z enim junakom in hodiš od Ptuja do Ljubljanskega gradu, kjer čaka zmaj. Na poti srečaš sovražnike, skrinje, plazove, vodnjake, krošnjarje in nove junake (v družini so največ štirje, bog le eden). Zdravje se po bitki ne vrne samo: junaki se pozdravijo pri vodnjaku. Zlatnike zapraviš pri krošnjarju za napoje, strupe in predmete. ',
-      h('button', { class: 'btn small', style: { 'margin-left': '4px' }, onclick: () => go('gallery') }, 'Liki, predmeti in ozadja')),
-    h('h3', {}, 'Težavnost'),
-    h('div', { class: 'choices' },
-      choice('real', 'Realni čas', 'Sovražniki napadajo sproti in počasi topijo zdravje družine. Hitrejše besede pomenijo manj udarcev.', 'priporočeno'),
-      choice('calm', 'Mirni način', 'Sovražniki počakajo na tvojo besedo. V bitkah ni časovnega pritiska; dogodki imajo dvojni čas.')),
-    h('h3', {}, 'Znanje'),
-    h('div', { class: 'choices three' },
-      know('malcek', 'Za učenje besed. Kratke vsakdanje besede v križankah, predlogi in trije namigi v mreži, pet razkritih črk na križanko.'),
-      know('ucenjak', 'Daljše in zahtevnejše besede. V mreži besede z vsaj štirimi črkami in en namig na bitko, v križanki dve razkriti črki.'),
-      know('molj', 'Križanke kot v časopisu: zemljepis, književnost, glasba, antika. V mreži nobene pomoči, v križanki ena razkrita črka.')),
-    LV().proposals ? h('label', { class: 'toggle' }, h('input', { type: 'checkbox', checked: S.suggest, onchange: e => { S.suggest = e.target.checked; } }),
-      'Predlogi besed med igro (lažje — dobro za učenje)') : null,
-    h('label', { class: 'toggle' }, h('input', { type: 'checkbox', checked: S.tutOn, onchange: e => { S.tutOn = e.target.checked; } }),
-      'Razlaga pred vsako novo vrsto uganke (čas medtem stoji)',
-      h('button', { class: 'btn small', style: { 'margin-left': '6px' }, onclick: e => { e.preventDefault(); resetTuts(); e.target.textContent = 'Razlage se bodo pokazale znova'; e.target.disabled = true; } }, 'Pokaži razlage znova')),
-    h('div', { class: 'title-links' }, reportButton(openReportWindow, 'Prijavi manjkajočo besedo'),
-      h('span', { class: 'muted' }, 'Je igra zavrnila pravo slovensko besedo? Sporoči nam jo.')),
-    h('label', { class: 'toggle' }, h('input', { type: 'checkbox', checked: S.testMode, onchange: e => { S.testMode = e.target.checked; } }),
-      'Preizkusni način: 200 zlatnikov, postaje in pokrajine lahko preskočiš'),
-    h('div', { class: 'row', style: { 'justify-content': 'flex-start', 'flex-wrap': 'wrap' } },
-      h('button', { class: 'btn primary', onclick: () => go('pick') }, 'Nova pot'), h('span', { class: 'muted', style: { 'align-self': 'center' } }, h('kbd', {}, 'Enter')),
-      S.run ? h('button', { class: 'btn', onclick: () => go('travel') }, `Nadaljuj pot (${WORLD.regions[S.run.ri].name})`) : null),
-    h('div', { class: 'touch-help' }, 'Na telefonu: vleci po sosednjih črkah in spusti, beseda se pošlje sama (pri tapkanju še enkrat tapni zadnjo črko). Tap na predlog ga pošlje. Križanke in plaz tipkaš s slovensko tipkovnico v igri.'),
-    h('div', { class: 'controls-help' },
-      h('span', {}, h('kbd', {}, 'a–ž')), h('span', {}, 'tipkaj besedo; pot v mreži se poišče sama'),
-      h('span', {}, 'miška'), h('span', {}, 'vleci čez sosednje črke ali klikaj eno za drugo (klik na zadnjo potrdi)'),
-      h('span', {}, h('kbd', {}, 'Enter')), h('span', {}, 'potrdi besedo'),
-      h('span', {}, h('kbd', {}, 'Backspace'), ' ', h('kbd', {}, 'Del')), h('span', {}, 'briši črko · počisti besedo'),
-      h('span', {}, h('kbd', {}, 'Esc')), h('span', {}, 'premor: čas se ustavi, uganka se zakrije'),
-      h('span', {}, h('kbd', {}, 'presledek')), h('span', {}, 'izreci zagovor, ko je poln'),
-      h('span', {}, h('kbd', {}, '←'), ' ', h('kbd', {}, '→')), h('span', {}, 'izberi cilj (v križanki: premik po mreži)'),
-      h('span', {}, h('kbd', {}, '1'), ' ', h('kbd', {}, '2')), h('span', {}, 'namig · premešaj mrežo'),
-      h('span', {}, h('kbd', {}, 'Tab')), h('span', {}, 'v križanki: naslednja beseda'),
-      h('span', {}, h('kbd', {}, '?')), h('span', {}, 'v križanki: razkrij črko (število je omejeno)'))));
-}
+// The start screen (main menu) and the pages under it are in src/menu.js.
 
 
 // ============================================================ hero moments: backstories, greetings, thanks
@@ -1023,7 +986,7 @@ const LORE = {
   veles: { story: ['Veles je gospodar živine, bogastva in spodnjega sveta. Pri njem in pri Perunu so stari Slovani prisegali.', 'S Perunom se večno prepirata: Veles se skriva pod koreninami svetovnega drevesa, v vodi in v volni. Je tudi zavetnik pevcev in čarovnih besed.'],
     meet: 'Besede so moja čreda. Pazi, kako jih paseš.', after: 'Vsak dolg se enkrat poplača.', thanks: 'Dolgo sem bil zaklet v lastni temi. Hvala vam. Ko se naslednjič srečamo, vam posodim moč spodnjega sveta.' },
 };
-const HM_KIND = { after: 'Po bitki', meet: 'Srečanje na poti', freed: 'Urok je zlomljen' };
+const HM_KIND = { after: 'Po bitki', meet: 'Srečanje na poti', freed: 'Urok je zlomljen', codex: 'Junak' };
 function renderHeroMoment(arg) {
   arg = arg || S.heroArg; S.heroArg = arg;
   if (arg.sel == null) arg.sel = 0;
@@ -1038,8 +1001,9 @@ function renderHeroMoment(arg) {
   flip.append(h('div', { class: 'flip-in' }, front, rear));
   const flipBtn = h('button', { class: 'btn', 'aria-pressed': 'false', onclick: () => { const b = flip.classList.toggle('back'); flipBtn.setAttribute('aria-pressed', b ? 'true' : 'false'); flipBtn.lastChild.textContent = b ? ' Pokaži sliko' : ' Obrni karto'; sfx('sel', { rate: b ? .8 : 1.2 }); } }, '↻', ' Obrni karto');
   flip.addEventListener('click', () => flipBtn.click());
-  const line = kind === 'freed' ? L.thanks || L.meet : kind === 'meet' ? L.meet : hs && hs.down ? '…' : L.after;
+  const line = kind === 'freed' ? L.thanks || L.meet : kind === 'meet' || kind === 'codex' ? L.meet : hs && hs.down ? '…' : L.after;
   const wrap = h('div', { class: 'hm', style: { '--c': ch.c } },
+    arg.crumb ? crumb(arg.crumb, () => arg.next()) : null,
     h('div', {}, h('div', { class: 'kind' }, HM_KIND[kind]), h('h2', {}, ch.name, h('small', {}, ch.sub)),
       hs ? h('div', { class: 'hstat' }, hs.down ? 'Obležal. Zbudi ga vodnjak, junak z zdravilno močjo ali mrtva voda.' : [`Raven ${hs.lvl} od 3 · zdravje ${hs.hp}/${hs.maxHp}`, hs.leveled ? h('b', {}, ' · nova raven!') : null,
         hs.lvl < 3 ? ` · do naslednje ravni še ${LV_XP[hs.lvl] - hs.xp} XP` : ' · dolge besede zdaj štejejo največ']) : null),
@@ -1060,7 +1024,8 @@ function renderHeroMoment(arg) {
 // ============================================================ gallery (character sprites + attack cards)
 function renderGallery() {
   const wrap = h('div', { class: 'gallery' },
-    h('div', { class: 'logo', style: { 'font-size': '30px' } }, 'Liki in karte'),
+    crumb('Nazaj na junake', () => go('heroes')),
+    h('h1', { class: 'logo page-h1', tabindex: '-1', style: { 'font-size': '30px' } }, 'Liki in karte'),
     h('p', { class: 'lead' }, 'Piksel sličice so narisane na mreži 48 × 48 (šefa 64 × 64) z dvema sličicama: mirovanje in napad. Napad je namenoma preprost, kot na prvih ročnih konzolah: lik skoči naprej, tarča utripne. Nad napadalcem se dvigne poslikana deska v slogu panjskih končnic in ostane do tri sekunde; močnejša beseda pokaže večjo in bogatejšo sliko. Sovražnikove karte imajo temen okvir.'));
   const frames = (id, cursed) => h('div', { class: 'gframes' },
     cursed ? h('figure', {}, h('div', { class: 'fr cursed', style: { 'background-image': `url(${SPRITES[id]})` } }), 'zaklet (šef)') : null,
@@ -1105,8 +1070,9 @@ function renderGallery() {
       h('p', {}, ch.note), frames(ch.id),
       h('div', { class: 'gboards two' }, ch.plays.map(pl => board(ch.id, pl[1], pl[0])))));
   });
-  wrap.append(h('div', { class: 'row', style: { 'justify-content': 'flex-start' } }, h('button', { class: 'btn small', onclick: () => go('title') }, 'Nazaj na nastavitve')));
+  wrap.append(h('div', { class: 'row', style: { 'justify-content': 'flex-start' } }, h('button', { class: 'btn small', onclick: () => go('heroes') }, 'Nazaj na junake')));
   SCR.append(wrap);
+  focusPage();
 }
 
 
@@ -2751,10 +2717,9 @@ function finishEvent() {
 // ============================================================ global input + loop
 document.addEventListener('keydown', e => {
   if (isTextInput(e.target)) return;   // crossword / trap fields handle their own keys
-  if (S.screen === 'gallery') { if (e.key === 'Escape') go('title'); return; }
-  if (S.screen === 'credits') { if (e.key === 'Escape' || e.key === 'Enter') { e.preventDefault(); go('title'); } return; }
   if (S.overlayKey) { S.overlayKey(e); return; }
-  if (S.screen === 'title') { if (e.key === 'Enter') { e.preventDefault(); go('pick'); } return; }
+  if (S.screen === 'title') { menuKey(e); return; }
+  if (MENU_PAGES[S.screen] || S.screen === 'gallery') { pageKey(e); return; }
   if (S.screen === 'pick') { pickKey(e); return; }
   if (S.screen === 'travel') { travelKey(e); return; }
   if (S.screen === 'ending') { if (e.key === 'Enter') { e.preventDefault(); resetRun(); go('title'); } return; }
@@ -2793,6 +2758,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { menuItems, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 

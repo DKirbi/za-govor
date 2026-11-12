@@ -14,6 +14,7 @@
     "test:journey": "node tests/journey.test.js",
     "test:title": "node tests/title.test.js",
     "test:lexicon": "node tests/lexicon.test.js",
+    "test:menu": "node tests/menu.test.js",
     "screenshots": "node tools/readme-shots.js",
     "android:sync": "python3 build.py && cap sync android",
     "android:open": "cap open android",
