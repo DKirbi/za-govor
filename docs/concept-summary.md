@@ -1,13 +1,16 @@
-# Za govor — concept summary (updated 11 Nov 2026, evening)
+# Za govor — concept summary (updated 12 Nov 2026)
 
 Full concept doc: https://claude.ai/artifact/SNNktnteBoppi5M4PMkzFF
 Playable UX prototype (browser; all party heroes and enemies have sprites, cards and sound): https://claude.ai/artifact/NTdMnud7X8Um2p38G1fVnb
 
 ## The journey (11 Nov 2026, afternoon — details in the progression design doc)
 - **The game is one 2D side-scrolling journey through Slovenia**, with no level list: Ptuj → Peca → Triglav → Bled → Trnovski gozd → Piranske soline → Predjamski grad → Ljubljansko barje → Ljubljanica → Ljubljanski grad. **Lintvern, the dragon at Ljubljana castle, is the final battle.**
-- **Start with one hero — the first journey always with Martin Krpan.** Folk heroes met at random on the road are unlocked as starters for later journeys (three choices at most; gods never start). At most four in the party, only one god per journey; gods are stronger.
+- **Start with one hero.** The start screen shows all fifteen characters; on a fresh game only Martin Krpan, Zeleni Jurij and Kurent are known, the rest are silhouettes until met on the road (meeting unlocks them for later journeys). At most four in the party, only one god per journey; gods are stronger.
 - **New heroes:** Erazem Predjamski (Erasmus of Lueg), Peter Klepec, Lepa Vida, Ajdovska deklica.
 - **Healing is mainly at wells** (full heal, the fallen stand up). Heroes' healing skills stop at 70 % of health; a hero under 30 % drinks Živa voda automatically and the flask is used up. A fallen hero stays down until a well, a skill or Mrtva voda raises them, and can be left behind when a new hero is met.
+- **Healers attack too** (Mokoš, Zeleni Jurij): weak at level 1, growing with each level.
+- **All potions and poisons are used automatically** by the heroes (no tool belt for now; more potions such as slowing time are left out for now).
+- **Darts mini-event (Puščice v zidu):** six columns of letters, one letter per column from left to right; a shorter word may be sent early for a smaller effect, and a wrong word can be sent too. Turned darts strike every enemy at the start of the next battle; the rest hit the party.
 - **Rewards:** every defeated enemy drops gold and gives its XP to all standing heroes; solved chests and rock slides pay gold and XP too. Chests and rock slides take one word: a real word that misses letters ends them with a partial reward or partial damage.
 - **Random enemies per region; stops on the road:** battles, chests, rock slides, wells, pedlars, heroes to meet, one shrine. Each has its own sprite.
 - **Items with Slavic and Slovene names:** 13 relics (Perunova sekira, Svarogovo kladivo, Velesov rog, Zlatorogova roža, Kamen Alatir…) and 10 potions and poisons (Živa voda, Mrtva voda, Perunova medica, Velesov strup, Volčja jagoda, Morin prah…), found in chests, dropped by bosses and sold by pedlars for gold.

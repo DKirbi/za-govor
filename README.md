@@ -71,14 +71,15 @@ Ljubljana castle is the last battle.
 
 - **Walking:** press `→` (or *Naprej*) and the party walks to the next stop; a prompt offers
   what can be done there (`Enter` for the main choice, `Esc` to walk past where that is allowed).
-- **The party:** the first journey starts with Martin Krpan. Folk heroes wait at random
-  along the road; meeting one unlocks them as a starter for later journeys (three choices at
-  most, never a god). Up to four travel together; a fifth can only take somebody's place.
-  **Only one god** may travel with you — gods hit harder.
+- **The party:** you pick one hero. On a fresh game Martin Krpan, Zeleni Jurij and Kurent
+  are known; everyone else is a silhouette until you meet them on the road, which unlocks
+  them for later journeys. Up to four travel together; a fifth can only take somebody's
+  place. **Only one god** may travel with you — gods hit harder.
 - **Health stays as it is after a battle.** **Wells** heal everyone fully and raise the
-  fallen. Heroes' healing skills stop at 70 % of health, and a hero under 30 % drinks
-  *Živa voda* by themselves if the party carries one. A fallen hero stays down until a
-  well, a skill or *Mrtva voda* raises them.
+  fallen. Healers (Mokoš, Zeleni Jurij) heal only up to 70 % of health, and they attack as
+  well — weakly at first, stronger with every level.
+- **Potions and poisons are used automatically:** a badly hurt hero drinks *Živa voda*, a
+  fallen one is raised by *Mrtva voda*, battle potions are opened when a fight begins.
 - **Enemies are random:** every battle draws from the enemies of its region, and they grow
   stronger from region to region.
 - **Gold and items:** battles and chests pay gold; the pedlar sells potions, poisons and
@@ -183,10 +184,14 @@ everyone).
   part of the XP and gold.
 - **Rock slide:** every falling rock carries a letter and you have one word. Rocks whose
   letters are in it break (XP and gold for each); the rest graze the party for half damage.
+- **Darts (*Puščice v zidu*):** six columns of letters; take one from each column, left to
+  right, and send a word. A shorter word may be sent early, and nothing stops you from
+  sending a word that does not exist. Every letter of a real word turns one dart against the
+  enemies of the next battle; the darts left over hit the party.
 - **Well:** every hero is healed and the fallen stand up again.
 - **Pedlar:** four potions or poisons and two relics for gold.
 - **Shrine:** three gods offer themselves; one may join.
-- **Bag:** `T` on the road, `3` in a battle (the fight pauses while the bag is open).
+- **Bag:** `T` on the road, `3` in a battle. It only shows what you carry; the heroes use it themselves.
 
 ### Two difficulty choices
 **Pace** (*Težavnost*): **real-time** (recommended) has no countdown — enemies attack at
@@ -214,7 +219,7 @@ Malček is the game as it was before the levels were added.
 | Clear the word / pause | `Esc` (clears first, pauses on an empty word) | *Počisti* / *Premor* |
 | Remove the last letter | `Backspace` | *Briši* |
 | Speak the zagovor (meter full) | `Space` | *Izreci zagovor* |
-| Hint / reshuffle / bag | `1` / `2` / `3` | *Namig* / *Premešaj* / *Torba* |
+| Hint / reshuffle / look into the bag | `1` / `2` / `3` | *Namig* / *Premešaj* / *Torba* |
 | Walk on the road, confirm a stop | `→` or `Enter` (`Esc` = walk past, `T` = bag) | *Naprej* and the buttons of the stop |
 | Crossword: reveal a letter | `?` | *Razkrij črko* |
 | Crossword: next entry, move | `Enter` or `Tab`, arrow keys | Tap a cell or a clue; the phone keyboard opens |
