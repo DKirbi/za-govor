@@ -7,7 +7,7 @@ run(async () => {
   const ctx = await openGame({ width: 1100, height: 900 });
   const { page, errors, shot } = ctx;
 
-  const title = await page.evaluate(() => { const p = document.querySelector('.title .inspired'); return p ? { text: p.textContent, afterTagline: !!(p.previousElementSibling && p.previousElementSibling.classList.contains('tagline')), visible: p.getBoundingClientRect().bottom <= innerHeight } : null; });
+  const title = await page.evaluate(() => { const p = document.querySelector('.title .inspired'); return p ? { text: p.textContent, afterTagline: !!(p.previousElementSibling && /\b(tagline|title-stage)\b/.test(p.previousElementSibling.className)), visible: p.getBoundingClientRect().bottom <= innerHeight } : null; });
   check(title && /Words for Evil/.test(title.text) && /Chromosphere Games, 2014/.test(title.text) && title.afterTagline && title.visible,
     'the start screen credits Words for Evil right under the title', JSON.stringify(title));
   await shot('credits-01-title');
