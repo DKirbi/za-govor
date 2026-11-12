@@ -15,3 +15,6 @@ test-output/
 Thumbs.db
 .idea/
 .vscode/
+
+# Sloleks forms cache from tools/build_lexicon.py (regenerated from the zip)
+build/

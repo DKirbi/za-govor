@@ -71,7 +71,7 @@ Playable UX prototype (browser; all party heroes and enemies have sprites, cards
 - **For the real game (candidates):** CC0 packs — SubspaceAudio "512 Sound Effects (8-bit style)" on OpenGameArt, Kenney audio packs; generators — jsfxr / sfxr.me, jfxr (BSD), ZzFX designer; music — incompetech (CC BY, credit required) or commissioned Slovene folk instruments. Keep a licence log.
 
 ## Proposed, not yet confirmed
-- Dictionary for the real game: Sloleks 3.x (CC BY-SA 4.0). Avoid Sloleks 1.0 and the website data (non-commercial). The prototype uses ~46k forms (every form of common words) from simplemma + wordfreq.
+- Dictionary for the real game: Sloleks 3.x (CC BY-SA 4.0). Avoid Sloleks 1.0 and the website data (non-commercial). The prototype accepts 1.48 million forms from Sloleks 3.1, plus Franček and Thesaurus of Modern Slovene headwords that Sloleks lacks (`tools/build_lexicon.py`).
 - Dual forms (dvojina) trigger pair attacks; Č/Š/Ž are power tiles (in prototype: crit ×1.5); domain-word bonus per hero (in prototype: ×1.5).
 - Archaic layer from Besedje 16. stoletja and Pleteršnik; bohoričica chapter; hero ultimates are multi-word charms.
 - Veles moves: Kačji pik, Medvedja šapa, Korenine sveta.

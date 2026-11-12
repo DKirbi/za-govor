@@ -57,8 +57,8 @@ run(async () => {
   await shot('report-02-sent');
 
   // 4. a typed word, sent with Enter, does not resume the game; a word the game knows is not sent
-  await page.click('.report .rp-word'); await page.keyboard.type('kozolček'); await page.keyboard.press('Enter'); await sleep(400);
-  check(posts.length === 2 && posts[1].body['entry.11'] === 'kozolček' && posts[1].body['entry.22'] === 'vpisana' && await page.evaluate(() => window.__ZG.G.paused),
+  await page.click('.report .rp-word'); await page.keyboard.type('pehtrančnica'); await page.keyboard.press('Enter'); await sleep(400);
+  check(posts.length === 2 && posts[1].body['entry.11'] === 'pehtrančnica' && posts[1].body['entry.22'] === 'vpisana' && await page.evaluate(() => window.__ZG.G.paused),
     'a typed word goes out with Enter and the game stays paused', JSON.stringify(posts[1] && posts[1].body));
   await page.click('.report .rp-word'); await page.keyboard.type('volk'); await page.keyboard.press('Enter'); await sleep(300);
   check(posts.length === 2 && /že v slovarju/.test(await page.evaluate(() => document.querySelector('.report .fb').textContent)), 'a word the game already knows is not sent');

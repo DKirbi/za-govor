@@ -271,10 +271,11 @@ Sheet, then take *⋮ → Get pre-filled link*. Its ID (`/forms/d/e/<ID>/viewfor
 python3 tools/check_reports.py responses.csv [--lexicon forms.txt ...]
 ```
 
-It counts reports per word and marks each as already accepted, found in a given word list
-(for example the forms extracted from Sloleks), or missing, with a Fran.si link. Confirmed
-words go into `data/allow.json` (lemma → forms); then run `python3 tools/build_dict.py` and
-`python3 build.py`.
+It counts reports per word and marks each as already accepted (with its base form), found
+in an extra word list given with `--lexicon`, or missing, with a Fran.si link. Since the game
+accepts all of Sloleks, Franček and the thesaurus, most reports will be words those lack.
+Confirmed words go into `data/allow.json` (lemma → forms); then rebuild the word list
+(see [Build from source](#build-from-source)) and run `python3 build.py`.
 
 ## Controls
 | Action | Keyboard | Mouse / touch |
@@ -299,14 +300,25 @@ words go into `data/allow.json` (lemma → forms); then run `python3 tools/build
 python3 build.py            # -> dist/index.html
 ```
 
-The two data files are committed, so this is all you need. To regenerate them:
+The generated data files are committed, so this is all you need. To regenerate them:
 
 ```sh
-pip install simplemma wordfreq
-python3 tools/build_dict.py   # battle word list  -> data/dict.json  (~1 min)
+python3 tools/build_lexicon.py ~/Downloads/SlovenianResource   # word list -> data/lexicon.bin (~1.5 min the first time)
+python3 tools/xref_sources.py ~/Downloads/SlovenianResource    # what each dictionary has that the game does not accept
 python3 tools/cluebank.py     # crossword clues   -> data/clues.json (validates every clue on every level)
 python3 build.py
 ```
+
+The word list needs these zips from the CLARIN.SI repository in one folder, kept zipped
+(standard library only, no `pip install`). The first run unpacks every Sloleks form into
+`build/sloleks_forms.tsv.gz` (ignored by git) and later runs reuse it.
+
+| Zip | Used for | Licence |
+| --- | --- | --- |
+| [`Sloleks.3.1.zip`](http://hdl.handle.net/11356/2080) (263 MB) | every word form, base forms, Gigafida frequency | CC BY-SA 4.0 |
+| [`FrancekPortalHeadwordList.zip`](http://hdl.handle.net/11356/1445) | headwords Sloleks lacks; which words the game suggests | CC BY 4.0 |
+| [`CJVT-Thesaurus-of-Modern-Slovene-v2.2.zip`](http://hdl.handle.net/11356/2092) | headwords both lack | CC BY-SA 4.0 |
+| [`eSSKJSchoolEdition.zip`](http://hdl.handle.net/11356/1456), [`SchoolDictionaryOfSlovenianLanguage-semantic.zip`](http://hdl.handle.net/11356/1451) | only checked by `tools/xref_sources.py` | CC BY 4.0 |
 
 To add or change crossword clues, edit the banks in `tools/cluebank.py` — `MALCEK`,
 `UCENJAK` and `MOLJ`, one line per clue (`ANSWER|clue|topic|difficulty`) — and `THEMES`
@@ -322,7 +334,7 @@ The tests open the built page in headless Chrome and play it through a test hook
 ```sh
 npm install
 python3 build.py
-npm test                                  # all eight test files
+npm test                                  # all nine test files
 CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 ```
 
@@ -335,6 +347,7 @@ CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 | `tests/credits.test.js` | Words for Evil is credited on the start screen, the *Zasluge* screen (with every source and a Steam link) and the ending; the line fits a 360 px phone; Esc and the Android back button leave the credits |
 | `tests/report.test.js` | *Prijavi besedo*: rejected words are remembered (mesh, chest), the pause screen and start screen list them, one tap posts word, place, note and level to the Google Form (intercepted), typing works while paused, known words are not sent, the queue waits without a form and goes out once there is one, lists survive a reload, the panel fits a 360 px phone; *jasa* and base forms are accepted |
 | `tests/journey.test.js` | The road: choosing the first hero, walking to a stop, one enemy for one hero, no healing after a battle, a hero joining, the chest's gold and item, the well, the pedlar, using a potion, the bag pausing the battle, the shrine and the one-god rule, swapping with a full party, all 45 hero moves, the dragon and the ending |
+| `tests/lexicon.test.js` | The word list in the browser: over a million forms accepted and a common part suggested, the 217-word coverage set accepted and its non-words (Croatian, English, made up) refused, the reported words (*jasa*, *loj*, *runa*, *seks*) and *ritem*/*ritual*/*riti*, vulgar words accepted but never suggested, mythology names, *deny.json*, non-standard forms, base forms (*ljudje* → *človek*), headwords Sloleks lacks (*zborišča*, *sedemkotnik*), and at 4× slower CPU a mesh walk under 50 ms and a lookup under 20 µs |
 | `tests/desktop.test.js` | A keyboard playthrough: c/s/z are not accepted for č/š/ž, first battle, result and hero screens, chest, finisher, Lintvern's letter lock and forced crossword, ambush, rock slide, and no console errors anywhere |
 
 Screenshots from each run land in `test-output/` (ignored by git).
@@ -359,12 +372,19 @@ za-govor/
 ├── capacitor.config.json     # app id, name, webDir: dist
 ├── .github/workflows/        # android-apk.yml: debug APK on every push
 ├── data/
-│   ├── dict.json             # battle word list: 9,869 base words → 48,145 forms
-│   ├── allow.json            # reported words checked by hand, merged into dict.json
+│   ├── lexicon.bin           # word list: 1.48 million forms, each with its base form, packed (tools/lexicon.py)
+│   ├── allow.json            # reported words checked by hand, merged into the word list
+│   ├── deny.json             # foreign words the sources contain (Croatian, English citation forms)
+│   ├── never-suggest.json    # vulgar words and slurs: accepted, never offered
+│   ├── myth.json             # mythology and enemy names with their forms, always suggested
 │   ├── clues.json            # crossword clue banks per knowledge level, mythology keywords
 │   └── world.json            # the journey: regions, stops, enemy pools, items
 ├── tools/
-│   ├── build_dict.py         # builds data/dict.json
+│   ├── build_lexicon.py      # builds data/lexicon.bin from Sloleks, Franček and the thesaurus
+│   ├── sloleks_extract.py    # every form from the Sloleks XML (reads the zip directly)
+│   ├── inflect.py            # inflects headwords Sloleks lacks by analogy with Sloleks words
+│   ├── lexicon.py            # the packed word list: writer and reader (format description)
+│   ├── xref_sources.py       # cross-reference: what each dictionary has that the game does not accept
 │   ├── check_reports.py      # checks the words players reported (CSV from the form's Sheet)
 │   ├── cluebank.py           # the three clue banks; validates and builds data/clues.json
 │   ├── art_extra.py          # draws the new heroes, road objects, item icons and backgrounds (needs Pillow)
@@ -379,18 +399,23 @@ za-govor/
 
 ## How the prototype works
 - **One file, no dependencies.** Plain JavaScript with a tiny `h()` element helper; no
-  framework or bundler. `build.py` inlines the CSS, the three JSON data files and the scripts
-  into one HTML page.
+  framework or bundler. `build.py` inlines the CSS, the data files (the word list as base64)
+  and the scripts into one HTML page.
 - **The journey.** `data/world.json` lists the regions in travel order with their stops,
   enemy pools and local hero, and all items. On the travel screen the party stands still
   and the stops slide towards it; the background pans slowly across the region's landmark.
   The same file is meant to feed the Godot game.
-- **Dictionary.** `data/dict.json` maps each base word (lemma) to its forms. At start-up
-  the game builds a set of forms, a form → lemma map (for the repeat penalty and the "base
-  form" hint) and a trie. Finding every word in the mesh is a depth-first search over the
-  8-neighbour grid, pruned by the trie; the same search powers hints, proposals and the
-  "words in the mesh" count. Typed input finds a matching path automatically; letters must
-  match exactly, so c, s and z never match a č, š or ž tile.
+- **Dictionary.** `data/lexicon.bin` is a minimised automaton (DAWG) over every accepted
+  form, 1.48 million of them in 1.4 MB. Each form ends in a mark saying whether the game may
+  *suggest* it or only *accepts* it, followed by its base form written as "drop n letters,
+  add these" (*ljudje* → drop 6, add *človek*). `src/lexicon.js` keeps it as one
+  `Uint32Array` of edges and walks it in place: no set of strings, no object trie, about
+  35 ms to load on a laptop. Finding every word in the mesh is a depth-first search over the 8-neighbour
+  grid that only follows letters that can still lead to a suggested word; the same search
+  powers hints, proposals and the "words in the mesh" count. A word the player makes counts
+  if it is accepted, so rare and inflected words score too, but the game never proposes them.
+  Typed input finds a matching path automatically; letters must match exactly, so c, s and
+  z never match a č, š or ž tile.
 - **Mesh refill.** Letters are drawn from the Slovene Scrabble distribution (98 tiles),
   vowels are balanced, and the grid is re-rolled if it holds too few words.
 - **Crossword generator.** Two styles. *Keyword column:* for each letter of the keyword,
@@ -415,17 +440,31 @@ za-govor/
   game.
 
 ## Language data and sources
-- **Battle words:** `data/dict.json` comes from the Slovene dictionary in
-  [simplemma](https://github.com/adbar/simplemma) (MIT; its word lists are derived from
-  sources such as Michal Měchura's lemmatization lists, ODbL, and Wiktionary), filtered by
-  frequency with [wordfreq](https://github.com/rspeer/wordfreq) (Apache-2.0; used only to
-  filter, no frequency data is shipped). Kept: lowercase words of 3–9 letters whose form
-  or base word is common, and the base form of every word with an accepted form (before
-  that, 2,051 base forms such as *jasa*, *vabiti* and *copata* were missing), minus a short
-  profanity list, plus the mythology and enemy names and the reviewed reports in
-  `data/allow.json`.
-  **The real game will use [Sloleks 3](https://www.clarin.si/repository/xmlui/handle/11356/1745)
-  (CC BY-SA 4.0)** instead.
+- **Words** (`data/lexicon.bin`, built by `tools/build_lexicon.py`): lowercase words of
+  3–15 letters of the Slovene alphabet, no names.
+  - *Accepted:* every form of every common word in
+    [Sloleks 3.1](http://hdl.handle.net/11356/2080) (CJVT, University of Ljubljana; CC BY-SA
+    4.0), 1.23 million forms. On top of that the headwords Sloleks lacks, from the
+    [Franček headword list](http://hdl.handle.net/11356/1445) (ZRC SAZU; CC BY 4.0; 23,958
+    words such as *zborišče*, *kombajnar*, *kolarna*) and the
+    [Thesaurus of Modern Slovene 2.2](http://hdl.handle.net/11356/2092) (CJVT; CC BY-SA 4.0;
+    3,922 words such as *sedemkotnik*, *oceanologija*), 250,000 forms in all. Their forms are
+    borrowed from hand-checked Sloleks words of the same class that end the same way
+    (`tools/inflect.py`): *zborišče* inflects like *igrišče*. Tested on Sloleks words held
+    out of their own vote, 98.5 % of the guessed forms are right; where the analogues
+    disagree (*biter*, *konop*) the word keeps only its base form. Plus the mythology names
+    (`data/myth.json`) and reviewed reports (`data/allow.json`), minus foreign words
+    (`data/deny.json`: Croatian and English text Sloleks picked up from the corpus, and
+    English or French citation forms in the dictionaries, such as *house* or *jeep*).
+  - *Suggested* (proposals, hints, word counts, darts and rock-slide words): 186,510 forms
+    of words that are hand-checked in Sloleks or listed in Franček, common in the Gigafida
+    2.0 corpus (frequency ≥ 1,000), standard, and not in `data/never-suggest.json` (vulgar
+    words and slurs, matched exactly, so *ritem* and *riti* are not caught by *rit*).
+  - *Cross-reference* (`tools/xref_sources.py`, 12 Nov 2026): of the one-word entries of each
+    dictionary the game accepts 99.9 % of Franček (the rest are the citation forms in
+    `deny.json`), 99.7 % of the eSSKJ school edition, 100 % of the school dictionary and
+    99.9 % of the thesaurus. Before, the list from simplemma and wordfreq accepted 104 of the
+    217 words of a hand-picked set of valid words; now it accepts all of them.
 - **Crossword clues:** all 835 clues (359 Malček, 219 Učenjak, 257 Knjižni molj) were
   written for this project. There is no Slovene crossword API; magazine crosswords
   (*Razvedrilo*, *KIH*, *3K*) are copyrighted, and solver sites such as Pet vodoravno are
@@ -479,5 +518,7 @@ text or sound and is not officially connected to its authors. The in-game *Zaslu
 credits the inspiration and every third-party source.
 
 No licence has been chosen yet, so all rights are reserved by the author. Third-party
-data and code keep their own licences (see [Language data and sources](#language-data-and-sources));
-the Sloleks licence (CC BY-SA 4.0) will require attribution in the final game's credits.
+data and code keep their own licences (see [Language data and sources](#language-data-and-sources)).
+The word list (`data/lexicon.bin`) is adapted from Sloleks and the thesaurus, both CC BY-SA
+4.0, so it is shared under CC BY-SA 4.0 too, whatever licence the rest of the game gets; the
+*Zasluge* screen credits every source.

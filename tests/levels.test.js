@@ -53,7 +53,7 @@ run(async () => {
     const three = await page.evaluate(() => {
       const Z = window.__ZG;
       for (let i = 0; i < 30; i++) {
-        const w = [...Z.WORDS].find(x => x.length === 3 && (Z.findPath(x) || []).length === 3);
+        const w = Z.LEX.suggestedWords(3, 3).find(x => (Z.findPath(x) || []).length === 3);
         if (w) return w;
         Z.go('battle', Z.NODES[2]);
       }
