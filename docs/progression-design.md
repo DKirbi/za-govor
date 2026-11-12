@@ -21,7 +21,7 @@ One road, walked left to right. The party stands still and the world scrolls pas
 | 1 | Ptuj | castle above the snowy town | Kurent | battle, hero, chest, battle | Škrat, Vešča |
 | 2 | Peca | King Matjaž's cave | Kralj Matjaž | battle, rock slide, hero, well, battle | Perkmandeljc, Škrat, Pesjan |
 | 3 | Triglav | the three peaks | Ajdovska deklica | battle, rock slide, hero, pedlar, battle | Pesjan, Perkmandeljc, Vešča |
-| 4 | Bled | island church, castle on the cliff | Kresnik (fallback) | battle, chest, **shrine**, well, battle | Vodna vila, Vešča, Škrat |
+| 4 | Bled | island church, castle on the cliff | — (Kresnik has no home and turns up anywhere) | battle, chest, **shrine**, well, battle | Vodna vila, Vešča, Škrat |
 | 5 | Trnovski gozd | moonlit forest | Martin Krpan | battle, chest, hero, battle | Mora, Volkodlak, Vešča |
 | 6 | Piranske soline | salt pans, Piran at sunset | Lepa Vida | battle, pedlar, hero, well, battle | Vodna vila, Pesjan, Mora |
 | 7 | Predjamski grad | the castle in the cliff | Erazem Predjamski | battle, rock slide, hero, chest, ambush | Zmajev mladič, Perkmandeljc, Volkodlak |
@@ -173,7 +173,7 @@ On the name *Perun's Hammer*: in the sources Perun's weapon is an axe (and the t
 - Sprite sheets are plain PNG frames (idle | attack), ready for `AnimatedSprite2D`.
 
 ## 10. Still to decide
-1. Gods as starters: a god met at the shrine is now unlocked like anyone else. Keep, or should gods never start?
+1. Gods as starters: a god beaten in the shrine's trial is unlocked like anyone else, so they can also start a journey. Keep, or should gods never start?
 2. Left out for now, as in the original game: a tool belt for choosing potions by hand, and more potions (slow time and others).
 3. Journey length: ten regions and 19 battles is long for one sitting. Save points, or a shorter road?
 4. Should a hero you leave behind be met again later, or are they gone (as now)?
