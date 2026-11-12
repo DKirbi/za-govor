@@ -12,6 +12,11 @@ run(async () => {
   const ctx = await openGame({ phone: true });
   const { page, errors, shot } = ctx;
   check(await page.evaluate(() => document.body.classList.contains('mobile')), 'mobile layout switches on by itself on a touch phone');
+  // the old Mobilni prikaz switch could turn a phone into the broken desktop layout; a stored choice is ignored now
+  await page.evaluate(() => localStorage.setItem('zg-mobile', '0')); await page.reload(); await page.waitForFunction(() => !!window.__ZG);
+  await page.evaluate(() => { window.__ZG.S.tutOn = false; }); await sleep(300);
+  check(await page.evaluate(() => window.__ZG.S.mobile && localStorage.getItem('zg-mobile') === null && !document.querySelector('.topbar')),
+    'a phone stays in the phone layout even with an old "desktop" choice stored, and there is no switch');
 
   // 1. Letter mesh: tap a word, the send button is visible and plays it
   await page.evaluate(() => window.__ZG.go('battle', window.__ZG.NODES[2])); await sleep(600);
@@ -156,10 +161,11 @@ run(async () => {
   await shot('phone-05-darts');
 
   // 6. Premor: a labelled thumb-size button that stops the clock and hides the puzzle
-  const pause = await page.evaluate(() => { const b = document.querySelector('.tb-pause'), r = b.getBoundingClientRect(), tb = document.querySelector('.topbar'); return { label: b.innerText.trim(), h: Math.round(r.height), fits: tb.scrollWidth <= tb.clientWidth }; });
-  check(pause.label === 'Premor' && pause.h >= 40 && pause.fits, 'the top bar has a labelled Premor button and still fits 360 px', JSON.stringify(pause));
+  const pause = await page.evaluate(() => { const b = document.querySelector('.bhead .pausebtn'), r = b.getBoundingClientRect(), hd = b.closest('.bhead');
+    return { label: b.innerText.trim(), h: Math.round(r.height), right: Math.round(r.right), vw: innerWidth, fits: hd.scrollWidth <= hd.clientWidth }; });
+  check(pause.label === 'Premor' && pause.h >= 40 && pause.fits && pause.right <= pause.vw, "the puzzle's header has a labelled Premor button that fits 360 px", JSON.stringify(pause));
   const t0 = await page.evaluate(() => window.__ZG.S.ev.time);
-  await page.tap('.tb-pause'); await sleep(600);
+  await page.tap('.bhead .pausebtn'); await sleep(600);
   const held = await page.evaluate(() => ({ paused: window.__ZG.G.paused, t: window.__ZG.S.ev.time, blur: getComputedStyle(document.querySelector('.event .panel')).filter }));
   check(held.paused && Math.abs(held.t - t0) < 0.15 && held.blur.includes('blur'), 'Premor stops the clock and blurs the puzzle', JSON.stringify({ t0, ...held }));
   await page.tap('.overlay.pause .btn.primary'); await sleep(200);

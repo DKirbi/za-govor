@@ -1,6 +1,8 @@
 // The start menu and the pages under it: Nadaljuj pot, Nova pot (pace, knowledge, options; a draft
-// until the journey starts), Dosežki in junaki, Kako igrati (controls + puzzle carousel) and O igri.
-// Every page has "← Nazaj na glavni meni" at the top; Esc and the Android back button do the same.
+// until the journey starts), Dosežki in junaki, Kako igrati (controls + puzzle carousel), Nastavitve
+// (sound, fullscreen) and O igri, with the build's version at the bottom. There is no top bar: every page
+// has "← Nazaj na glavni meni" at the top, sticky while it scrolls; Esc and the Android back button do the same.
+const VERSION = require('../package.json').version;
 const { openGame, runner, sleep } = require('./harness');
 const { check, run } = runner('Start menu and its pages');
 
@@ -15,10 +17,15 @@ run(async () => {
   const { page, errors, shot } = ctx;
 
   // 1. a fresh game: four items, no text block, the first item ready for the keyboard
-  check((await items(page)).join('|') === 'Nova pot|Dosežki in junaki|Kako igrati|O igri', 'a fresh game shows Nova pot, Dosežki in junaki, Kako igrati and O igri', (await items(page)).join('|'));
+  check((await items(page)).join('|') === 'Nova pot|Dosežki in junaki|Kako igrati|Nastavitve|O igri', 'a fresh game shows Nova pot, Dosežki in junaki, Kako igrati, Nastavitve and O igri', (await items(page)).join('|'));
+  check(await page.evaluate(() => !document.querySelector('.topbar, .tb-mobile, .tb-sound')), 'there is no top bar and no Mobilni prikaz or Zvok switch');
+  const ver = await page.evaluate(() => { const v = document.querySelector('.menu .mm-version'), r = v && v.getBoundingClientRect(), last = [...document.querySelectorAll('.mm-item')].pop().getBoundingClientRect();
+    return v ? { text: v.textContent, below: r.top > last.bottom, inView: r.bottom <= innerHeight } : null; });
+  check(ver && ver.text.startsWith('zaprta alfa · v' + VERSION) && ver.below && ver.inView, 'the version (from package.json) sits at the bottom of the start screen, under the menu', JSON.stringify(ver));
   // the title scene (wordmark and subtitle, read out to screen readers) does not count as text on the menu
   const bare = await page.evaluate(() => { const m = document.querySelector('.menu'), st = m.querySelector('.title-stage');
-    return { text: m.textContent.length - (st ? st.textContent.length : 0), extras: [...m.querySelectorAll('p, .note, input, .choice')].filter(e => !e.closest('.title-stage')).length, scene: !!st }; });
+    const v = m.querySelector('.mm-version');
+    return { text: m.textContent.length - (st ? st.textContent.length : 0) - (v ? v.textContent.length : 0), extras: [...m.querySelectorAll('p, .note, input, .choice')].filter(e => !e.closest('.title-stage') && e !== v).length, scene: !!st }; });
   check(bare.scene && bare.extras === 0 && bare.text < 80, 'the start screen is the title scene and the menu, with no description, settings or help text', JSON.stringify(bare));
   check(await focused(page) === 'new', 'Nova pot has keyboard focus');
   await shot('menu-01-fresh');
@@ -34,7 +41,7 @@ run(async () => {
   check(await S(page) === 'title' && await focused(page) === 'heroes', 'Esc returns to the menu, on the item it came from');
 
   // 3. every page under the menu: the way back at the top, first thing on the page
-  for (const [id, title] of [['newrun', 'Nova pot'], ['heroes', 'Dosežki in junaki'], ['howto', 'Kako igrati'], ['about', 'O igri']]) {
+  for (const [id, title] of [['newrun', 'Nova pot'], ['heroes', 'Dosežki in junaki'], ['howto', 'Kako igrati'], ['settings', 'Nastavitve'], ['about', 'O igri']]) {
     await page.evaluate(t => [...document.querySelectorAll('.mm-item')].find(b => b.textContent === t).click(), title); await sleep(200);
     const c = await crumbInfo(page), h1 = await page.evaluate(() => ({ text: document.querySelector('.page-h1').textContent, focus: document.activeElement === document.querySelector('.page-h1') }));
     check(await S(page) === id && c && /^←\s*Nazaj na glavni meni$/.test(c.text) && c.first && c.top < 120 && c.h >= 44 && h1.text === title && h1.focus,
@@ -127,12 +134,42 @@ run(async () => {
   await page.click('.herogrid button.pickcard'); await sleep(250);
   const card = await page.evaluate(() => ({ screen: window.__ZG.S.screen, kind: document.querySelector('.hm .kind').textContent, crumb: document.querySelector('.hm .crumb').textContent }));
   check(card.screen === 'hero' && card.kind === 'Junak' && /Nazaj na junake/.test(card.crumb), 'a met hero opens their card with a way back to the heroes', JSON.stringify(card));
+  const backs = await page.evaluate(() => ({ crumbs: document.querySelectorAll('.hm .crumb').length,
+    buttons: [...document.querySelectorAll('#screen button')].filter(b => /Nazaj na junake/.test(b.textContent)).length, row: !!document.querySelector('.hm > .row') }));
+  check(backs.crumbs === 1 && backs.buttons === 1 && !backs.row, 'the hero card has one way back, the link at the top (no second button at the bottom)', JSON.stringify(backs));
+  await page.keyboard.press('Enter'); await sleep(150);
+  check(await S(page) === 'hero', 'Enter does not leave the card (there is no button it would press)');
   await page.keyboard.press('Escape'); await sleep(150);
   check(await S(page) === 'heroes', 'Esc on the card returns to the heroes');
   await page.click('.heroes .devbox .btn'); await sleep(250);
   check(await S(page) === 'gallery' && /Nazaj na junake/.test(await page.evaluate(() => document.querySelector('.gallery .crumb').textContent)), 'the developer gallery opens from the heroes, with its way back');
+  check(await page.evaluate(() => [...document.querySelectorAll('#screen button')].filter(b => /Nazaj na junake/.test(b.textContent)).length) === 1, 'the gallery has one way back too');
   await page.keyboard.press('Escape'); await sleep(150);
   check(await S(page) === 'heroes', 'Esc in the gallery returns to the heroes');
+
+  // 7b. the way back stays at the top while a long page scrolls, above the content
+  await page.evaluate(() => window.__ZG.go('about')); await sleep(200);
+  await page.evaluate(() => scrollTo(0, 900)); await sleep(150);
+  const stick = await page.evaluate(() => { const c = document.querySelector('#screen .crumb'), r = c.getBoundingClientRect(), e = document.elementFromPoint(r.left + 20, r.top + r.height / 2);
+    return { scrolled: Math.round(scrollY), top: Math.round(r.top), onTop: !!e && c.contains(e) }; });
+  check(stick.scrolled >= 600 && stick.top >= 0 && stick.top < 16 && stick.onTop, 'O igri scrolled: "← Nazaj na glavni meni" stays at the top of the screen, over the text', JSON.stringify(stick));
+  await page.click('#screen .crumb'); await sleep(150);
+  check(await S(page) === 'title', 'the sticky way back still returns to the menu');
+  const av = await page.evaluate(() => { window.__ZG.go('about'); const v = document.querySelector('.about .about-version'); return v ? v.textContent : ''; });
+  check(av.includes('v' + VERSION), 'O igri shows the version', av);
+
+  // 7c. Nastavitve: sound on/off and volume, remembered; fullscreen on a computer
+  await page.evaluate(() => window.__ZG.go('settings')); await sleep(200);
+  const st0 = await page.evaluate(() => ({ snd: document.querySelector('.settings .snd-on').checked, fs: !!document.querySelector('.settings .set-fs'), range: !document.querySelector('.settings .volrow input').disabled }));
+  check(st0.snd && st0.range && st0.fs, 'Nastavitve: sound on with its volume, and a fullscreen switch on a computer', JSON.stringify(st0));
+  await page.click('.settings .snd-on'); await sleep(100);
+  const st1 = await page.evaluate(() => ({ on: window.__ZG.SOUND_ON, saved: localStorage.getItem('zg-sound'), range: document.querySelector('.settings .volrow input').disabled }));
+  check(!st1.on && st1.saved === '0' && st1.range, 'switching sound off is remembered and greys out the volume', JSON.stringify(st1));
+  await page.evaluate(() => { const r = document.querySelector('.settings .volrow input'); r.disabled = false; r.value = 40; r.dispatchEvent(new Event('input', { bubbles: true })); }); await sleep(50);
+  check(await page.evaluate(() => Math.abs(window.__ZG.VOLUME - 0.4) < 0.001 && localStorage.getItem('zg-vol') === '0.4'), 'the volume slider sets and remembers the volume');
+  await page.click('.settings .snd-on'); await sleep(100);
+  check(await page.evaluate(() => window.__ZG.SOUND_ON && localStorage.getItem('zg-sound') === '1'), 'and sound comes back on');
+  await shot('menu-09-settings');
 
   // 8. a finished journey cannot be continued
   await page.evaluate(() => { const Z = window.__ZG; Z.newRun('krpan'); Z.go('ending'); Z.go('title'); }); await sleep(150);
@@ -141,17 +178,19 @@ run(async () => {
   // 9. phone
   await page.evaluate(() => { const Z = window.__ZG; Z.resetRun(); Z.newRun('krpan'); Z.go('title'); });
   await page.setViewport({ width: 360, height: 760, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
-  await page.evaluate(() => { if (!window.__ZG.S.mobile) document.querySelector('.tb-mobile').click(); }); await sleep(250);
+  await page.evaluate(() => window.__ZG.setLayout(true)); await sleep(250);
   const pm = await page.evaluate(() => { const r = [...document.querySelectorAll('.mm-item')].map(b => b.getBoundingClientRect());
     return { minH: Math.round(Math.min(...r.map(x => x.height))), right: Math.round(Math.max(...r.map(x => x.right))), bottom: Math.round(Math.max(...r.map(x => x.bottom))), vw: innerWidth, vh: innerHeight, wide: document.documentElement.scrollWidth,
       focus: document.activeElement && document.activeElement.classList.contains('mm-item') }; });
   check(pm.minH >= 56 && pm.right <= pm.vw && pm.wide <= pm.vw && pm.bottom <= pm.vh && !pm.focus, 'on a 360 px phone the menu items are 56 px tall, fit on one screen and nothing is pre-focused', JSON.stringify(pm));
   await shot('menu-06-phone');
-  for (const id of ['newrun', 'heroes', 'howto', 'about']) {
+  for (const id of ['newrun', 'heroes', 'howto', 'settings', 'about']) {
     await page.evaluate(x => window.__ZG.go(x), id); await sleep(250);
     const f = await page.evaluate(() => ({ wide: document.documentElement.scrollWidth, vw: innerWidth }));
     check(f.wide <= f.vw, `${id}: fits a 360 px phone`, JSON.stringify(f));
   }
+  await page.evaluate(() => window.__ZG.go('settings')); await sleep(200);
+  check(await page.evaluate(() => !document.querySelector('.settings .set-fs') && !!document.querySelector('.settings .snd-on')), 'on a phone Nastavitve has sound only (the app is always full screen)');
   await page.evaluate(() => window.__ZG.go('newrun')); await sleep(200);
   const cta = await page.evaluate(() => { const r = document.querySelector('.cta-row .cta').getBoundingClientRect(); return { bottom: Math.round(r.bottom), h: Math.round(r.height), vh: innerHeight }; });
   check(cta.bottom <= cta.vh && cta.h >= 48, 'Izberi junaka stays in reach at the bottom of the phone screen', JSON.stringify(cta));

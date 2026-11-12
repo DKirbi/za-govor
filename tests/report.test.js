@@ -105,7 +105,7 @@ run(async () => {
 
   // 9. on a phone the panel fits, with thumb-size fields and chips
   await page.setViewport({ width: 360, height: 780, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
-  await page.evaluate(() => { localStorage.setItem('zg-mobile', '1'); }); await page.reload(); await page.waitForFunction(() => !!window.__ZG); await sleep(300);
+  await page.reload(); await page.waitForFunction(() => !!window.__ZG); await page.evaluate(() => window.__ZG.setLayout(true)); await sleep(250);
   await page.evaluate(() => { const Z = window.__ZG; Z.noteRejected('jasja', 'mreza'); Z.go('about'); }); await sleep(150);
   await page.evaluate(() => document.querySelector('.about .rp-open').click()); await sleep(200);
   const ph = await page.evaluate(() => { const d = document.querySelector('.reportdlg').getBoundingClientRect(), i = document.querySelector('.report .rp-word').getBoundingClientRect(), c = document.querySelector('.report .rejlist .prop').getBoundingClientRect();

@@ -4,10 +4,10 @@ const { openGame, runner, sleep } = require('./harness');
 const { check, run } = runner('Title scene ("Za govor!")');
 
 const measure = page => page.evaluate(() => {
-  const st = document.querySelector('.title-stage'), fr = st && st.querySelector('.ts-frame'), bar = document.querySelector('.topbar');
+  const st = document.querySelector('.title-stage'), fr = st && st.querySelector('.ts-frame');
   if (!st) return null;
   const r = st.getBoundingClientRect(), f = fr.getBoundingClientRect(), logo = st.querySelector('.ts-logo'), rib = st.querySelector('.ts-ribbon');
-  return { s: +st.style.getPropertyValue('--s'), left: r.left, width: r.width, height: r.height, top: r.top, barBottom: bar ? bar.getBoundingClientRect().bottom : 0,
+  return { s: +st.style.getPropertyValue('--s'), left: r.left, width: r.width, height: r.height, top: r.top + scrollY, bar: !!document.querySelector('.topbar'),
     frameLeft: f.left, frameW: f.width, clientW: document.documentElement.clientWidth, scrollW: document.documentElement.scrollWidth,
     appLeft: app.getBoundingClientRect().left, appW: app.getBoundingClientRect().width,
     logo: logo.complete && logo.naturalWidth > 0, logoW: logo.getBoundingClientRect().width, natW: logo.naturalWidth, ribbon: rib.complete && rib.naturalWidth > 0,
@@ -30,7 +30,7 @@ run(async () => {
   check(Number.isInteger(m.s) && m.s === 3, 'the scene is drawn at a whole-number scale (3× at 1280 px)', 'scale ' + m.s);
   check(m.logoW === m.natW * m.s, 'the wordmark has square pixels at the same scale', `${m.logoW} = ${m.natW} × ${m.s}`);
   check(m.left === 0 && m.width === m.clientW && m.scrollW <= m.clientW, 'the scene spans the window without a sideways scrollbar', JSON.stringify([m.left, m.width, m.clientW, m.scrollW]));
-  check(Math.abs(m.top - m.barBottom) < 1, 'the scene starts right under the top bar', `${m.top} vs ${m.barBottom}`);
+  check(Math.abs(m.top) < 1 && !m.bar, 'there is no top bar: the scene starts at the very top of the page', `${m.top}`);
   check(m.frameW >= m.width && Number.isInteger(m.frameLeft), 'the scene covers the width and sits on a whole pixel', JSON.stringify([m.frameLeft, m.frameW]));
   check(m.height <= m.vh * 0.72 + 1, 'the scene leaves room for the menu below', `${m.height} of ${m.vh}`);
   const y1 = await sparkY(page); await sleep(1500); const y2 = await sparkY(page);
@@ -65,7 +65,14 @@ run(async () => {
   // phone
   ctx = await openGame({ phone: true });
   ({ page, errors, shot } = ctx);
-  await page.evaluate(() => { localStorage.setItem('zg-mobile', '1'); }); await page.reload(); await page.waitForFunction(() => !!window.__ZG); await sleep(400);
+  check(await page.evaluate(() => window.__ZG.S.mobile), 'a phone gets the phone layout by itself');
+  m = await measure(page);
+  check(Math.abs(m.top) < 1, 'on a phone the scene also starts at the very top', `${m.top}`);
+  // the Android app draws under the status bar: the sky continues there and the art starts below it
+  await page.evaluate(() => { document.documentElement.style.setProperty('--safe-area-inset-top', '32px'); window.__ZG.go('title'); }); await sleep(300);
+  const under = await page.evaluate(() => { const st = document.querySelector('.title-stage'), f = st.querySelector('.ts-frame').getBoundingClientRect(), r = st.getBoundingClientRect(); return { stage: Math.round(r.top), frame: Math.round(f.top) }; });
+  check(under.stage === 0 && under.frame === 32, 'under a 32 px status bar the scene starts at 0 and its art at 32 px', JSON.stringify(under));
+  await page.evaluate(() => { document.documentElement.style.removeProperty('--safe-area-inset-top'); window.__ZG.go('title'); }); await sleep(300);
   m = await measure(page);
   check(m.s === 2 && Math.abs(m.left - m.appLeft) < 1 && Math.abs(m.width - m.appW) < 1, 'on a phone the scene fills the column at 2×', JSON.stringify([m.s, m.left, m.width, m.appW]));
   check(m.logoW <= m.width - 8, 'on a phone the wordmark fits the screen', `${m.logoW} of ${m.width}`);
