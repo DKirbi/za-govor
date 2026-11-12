@@ -731,3 +731,95 @@ body.mobile .regdots i { width: 7px; height: 7px; }
 .dartcol.later { opacity: .5; } .dartcol.later .tile { cursor: default; }
 .dartcol .tile.sel { background: var(--gold); color: #1d1608; border-color: var(--gold); }
 body.mobile .dartcols { gap: 5px; } body.mobile .dartcol { padding: 5px; gap: 6px; } body.mobile .dartcol .tile { --tile-size: 44px; }
+
+/* ---------- Playtest round 2: pause, puzzle intros, fullscreen and fit to screen ---------- */
+/* While the game is held (pause or a puzzle intro) the puzzle is unreadable, so a stopped clock gives no free thinking time. */
+body.held .puzzle, body.held .wordbar, body.held .event .panel, body.held .lanes {
+  filter: blur(18px) saturate(.4) brightness(.8); pointer-events: none; user-select: none; }
+.overlay.pause { z-index: 70; background: rgba(8, 9, 12, .78); padding: 12px; }
+.overlay.tut { z-index: 80; background: rgba(8, 9, 12, .8); padding: 10px; }
+.pause-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 4px; }
+.volrow { display: flex; align-items: center; gap: 12px; margin-top: 16px; color: var(--dim); font-size: 13px; }
+.volrow input { flex: 1; accent-color: var(--gold); min-width: 0; }
+.volrow output { width: 3.2em; text-align: right; font-variant-numeric: tabular-nums; }
+
+.tb-btn { display: inline-flex; align-items: center; gap: 6px; touch-action: manipulation; }
+.tb-btn svg { width: 14px; height: 14px; flex: none; }
+.tb-btn.on { border-color: var(--gold); color: var(--gold); }
+body.mobile .tb-btn .lbl, body.mobile .tb-btn kbd { display: none; }
+body.mobile .tb-btn { padding: 6px 8px; }
+body.mobile .topbar { gap: 6px; }
+
+.toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 95; width: max-content; max-width: min(560px, 92vw);
+  background: var(--panel2); border: 1px solid var(--gold); border-radius: 10px; padding: 10px 14px; font-size: 13.5px; line-height: 1.4;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .5); }
+
+/* Puzzle intro: what the puzzle wants, with a picture of a solved one */
+.tutdlg { width: min(720px, 96vw); max-height: 94vh; max-height: 94dvh; overflow: auto; padding: 18px 22px 20px; }
+.tut-k { display: flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); }
+.tut-k .stop { color: var(--gold); border: 1px solid var(--gold); border-radius: 99px; padding: 1px 9px; }
+.tutdlg h2 { font-size: 22px; margin: 8px 0 4px; }
+.tut-lead { margin: 0 0 14px; font-size: 14.5px; line-height: 1.45; }
+.tut-body { display: grid; grid-template-columns: 284px 1fr; gap: 18px; align-items: start; }
+.tut-fig { margin: 0; background: var(--bg2); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; pointer-events: none; user-select: none; min-width: 0; }
+.tut-cap { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); margin-bottom: 10px; }
+.tut-res { margin-top: 10px; font-size: 13px; line-height: 1.4; }
+.tut-res b { letter-spacing: .05em; }
+.tut-res.ok b { color: var(--good); } .tut-res.part b { color: var(--gold); }
+.tut-steps { margin: 0; padding: 0; list-style: none; counter-reset: tut; display: grid; gap: 9px; font-size: 14px; line-height: 1.45; }
+.tut-steps li { counter-increment: tut; display: grid; grid-template-columns: 24px 1fr; gap: 10px; align-items: start; }
+.tut-steps li::before { content: counter(tut); width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--panel2); border: 1px solid var(--line); color: var(--gold); font-weight: 800; font-size: 12.5px; }
+.tut-time { margin: 14px 0 0; padding: 8px 12px; border-radius: 8px; background: #2c1f22; border: 1px solid #5a3338; color: #ffc9c9; font-size: 13.5px; line-height: 1.4; }
+.tut-time.calm { background: #1d2740; border-color: #33466e; color: #cfe0ff; }
+.tut-foot { display: flex; align-items: center; gap: 14px; margin-top: 16px; }
+.tut-foot .muted { flex: 1; font-size: 12.5px; line-height: 1.4; }
+/* figures reuse the real game pieces at a smaller size */
+.tut-fig .meshwrap { margin: 0; --tile-size: 40px; }
+.tut-fig .mesh { grid-template-columns: repeat(4, var(--tile-size)); gap: 5px; }
+.tut-fig .tile { font-size: 19px; cursor: default; }
+.tut-fig .tile .ini { font-size: 8.5px; top: 2px; left: 4px; }
+.tut-fig .tile.sel { transform: none; }
+.tut-fig .cwgrid { --cell: 30px; width: max-content; }
+.tut-fig .cell { font-size: 16px; cursor: default; }
+.tut-fig .cell.typed { outline: 1px solid #4a4f60; outline-offset: -1px; }
+.tut-fig .curclue { margin: 10px 0 0; font-size: 12.5px; padding: 6px 9px; }
+.tut-key { display: grid; grid-template-columns: 16px 1fr; gap: 5px 8px; align-items: center; margin-top: 10px; font-size: 12.5px; color: var(--dim); }
+.tut-key i { width: 16px; height: 16px; border-radius: 4px; }
+.tut-fig .letters { margin: 0 0 6px; gap: 5px; flex-wrap: nowrap; }
+.tut-fig .letters .tile { --tile-size: 36px; font-size: 17px; }
+.tut-fig .guess { min-height: 0; gap: 4px; }
+.tut-fig .guess .lt { width: 28px; height: 32px; font-size: 17px; }
+.tut-fig .guess.ok .lt { border-color: var(--good); color: var(--good); }
+.tut-fig .guess.part .lt { border-color: var(--gold); color: var(--gold); }
+.tut-arrow { color: var(--faint); font-size: 12px; margin: 2px 0 6px; }
+.tut-row { display: flex; align-items: center; gap: 12px; }
+.tut-row .obj { flex: none; }
+.tut-rocks { display: flex; gap: 8px; }
+.tut-fig .tut-rocks .rock { position: relative; margin: 0; width: 42px; height: 42px; font-size: 19px; }
+.tut-fig .rock::after { position: absolute; right: -6px; top: -6px; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 11px; font-weight: 800; text-shadow: none; }
+.tut-fig .rock.t-ok { filter: drop-shadow(0 0 5px var(--good)); }
+.tut-fig .rock.t-ok::after { content: "✓"; background: var(--good); color: #0d2417; }
+.tut-fig .rock.t-miss { filter: grayscale(.6) brightness(.8); }
+.tut-fig .rock.t-miss::after { content: "✕"; background: var(--danger); color: #2a0b0b; }
+.tut-typed { display: inline-block; margin: 10px 0 2px; padding: 4px 10px; border-radius: 6px; background: var(--panel2); border: 1px solid var(--line);
+  font-weight: 800; letter-spacing: .08em; text-transform: uppercase; font-size: 14px; }
+.tut-sep { height: 1px; background: var(--line); margin: 12px 0; }
+@media (max-width: 640px) { .tut-body { grid-template-columns: 1fr; } }
+body.mobile .tut-body { grid-template-columns: 1fr; gap: 12px; }
+body.mobile .tutdlg { padding: 14px 14px 16px; }
+body.mobile .tutdlg h2 { font-size: 19px; }
+body.mobile .tut-steps { font-size: 13.5px; }
+body.mobile .tut-foot { flex-direction: column-reverse; align-items: stretch; gap: 8px; }
+body.mobile .tut-foot .btn { padding: 12px; font-size: 15px; }
+
+/* Fit to screen (desktop): the scene and the puzzle stay in view together, so nothing scrolls away mid-battle.
+   fitScreen() first lets the battle scene give up some sky, then scales #screen down (or up in fullscreen). */
+body.fit .log { min-height: 0; max-height: 3.4em; overflow: hidden; }
+body.fit #app { padding-bottom: 8px; }
+body.tight .side .box.keys { display: none; }   /* short windows: the key legend gives way before anything is scaled down */
+/* darts intro figure: the whole six-column wall has to fit the example box */
+.tut-fig .dartcols { gap: 3px; margin: 0 0 8px; justify-content: flex-start; }
+.tut-fig .dartcol { padding: 3px; gap: 3px; border-width: 1px; }
+.tut-fig .dartcol .tile, body.mobile .tut-fig .dartcol .tile { --tile-size: 30px; font-size: 15px; }

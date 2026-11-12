@@ -659,6 +659,11 @@ V=W):0),x=(b+=u+=y)*M.cos(A*H++),g+=x+x*E*(a*a*d%2-1),n&&++n>z&&(b+=v,C+=v,n=0),
 const SFX = {"sel": [0.5, 0, 560, 0, 0.01, 0.05, 1, 1.2], "bad": [0.6, 0, 130, 0.005, 0.08, 0.12, 2, 1, -1, 0, 0, 0, 0, 0, 0, 0.1], "ok": [0.6, 0, 880, 0, 0.03, 0.16, 1, 1.5, 0, 0, 440, 0.05], "hit1": [0.9, 0, 180, 0, 0.02, 0.1, 4, 1.2, -5, 0, 0, 0, 0, 0.8, 0, 0.1], "hit2": [1, 0, 170, 0, 0.04, 0.16, 4, 1.2, -5, 0, 0, 0, 0, 0.8, 0, 0.1], "hit3": [1.2, 0, 95, 0.01, 0.12, 0.45, 4, 1.6, -2, 0, 0, 0, 0, 1.2, 0, 0.3, 0.08], "zap": [0.7, 0, 1300, 0, 0.03, 0.16, 2, 1, -30, 0, 0, 0, 0, 0.3], "clang": [0.7, 0, 640, 0, 0.01, 0.24, 1, 0.6, 0, 0, 0, 0, 0, 0, 180, 0, 0, 0.6, 0.02], "heal": [0.5, 0, 520, 0.02, 0.1, 0.26, 0, 1, 2, 0, 260, 0.09], "fire": [0.8, 0, 200, 0.03, 0.08, 0.24, 4, 1.2, 3, 0, 0, 0, 0, 0.9, 0, 0.1], "venom": [0.7, 0, 180, 0.02, 0.1, 0.22, 3, 1, -1, 0, 0, 0, 0, 0, 12, 0, 0, 0.7, 0, 0.4], "foe": [0.9, 0, 140, 0, 0.03, 0.15, 4, 1.4, -4, 0, 0, 0, 0, 0.9, 0, 0.2], "curse": [0.7, 0, 440, 0.03, 0.2, 0.36, 2, 1.4, -3, 0, -110, 0.12, 0, 0, 6, 0, 0.06, 0.7, 0, 0.3], "dead": [0.8, 0, 400, 0, 0.05, 0.26, 5, 0.5, -8, 0, 0, 0, 0, 0.2, 0, 0.2], "win": [0.6, 0, 523, 0.01, 0.26, 0.32, 1, 1.2, 0, 0, 262, 0.08, 0.16], "lose": [0.7, 0, 330, 0.02, 0.3, 0.5, 2, 1.5, -1.2, 0, -80, 0.15, 0, 0, 0, 0.1]};
 let SOUND_ON = (() => { try { return localStorage.getItem('zg-sound') !== '0'; } catch (e) { return true; } })();
 let AC = null; const SFX_BUF = {};
+// Playtest: attack sounds were too punchy. They now play at well under half the level through a low-pass filter
+// (soft: true), and one master volume (pause menu) scales everything.
+let VOLUME = (() => { try { const v = parseFloat(localStorage.getItem('zg-vol')); if (v >= 0 && v <= 1) return v; } catch (e) { /* no storage */ } return 0.8; })();
+const ATK_VOL = 0.4;
+function setVolume(v) { VOLUME = clamp(v, 0, 1); try { localStorage.setItem('zg-vol', String(VOLUME)); } catch (e) { /* no storage */ } }
 function audioUnlock() {
   if (!SOUND_ON) return;
   try { if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume().catch(() => {}); } catch (e) { /* no audio */ }
@@ -670,16 +675,17 @@ function sfx(name, o = {}) {
     let buf = SFX_BUF[name];
     if (!buf) { const smp = zzfxG(...SFX[name]); buf = AC.createBuffer(1, smp.length, 44100); buf.getChannelData(0).set(smp); SFX_BUF[name] = buf; }
     const src = AC.createBufferSource(), g = AC.createGain();
-    src.buffer = buf; src.playbackRate.value = o.rate || 1; g.gain.value = 1.5 * (o.vol == null ? 1 : o.vol);
-    src.connect(g); g.connect(AC.destination); src.start(AC.currentTime + (o.delay || 0));
+    src.buffer = buf; src.playbackRate.value = o.rate || 1; g.gain.value = 1.5 * VOLUME * (o.vol == null ? 1 : o.vol);
+    if (o.soft) { const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1700; lp.Q.value = 0.4; src.connect(lp); lp.connect(g); } else src.connect(g);
+    g.connect(AC.destination); src.start(AC.currentTime + (o.delay || 0));
   } catch (e) { /* sound is optional */ }
 }
 const HERO_SFX = { erazem: 'clang', klepec: 'clang', vida: 'heal', ajda: 'clang', perun: 'zap', svarog: 'clang', mokos: 'heal', kresnik: 'fire', veles: 'venom', dazbog: 'fire', stribog: 'zap', kurent: 'clang', jurij: 'heal', krpan: 'hit2', matjaz: 'clang' };
 function cardSound(o) {
   const rate = o.tier === 3 ? .78 : o.tier === 2 ? .9 : 1.06;
-  if (o.foe) { sfx(o.tier > 1 ? 'curse' : 'foe'); if (o.tier === 3 && o.value) sfx('hit3', { delay: .15, vol: .8 }); return; }
-  sfx(HERO_SFX[o.art] || 'hit1', { rate });
-  if (o.art !== 'mokos' && o.art !== 'jurij') sfx(o.tier === 3 ? 'hit3' : o.tier === 2 ? 'hit2' : 'hit1', { delay: .12, vol: .9 });
+  if (o.foe) { sfx(o.tier > 1 ? 'curse' : 'foe', { soft: true, vol: ATK_VOL }); if (o.tier === 3 && o.value) sfx('hit3', { delay: .15, soft: true, vol: ATK_VOL * .7 }); return; }
+  sfx(HERO_SFX[o.art] || 'hit1', { rate, soft: true, vol: ATK_VOL });
+  if (o.art !== 'mokos' && o.art !== 'jurij') sfx(o.tier === 3 ? 'hit3' : o.tier === 2 ? 'hit2' : 'hit1', { delay: .12, soft: true, vol: ATK_VOL * .65 });
 }
 function toggleSound() {
   SOUND_ON = !SOUND_ON; try { localStorage.setItem('zg-sound', SOUND_ON ? '1' : '0'); } catch (e) { /* no storage */ }
@@ -883,7 +889,7 @@ const S = {
   screen: 'title', mode: 'real',
   know: (() => { try { const v = localStorage.getItem('zg-know'); if (LEVELS[v]) return v; } catch (e) { /* no storage */ } return 'malcek'; })(),
   xp: 0, meterBonus: 0,
-  battle: null, ev: null, suggest: true,
+  battle: null, ev: null, suggest: true, tutOn: true,
   mobile: (() => { try { const v = localStorage.getItem('zg-mobile'); if (v != null) return v === '1'; } catch (e) { /* no storage */ }
     const coarse = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches);
     const touchPhone = (navigator.maxTouchPoints || 0) > 0 && Math.min(screen.width, screen.height) < 820;
@@ -906,6 +912,7 @@ function go(screen, arg) {
   mountShell();
   ({ title: renderTitle, pick: renderPick, travel: renderTravel, ending: renderEnding, battle: startBattle, chest: startChest, trap: startTrap, darts: startDarts, gallery: renderGallery, hero: renderHeroMoment })[screen](arg);
   window.scrollTo(0, 0);
+  fitScreen();
 }
 
 // Top bar: always visible, holds the mobile/desktop switch
@@ -913,12 +920,17 @@ function renderTopbar() {
   return h('div', { class: 'topbar' },
     h('div', { class: 'tb-logo' }, 'Za', h('span', { class: 'dot' }, '·'), 'govor'),
     h('span', { class: 'tb-sp' }),
+    TIMED[S.screen] ? h('button', { class: 'btn small tb-btn tb-pause', title: 'Premor (Esc): čas se ustavi, uganka se zakrije', 'aria-label': 'Premor', onclick: () => setPause(true) },
+      tbIcon('M3 2h3v10H3zM8 2h3v10H8z'), h('span', { class: 'lbl' }, 'Premor'), h('kbd', {}, 'Esc')) : null,
+    S.mobile ? null : h('button', { class: 'btn small tb-btn tb-fs' + (isFs() ? ' on' : ''), 'aria-pressed': isFs() ? 'true' : 'false', title: 'Celozaslonski način', 'aria-label': 'Celozaslonski način', onclick: toggleFullscreen },
+      tbIcon(isFs() ? 'M5 1v4H1v1.6h5.6V1zM9 13V9h4V7.4H7.4V13zM1 9h4v4h1.6V7.4H1zM13 5H9V1H7.4v5.6H13z' : 'M1 1h5v1.6H2.6V6H1zM13 13H8v-1.6h3.4V8H13zM1 13V8h1.6v3.4H6V13zM13 1v5h-1.6V2.6H8V1z'), h('span', { class: 'lbl' }, isFs() ? 'Zapri cel zaslon' : 'Cel zaslon')),
     h('button', { class: 'btn small tb-sound' + (SOUND_ON ? ' on' : ''), 'aria-pressed': SOUND_ON ? 'true' : 'false', title: 'Zvočni učinki', 'aria-label': 'Zvočni učinki', onclick: toggleSound },
       '♪ Zvok', h('span', { class: 'pill' }, SOUND_ON ? 'VKLOP' : 'IZKLOP')),
     h('button', { class: 'btn small tb-mobile' + (S.mobile ? ' on' : ''), 'aria-pressed': S.mobile ? 'true' : 'false',
       title: 'Preklopi med mobilnim in namiznim prikazom', onclick: toggleMobile },
       h('span', { class: 'phone' }), 'Mobilni prikaz', h('span', { class: 'pill' }, S.mobile ? 'VKLOP' : 'IZKLOP')));
 }
+function tbIcon(d) { const s = svgEl('svg', { viewBox: '0 0 14 14', 'aria-hidden': 'true' }); s.append(svgEl('path', { d, fill: 'currentColor' })); return s; }
 function toggleMobile() {
   S.mobile = !S.mobile;
   try { localStorage.setItem('zg-mobile', S.mobile ? '1' : '0'); } catch (e) { /* no storage */ }
@@ -936,6 +948,7 @@ function toggleMobile() {
   else if (scr === 'gallery') renderGallery();
   else if (scr === 'hero') renderHeroMoment();
   else renderTitle();
+  fitScreen();
 }
 
 // ============================================================ title
@@ -963,6 +976,9 @@ function renderTitle() {
       know('molj', 'Križanke kot v časopisu: zemljepis, književnost, glasba, antika. V mreži nobene pomoči, v križanki ena razkrita črka.')),
     LV().proposals ? h('label', { class: 'toggle' }, h('input', { type: 'checkbox', checked: S.suggest, onchange: e => { S.suggest = e.target.checked; } }),
       'Predlogi besed med igro (lažje — dobro za učenje)') : null,
+    h('label', { class: 'toggle' }, h('input', { type: 'checkbox', checked: S.tutOn, onchange: e => { S.tutOn = e.target.checked; } }),
+      'Razlaga pred vsako novo vrsto uganke (čas medtem stoji)',
+      h('button', { class: 'btn small', style: { 'margin-left': '6px' }, onclick: e => { e.preventDefault(); resetTuts(); e.target.textContent = 'Razlage se bodo pokazale znova'; e.target.disabled = true; } }, 'Pokaži razlage znova')),
     h('label', { class: 'toggle' }, h('input', { type: 'checkbox', checked: S.testMode, onchange: e => { S.testMode = e.target.checked; } }),
       'Preizkusni način: 200 zlatnikov, postaje in pokrajine lahko preskočiš'),
     h('div', { class: 'row', style: { 'justify-content': 'flex-start', 'flex-wrap': 'wrap' } },
@@ -973,7 +989,8 @@ function renderTitle() {
       h('span', {}, h('kbd', {}, 'a–ž')), h('span', {}, 'tipkaj besedo; pot v mreži se poišče sama'),
       h('span', {}, 'miška'), h('span', {}, 'vleci čez sosednje črke ali klikaj eno za drugo (klik na zadnjo potrdi)'),
       h('span', {}, h('kbd', {}, 'Enter')), h('span', {}, 'potrdi besedo'),
-      h('span', {}, h('kbd', {}, 'Backspace'), ' ', h('kbd', {}, 'Esc')), h('span', {}, 'briši črko · počisti besedo (Esc na prazni besedi = premor)'),
+      h('span', {}, h('kbd', {}, 'Backspace'), ' ', h('kbd', {}, 'Del')), h('span', {}, 'briši črko · počisti besedo'),
+      h('span', {}, h('kbd', {}, 'Esc')), h('span', {}, 'premor: čas se ustavi, uganka se zakrije'),
       h('span', {}, h('kbd', {}, 'presledek')), h('span', {}, 'izreci zagovor, ko je poln'),
       h('span', {}, h('kbd', {}, '←'), ' ', h('kbd', {}, '→')), h('span', {}, 'izberi cilj (v križanki: premik po mreži)'),
       h('span', {}, h('kbd', {}, '1'), ' ', h('kbd', {}, '2')), h('span', {}, 'namig · premešaj mrežo'),
@@ -1126,8 +1143,9 @@ function startBattle(node) {
   ensureSolvable();
   buildBattleDom();
   log(`${node.title}: ${B.enemies.map(e => e.name).join(', ')}.`);
-  { const b = B; setTimeout(() => { if (B === b && !B.over) { autoItems('start'); dartStrike(); } }, 700); }
-  if (def.ambush) setTimeout(() => { if (S.battle === B) openCrossword('ambush', def.ambush); }, 400);
+  { const b = B; later(() => { if (B === b && !B.over) { autoItems('start'); dartStrike(); } }, 700); }
+  if (def.ambush) later(() => { if (S.battle === B) openCrossword('ambush', def.ambush); }, 400);
+  else showTut('mesh');
 }
 
 const nodeBg = node => node.bg || NODE_BG[node.id];
@@ -1139,8 +1157,7 @@ function buildBattleDom() {
   SCR.append(battle = h('div', { class: 'battle' },
     h('div', { class: 'bhead' },
       h('div', { class: 't' }, B.node.title, h('small', {}, B.node.sub)),
-      h('div', { class: 'meta', ref: el => UI.meta = el }),
-      h('button', { class: 'btn small', onclick: () => togglePause() }, 'Premor')),
+      h('div', { class: 'meta', ref: el => UI.meta = el })),
     h('div', { class: 'scene' + (nodeBg(B.node) ? ' hasbg' : ''), style: nodeBg(B.node) ? { 'background-image': `linear-gradient(rgba(14,16,26,.36), rgba(14,16,26,.16)), url(${BG[nodeBg(B.node)]})` } : {}, ref: el => UI.scene = el },
       S.mobile ? coach : null,   // first, so actors, the target marker and cards paint over it
       h('div', { class: 'party', ref: el => UI.party = el }),
@@ -1269,7 +1286,7 @@ function renderSide() {
         h('span', { class: 'sw' }), h('span', {}, h('b', {}, hr.ini), ' ', hr.name, ' · ', hr.role),
         h('span', { class: 'zz' }, S.heroes[i].down ? 'padel' : asleep(i) ? 'spi' : ''))))),
     h('div', { class: 'box keys' },
-      h('kbd', {}, 'Enter'), h('span', {}, 'potrdi'), h('kbd', {}, 'Esc'), h('span', {}, 'počisti / premor'),
+      h('kbd', {}, 'Enter'), h('span', {}, 'potrdi'), h('kbd', {}, 'Del'), h('span', {}, 'počisti'), h('kbd', {}, 'Esc'), h('span', {}, 'premor'),
       h('kbd', {}, '← →'), h('span', {}, 'cilj')));
 }
 
@@ -1295,8 +1312,8 @@ function renderCoach() {
 
 // ------------------------------------------------------------ cards + floats
 function actorCenter(el, scene = UI.scene) {
-  const s = scene.getBoundingClientRect(), r = el.getBoundingClientRect();
-  return { x: r.left - s.left + r.width / 2, top: r.top - s.top, bottom: r.bottom - s.top };
+  const s = scene.getBoundingClientRect(), r = el.getBoundingClientRect(), k = (scene.offsetWidth && s.width / scene.offsetWidth) || 1;
+  return { x: (r.left - s.left + r.width / 2) / k, top: (r.top - s.top) / k, bottom: (r.bottom - s.top) / k };
 }
 function spawnCard(actorEl, o, ctx = UI) {
   if (!actorEl || !ctx.cards) return;
@@ -1670,7 +1687,7 @@ function resolveWord(w, path) {
     spawnCard(e.el, { tier: 2, foe: true, name: e.name, move: 'Hrani se s ponovitvijo', value: `napad ${e.atk}` });
   });
 
-  acts.forEach((a, n) => { a.n = n; setTimeout(() => { if (B && S.battle === B && !B.over) heroAct(a, w); }, n * 220); });
+  acts.forEach((a, n) => { a.n = n; later(() => { if (B && S.battle === B && !B.over) heroAct(a, w); }, n * 220); });
 
   // bookkeeping
   B.words++; B.stats.words++;
@@ -1812,7 +1829,7 @@ function damageEnemy(e, amount, opts = {}) {
     if (drop) floatOn(e.el, `+${drop} zlatnikov`, 'crit');
     log(`${e.name} je ${e.f ? 'premagana' : 'premagan'}: vsak junak +${e.xp} XP` + (drop ? `, +${drop} zlatnikov.` : '.'));
     gainXp(e.xp, null, true); retarget();
-    const b = B; setTimeout(() => { if (B === b) checkEnd(); }, 650);
+    const b = B; later(() => { if (B === b) checkEnd(); }, 650);
   }
   renderEnemies();
   return a;
@@ -1835,13 +1852,13 @@ function hurtParty(amount, src, all) {
   }
   autoItems('tick');
   renderPartyHp();
-  const b = B; if (!living().length) setTimeout(() => { if (B === b) checkEnd(); }, 400);
+  const b = B; if (!living().length) later(() => { if (B === b) checkEnd(); }, 400);
   return a;
 }
 function heroFalls(k) {
   const st = S.heroes[k]; st.down = true; st.hp = 0; delete B.sleep[k];
   log(`${HEROES[k].name} obleži, dokler ga ne obudi vodnjak, junak ali napoj.`); fb(`${HEROES[k].name}: zdravja je zmanjkalo. Te črke so ugasnile.`, 'err');
-  setTimeout(() => { if (B && S.battle === B) { renderParty(); renderPuzzle(); renderSide(); } }, 350);
+  later(() => { if (B && S.battle === B) { renderParty(); renderPuzzle(); renderSide(); } }, 350);
 }
 
 function gainXp(n, k, each) {           // k = hero index; without it the XP is split among the heroes still standing, or with `each` everyone gets all of it
@@ -1916,7 +1933,7 @@ function calmAfterWord() {
     e.charge += e.calmStep;
     if (e.charge >= 0.999) { e.charge = 0; acting.push(e); }
   });
-  acting.forEach((e, n) => setTimeout(() => { if (B && S.battle === B && !B.over) enemyAct(e); }, 650 + n * 700));
+  acting.forEach((e, n) => later(() => { if (B && S.battle === B && !B.over) enemyAct(e); }, 650 + n * 700));
   renderEnemies();
 }
 
@@ -1963,12 +1980,7 @@ function battleTick(dt) {
   }
 }
 
-function togglePause() {
-  if (!B || B.over) return;
-  B.paused = !B.paused;
-  renderPuzzle();
-}
-window.addEventListener('blur', () => { if (B && S.screen === 'battle' && S.mode === 'real' && !B.paused && !B.over) togglePause(); });
+// pause: see setPause() in the playtest round 2 block
 
 // ------------------------------------------------------------ hint + shuffle
 function useHint() {
@@ -2156,6 +2168,7 @@ function openCrossword(kind, id, opts = {}) {
   // Opened by a tap or key press, this also opens the phone keyboard; opened by an enemy, the player taps the grid.
   focusCwInput();
   if (S.mobile) UI.puzzle.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  fitSoon(); showTut(kind);
 }
 const cellKey = (e, p) => (e.row + (e.dir === 'D' ? p : 0)) + ',' + (e.col + (e.dir === 'A' ? p : 0));
 // Pressing a clue, a cell or a banner button must not blur the input first: the blur redraws the banner,
@@ -2175,7 +2188,7 @@ function renderCrossword() {
       : `${D.title} — vsaka pravilna beseda sproži napad, cela križanka še mogočnejšega.`,
     lock: C.id === 'zmaj' ? 'Lintvern te sili v zmajevo uganko. Mreža je zaprta — uganeš geslo, se rešiš takoj.' : 'Vrtinec! Reši križanko ali ugani geslo, da se izviješ. Mreža je zaprta.',
     ambush: 'Zaseda! Vsaka pravilna beseda je udarec, preden te opazijo.' }[C.kind];
-  const btn = C.kind === 'finisher' ? h('button', { class: 'btn small', onclick: () => { closeCrossword(); fb('Zagovor prekinjen — moč ostane shranjena.', 'warn'); } }, 'Prekliči ', h('kbd', {}, 'Esc'))
+  const btn = C.kind === 'finisher' ? h('button', { class: 'btn small', onclick: () => { closeCrossword(); fb('Zagovor prekinjen — moč ostane shranjena.', 'warn'); } }, 'Prekliči zagovor')
     : C.kind === 'ambush' ? h('button', { class: 'btn small', onclick: () => cwFail() }, 'Preskoči')
     : C.timer === Infinity ? h('button', { class: 'btn small', onclick: () => cwFail() }, 'Predaj se (prejmi udarec)') : null;
   UI.puzzle.append(h('div', { class: 'cwhead' }, h('span', { class: 'k ' + C.kind }, label), h('h3', {}, head), h('span', { class: 'grow' }), btn));
@@ -2428,15 +2441,15 @@ function cwFail() {
     log('Opazili so te. Bitka se nadaljuje brez nadaljnje prednosti.'); fb('Opazili so te.', 'warn');
   }
 }
-function closeCrossword() { B.cw = null; UI.cwTimer = null; renderPuzzle(); renderSide(); renderWord(); }
+function closeCrossword() { B.cw = null; UI.cwTimer = null; renderPuzzle(); renderSide(); renderWord(); fitSoon(); if (!B.over) showTut('mesh'); }
 
 
 // ------------------------------------------------------------ battle end
 function checkEnd() {
   if (!B || B.over || S.screen !== 'battle') return;
   const b = B;   // timers must act on this battle only, even if the player has moved on
-  if (!living().length) { B.over = true; setTimeout(() => { if (B === b) showResult(false); }, 700); }
-  else if (B.enemies.every(e => e.hp <= 0)) { B.over = true; if (B.cw) closeCrossword(); setTimeout(() => { if (B === b) showResult(true); }, 900); }
+  if (!living().length) { B.over = true; later(() => { if (B === b) showResult(false); }, 700); }
+  else if (B.enemies.every(e => e.hp <= 0)) { B.over = true; if (B.cw) closeCrossword(); later(() => { if (B === b) showResult(true); }, 900); }
 }
 function showResult(win) {
   sfx(win ? 'win' : 'lose', { delay: .3 });
@@ -2482,12 +2495,10 @@ function battleKey(e) {
   if (!B) return;
   const k = e.key;
   if (k === 'Escape') {
-    e.preventDefault();
-    if (B.cw && B.cw.kind === 'finisher') { closeCrossword(); fb('Zagovor prekinjen — moč ostane shranjena.', 'warn'); return; }
-    if (!B.cw && (B.typed || B.path.length)) { clearWord(); return; }
-    togglePause(); return;
+    e.preventDefault(); setPause(true); return;   // normally caught earlier by the capture listener
   }
   if (B.paused || B.over) return;
+  if (k === 'Delete') { e.preventDefault(); if (!B.cw) clearWord(); return; }
   if (B.cw) {
     if (k === 'Tab') { e.preventDefault(); cwNext(e.shiftKey ? -1 : 1); return; }
     if (k === 'Enter') { e.preventDefault(); cwNext(); return; }
@@ -2525,6 +2536,7 @@ function startChest(node) {
   S.ev = { node, kind: 'chest', item, letters: letters.map(ch => ({ ch, used: false })), sel: [], time: t, timeMax: t,
     done: false, found: [], msg: '', msgKind: '' };
   renderChest();
+  showTut('chest');
 }
 function renderChest() {
   const E = S.ev; SCR.innerHTML = '';
@@ -2545,7 +2557,7 @@ function renderChest() {
       E.done ? h('div', {}, h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')))
       : h('div', { class: 'row', style: { 'justify-content': 'flex-start', 'flex-wrap': 'wrap' } },
         h('button', { class: 'btn small', onclick: chestBack }, '⌫ Briši'),
-        h('button', { class: 'btn small', onclick: chestClear }, 'Počisti ', h('kbd', {}, 'Esc')),
+        h('button', { class: 'btn small', onclick: chestClear }, 'Počisti ', h('kbd', {}, 'Del')),
         h('button', { class: 'btn small', onclick: () => { E.letters = shuffle(E.letters.map((l, i) => ({ ...l, i }))); chestRemap(); } }, 'Premešaj')),
       null)));
 }
@@ -2616,6 +2628,7 @@ function startTrap(node) {
   S.ev = { node, kind: 'trap', time: 0, fall: (real ? 16 : 32) * (has('pisanica') ? 1.5 : 1), used: new Set(), broken: 0, hits: 0, dmg: 0, done: false, word: '',
     rocks: letters.map((ch, i) => ({ ch, lane: [14, 38, 62, 86][i], spawn: 0.5 + i * 0.3, y: -60, state: 'wait', el: null })) };
   renderTrap();
+  showTut('trap');
 }
 function renderTrap() {
   const E = S.ev; SCR.innerHTML = '';
@@ -2646,7 +2659,7 @@ function renderTrapStat() {
   const left = E.rocks.filter(r => r.state === 'wait' || r.state === 'fall').length;
   UI.trapStat.textContent = `Razbite: ${E.broken} · zadetki: ${E.hits} · še ${left} od ${E.rocks.length} skal`;
 }
-function trapFb(text, kind) { if (kind === 'err') sfx('bad'); else if (kind === 'ok') sfx('hit2'); UI.trapFb.className = 'fb ' + (kind || ''); UI.trapFb.textContent = text; }
+function trapFb(text, kind) { if (kind === 'err') sfx('bad'); else if (kind === 'ok') sfx('hit2', { soft: true, vol: ATK_VOL }); UI.trapFb.className = 'fb ' + (kind || ''); UI.trapFb.textContent = text; }
 function trapSubmit() {
   const E = S.ev; if (E.done || !UI.trapInput) return;
   const typed = [...UI.trapInput.value].map(normLetter).filter(Boolean).join('');
@@ -2739,7 +2752,7 @@ document.addEventListener('keydown', e => {
     if (E.done) { if (e.key === 'Enter') finishEvent(); return; }
     if (e.key === 'Enter') { e.preventDefault(); chestSubmit(); return; }
     if (e.key === 'Backspace') { e.preventDefault(); chestBack(); return; }
-    if (e.key === 'Escape') { chestClear(); return; }
+    if (e.key === 'Delete') { e.preventDefault(); chestClear(); return; }
     const ch = letterKey(e); if (ch) { e.preventDefault(); chestType(ch); }
     return;
   }
@@ -2750,17 +2763,21 @@ let lastT = performance.now();
 function frame(t) {
   const dt = Math.min(0.1, (t - lastT) / 1000); lastT = t;
   try {
-    if (S.screen === 'battle') battleTick(dt);
-    else if (S.screen === 'chest') chestTick(dt);
-    else if (S.screen === 'darts') dartsTick(dt);
-    else if (S.screen === 'trap') trapTick(dt);
-    else if (S.screen === 'travel') travelTick(dt);
+    if (held()) { /* pause or puzzle intro: every clock stands still */ }
+    else {
+      runLater(dt);
+      if (S.screen === 'battle') battleTick(dt);
+      else if (S.screen === 'chest') chestTick(dt);
+      else if (S.screen === 'darts') dartsTick(dt);
+      else if (S.screen === 'trap') trapTick(dt);
+      else if (S.screen === 'travel') travelTick(dt);
+    }
   } catch (err) { console.error(err); }
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 

@@ -432,6 +432,7 @@ function startDarts(node) {
   const cols = [...word].map(ch => { const col = [ch]; while (col.length < DART_ROWS) { const x = BAG[rnd(BAG.length)]; if (!col.includes(x)) col.push(x); } return shuffle(col); });
   S.ev = { node, kind: 'darts', word, cols, sel: [], time: t, timeMax: t, done: false, msg: '', msgKind: '' };
   renderDarts();
+  showTut('darts');
 }
 const dartsGuess = () => S.ev.sel.map((r, c) => S.ev.cols[c][r]).join('');
 function renderDarts() {
@@ -452,7 +453,7 @@ function renderDarts() {
       E.done ? h('div', {}, h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')))
       : h('div', { class: 'row', style: { 'justify-content': 'flex-start', 'flex-wrap': 'wrap' } },
         h('button', { class: 'btn small', onclick: () => { E.sel.pop(); renderDarts(); } }, '⌫ Briši'),
-        h('button', { class: 'btn small', onclick: () => { E.sel = []; renderDarts(); } }, 'Počisti ', h('kbd', {}, 'Esc')),
+        h('button', { class: 'btn small', onclick: () => { E.sel = []; renderDarts(); } }, 'Počisti ', h('kbd', {}, 'Del')),
         h('span', { class: 'muted', style: { 'align-self': 'center' } }, `najmanj ${MINW()} črke`)))));
 }
 // a letter can be taken in the next free column, or changed in a column already used (later letters are dropped)
@@ -465,7 +466,7 @@ function dartsKey(e) {
   if (E.done) { if (e.key === 'Enter') finishEvent(); return; }
   if (e.key === 'Enter') { e.preventDefault(); dartsSubmit(); return; }
   if (e.key === 'Backspace') { e.preventDefault(); E.sel.pop(); renderDarts(); return; }
-  if (e.key === 'Escape') { E.sel = []; renderDarts(); return; }
+  if (e.key === 'Delete') { E.sel = []; renderDarts(); return; }
   const ch = letterKey(e); if (!ch) return;
   e.preventDefault();
   const c = E.sel.length, r = c < E.cols.length ? E.cols[c].indexOf(ch) : -1;

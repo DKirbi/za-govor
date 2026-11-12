@@ -4,7 +4,8 @@
 
 Inputs:  src/index.src.html (template), src/game.css,
          src/game.js (battles, crosswords, events) with two generated/added parts spliced in:
-           src/art-extra.js (pixel art from tools/art_extra.py) and src/journey.js (the road),
+           src/art-extra.js (pixel art from tools/art_extra.py), src/journey.js (the road) and
+           src/playtest.js (pause, puzzle intros, fullscreen, fit to screen),
          data/dict.json (battle word list), data/clues.json (crossword clue bank),
          data/world.json (regions and items of the journey)
 Output:  dist/index.html — open it in any modern browser, no server needed.
@@ -19,9 +20,9 @@ for name, text in data.items():
     assert '</script' not in text, f'{name} would close its <script> tag'
 
 js = read('src/game.js')
-for mark, rel in (('/*__ART_EXTRA__*/', 'src/art-extra.js'), ('/*__JOURNEY__*/', 'src/journey.js')):
+for mark, rels in (('/*__ART_EXTRA__*/', ['src/art-extra.js']), ('/*__JOURNEY__*/', ['src/journey.js', 'src/playtest.js'])):
     assert js.count(mark) == 1, f'{mark} must appear exactly once in src/game.js'
-    js = js.replace(mark, read(rel))
+    js = js.replace(mark, ''.join(read(rel) for rel in rels))
 
 out = template.replace('/*__CSS__*/', read('src/game.css'))
 for mark, text in data.items():
