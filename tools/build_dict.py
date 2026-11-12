@@ -44,6 +44,16 @@ for form, lemma in lemma_of.items():
     if fz >= FORM_Z or lz >= LEMMA_Z:   # every form of a common word counts
         keep[form] = lemma
 
+# A word whose inflected form is accepted is accepted in its dictionary form too. Before this,
+# 2,462 base forms were missing (jasa, sodelovati, vabiti, copata…) because only an inflected
+# form passed the frequency cut. Three-letter base forms come only from a reviewed list:
+# simplemma's short lemmas include junk (tea, mia, avt).
+SHORT_OK = {'brk', 'kov', 'seč', 'soj', 'tog', 'uta', 'vit', 'čer'}
+for lemma in set(keep.values()):
+    if lemma in keep or not ALPHA.match(lemma) or blocked(lemma): continue
+    if not (MINLEN <= len(lemma) <= MAXLEN) or (len(lemma) == 3 and lemma not in SHORT_OK): continue
+    keep[lemma] = lemma
+
 MANUAL = {
  'perun':['perun','peruna','perunu','perunom'],
  'veles':['veles','velesa','velesu','velesom'],
@@ -67,6 +77,9 @@ MANUAL = {
  'volk':['volk','volka','volku','volkom','volkova','volkovi','volkov','volkove','volkovoma'],
  'zmaj':['zmaj','zmaja','zmaju','zmajem','zmaji','zmajev','zmajema'],
 }
+# data/allow.json: words players reported (Prijavi besedo), checked by hand, lemma -> forms
+ALLOW = json.loads((OUT.parent / 'allow.json').read_text(encoding='utf-8')) if (OUT.parent / 'allow.json').exists() else {}
+MANUAL.update({l: fs for l, fs in ALLOW.items() if not l.startswith('_')})
 for l, fs in MANUAL.items():
     for f in fs:
         if MINLEN <= len(f) <= MAXLEN: keep[f] = l
@@ -78,5 +91,5 @@ s = json.dumps(out, ensure_ascii=False, separators=(',',':'))
 print('json bytes', len(s.encode()))
 OUT.write_text(s, encoding='utf-8')
 print('wrote', OUT)
-for w in ['volk','volka','volkom','volkova','strela','strele','grom','hrast','kres','ogenj','iskra','sonce','voda','riba','reka','zmaj','luska','grad','vila','kovač','preja','zvonec','vrtinec','barje','zlatorog','triglav','perun','veles','urška']:
+for w in ['jasa','jase','sodelovati','vabiti','copata','volk','volka','volkom','volkova','strela','strele','grom','hrast','kres','ogenj','iskra','sonce','voda','riba','reka','zmaj','luska','grad','vila','kovač','preja','zvonec','vrtinec','barje','zlatorog','triglav','perun','veles','urška']:
     print(w, w in keep, keep.get(w))
