@@ -910,7 +910,7 @@ function go(screen, arg) {
   if (screen === 'title') S.pickIds = null;
   if (screen !== 'battle') { S.battle = null; B = null; }
   mountShell();
-  ({ title: renderTitle, pick: renderPick, travel: renderTravel, ending: renderEnding, battle: startBattle, chest: startChest, trap: startTrap, darts: startDarts, gallery: renderGallery, hero: renderHeroMoment })[screen](arg);
+  ({ title: renderTitle, pick: renderPick, travel: renderTravel, ending: renderEnding, battle: startBattle, chest: startChest, trap: startTrap, darts: startDarts, gallery: renderGallery, credits: renderCredits, hero: renderHeroMoment })[screen](arg);
   window.scrollTo(0, 0);
   fitScreen();
 }
@@ -946,6 +946,7 @@ function toggleMobile() {
   else if (scr === 'pick') renderPick();
   else if (scr === 'ending') renderEnding();
   else if (scr === 'gallery') renderGallery();
+  else if (scr === 'credits') renderCredits();
   else if (scr === 'hero') renderHeroMoment();
   else renderTitle();
   fitScreen();
@@ -962,6 +963,7 @@ function renderTitle() {
   SCR.append(h('div', { class: 'title' },
     h('div', { class: 'logo' }, 'Za', h('span', { class: 'dot' }, '·'), 'govor'),
     h('div', { class: 'tagline' }, 'Besedna igra s slovanskimi bogovi — prototip mini iger'),
+    inspiredLine(),
     h('div', { class: 'folk-rule' }),
     h('div', { class: 'note' }, 'Novo: pot po Sloveniji. Začneš z enim junakom in hodiš od Ptuja do Ljubljanskega gradu, kjer čaka zmaj. Na poti srečaš sovražnike, skrinje, plazove, vodnjake, krošnjarje in nove junake (v družini so največ štirje, bog le eden). Zdravje se po bitki ne vrne samo: junaki se pozdravijo pri vodnjaku. Zlatnike zapraviš pri krošnjarju za napoje, strupe in predmete. ',
       h('button', { class: 'btn small', style: { 'margin-left': '4px' }, onclick: () => go('gallery') }, 'Liki, predmeti in ozadja')),
@@ -2748,6 +2750,7 @@ function finishEvent() {
 document.addEventListener('keydown', e => {
   if (isTextInput(e.target)) return;   // crossword / trap fields handle their own keys
   if (S.screen === 'gallery') { if (e.key === 'Escape') go('title'); return; }
+  if (S.screen === 'credits') { if (e.key === 'Escape' || e.key === 'Enter') { e.preventDefault(); go('title'); } return; }
   if (S.overlayKey) { S.overlayKey(e); return; }
   if (S.screen === 'title') { if (e.key === 'Enter') { e.preventDefault(); go('pick'); } return; }
   if (S.screen === 'pick') { pickKey(e); return; }
