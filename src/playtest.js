@@ -144,6 +144,8 @@ function tutCross(kind) {
       S.mobile ? ['Tipka Naprej skoči na naslednjo besedo; izbereš jo lahko tudi s tapom v mreži. Gumb »Razkrij črko« pokaže eno črko.'] : [K('Tab'), ' skoči na naslednjo besedo, ', K('?'), ' razkrije eno črko (število je omejeno).'],
       geslo ? ['Zlat stolpec skriva geslo. Če ga uganeš, je križanka rešena takoj.'] : null] };
 }
+// seconds of the running event, when there is one (Kako igrati shows the same intros without an event)
+const evSecs = k => S.ev && S.ev[k] ? ` (${Math.round(S.ev[k])} s)` : '';
 const TUT = {
   mesh: () => ({ title: 'Mreža črk', lead: 'Iz sosednjih črk sestavi slovensko besedo. Vsaka beseda je napad na sovražnika.', fig: figMesh(), calm: S.mode !== 'real',
     time: S.mode === 'real' ? 'Sovražniki napadajo sproti. Ko sovražnik zažari, sledi udarec, zato so hitre besede vredne več kot popolne.' : 'V mirnem načinu sovražniki počakajo na tvojo besedo.',
@@ -154,19 +156,19 @@ const TUT = {
       S.mobile ? ['Vsaka črka polni zagovor. Ko je poln, gumb Izreci zagovor odpre križanko za mogočen udarec.'] : ['Vsaka črka polni zagovor. Ko je poln, ', K('presledek'), ' odpre križanko za mogočen udarec.']] }),
   finisher: () => tutCross('finisher'), lock: () => tutCross('lock'), ambush: () => tutCross('ambush'),
   chest: () => ({ title: 'Zaklenjena skrinja', lead: 'Iz premešanih črk sestavi skrito besedo. Namig pove, kaj iščeš.', fig: figChest(),
-    time: `Rdeča črta je čas (${Math.round(S.ev.timeMax)} s). Ko poteče, skrinja ostane zaklenjena.`,
+    time: `Rdeča črta je čas${evSecs('timeMax')}. Ko poteče, skrinja ostane zaklenjena.`,
     steps: [
       S.mobile ? ['Tapkaj črke v pravem vrstnem redu.'] : ['Tipkaj črke ali klikaj nanje.'],
       S.mobile ? ['Pritisni Pošlji. Prva prava beseda zaključi dogodek.'] : [K('Enter'), ' odda besedo. Prva prava beseda zaključi dogodek.'],
       ['Beseda iz vseh črk odpre skrinjo in prinese celo nagrado. Krajša prava beseda prinese le del.']] }),
   darts: () => ({ title: 'Puščice v zidu', lead: 'Zid črk v stolpcih. Iz vsakega stolpca vzemi eno črko, od leve proti desni.', fig: figDarts(),
-    time: `Rdeča črta je čas (${Math.round(S.ev.timeMax)} s). Ko poteče, poletijo vse puščice nate.`,
+    time: `Rdeča črta je čas${evSecs('timeMax')}. Ko poteče, poletijo vse puščice nate.`,
     steps: [
       S.mobile ? ['Tapni eno črko v prvem stolpcu, nato v drugem in tako naprej.'] : ['Tipkaj črke ali klikaj nanje: najprej prvi stolpec, nato drugi in tako naprej.'],
       ['Besedo lahko pošlješ, še preden prideš do zadnjega stolpca. Vsaka črka prave besede obrne eno puščico proti sovražnikom naslednje bitke.'],
       ['Puščice, ki ostanejo, zadenejo družino. Beseda, ki ne obstaja, ne obrne nobene.']] }),
   trap: () => ({ title: 'Plaz kamenja', lead: 'S pobočja padajo skale. Vsaka nosi črko in ena sama beseda jih lahko razbije.', fig: figTrap(),
-    time: `Skale padajo ${Math.round(S.ev.fall)} s. Šteje prva prava beseda; če ne pošlješ nobene, skale udarijo s polno močjo.`,
+    time: `Skale padajo ${S.ev ? Math.round(S.ev.fall) + ' s' : 'nekaj sekund'}. Šteje prva prava beseda; če ne pošlješ nobene, skale udarijo s polno močjo.`,
     steps: [
       ['Poglej črke na skalah.'],
       [S.mobile ? 'Vpiši eno besedo s tipkami spodaj in pritisni Pošlji.' : 'Vpiši eno besedo in jo pošlji.', ' Vsebuje naj čim več teh črk; v besedi so lahko kjerkoli.'],
@@ -266,5 +268,5 @@ if (window.ResizeObserver) new ResizeObserver(() => {
   if (S.mobile || !FIT[S.screen] || !SCR) return;
   if (document.documentElement.scrollHeight > window.innerHeight + 2 && ZOOM > 0.6) fitSoon();
 }).observe(app);
-window.addEventListener('resize', fitSoon);
+window.addEventListener('resize', () => { fitSoon(); if (S.screen === 'howto' && UI.car) UI.car.fit(); });
 for (const ev of ['fullscreenchange', 'webkitfullscreenchange']) document.addEventListener(ev, () => { syncTopbar(); fitSoon(); });

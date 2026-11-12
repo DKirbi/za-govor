@@ -8,8 +8,9 @@ Inputs:  src/index.src.html (template), src/game.css,
            src/art-extra.js (pixel art from tools/art_extra.py), src/journey.js (the road) and
            src/playtest.js (pause, puzzle intros, fullscreen, fit to screen) and
            src/mobile.js (phone specifics: in-game Slovene keyboard, haptics),
-           src/credits.js (Zasluge: the Words for Evil credit and all sources),
+           src/credits.js (Navdih and Zasluge: the Words for Evil credit and all sources),
            src/report.js (Prijavi besedo: rejected words, reports to a Google Form),
+           src/menu.js (the start menu and its pages: Nova pot, Dosežki in junaki, Kako igrati, O igri),
          data/lexicon.bin (word list from tools/build_lexicon.py, inlined as base64),
          data/clues.json (crossword clue bank), data/world.json (regions and items of the journey)
 Output:  dist/index.html — open it in any modern browser, no server needed.
@@ -26,7 +27,7 @@ for name, text in data.items():
 
 js = read('src/game.js')
 for mark, rels in (('/*__LEXICON__*/', ['src/lexicon.js']), ('/*__ART_EXTRA__*/', ['src/art-extra.js']),
-                   ('/*__JOURNEY__*/', ['src/journey.js', 'src/playtest.js', 'src/mobile.js', 'src/credits.js', 'src/report.js'])):
+                   ('/*__JOURNEY__*/', ['src/journey.js', 'src/playtest.js', 'src/mobile.js', 'src/credits.js', 'src/report.js', 'src/menu.js'])):
     assert js.count(mark) == 1, f'{mark} must appear exactly once in src/game.js'
     js = js.replace(mark, ''.join(read(rel) for rel in rels))
 
