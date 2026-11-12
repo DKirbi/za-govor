@@ -30,3 +30,21 @@ const trapKeyboard = () => vkbd({
 
 // A phone app that goes to the background (call, notification, home button) pauses itself.
 document.addEventListener('visibilitychange', () => { if (document.hidden && !held()) setPause(true); });
+
+// The Android app's back button (android/app/src/main/java/.../MainActivity.java) asks the game
+// what to do. It answers 'exit' only on the start screen; everywhere else back pauses a running
+// puzzle, resumes from the pause, closes an open panel or steps back to the start screen.
+window.zgBack = () => {
+  try {
+    if (G.tut) { closeTut(); return 'ok'; }
+    if (G.paused) { setPause(false); return 'ok'; }
+    if (S.overlayKey) { S.overlayKey(new KeyboardEvent('keydown', { key: 'Escape' })); return 'ok'; }
+    if (pausable()) { setPause(true); return 'ok'; }
+    if (S.screen === 'title') return 'exit';
+    if (S.ev && S.ev.done && (S.screen === 'chest' || S.screen === 'trap' || S.screen === 'darts')) { finishEvent(); return 'ok'; }
+    if (S.screen === 'result' || S.screen === 'hero') return 'ok';   // these move on with their own button
+    if (S.screen === 'ending') resetRun();
+    go('title');
+    return 'ok';
+  } catch (err) { console.error(err); return 'ok'; }
+};
