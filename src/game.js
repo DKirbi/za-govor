@@ -925,7 +925,7 @@ function renderTopbar() {
     S.mobile ? null : h('button', { class: 'btn small tb-btn tb-fs' + (isFs() ? ' on' : ''), 'aria-pressed': isFs() ? 'true' : 'false', title: 'Celozaslonski način', 'aria-label': 'Celozaslonski način', onclick: toggleFullscreen },
       tbIcon(isFs() ? 'M5 1v4H1v1.6h5.6V1zM9 13V9h4V7.4H7.4V13zM1 9h4v4h1.6V7.4H1zM13 5H9V1H7.4v5.6H13z' : 'M1 1h5v1.6H2.6V6H1zM13 13H8v-1.6h3.4V8H13zM1 13V8h1.6v3.4H6V13zM13 1v5h-1.6V2.6H8V1z'), h('span', { class: 'lbl' }, isFs() ? 'Zapri cel zaslon' : 'Cel zaslon')),
     h('button', { class: 'btn small tb-sound' + (SOUND_ON ? ' on' : ''), 'aria-pressed': SOUND_ON ? 'true' : 'false', title: 'Zvočni učinki', 'aria-label': 'Zvočni učinki', onclick: toggleSound },
-      '♪ Zvok', h('span', { class: 'pill' }, SOUND_ON ? 'VKLOP' : 'IZKLOP')),
+      h('span', { class: 'tb-note', 'aria-hidden': 'true' }, '♪'), h('span', { class: 'lbl' }, 'Zvok'), h('span', { class: 'pill' }, SOUND_ON ? 'VKLOP' : 'IZKLOP')),
     h('button', { class: 'btn small tb-mobile' + (S.mobile ? ' on' : ''), 'aria-pressed': S.mobile ? 'true' : 'false',
       title: 'Preklopi med mobilnim in namiznim prikazom', onclick: toggleMobile },
       h('span', { class: 'phone' }), 'Mobilni prikaz', h('span', { class: 'pill' }, S.mobile ? 'VKLOP' : 'IZKLOP')));

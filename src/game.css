@@ -748,6 +748,16 @@ body.held .puzzle, body.held .wordbar, body.held .event .panel, body.held .lanes
 .tb-btn.on { border-color: var(--gold); color: var(--gold); }
 body.mobile .tb-btn .lbl, body.mobile .tb-btn kbd { display: none; }
 body.mobile .tb-btn { padding: 6px 8px; }
+/* phones: the pause is a labelled thumb-size button, not a bare icon; the sound and view
+   switches shrink to icon + state so it fits beside them (from 360 px wide) */
+body.mobile .tb-btn.tb-pause { min-height: 40px; padding: 6px 12px; gap: 6px; font-size: 14px; font-weight: 700;
+  border-color: var(--gold); color: var(--gold); background: color-mix(in srgb, var(--gold) 12%, var(--panel2)); }
+body.mobile .tb-btn.tb-pause .lbl { display: inline; }
+body.mobile .tb-btn.tb-pause svg { width: 13px; height: 13px; }
+body.mobile .topbar .tb-sound { font-size: 15px; gap: 4px; padding: 6px 8px; min-height: 40px; } body.mobile .tb-sound .lbl { display: none; }
+body.mobile .topbar .tb-mobile { min-height: 40px; padding: 6px 8px; }
+@media (max-width: 374px) { body.mobile .tb-logo { font-size: 15px; } body.mobile .topbar { gap: 5px; }
+  body.mobile .tb-btn.tb-pause { padding: 6px 9px; } body.mobile .topbar .tb-sound, body.mobile .topbar .tb-mobile { padding: 6px 6px; } }
 body.mobile .topbar { gap: 6px; }
 
 .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 95; width: max-content; max-width: min(560px, 92vw);
