@@ -394,6 +394,7 @@ in [docs/progression-design.md](docs/progression-design.md) and
   cursed-god bosses, items, backgrounds.
 - [Platform roadmap](docs/platform-roadmap.md) — from browser prototype to Windows, macOS,
   Linux, Android and iOS.
+- [Playtest notes](docs/playtest-notes.md) — what each test round found and what changed
 
 ## Licence
 No licence has been chosen yet, so all rights are reserved by the author. Third-party
