@@ -10,7 +10,7 @@ const state = page => page.evaluate(() => {
 });
 
 // Type a random valid word from the current mesh (č/š/ž included) and send it. If a word
-// is still selected after Enter, Escape clears it (Escape on an empty word pauses).
+// is still selected after Enter, Delete clears it (Escape pauses the game).
 async function playWord(page) {
   const w = await page.evaluate(() => {
     const ws = [...window.__ZG.allWords().keys()].filter(w => w.length >= 4 && w.length <= 6);
@@ -20,7 +20,7 @@ async function playWord(page) {
   await typeText(page, w);
   await page.keyboard.press('Enter');
   await sleep(50);
-  if (await page.evaluate(() => { const B = window.__ZG.B; return !!(B && !B.cw && (B.typed || B.path.length)); })) await page.keyboard.press('Escape');
+  if (await page.evaluate(() => { const B = window.__ZG.B; return !!(B && !B.cw && (B.typed || B.path.length)); })) await page.keyboard.press('Delete');
   return w;
 }
 
@@ -65,7 +65,7 @@ run(async () => {
     await page.keyboard.press('Enter'); await sleep(200);
     const words1 = await page.evaluate(() => window.__ZG.B.words);
     check(words1 === words0, 'typing c/s/z instead of č/š/ž is not accepted', `${sumnik.plain} for ${sumnik.word}`);
-    await page.keyboard.press('Escape'); await sleep(100);
+    await page.keyboard.press('Delete'); await sleep(100);
     await typeText(page, sumnik.word);
     await page.keyboard.press('Enter'); await sleep(700);
     check(await page.evaluate(() => window.__ZG.B.words) === words0 + 1, 'typing the real letters plays the word', sumnik.word);

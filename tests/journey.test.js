@@ -189,6 +189,17 @@ run(async () => {
   await page.keyboard.press('Enter'); await sleep(250);
   d = await page.evaluate(() => { const Z = window.__ZG, E = Z.S.ev; return { turned: E.turned, dmg: E.dmg, strike: Z.S.strike }; });
   check(wrong && d.turned === 0 && d.dmg === 18 && d.strike === 0, 'a word that does not exist can be sent too: every dart hits the party', `${wrong} ${JSON.stringify(d)}`);
+  // the darts have a "Kako se igra" intro that holds the clock, and Esc pauses them
+  const tut = await page.evaluate(async () => { const Z = window.__ZG; Z.S.tutOn = true; Z.TUT_SEEN.delete('darts'); Z.go('darts', { id: 'puscice' });
+    const t0 = Z.S.ev.time; await new Promise(r => setTimeout(r, 500));
+    return { shown: !!Z.G.tut && document.body.classList.contains('held') && !!document.querySelector('.tutdlg .dartcols'), frozen: Z.S.ev.time === t0 }; });
+  check(tut.shown && tut.frozen, 'the first dart wall opens with an intro and the clock waits', JSON.stringify(tut));
+  await shot('journey-06c-darts-intro');
+  await page.evaluate(() => { const Z = window.__ZG; Z.closeTut(); Z.S.tutOn = false; }); await sleep(150);
+  await page.keyboard.press('Escape'); await sleep(200);
+  const paused = await page.evaluate(async () => { const Z = window.__ZG, t0 = Z.S.ev.time; await new Promise(r => setTimeout(r, 400)); return Z.G.paused && Z.S.ev.time === t0 && document.body.classList.contains('held'); });
+  await page.keyboard.press('Escape'); await sleep(200);
+  check(paused && await page.evaluate(() => !window.__ZG.G.paused), 'Esc pauses the darts (letters hidden, clock stopped) and Esc resumes');
   // healers strike as well as heal
   const healer = await page.evaluate(async () => { const Z = window.__ZG; Z.resetRun(); Z.S.mode = 'calm'; Z.setParty(['jurij']); Z.go('battle', Z.NODES[2]);
     const w = [...Z.allWords().keys()].find(x => x.length >= 4), path = Z.findPath(w); path.forEach((i, n) => { Z.B.grid[i].owner = n < 1 ? 0 : -1; });
