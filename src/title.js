@@ -34,7 +34,8 @@ const TS_PARTS = (() => {
   return out;
 })();
 
-function titleStage() {
+// opts.maxVh: the most of the screen height the scene may take (default .72; the main menu asks for less)
+function titleStage(opts = {}) {
   const M = TITLE_META, A = TITLE_ART;
   const t = (performance.now() / 1000).toFixed(2);
   const lay = (cls, img) => h('div', { class: 'ts-l ' + cls, style: { 'background-image': `url(${img})` } });
@@ -51,7 +52,7 @@ function titleStage() {
     h('img', { class: 'ts-logo', src: A.logo, alt: '', draggable: 'false' }),
     h('img', { class: 'ts-ribbon', src: A.ribbon, alt: '', draggable: 'false' }),
     ...parts.filter((p, i) => TS_PARTS[i].k === 'spark'));
-  const st = h('header', { class: 'title-stage', style: { '--t': t, '--s': titleScale(window.innerWidth), height: M.h * titleScale(window.innerWidth) + 'px' } },
+  const st = h('header', { class: 'title-stage', 'data-maxvh': opts.maxVh || .72, style: { '--t': t, '--s': titleScale(window.innerWidth), height: M.h * titleScale(window.innerWidth) + 'px' } },
     h('div', { class: 'ts-frame' }, art, mark),
     h('div', { class: 'ts-fade' }),
     h('h1', { class: 'sr-only' }, 'Za govor!'),
@@ -60,7 +61,8 @@ function titleStage() {
   return st;
 }
 const titleScale = width => Math.max(2, Math.ceil(width / TITLE_META.w));
-// Full width of the window (or of the phone column), whole-number scale, never taller than ~72% of the screen.
+// Full width of the window (or of the phone column), whole-number scale, never taller than maxVh of the screen
+// (the bottom of the scene is cropped first: it is the part that fades out anyway).
 function layoutTitleStage() {
   const st = document.querySelector('.title-stage'); if (!st || !st.parentElement) return;
   const par = st.parentElement.getBoundingClientRect();
@@ -73,7 +75,7 @@ function layoutTitleStage() {
   // centre the scene on a whole screen pixel, or every art pixel would be smeared across two
   const fr = st.querySelector('.ts-frame');
   fr.style.setProperty('--fx', Math.round((width - TITLE_META.w * s) / 2) + 'px'); fr.classList.add('placed');
-  st.style.height = Math.min(full, Math.max(TITLE_META.h * 2 - 40, Math.round(window.innerHeight * 0.72))) + 'px';
+  st.style.height = Math.min(full, Math.max(TITLE_META.h * 2 - 40, Math.round(window.innerHeight * (+st.dataset.maxvh || .72)))) + 'px';
   // sit right under the top bar, whatever margins the start screen above it has
   const bar = document.querySelector('.topbar');
   st.style.marginTop = '0px';

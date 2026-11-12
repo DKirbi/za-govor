@@ -2,7 +2,11 @@
 /* ---------- Title scene: "Za govor!" over a dusk landscape (src/title.js, art from tools/art_title.py) ----------
    Sizes are in art pixels times --s, the whole-number scale; animations move one art pixel per step. */
 .sr-only { position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-.title-stage { --u: calc(var(--s) * 1px); position: relative; overflow: hidden; margin-bottom: 6px; background: #141836; isolation: isolate; }
+.title-stage { --u: calc(var(--s) * 1px); position: relative; overflow: hidden; margin-bottom: 6px; background: #141836; isolation: isolate;
+  align-self: flex-start; flex-shrink: 0; }  /* in a centring flex column, title.js places it */
+/* the main menu starts inside the faded bottom of the scene */
+.title-stage + .mainmenu { position: relative; z-index: 1; margin-top: -56px; padding-top: 0; }
+body.mobile .title-stage + .mainmenu { margin-top: -40px; }
 .title-stage * { image-rendering: pixelated; image-rendering: crisp-edges; image-rendering: pixelated; }
 .ts-frame { position: absolute; left: 50%; top: 0; width: calc(480 * var(--u)); height: calc(160 * var(--u)); margin-left: calc(-240 * var(--u)); }
 .ts-frame.placed { left: var(--fx); margin-left: 0; }
