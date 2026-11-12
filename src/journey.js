@@ -403,6 +403,8 @@ function renderEnding() {
     h('div', { class: 'stats' },
       h('div', {}, 'Bitke'), h('div', {}, R.battles), h('div', {}, 'Izrečene besede'), h('div', {}, R.words),
       h('div', {}, 'Zlatniki'), h('div', {}, R.gold), h('div', {}, 'Predmeti'), h('div', {}, R.relics.length ? R.relics.map(id => ITEMS[id].name).join(', ') : '—')),
+    h('p', { class: 'thanks' }, 'Hvala, ker si prehodil pot do konca.'),
+    inspiredLine(),
     h('div', { class: 'row', style: { 'justify-content': 'flex-start' } }, h('button', { class: 'btn primary', onclick: () => { resetRun(); go('title'); } }, 'Nova pot ', h('kbd', {}, 'Enter')))));
   sfx('win');
 }

@@ -20,6 +20,7 @@ Playable UX prototype (browser; all party heroes and enemies have sprites, cards
 ## Reference game
 - The inspiration is **Words for Evil** (Chromosphere Games / Dylan Loney, 2014, Unity, English only): Boggle-style letter grid; the coloured tiles in a word decide which hero attacks (1/2/3 tiles = simple/super/ultra); enemies attack in real time.
 - Plan: an original game with its own name, art, heroes and text, not a translation.
+- **Credited in the game (12 Nov 2026):** a line under the title on the start screen, a thank-you with the same line after the final battle, and a *Zasluge* screen naming Words for Evil, Chromosphere Games, Dylan Loney and 2014 with a Steam link, a note that Za govor is not officially connected to its authors, and every other source. Wording is "po navdihu" (inspired by), not "na podlagi" (based on), because no code, art, text or sound is reused.
 
 ## Confirmed decisions
 - **Title: Za govor.** Read as one word, *zagovor* is a folk charm; as two words it means "for speech", a nod to promoting the Slovene language. Write it "Za govor" (Slovene titles capitalise only the first word). Logo treatment is still open.

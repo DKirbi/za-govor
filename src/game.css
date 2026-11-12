@@ -872,3 +872,19 @@ body.mobile { --faint: #8d897f; }
 body.mobile .bhead .meta, body.mobile .chip, body.mobile .partyhp { font-size: 12px; }
 body.mobile .muted { color: #b3ad9f; }
 @media (prefers-contrast: more) { :root { --dim: #cfc9bb; --faint: #a9a498; --line: #5a6074; } }
+
+/* ---------- Credits: the Words for Evil line (start screen, ending) and the Zasluge screen ---------- */
+.inspired { margin: 8px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--dim); }
+.inspired i { color: var(--ink); font-style: italic; }
+.linkbtn { background: none; border: 0; padding: 2px 0; margin-left: 2px; font: inherit; color: var(--gold); text-decoration: underline;
+  text-underline-offset: 3px; cursor: pointer; }
+.linkbtn:hover, .linkbtn:focus-visible { color: var(--ink); }
+.ending .thanks { margin: 18px 0 0; font-size: 15px; }
+.credits section { margin: 18px 0 0; }
+.credits h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .07em; color: var(--gold); margin-bottom: 6px; }
+.credits p { margin: 0 0 8px; line-height: 1.55; color: var(--ink); max-width: 62ch; }
+.credits a { color: var(--gold); text-underline-offset: 3px; }
+.credits a:focus-visible, .linkbtn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 2px; }
+body.mobile .credits p { font-size: 14px; }
+/* a 36 px tap area that does not push the sentence's lines apart */
+body.mobile .linkbtn { min-height: 36px; padding: 0; margin: -9px 0 -9px 2px; vertical-align: baseline; }

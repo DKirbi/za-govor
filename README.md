@@ -4,8 +4,10 @@
 across Slovenia from Ptuj to Ljubljana castle, chain letters into Slovene words to make
 your heroes attack, solve crosswords to speak a *zagovor* (a folk charm), and fight the
 creatures of Slovene folklore on the way to the dragon. The game is
-inspired by [Words for Evil](https://store.steampowered.com/app/335790) (Chromosphere Games, 2014) and exists to show
-how rich and playful the Slovene language is.
+inspired by [Words for Evil](https://store.steampowered.com/app/335790/Words_for_Evil/)
+(Chromosphere Games / Dylan Loney, 2014) and exists to show how rich and playful the
+Slovene language is. The game says so itself: on the start screen, after the final battle,
+and on its *Zasluge* (credits) screen.
 
 > **Slovensko:** *Za govor* je besedna igra s prvinami igre vlog v slovenščini. Junaki iz
 > slovanske mitologije se bojujejo z besedami: iz mreže črk sestavljaš besede, rešuješ
@@ -288,7 +290,7 @@ The tests open the built page in headless Chrome and play it through a test hook
 ```sh
 npm install
 python3 build.py
-npm test                                  # all six test files
+npm test                                  # all seven test files
 CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 ```
 
@@ -298,6 +300,7 @@ CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 | `tests/levels.test.js` | Each knowledge level: chosen and saved on the title screen, hints and proposals, word count and coaching tips, shortest word, crossword bank, letter counts, revealed letters (and half power), mouse clicks reaching the crossword |
 | `tests/keyword.test.js` | Guessing the keyword early ends the crossword and fires the zagovor; in Povodni mož's whirlpool *urska* with a plain s stays black and *urška* breaks it |
 | `tests/phone.test.js` | On a 390×844 touch screen: the mesh sends without *Pošlji* (second tap, lifted drag, non-words clear), the in-game keyboard types crosswords and the rock slide with the system keyboard closed, wrong entries stay black and correct ones fire, chest partial rewards, darts fit 360 px, *Premor*, and the Android back button |
+| `tests/credits.test.js` | Words for Evil is credited on the start screen, the *Zasluge* screen (with every source and a Steam link) and the ending; the line fits a 360 px phone; Esc and the Android back button leave the credits |
 | `tests/journey.test.js` | The road: choosing the first hero, walking to a stop, one enemy for one hero, no healing after a battle, a hero joining, the chest's gold and item, the well, the pedlar, using a potion, the bag pausing the battle, the shrine and the one-god rule, swapping with a full party, all 45 hero moves, the dragon and the ending |
 | `tests/desktop.test.js` | A keyboard playthrough: c/s/z are not accepted for č/š/ž, first battle, result and hero screens, chest, finisher, Lintvern's letter lock and forced crossword, ambush, rock slide, and no console errors anywhere |
 
@@ -315,6 +318,7 @@ za-govor/
 │   ├── journey.js            # the road: regions, stops, party, items, pedlar, bag, darts
 │   ├── playtest.js           # pause, puzzle intros, fullscreen, fit to screen
 │   ├── mobile.js             # phone specifics: in-game keyboard, haptics, Android back button
+│   ├── credits.js            # Zasluge: the Words for Evil credit and every source
 │   ├── art-extra.js          # generated pixel art (tools/art_extra.py)
 │   └── game.css              # styles, desktop and phone layouts
 ├── android/                  # Capacitor 8 Android project (npm run android:open)
@@ -431,6 +435,10 @@ in [docs/progression-design.md](docs/progression-design.md) and
 - [Playtest notes](docs/playtest-notes.md) — what each test round found and what changed
 
 ## Licence
+Za govor is an original game inspired by Words for Evil; it reuses none of its code, art,
+text or sound and is not officially connected to its authors. The in-game *Zasluge* screen
+credits the inspiration and every third-party source.
+
 No licence has been chosen yet, so all rights are reserved by the author. Third-party
 data and code keep their own licences (see [Language data and sources](#language-data-and-sources));
 the Sloleks licence (CC BY-SA 4.0) will require attribution in the final game's credits.
