@@ -6,7 +6,7 @@ This replaces the earlier "three starters and cursed-god bosses" proposal. Every
 
 ## Status at a glance
 - **Decided by the user (11 Nov):** the 2D side-scrolling journey is the point of the game; the levels are places in Slovenia visited one after another, with no level list; the dragon at Ljubljana castle is the final battle; healing happens only at special places such as wells; the player starts with one character; four is the most in a party; only one god per play, and gods are stronger; Erasmus of Lueg (Erazem Predjamski) is a new character and more should be explored; all characters are unlocked; there are items with mythical Slavic names; merchants sell potions, poisons and attack boosts; traps, chests and wells have their own sprites; the web prototype is expanded for fast testing and Godot stays the end goal.
-- **12 Nov (built):** the darts event (*Puščice v zidu*), the start screen with silhouettes and three known starters, attacks for the healers, every potion used automatically.
+- **12 Nov (built):** the darts event (*Puščice v zidu*, renamed *Past s konicami* on 13 Nov), the start screen with silhouettes and three known starters, attacks for the healers, every potion used automatically.
 - **Evening fixes (built):** partial healing outside wells, automatic potions, wells raise the fallen, gold and XP from every enemy, one-word chests and rock slides with partial outcomes, Krpan as the first starter with unlocks.
 - **Built:** the journey (ten regions, 48 stops), choosing the first hero, meeting and swapping heroes, the shrine with one god, wells, the pedlar, gold, 23 items, random regional enemies, sprites for every stop, four new heroes, battle abilities for all fifteen heroes.
 - **Parked:** cursed gods as bosses (section 7 of the old design). Gods are simply powerful companions now.
@@ -67,12 +67,13 @@ One road, walked left to right. The party stands still and the world scrolls pas
 - **Chest (one word):** the hidden word, or any real word from all the letters, opens it: 50 XP for every hero, 15–25 gold, one item, and a half-full zagovor in the next battle. A real word that leaves letters unused ends the chest with a share of the reward (XP and gold in proportion to the letters used, no item). Running out of time gives nothing.
 - **Rock slide (one word):** the rocks whose letters are in the word break (8 XP for every hero and 3 gold per rock); the others graze the party for half damage (4 each). A word with every letter breaks the whole slide. If no word is sent, every rock lands with full force (8 each).
 
-## 3b. Darts: *Puščice v zidu* (new mini-event)
-- A wall of letters: **six columns of three letters**. Take one letter from each column, strictly left to right, and send the word. 35 s (70 s in calm mode).
-- A hidden six-letter word always exists, but **you may send early**: a real word of 3–5 letters counts for that many darts. **A word that does not exist can be sent too** — then every dart misses.
-- Each letter of a real word turns one dart: 7 XP for every hero, 2 gold, and **4 damage to every enemy at the start of the next battle** (so the full word opens the next fight with −24 to each enemy). Darts that are not turned hit the party for 3 each.
+## 3b. Spikes trap: *Past s konicami* (mini-event; the darts of 12 Nov, renamed 13 Nov)
+- A wall with **six slots of three letters each**. Take one letter from each slot, strictly left to right, and send the word. 35 s (70 s in calm mode).
+- A hidden six-letter word always exists, but **you may send early**: a real word of 3–5 letters sets that many spikes. **A word that does not exist can be sent too** — then every spike springs at the party.
+- Each letter of a real word sets one spike: 7 XP for every hero, 2 gold, and **4 damage to every enemy at the start of the next battle** (so the full word opens the next fight with −24 to each enemy). Spikes that are not set hit the party for 3 each.
 - Like the chest and the rock slide it has a *Kako se igra* intro with a solved example, and Esc pauses it (Delete clears the letters).
-- On the road it stands in Trnovski gozd, at Predjamski grad and before the dragon. It has its own sprite (a wall with dart holes).
+- On the road it stands in Trnovski gozd, at Predjamski grad and before the dragon. It has its own sprite (a stone wall with iron spikes coming out of the slots).
+- Internal ids stay `darts` and `puscice`, so saved runs, `data/world.json` and the missing-word reports keep working.
 
 ## 4. Levels (unchanged)
 Three levels per hero: level 2 at 50 XP, level 3 at 140 XP; health ×1.25 / ×1.6, attack ×1.15 / ×1.3, and long words add 4 % / 10 % per letter beyond the fourth.
