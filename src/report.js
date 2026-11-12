@@ -7,7 +7,8 @@
 
 // Filled in from the form's pre-filled link: .../forms/d/e/<id>/viewform?entry.<n>=...
 // The four fields are Beseda, Kje, Opomba, Podatki. With no id, reports only queue.
-const REPORT_FORM = { id: '', entry: { word: '', where: '', note: '', meta: '' } };
+const REPORT_FORM = { id: '1FAIpQLSdQMdF0tOxiSydO23w7HKLdaIzFxF_8vTGCxRxQzTFnNlSK4Q',
+  entry: { word: '999563651', where: '450611827', note: '1964532332', meta: '777699005' } };
 
 const RJ_KEY = 'zg-rejected', RP_KEY = 'zg-reports', RJ_MAX = 40, SESSION = Date.now();
 const loadList = k => { try { const v = JSON.parse(localStorage.getItem(k) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } };
