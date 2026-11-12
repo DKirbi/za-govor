@@ -718,3 +718,16 @@ body.mobile .regdots i { width: 7px; height: 7px; }
 .pickgrid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 .pickcard.locked { cursor: default; opacity: .55; border-style: dashed; }
 .pickcard .q { display: grid; place-items: center; font-style: normal; font-size: 34px; font-weight: 800; color: var(--faint); }
+
+/* start screen: unknown characters are silhouettes */
+.pickcard.locked { cursor: default; opacity: 1; border-style: dashed; background: var(--bg2); }
+.pickcard.locked i.shade { filter: brightness(0) opacity(.55); }
+.pickcard.locked b { color: var(--faint); letter-spacing: .12em; } .pickcard.locked span { color: var(--faint); }
+/* darts: columns of letters, one from each, left to right */
+.dartcols { display: flex; gap: 10px; margin: 14px 0; justify-content: center; }
+.dartcol { display: grid; gap: 8px; padding: 8px; border-radius: 10px; border: 2px solid transparent; background: var(--bg2); }
+.dartcol .tile { --tile-size: 52px; }
+.dartcol.next { border-color: var(--gold); }
+.dartcol.later { opacity: .5; } .dartcol.later .tile { cursor: default; }
+.dartcol .tile.sel { background: var(--gold); color: #1d1608; border-color: var(--gold); }
+body.mobile .dartcols { gap: 5px; } body.mobile .dartcol { padding: 5px; gap: 6px; } body.mobile .dartcol .tile { --tile-size: 44px; }

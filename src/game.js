@@ -702,13 +702,13 @@ function attackAnim(el, tier, sceneEl) {
 const KIT = {
   perun:   { ini: 'Pe', kit: 'burst', role: 'udar', domain: ['grom', 'strela', 'hrast', 'nevihta', 'oblak', 'sekira', 'nebo', 'blisk', 'dež', 'veter'] },
   svarog:  { ini: 'Sv', kit: 'smith', role: 'udar + ščit', domain: ['ogenj', 'kovač', 'kladivo', 'nakovalo', 'meč', 'železo', 'jeklo', 'peč', 'kovina', 'orodje'] },
-  mokos:   { ini: 'Mo', kit: 'heal', role: 'zdravi', domain: ['voda', 'zemlja', 'preja', 'kruh', 'mati', 'žito', 'njiva', 'vreteno', 'seme', 'reka'] },
+  mokos:   { ini: 'Mo', kit: 'heal', role: 'zdravi + šibek udar', domain: ['voda', 'zemlja', 'preja', 'kruh', 'mati', 'žito', 'njiva', 'vreteno', 'seme', 'reka'] },
   kresnik: { ini: 'Ks', kit: 'fire', role: 'ogenj', domain: ['kres', 'sonce', 'iskra', 'žar', 'poletje', 'luč', 'svetloba', 'dan', 'zlato', 'plamen'] },
   veles:   { ini: 'Ve', kit: 'venom', role: 'strup, zadene vse', domain: ['rog', 'medved', 'kača', 'korenina', 'živina', 'volna', 'čreda', 'zaklad', 'tema', 'pesem'] },
   dazbog:  { ini: 'Da', kit: 'light', role: 'luč: naslednja beseda močnejša', domain: ['dan', 'zarja', 'sonce', 'jutro', 'voz', 'žarek', 'svetloba', 'zlato', 'nebo', 'dar'] },
   stribog: { ini: 'St', kit: 'wind', role: 'zadene vse', domain: ['veter', 'burja', 'vihar', 'sapa', 'piš', 'zrak', 'oblak', 'jadro', 'krilo', 'pero'] },
   krpan:   { ini: 'Kp', kit: 'heavy', role: 'težek udar', domain: ['sol', 'kobila', 'kij', 'lipa', 'cesar', 'voz', 'mesar', 'tovor', 'cesta', 'pismo'] },
-  jurij:   { ini: 'Ju', kit: 'bloom', role: 'zdravi malo', domain: ['list', 'breza', 'pomlad', 'trava', 'cvet', 'veja', 'zelenje', 'konj', 'rosa', 'popek'] },
+  jurij:   { ini: 'Ju', kit: 'bloom', role: 'zdravi malo + šibek udar', domain: ['list', 'breza', 'pomlad', 'trava', 'cvet', 'veja', 'zelenje', 'konj', 'rosa', 'popek'] },
   kurent:  { ini: 'Ku', kit: 'noise', role: 'omama', domain: ['zvon', 'zvonec', 'maska', 'pust', 'kožuh', 'zima', 'ples', 'krof', 'hrup', 'jež'] },
   matjaz:  { ini: 'Ma', kit: 'guard', role: 'ščit', domain: ['meč', 'krona', 'kralj', 'vojska', 'brada', 'gora', 'miza', 'lipa', 'krokar', 'spanje'] },
   erazem:  { ini: 'Er', kit: 'siege', role: 'izmik + ščit', domain: ['grad', 'vitez', 'jama', 'rov', 'češnja', 'oklep', 'stolp', 'skala', 'obleganje', 'top'] },
@@ -867,7 +867,7 @@ function reviveHero(k) {
   const st = S.heroes[k]; st.down = false; st.hp = Math.max(1, Math.round(st.maxHp * 0.4));
   log(`${HEROES[k].name} spet vstane.`); if (B) { renderParty(); renderPuzzle(); renderSide(); }
 }
-function resetRun() { S.run = null; setParty(CLASSIC); S.meterBonus = 0; }
+function resetRun() { S.run = null; setParty(CLASSIC); S.meterBonus = 0; S.strike = 0; }
 
 // ============================================================ global state
 const S = {
@@ -904,7 +904,7 @@ function go(screen, arg) {
   if (screen === 'title') S.pickIds = null;
   if (screen !== 'battle') { S.battle = null; B = null; }
   mountShell();
-  ({ title: renderTitle, pick: renderPick, travel: renderTravel, ending: renderEnding, battle: startBattle, chest: startChest, trap: startTrap, gallery: renderGallery, hero: renderHeroMoment })[screen](arg);
+  ({ title: renderTitle, pick: renderPick, travel: renderTravel, ending: renderEnding, battle: startBattle, chest: startChest, trap: startTrap, darts: startDarts, gallery: renderGallery, hero: renderHeroMoment })[screen](arg);
   window.scrollTo(0, 0);
 }
 
@@ -928,6 +928,7 @@ function toggleMobile() {
   const scr = S.screen;
   if ((scr === 'battle' || scr === 'result') && B) buildBattleDom();
   else if (scr === 'chest') renderChest();
+  else if (scr === 'darts') renderDarts();
   else if (scr === 'trap') renderTrap();
   else if (scr === 'travel') renderTravel();
   else if (scr === 'pick') renderPick();
@@ -1125,6 +1126,7 @@ function startBattle(node) {
   ensureSolvable();
   buildBattleDom();
   log(`${node.title}: ${B.enemies.map(e => e.name).join(', ')}.`);
+  { const b = B; setTimeout(() => { if (B === b && !B.over) { autoItems('start'); dartStrike(); } }, 700); }
   if (def.ambush) setTimeout(() => { if (S.battle === B) openCrossword('ambush', def.ambush); }, 400);
 }
 
@@ -1724,12 +1726,12 @@ function heroAct(a, w) {
     case 'smith': { const d = hit(3); card.value = `−${d} · ščit +${shield(2.5)}`; break; }            // Svarog: hit + shield
     case 'guard': { const d = hit(2.6); card.value = `−${d} · ščit +${shield(3.5)}`; break; }          // Matjaž: smaller hit, bigger shield
     case 'heal': {           // Mokoš: heal, tier 2+ cleanses, tier 3 lifts one fallen hero once per battle
-      heal(3);
+      const d = hit(1.4 + 0.4 * S.heroes[a.k].lvl); heal(3); card.value = `−${d} · ${card.value}`;
       if (a.tier === 3 && !B.revived && revive()) B.revived = true;
       if (a.tier >= 2 && cleanse()) card.extra = card.extra || 'očisti črke in zbudi junake';
       break; }
     case 'bloom': {          // Zeleni Jurij: small heals, tier 2+ unlocks letters, tier 3 revives once per journey
-      heal(2);
+      const d = hit(1.2 + 0.4 * S.heroes[a.k].lvl); heal(2); card.value = `−${d} · ${card.value}`;
       if (a.tier === 3 && !(S.run || S).jurijUsed && revive()) (S.run || S).jurijUsed = true;
       if (a.tier >= 2 && cleanse()) card.extra = card.extra || 'odklene črke';
       break; }
@@ -1828,9 +1830,10 @@ function hurtParty(amount, src, all) {
       const st = S.heroes[k], real = Math.min(st.hp, d); st.hp -= real; a += real;
       floatOn(UI.heroEls[k], `−${real}`, 'dmg'); shakeEl(UI.heroEls[k]);
       if (st.hp <= 0 && has('zlatorogova-roza') && !S.run.rozaUsed) { S.run.rozaUsed = true; st.hp = 1; floatOn(UI.heroEls[k], 'Zlatorogova roža', 'heal'); log(`Zlatorogova roža reši junaka ${HEROES[k].name}.`); }
-      if (st.hp <= 0) heroFalls(k); else autoPotion(k);
+      if (st.hp <= 0) heroFalls(k);
     });
   }
+  autoItems('tick');
   renderPartyHp();
   const b = B; if (!living().length) setTimeout(() => { if (B === b) checkEnd(); }, 400);
   return a;
@@ -1919,6 +1922,7 @@ function calmAfterWord() {
 
 // ------------------------------------------------------------ real-time loop
 function battleTick(dt) {
+  if (B && !B.over && !B.paused && (B.autoT = (B.autoT || 0) + dt) > 0.5) { B.autoT = 0; autoItems('tick'); }
   if (!B || B.over || B.paused) return;
   B.time += dt;
   if (S.mode === 'real') {
@@ -2729,6 +2733,7 @@ document.addEventListener('keydown', e => {
   if (S.screen === 'result') { if (e.key === 'Enter') { e.preventDefault(); const w = !!(B && B.won); S.resultEl.remove(); afterResult(w); } return; }
   if (S.screen === 'hero') { if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); const A = S.heroArg, acts = A.actions ? A.actions(A) : null; if (!acts) A.next(); else { const a = e.key === 'Enter' ? acts.find(x => x.primary) : acts[acts.length - 1]; if (a) a.fn(); } } else if (e.key === ' ') { e.preventDefault(); const b = document.querySelector('.hm-actions .btn'); if (b) b.click(); } return; }
   if (S.screen === 'battle') { battleKey(e); return; }
+  if (S.screen === 'darts') { dartsKey(e); return; }
   if (S.screen === 'chest') {
     const E = S.ev;
     if (E.done) { if (e.key === 'Enter') finishEvent(); return; }
@@ -2747,6 +2752,7 @@ function frame(t) {
   try {
     if (S.screen === 'battle') battleTick(dt);
     else if (S.screen === 'chest') chestTick(dt);
+    else if (S.screen === 'darts') dartsTick(dt);
     else if (S.screen === 'trap') trapTick(dt);
     else if (S.screen === 'travel') travelTick(dt);
   } catch (err) { console.error(err); }
@@ -2755,6 +2761,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { UNLOCKED, unlock, healParty, autoPotion, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, useItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 

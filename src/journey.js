@@ -9,25 +9,21 @@ const TV_SPEED = 240;                      // walking speed, world pixels per se
 function has(id) { return !!(S.run && S.run.relics.includes(id)); }
 
 // ------------------------------------------------------------ who can start a journey
-// The first journey always starts with Martin Krpan. A folk hero you meet on the road is unlocked
-// for later journeys (remembered in this browser); the start screen then offers Krpan and two of
-// the unlocked ones. Gods never start a journey — they are met at the shrine.
-const STARTER = 'krpan', STARTER_SLOTS = 3;
-const UNLOCKED = new Set([STARTER]);
+// Martin Krpan, Zeleni Jurij and Kurent can start the first journey. Everyone else is unknown
+// (a silhouette on the start screen) until met on the road; a met character is unlocked for
+// later journeys, remembered in this browser. That includes a god met at the shrine.
+const STARTERS = ['krpan', 'jurij', 'kurent'];
+const UNLOCKED = new Set(STARTERS);
 try { JSON.parse(localStorage.getItem('zg-unlocked') || '[]').forEach(id => { if (ROSTER[id]) UNLOCKED.add(id); }); } catch (e) { /* no storage */ }
 function unlock(id) {
   if (UNLOCKED.has(id)) return false;
   UNLOCKED.add(id); try { localStorage.setItem('zg-unlocked', JSON.stringify([...UNLOCKED])); } catch (e) { /* no storage */ }
   return true;
 }
-function starterChoices() {
-  if (!S.pickIds) {
-    const folk = CHARS.filter(c => !isGod(c.id) && c.id !== STARTER).map(c => c.id);
-    S.pickIds = [STARTER].concat(S.testMode ? folk : shuffle(folk.filter(id => UNLOCKED.has(id))).slice(0, STARTER_SLOTS - 1));
-  }
-  return S.pickIds;
-}
+const canStart = id => S.testMode || UNLOCKED.has(id);
+const starterChoices = () => CHARS.filter(c => canStart(c.id)).map(c => c.id);
 
+// backstories of the four heroes added with the journey
 Object.assign(LORE, {
   erazem: { story: ['Erazem Predjamski je bil vitez iz 15. stoletja, gospodar gradu v skalni steni pri Postojni. Ko se je zameril cesarju, ga je vojska oblegala leto in dan.', 'Po skrivnem rovu skozi jamo je dobival svežo hrano in oblegovalcem za posmeh metal češnje. Izročilo pravi, da ga je izdal sluga in da ga je topovska krogla zadela na stranišču.'],
     meet: 'Moj grad ne pade. Če greste na zmaja, grem z vami — rov poznam le jaz.', after: 'Leto in dan sem zdržal. To je bila malenkost.' },
@@ -63,59 +59,78 @@ function randomItem(kind) {
   return pool.length ? pick(pool) : pick(WORLD.items.filter(it => it.kind === 'use'));
 }
 // can this item be used by hand right now? (Živa voda is drunk automatically in battle)
-const usable = (it, inBattle) => inBattle ? it.where !== 'road' : it.where !== 'battle';
-const bagCount = inBattle => S.run ? Object.entries(S.run.bag).reduce((a, [id, n]) => a + (n > 0 && (!inBattle || usable(ITEMS[id], true)) ? n : 0), 0) : 0;
+const bagCount = () => S.run ? Object.values(S.run.bag).reduce((a, n) => a + n, 0) : 0;
 
-// ------------------------------------------------------------ potions, poisons and other things you use up
-// Returns a line of text describing what happened, or null if the item could not be used now.
-function useItem(id) {
-  const R = S.run, it = ITEMS[id]; if (!R || !it || !(R.bag[id] > 0)) return null;
-  const inB = !!B && S.screen === 'battle' && !B.over;
-  if (!usable(it, inB)) return null;
-  const t = inB ? cwTarget() : null, foes = inB ? B.enemies.filter(e => e.hp > 0) : [];
-  let msg = null;
-  if (id === 'ziva-voda') {
-    const k = living().filter(i => S.heroes[i].hp < S.heroes[i].maxHp).sort((a, b) => S.heroes[a].hp / S.heroes[a].maxHp - S.heroes[b].hp / S.heroes[b].maxHp)[0];
-    if (k != null) { const st = S.heroes[k], got = Math.min(st.maxHp - st.hp, Math.round(st.maxHp * POTION_HEAL)); st.hp += got; msg = `Živa voda: ${HEROES[k].name} +${got} zdravja.`; }
-  } else if (id === 'mrtva-voda') {
-    const k = S.heroes.findIndex(x => x.down);
-    if (k >= 0) { const st = S.heroes[k]; st.down = false; st.hp = Math.max(1, Math.round(st.maxHp * 0.5)); msg = `Mrtva voda: ${HEROES[k].name} spet vstane.`; }
-  } else if (id === 'perunova-medica') { B.boost = 3; msg = 'Perunova medica: naslednje tri besede udarijo močneje.'; }
-  else if (id === 'triglavov-napoj') { if (B.meter < METER_MAX) { B.meter = METER_MAX; msg = 'Triglavov napoj: zagovor je poln.'; } }
-  else if (id === 'vesnin-venec') { B.shield = Math.min(30, B.shield + 15); msg = 'Vesnin venec: ščit družine +15.'; }
-  else if (id === 'rusalkina-solza') { if (B.grid.some(isLocked) || Object.keys(B.sleep).length) { B.grid.forEach(x => { x.lockUntil = 0; x.lockWords = 0; x.flood = false; }); B.sleep = {}; msg = 'Rusalkina solza: črke so čiste, junaki budni.'; } }
-  else if (id === 'velesov-strup') { if (t) { applyBurn(t, 2.8, 'zastrupljen', true); msg = `Velesov strup: ${t.name} — strup deluje.`; } }
-  else if (id === 'volcja-jagoda') { if (t) { t.atk = Math.max(1, Math.round(t.atk * 0.7)); msg = `Volčja jagoda: ${t.name} napada šibkeje (napad ${t.atk}).`; } }
-  else if (id === 'morin-prah') { if (foes.length) { foes.forEach(e => { if (S.mode === 'real') e.stunUntil = Math.max(e.stunUntil, B.time + 8); else e.stunWords = Math.max(e.stunWords, 2); }); msg = 'Morin prah: sovražniki zaspijo.'; } }
-  else if (id === 'kresna-zerjavica') { if (foes.length) { foes.forEach(e => applyBurn(e, 2.5)); msg = 'Kresna žerjavica: vsi sovražniki gorijo.'; } }
-  if (!msg) return null;
-  R.bag[id]--; sfx(it.poison ? 'venom' : 'heal');
-  if (inB) { log(msg); fb(msg, 'ok'); renderParty(); renderEnemies(); renderSide(); if (!B.cw) renderPuzzle(); }
-  return msg;
+// ------------------------------------------------------------ potions and poisons work by themselves
+// What a potion does. `arg` is a hero index or an enemy, chosen by the trigger in autoItems.
+// Returns a line of text, or null when it would change nothing (then it is not spent).
+function applyItem(id, arg) {
+  const foes = B ? B.enemies.filter(e => e.hp > 0) : [];
+  if (id === 'ziva-voda') { const st = S.heroes[arg]; if (!st || st.down || st.hp >= st.maxHp) return null;
+    const got = Math.min(st.maxHp - st.hp, Math.round(st.maxHp * POTION_HEAL)); st.hp += got; return `${HEROES[arg].name} popije živo vodo: +${got} zdravja.`; }
+  if (id === 'mrtva-voda') { const st = S.heroes[arg]; if (!st || !st.down) return null; st.down = false; st.hp = Math.max(1, Math.round(st.maxHp * 0.5)); return `Mrtva voda: ${HEROES[arg].name} spet vstane.`; }
+  if (!B) return null;
+  if (id === 'perunova-medica') { B.boost = 3; return 'Perunova medica: prve tri besede udarijo močneje.'; }
+  if (id === 'triglavov-napoj') { if (B.meter >= METER_MAX) return null; B.meter = METER_MAX; return 'Triglavov napoj: zagovor je poln.'; }
+  if (id === 'vesnin-venec') { B.shield = Math.min(30, B.shield + 15); return 'Vesnin venec: ščit družine +15.'; }
+  if (id === 'rusalkina-solza') { B.grid.forEach(x => { x.lockUntil = 0; x.lockWords = 0; x.flood = false; }); B.sleep = {}; return 'Rusalkina solza: črke so čiste, junaki budni.'; }
+  if (id === 'velesov-strup') { if (!arg) return null; applyBurn(arg, 2.8, 'zastrupljen', true); return `Velesov strup: ${arg.name} je zastrupljen.`; }
+  if (id === 'volcja-jagoda') { if (!arg) return null; arg.atk = Math.max(1, Math.round(arg.atk * 0.7)); return `Volčja jagoda: ${arg.name} napada šibkeje.`; }
+  if (id === 'morin-prah') { if (!foes.length) return null; foes.forEach(e => { if (S.mode === 'real') e.stunUntil = Math.max(e.stunUntil, B.time + 8); else e.stunWords = Math.max(e.stunWords, 2); }); return 'Morin prah: sovražniki zaspijo.'; }
+  if (id === 'kresna-zerjavica') { if (!foes.length) return null; foes.forEach(e => applyBurn(e, 2.5)); return 'Kresna žerjavica: vsi sovražniki gorijo.'; }
+  return null;
+}
+// Heroes use what the party carries without being told. `when`:
+//   'start' — a battle begins: one opening potion in an ordinary battle, every kind against an ambush or a boss
+//   'tick'  — during a battle (twice a second and after every hit): hurt or fallen heroes, locked letters
+//   'road'  — outside battles: only the two waters
+function autoItems(when) {
+  const R = S.run; if (!R) return [];
+  const inB = !!B && S.screen === 'battle' && !B.over, used = [];
+  const spend = (id, arg) => {
+    if (!(R.bag[id] > 0)) return false;
+    const msg = applyItem(id, arg); if (!msg) return false;
+    R.bag[id]--; used.push(id); sfx(ITEMS[id].poison ? 'venom' : 'heal', { vol: .7 });
+    if (inB) { log(msg); fb(msg, 'ok'); if (UI.party) floatOn(typeof arg === 'number' && UI.heroEls[arg] ? UI.heroEls[arg] : arg && arg.el ? arg.el : UI.party, ITEMS[id].name, ITEMS[id].poison ? 'burn' : 'heal'); }
+    else R.lastAuto = msg;
+    return true;
+  };
+  if (when === 'start') {
+    if (!inB) return used;
+    const foes = B.enemies.filter(e => e.hp > 0), big = !!(B.node.stop && B.node.stop.kind !== 'battle');
+    const top = key => foes.slice().sort((a, b) => b[key] - a[key])[0];
+    for (const id of ['triglavov-napoj', 'perunova-medica', 'kresna-zerjavica', 'velesov-strup', 'volcja-jagoda']) {
+      if (spend(id, id === 'velesov-strup' ? top('hp') : id === 'volcja-jagoda' ? top('atk') : null) && !big) break;
+    }
+  } else {
+    S.heroes.forEach((st, k) => { if (st.down) spend('mrtva-voda', k); });
+    S.heroes.forEach((st, k) => { if (!st.down && st.hp > 0 && st.hp <= st.maxHp * POTION_AT) spend('ziva-voda', k); });
+    if (inB && when === 'tick') {
+      const low = f => living().some(k => S.heroes[k].hp <= S.heroes[k].maxHp * f);
+      if (B.shield <= 0 && low(0.5) && !B.usedVenec && spend('vesnin-venec')) B.usedVenec = true;
+      if (low(0.4) && !B.usedPrah && spend('morin-prah')) B.usedPrah = true;
+      if ((B.grid.filter(isLocked).length >= 4 || Object.keys(B.sleep).length) && !B.cw) spend('rusalkina-solza');
+    }
+  }
+  if (used.length && inB) { renderParty(); renderEnemies(); renderSide(); renderPartyHp(); if (!B.cw) renderPuzzle(); }
+  return used;
 }
 
-// The bag: relics (always on) and things to use. In a battle it pauses the fight while open.
+// The bag only shows what the party carries: relics work all the time, potions wait for their moment.
 function openBag() {
   const R = S.run; if (!R || S.bagEl) return;
   const inB = !!B && S.screen === 'battle' && !B.over;
   if (inB && B.cw) return;
   const was = inB ? B.paused : false; if (inB) B.paused = true;
-  const close = () => { ov.remove(); S.bagEl = null; S.overlayKey = null; if (inB && B) B.paused = was; if (S.screen === 'travel') renderTravelPanel(); };
-  const useRow = id => { const it = ITEMS[id], ok = usable(it, inB);
-    return h('div', { class: 'itemrow' }, itemIcon(id), h('div', {}, h('b', {}, it.name, R.bag[id] > 1 ? ` ×${R.bag[id]}` : ''), h('span', {}, it.text)),
-      h('button', { class: 'btn small', disabled: !ok, title: ok ? '' : it.auto ? 'Junak jo popije sam, ko mu zmanjkuje zdravja' : 'Uporabno le v bitki', onclick: () => {
-        if (inB) { close(); if (!useItem(id)) fb(`${it.name}: zdaj ne bi pomagalo.`, 'warn'); }
-        else { const m = useItem(id); note.textContent = m || `${it.name}: zdaj ne bi pomagalo.`; if (m) { close(); openBag(); S.bagEl.querySelector('.bagnote').textContent = m; } }
-      } }, ok ? 'Uporabi' : it.auto ? 'samodejno' : 'v bitki')); };
-  const uses = Object.keys(R.bag).filter(id => R.bag[id] > 0), note = h('p', { class: 'bagnote muted' });
+  const close = () => { ov.remove(); S.bagEl = null; S.overlayKey = null; if (inB && B) B.paused = was; };
+  const uses = Object.keys(R.bag).filter(id => R.bag[id] > 0);
+  const row = (id, n) => h('div', { class: 'itemrow' }, itemIcon(id), h('div', {}, h('b', {}, ITEMS[id].name, n > 1 ? ` ×${n}` : ''), h('span', {}, ITEMS[id].text)));
   const ov = h('div', { class: 'overlay', onclick: e => { if (e.target === ov) close(); } }, h('div', { class: 'dialog bag' },
     h('h2', {}, 'Torba', h('span', { class: 'goldtag' }, h('i', { class: 'coin' }), R.gold)),
-    h('h4', {}, 'Napoji in strupi'),
-    uses.length ? h('div', { class: 'itemlist' }, uses.map(useRow)) : h('p', { class: 'muted' }, 'Torba je prazna. Napoje in strupe prodaja krošnjar, nekaj jih je tudi v skrinjah.'),
-    inB ? null : h('h4', {}, 'Predmeti (delujejo ves čas)'),
-    inB ? null : R.relics.length ? h('div', { class: 'itemlist' }, R.relics.map(id => h('div', { class: 'itemrow' }, itemIcon(id), h('div', {}, h('b', {}, ITEMS[id].name), h('span', {}, ITEMS[id].text)))))
-      : h('p', { class: 'muted' }, 'Še nobenega predmeta.'),
-    note,
+    h('h4', {}, 'Napoji in strupi (junaki jih uporabijo sami)'),
+    uses.length ? h('div', { class: 'itemlist' }, uses.map(id => row(id, R.bag[id]))) : h('p', { class: 'muted' }, 'Torba je prazna. Napoje in strupe prodaja krošnjar, nekaj jih je tudi v skrinjah.'),
+    h('h4', {}, 'Predmeti (delujejo ves čas)'),
+    R.relics.length ? h('div', { class: 'itemlist' }, R.relics.map(id => row(id, 1))) : h('p', { class: 'muted' }, 'Še nobenega predmeta.'),
     h('div', { class: 'row' }, h('button', { class: 'btn primary', onclick: close }, 'Zapri ', h('kbd', {}, 'Esc')))));
   document.body.append(ov); S.bagEl = ov;
   S.overlayKey = e => { if (e.key === 'Escape' || e.key === 'Enter') { e.preventDefault(); close(); } };
@@ -126,14 +141,15 @@ function renderPick() {
   const ids = starterChoices(), list = ids.map(id => CHARS.find(c => c.id === id));
   S.pickSel = clamp(S.pickSel, 0, list.length - 1);
   const ch = list[S.pickSel], K = ROSTER[ch.id];
-  const locked = CHARS.filter(c => !isGod(c.id) && !UNLOCKED.has(c.id)).length;
+  const locked = CHARS.length - ids.length;
   SCR.append(h('div', { class: 'pick' },
     h('div', { class: 'logo', style: { 'font-size': '30px' } }, 'Kdo gre na pot?'),
-    h('p', { class: 'lead' }, 'Prvo pot začne Martin Krpan. Junaka, ki ga srečaš na poti, odkleneš: naslednjič lahko začneš tudi z njim. Na izbiro so vedno največ trije; bogovi poti ne začenjajo, enega lahko srečaš pri svetišču.' + (locked ? ` Še neodkritih junakov: ${locked}.` : ' Vsi junaki so odkriti.') + (S.testMode ? ' (Preizkusni način: na izbiro so vsi.)' : '')),
-    h('div', { class: 'pickgrid' }, list.map((c, i) => h('button', { class: 'pickcard' + (i === S.pickSel ? ' on' : ''), style: { '--c': c.c }, 'aria-pressed': i === S.pickSel ? 'true' : 'false',
-      onclick: () => { if (S.pickSel === i) return startJourney(); S.pickSel = i; sfx('sel'); mountShell(); renderPick(); } },
-      h('i', { style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, c.name), h('span', {}, ROSTER[c.id].role))),
-      Array.from({ length: Math.max(0, STARTER_SLOTS - list.length) }, () => h('div', { class: 'pickcard locked' }, h('i', { class: 'q' }, '?'), h('b', {}, 'Še neodkrit'), h('span', {}, 'srečaš ga na poti')))),
+    h('p', { class: 'lead' }, 'Izberi enega junaka. Na začetku so znani trije: Martin Krpan, Zeleni Jurij in Kurent. Drugi so še sence — ko koga srečaš na poti, ga spoznaš in naslednjič lahko začneš tudi z njim.' + (locked ? ` Še neznanih: ${locked}.` : ' Spoznal si vse.') + (S.testMode ? ' (Preizkusni način: na izbiro so vsi.)' : '')),
+    h('div', { class: 'pickgrid' }, CHARS.map(c => { const i = ids.indexOf(c.id);
+      return i < 0 ? h('div', { class: 'pickcard locked', title: 'Še neznan: srečaš ga na poti' }, h('i', { class: 'shade', style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, '???'), h('span', {}, 'še neznan'))
+        : h('button', { class: 'pickcard' + (i === S.pickSel ? ' on' : '') + (isGod(c.id) ? ' god' : ''), style: { '--c': c.c }, 'aria-pressed': i === S.pickSel ? 'true' : 'false',
+          onclick: () => { if (S.pickSel === i) return startJourney(); S.pickSel = i; sfx('sel'); mountShell(); renderPick(); } },
+          h('i', { style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, c.name), h('span', {}, isGod(c.id) ? 'bog' : ROSTER[c.id].role)); })),
     h('div', { class: 'pickinfo', style: { '--c': ch.c } },
       h('div', { class: 'spirit' }, spriteEl(ch.id, ch.c)),
       h('div', {},
@@ -154,7 +170,7 @@ function pickKey(e) {
   else if (e.key === 'Enter') { e.preventDefault(); startJourney(); }
   else if (e.key === 'Escape') go('title');
 }
-function startJourney() { const ids = starterChoices(); newRun(ids[clamp(S.pickSel, 0, ids.length - 1)]); S.pickIds = null; S.pickSel = 0; go('travel'); }
+function startJourney() { const ids = starterChoices(); newRun(ids[clamp(S.pickSel, 0, ids.length - 1)]); S.pickSel = 0; go('travel'); }
 
 // ------------------------------------------------------------ a run and its regions
 function newRun(starterId) {
@@ -196,6 +212,7 @@ const nextStop = () => S.run.stops.find(s => !s.passed);
 // ------------------------------------------------------------ the travel screen
 function renderTravel() {
   const R = S.run; if (!R) return go('title');
+  autoItems('road');
   const reg = WORLD.regions[R.ri], T = UI.tv = { objs: [] };
   SCR.innerHTML = '';
   const scene = h('div', { class: 'scene hasbg travel', ref: el => T.scene = el,
@@ -212,6 +229,7 @@ function renderTravel() {
       cap = stop.kind === 'boss' ? 'Šef' : stop.kind === 'elite' ? 'Zaseda' : 'Sovražniki';
     } else if (stop.kind === 'chest') { body = objEl('skrinja', stop.done ? 1 : 0); cap = stop.done ? '' : 'Skrinja'; }
     else if (stop.kind === 'trap') { if (stop.done) return; body = objEl('plaz'); cap = 'Plaz'; }
+    else if (stop.kind === 'darts') { body = objEl('puscice', stop.done ? 1 : 0); cap = stop.done ? '' : 'Puščice'; }
     else if (stop.kind === 'well') { body = objEl('vodnjak', stop.done ? 1 : 0); cap = 'Vodnjak'; }
     else if (stop.kind === 'shop') { body = objEl('krosnjar', 0, 'mirror npc'); cap = 'Krošnjar'; }
     else if (stop.kind === 'god') { body = objEl('svetisce', 0, 'npc'); cap = 'Svetišče'; }
@@ -298,6 +316,7 @@ function promptFor(stop) {
     return { text: `${lead}: ${names}.`, actions: [{ label: 'V boj', primary: true, fn: () => stopBattle(stop) }, ...skip] };
   }
   if (stop.kind === 'chest') return { text: 'Ob poti leži zaklenjena skrinja. Odpre jo prava beseda.', actions: [{ label: 'Odpri skrinjo', primary: true, fn: () => go('chest', { id: 'skrinja', stop }) }, { label: 'Pusti jo', fn: () => pass() }] };
+  if (stop.kind === 'darts') return { text: 'Iz starega zidu merijo puščice. Kdor jih zagovori s pravo besedo, jih obrne proti sovražniku.', actions: [{ label: 'Stopi pred zid', primary: true, fn: () => go('darts', { id: 'puscice', stop }) }, ...skip] };
   if (stop.kind === 'trap') return { text: 'S pobočja se usuje plaz kamenja!', actions: [{ label: 'Brani se z besedami', primary: true, fn: () => go('trap', { id: 'plaz', stop }) }, ...skip] };
   if (stop.kind === 'well') {
     const hurt = S.heroes.some(st => st.down || st.hp < st.maxHp), fallen = S.heroes.some(st => st.down);
@@ -343,7 +362,7 @@ function stopBattle(stop) {
 function meetHero(stop, ids) {
   const R = S.run, back = () => go('travel');
   const leave = () => { stop.passed = true; R.prompt = null; back(); };
-  const fresh = ids.filter(id => !isGod(id) && unlock(id));          // meeting a folk hero unlocks them as a starter
+  const fresh = ids.filter(id => unlock(id));          // whoever you meet is known from now on and can start a later journey
   go('hero', { kind: 'meet', ids, sel: 0,
     info: A => { const id = A.ids[A.sel], full = HEROES.length >= 4;
       return (fresh.includes(id) ? `${ROSTER[id].name} je odklenjen: odslej lahko pot začneš tudi z njim. ` : '') + (isGod(id) ? 'Bog je močnejši od ljudskih junakov, a s teboj gre le eden. ' : '') + (full ? 'Družina je polna (štirje). Če ga vzameš s seboj, se mora eden od tvojih posloviti.' : `V družini je še prostor (${HEROES.length} od 4).`); },
@@ -393,9 +412,94 @@ function renderGalleryExtras(wrap) {
   const fig = (id, cap, frame) => h('figure', {}, objEl(id, frame), cap);
   wrap.append(h('h2', {}, 'Na poti'),
     h('p', { class: 'lead' }, 'Postaje ob poti imajo svoje sličice: skrinja (zaprta in odprta), vodnjak, plaz kamenja, svetišče, krošnjar in kažipot do naslednje pokrajine.'),
-    h('div', { class: 'gobjs' }, fig('skrinja', 'skrinja'), fig('skrinja', 'odprta skrinja', 1), fig('vodnjak', 'vodnjak'), fig('plaz', 'plaz kamenja'), fig('svetisce', 'svetišče'), fig('krosnjar', 'krošnjar'), fig('kazipot', 'kažipot')),
+    h('div', { class: 'gobjs' }, fig('skrinja', 'skrinja'), fig('skrinja', 'odprta skrinja', 1), fig('vodnjak', 'vodnjak'), fig('plaz', 'plaz kamenja'), fig('puscice', 'puščice'), fig('svetisce', 'svetišče'), fig('krosnjar', 'krošnjar'), fig('kazipot', 'kažipot')),
     h('h2', {}, 'Predmeti'),
     h('p', { class: 'lead' }, 'Predmeti delujejo ves čas, napoji in strupi se porabijo. Dobiš jih v skrinjah, pri krošnjarju in od šefov.'),
     h('div', { class: 'itemlist gitems' }, WORLD.items.map(it => h('div', { class: 'itemrow' }, itemIcon(it.id),
       h('div', {}, h('b', {}, it.name, h('em', {}, it.kind === 'relic' ? 'predmet' : it.poison ? 'strup' : 'napoj')), h('span', {}, it.text)), h('span', { class: 'price' }, h('i', { class: 'coin' }), it.price)))));
+}
+
+// ============================================================ darts: one letter from every column
+// The third timed event. A wall of letters in columns: build a word from left to right by taking
+// one letter from each column. You may send it before the last column — a shorter word turns
+// fewer darts — and nothing stops you from sending a word that does not exist. Darts you turn
+// fly at the enemies of the next battle; the others hit the party.
+const DART_COLS = 6, DART_ROWS = 3, DART_DMG = 3, DART_XP = 7, DART_GOLD = 2, DART_STRIKE = 4;
+let DART_WORDS = null;
+function startDarts(node) {
+  if (!DART_WORDS) DART_WORDS = [...new Set(LEMMA.values())].filter(w => w.length === DART_COLS && WORDS.has(w));
+  const word = pick(DART_WORDS), t = (S.mode === 'real' ? 35 : 70) * (has('pisanica') ? 1.5 : 1);
+  const cols = [...word].map(ch => { const col = [ch]; while (col.length < DART_ROWS) { const x = BAG[rnd(BAG.length)]; if (!col.includes(x)) col.push(x); } return shuffle(col); });
+  S.ev = { node, kind: 'darts', word, cols, sel: [], time: t, timeMax: t, done: false, msg: '', msgKind: '' };
+  renderDarts();
+}
+const dartsGuess = () => S.ev.sel.map((r, c) => S.ev.cols[c][r]).join('');
+function renderDarts() {
+  const E = S.ev; SCR.innerHTML = '';
+  const guess = dartsGuess(), n = E.sel.length;
+  SCR.append(h('div', { class: 'event darts' },
+    h('div', { class: 'bhead' }, h('div', { class: 't' }, 'Puščice v zidu', h('small', {}, 'dogodek na čas')), h('div', { class: 'meta' }, `Družina ${S.partyHp}/${S.maxHp}`)),
+    h('div', { class: 'panel' },
+      h('div', { class: 'chestbox' }, objEl('puscice', E.done ? 1 : 0, 'big'),
+        h('div', {}, 'Iz vsakega stolpca vzemi eno črko, od leve proti desni, in pošlji besedo. Vsaka črka prave besede obrne eno puščico proti sovražnikom naslednje bitke; puščice, ki ostanejo, zadenejo družino. Pošlješ lahko tudi krajšo besedo. Če beseda ne obstaja, poletijo vse nate.')),
+      h('div', { class: 'timer', style: { margin: '14px 0 4px' } }, h('i', { ref: el => UI.evTimer = el, style: { width: clamp(100 * E.time / E.timeMax, 0, 100) + '%' } })),
+      h('div', { class: 'sendrow' },
+        h('div', { class: 'guess' }, E.cols.map((_, c) => h('span', { class: 'lt' }, c < n ? E.cols[c][E.sel[c]] : ''))),
+        E.done ? null : h('button', { class: 'btn primary send' + (n >= MINW() ? ' ready' : ''), disabled: n < MINW(), onclick: dartsSubmit }, 'Pošlji ', h('kbd', {}, 'Enter'))),
+      h('div', { class: 'dartcols' }, E.cols.map((col, c) => h('div', { class: 'dartcol' + (c === n && !E.done ? ' next' : c > n ? ' later' : '') },
+        col.map((ch, r) => h('div', { class: 'tile' + (E.sel[c] === r ? ' sel' : ''), onclick: () => dartsPick(c, r) }, ch))))),
+      E.msg ? h('p', { class: 'fb ' + E.msgKind }, E.msg) : null,
+      E.done ? h('div', {}, h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')))
+      : h('div', { class: 'row', style: { 'justify-content': 'flex-start', 'flex-wrap': 'wrap' } },
+        h('button', { class: 'btn small', onclick: () => { E.sel.pop(); renderDarts(); } }, '⌫ Briši'),
+        h('button', { class: 'btn small', onclick: () => { E.sel = []; renderDarts(); } }, 'Počisti ', h('kbd', {}, 'Esc')),
+        h('span', { class: 'muted', style: { 'align-self': 'center' } }, `najmanj ${MINW()} črke`)))));
+}
+// a letter can be taken in the next free column, or changed in a column already used (later letters are dropped)
+function dartsPick(c, r) {
+  const E = S.ev; if (E.done || c > E.sel.length) return;
+  E.sel = E.sel.slice(0, c).concat(r); sfx('sel', { rate: 1 + c * 0.06 }); renderDarts();
+}
+function dartsKey(e) {
+  const E = S.ev; if (!E) return;
+  if (E.done) { if (e.key === 'Enter') finishEvent(); return; }
+  if (e.key === 'Enter') { e.preventDefault(); dartsSubmit(); return; }
+  if (e.key === 'Backspace') { e.preventDefault(); E.sel.pop(); renderDarts(); return; }
+  if (e.key === 'Escape') { E.sel = []; renderDarts(); return; }
+  const ch = letterKey(e); if (!ch) return;
+  e.preventDefault();
+  const c = E.sel.length, r = c < E.cols.length ? E.cols[c].indexOf(ch) : -1;
+  if (r >= 0) dartsPick(c, r);
+}
+function dartsEnd(turned, text, kind) {
+  const E = S.ev, left = E.cols.length - turned, d = left * DART_DMG;
+  E.done = true; E.turned = turned; E.dmg = 0;
+  if (d) { const before = S.partyHp; S.partyHp = Math.max(1, S.partyHp - d); E.dmg = before - S.partyHp; }
+  E.xp = turned * DART_XP; E.gold = turned && S.run ? gainGold(turned * DART_GOLD) : 0; E.strike = turned * DART_STRIKE;
+  if (E.xp) gainXp(E.xp, null, true);
+  if (turned) S.strike = E.strike;
+  E.msg = text + (turned ? ` Vsak junak +${E.xp} XP` + (E.gold ? `, +${E.gold} zlatnikov` : '') + `; v naslednji bitki puščice zadenejo vsakega sovražnika za ${E.strike}.` : '') + (E.dmg ? ` Družina −${E.dmg}.` : '');
+  E.msgKind = kind; sfx(turned === E.cols.length ? 'win' : turned ? 'ok' : 'bad');
+  renderDarts();
+}
+function dartsSubmit() {
+  const E = S.ev; if (E.done) return;
+  const w = dartsGuess(); if (w.length < MINW()) return;
+  if (!WORDS.has(w)) return dartsEnd(0, `»${UP(w)}« ni beseda: vse puščice poletijo (prava je bila ${UP(E.word)}).`, 'err');
+  if (w.length === E.cols.length) return dartsEnd(w.length, `${UP(w)}! Vse puščice se obrnejo.`, 'ok');
+  dartsEnd(w.length, `${UP(w)} obrne ${w.length} od ${E.cols.length} puščic; ostale poletijo nate.`, 'warn');
+}
+function dartsTick(dt) {
+  const E = S.ev; if (!E || E.done) return;
+  E.time -= dt;
+  if (UI.evTimer) UI.evTimer.style.width = clamp(100 * E.time / E.timeMax, 0, 100) + '%';
+  if (E.time <= 0) dartsEnd(0, `Prepozno: vse puščice poletijo. Skrita beseda je bila ${UP(E.word)}.`, 'err');
+}
+// the darts turned at the wall open the next battle
+function dartStrike() {
+  if (!S.strike || !B) return;
+  const d = S.strike; S.strike = 0;
+  spawnCard(leadEl(), { tier: 2, c: 'var(--gold)', name: 'Puščice', move: 'Obrnjene puščice', value: `−${d} vsakemu` });
+  log(`Obrnjene puščice zadenejo vsakega sovražnika za ${d}.`); sfx('hit2');
+  B.enemies.filter(e => e.hp > 0).forEach(e => damageEnemy(e, d));
 }
