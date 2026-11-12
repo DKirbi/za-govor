@@ -71,6 +71,7 @@ One road, walked left to right. The party stands still and the world scrolls pas
 - A wall of letters: **six columns of three letters**. Take one letter from each column, strictly left to right, and send the word. 35 s (70 s in calm mode).
 - A hidden six-letter word always exists, but **you may send early**: a real word of 3–5 letters counts for that many darts. **A word that does not exist can be sent too** — then every dart misses.
 - Each letter of a real word turns one dart: 7 XP for every hero, 2 gold, and **4 damage to every enemy at the start of the next battle** (so the full word opens the next fight with −24 to each enemy). Darts that are not turned hit the party for 3 each.
+- Like the chest and the rock slide it has a *Kako se igra* intro with a solved example, and Esc pauses it (Delete clears the letters).
 - On the road it stands in Trnovski gozd, at Predjamski grad and before the dragon. It has its own sprite (a wall with dart holes).
 
 ## 4. Levels (unchanged)

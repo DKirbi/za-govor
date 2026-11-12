@@ -86,6 +86,10 @@ Ljubljana castle is the last battle.
   relics with names from Slavic myth and Slovene folklore (*Perunova sekira*, *Živa voda*,
   *Velesov strup*, *Zlatorogova roža*…). See [docs/progression-design.md](docs/progression-design.md)
   for the full lists.
+- **Intros and pause:** the first time each puzzle appears, a *Kako se igra* panel explains
+  it with a solved example and the clock waits until you press *Začni*. `Esc` pauses any
+  timed screen; while paused the letters are blurred. *Cel zaslon* in the top bar goes
+  fullscreen, and on desktop the game scales so the scene and the puzzle fit the window.
 - **Test mode** (a switch on the start screen) starts with 200 gold and lets you skip stops
   and regions.
 
@@ -216,7 +220,8 @@ Malček is the game as it was before the levels were added.
 | --- | --- | --- |
 | Make a word | Type it; the path is found for you. Č, Š, Ž must be typed as themselves (a Slovene keyboard layout), c/s/z never stand in for them | Drag across tiles, or tap them one by one |
 | Send the word | `Enter` | *Pošlji* |
-| Clear the word / pause | `Esc` (clears first, pauses on an empty word) | *Počisti* / *Premor* |
+| Clear the word | `Delete` | *Počisti* |
+| Pause (battle, crosswords, chest, rock slide, darts) | `Esc` | *Premor* in the top bar |
 | Remove the last letter | `Backspace` | *Briši* |
 | Speak the zagovor (meter full) | `Space` | *Izreci zagovor* |
 | Hint / reshuffle / look into the bag | `1` / `2` / `3` | *Namig* / *Premešaj* / *Torba* |
@@ -279,7 +284,8 @@ za-govor/
 ├── src/
 │   ├── index.src.html        # page template with placeholders
 │   ├── game.js               # battles, crosswords, chest, rock slide, heroes (no framework)
-│   ├── journey.js            # the road: regions, stops, party, items, pedlar, bag
+│   ├── journey.js            # the road: regions, stops, party, items, pedlar, bag, darts
+│   ├── playtest.js           # pause, puzzle intros, fullscreen, fit to screen
 │   ├── art-extra.js          # generated pixel art (tools/art_extra.py)
 │   └── game.css              # styles, desktop and phone layouts
 ├── data/
