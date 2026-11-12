@@ -737,6 +737,98 @@ body.mobile .regdots i { width: 7px; height: 7px; }
 .dartcol.later { opacity: .5; } .dartcol.later .tile { cursor: default; }
 .dartcol .tile.sel { background: var(--gold); color: #1d1608; border-color: var(--gold); }
 body.mobile .dartcols { gap: 5px; } body.mobile .dartcol { padding: 5px; gap: 6px; } body.mobile .dartcol .tile { --tile-size: 44px; }
+
+/* ---------- Playtest round 2: pause, puzzle intros, fullscreen and fit to screen ---------- */
+/* While the game is held (pause or a puzzle intro) the puzzle is unreadable, so a stopped clock gives no free thinking time. */
+body.held .puzzle, body.held .wordbar, body.held .event .panel, body.held .lanes {
+  filter: blur(18px) saturate(.4) brightness(.8); pointer-events: none; user-select: none; }
+.overlay.pause { z-index: 70; background: rgba(8, 9, 12, .78); padding: 12px; }
+.overlay.tut { z-index: 80; background: rgba(8, 9, 12, .8); padding: 10px; }
+.pause-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 4px; }
+.volrow { display: flex; align-items: center; gap: 12px; margin-top: 16px; color: var(--dim); font-size: 13px; }
+.volrow input { flex: 1; accent-color: var(--gold); min-width: 0; }
+.volrow output { width: 3.2em; text-align: right; font-variant-numeric: tabular-nums; }
+
+.tb-btn { display: inline-flex; align-items: center; gap: 6px; touch-action: manipulation; }
+.tb-btn svg { width: 14px; height: 14px; flex: none; }
+.tb-btn.on { border-color: var(--gold); color: var(--gold); }
+body.mobile .tb-btn .lbl, body.mobile .tb-btn kbd { display: none; }
+body.mobile .tb-btn { padding: 6px 8px; }
+body.mobile .topbar { gap: 6px; }
+
+.toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 95; width: max-content; max-width: min(560px, 92vw);
+  background: var(--panel2); border: 1px solid var(--gold); border-radius: 10px; padding: 10px 14px; font-size: 13.5px; line-height: 1.4;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .5); }
+
+/* Puzzle intro: what the puzzle wants, with a picture of a solved one */
+.tutdlg { width: min(720px, 96vw); max-height: 94vh; max-height: 94dvh; overflow: auto; padding: 18px 22px 20px; }
+.tut-k { display: flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); }
+.tut-k .stop { color: var(--gold); border: 1px solid var(--gold); border-radius: 99px; padding: 1px 9px; }
+.tutdlg h2 { font-size: 22px; margin: 8px 0 4px; }
+.tut-lead { margin: 0 0 14px; font-size: 14.5px; line-height: 1.45; }
+.tut-body { display: grid; grid-template-columns: 284px 1fr; gap: 18px; align-items: start; }
+.tut-fig { margin: 0; background: var(--bg2); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; pointer-events: none; user-select: none; min-width: 0; }
+.tut-cap { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); margin-bottom: 10px; }
+.tut-res { margin-top: 10px; font-size: 13px; line-height: 1.4; }
+.tut-res b { letter-spacing: .05em; }
+.tut-res.ok b { color: var(--good); } .tut-res.part b { color: var(--gold); }
+.tut-steps { margin: 0; padding: 0; list-style: none; counter-reset: tut; display: grid; gap: 9px; font-size: 14px; line-height: 1.45; }
+.tut-steps li { counter-increment: tut; display: grid; grid-template-columns: 24px 1fr; gap: 10px; align-items: start; }
+.tut-steps li::before { content: counter(tut); width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--panel2); border: 1px solid var(--line); color: var(--gold); font-weight: 800; font-size: 12.5px; }
+.tut-time { margin: 14px 0 0; padding: 8px 12px; border-radius: 8px; background: #2c1f22; border: 1px solid #5a3338; color: #ffc9c9; font-size: 13.5px; line-height: 1.4; }
+.tut-time.calm { background: #1d2740; border-color: #33466e; color: #cfe0ff; }
+.tut-foot { display: flex; align-items: center; gap: 14px; margin-top: 16px; }
+.tut-foot .muted { flex: 1; font-size: 12.5px; line-height: 1.4; }
+/* figures reuse the real game pieces at a smaller size */
+.tut-fig .meshwrap { margin: 0; --tile-size: 40px; }
+.tut-fig .mesh { grid-template-columns: repeat(4, var(--tile-size)); gap: 5px; }
+.tut-fig .tile { font-size: 19px; cursor: default; }
+.tut-fig .tile .ini { font-size: 8.5px; top: 2px; left: 4px; }
+.tut-fig .tile.sel { transform: none; }
+.tut-fig .cwgrid { --cell: 30px; width: max-content; }
+.tut-fig .cell { font-size: 16px; cursor: default; }
+.tut-fig .cell.typed { outline: 1px solid #4a4f60; outline-offset: -1px; }
+.tut-fig .curclue { margin: 10px 0 0; font-size: 12.5px; padding: 6px 9px; }
+.tut-key { display: grid; grid-template-columns: 16px 1fr; gap: 5px 8px; align-items: center; margin-top: 10px; font-size: 12.5px; color: var(--dim); }
+.tut-key i { width: 16px; height: 16px; border-radius: 4px; }
+.tut-fig .letters { margin: 0 0 6px; gap: 5px; flex-wrap: nowrap; }
+.tut-fig .letters .tile { --tile-size: 36px; font-size: 17px; }
+.tut-fig .guess { min-height: 0; gap: 4px; }
+.tut-fig .guess .lt { width: 28px; height: 32px; font-size: 17px; }
+.tut-fig .guess.ok .lt { border-color: var(--good); color: var(--good); }
+.tut-fig .guess.part .lt { border-color: var(--gold); color: var(--gold); }
+.tut-arrow { color: var(--faint); font-size: 12px; margin: 2px 0 6px; }
+.tut-row { display: flex; align-items: center; gap: 12px; }
+.tut-row .obj { flex: none; }
+.tut-rocks { display: flex; gap: 8px; }
+.tut-fig .tut-rocks .rock { position: relative; margin: 0; width: 42px; height: 42px; font-size: 19px; }
+.tut-fig .rock::after { position: absolute; right: -6px; top: -6px; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 11px; font-weight: 800; text-shadow: none; }
+.tut-fig .rock.t-ok { filter: drop-shadow(0 0 5px var(--good)); }
+.tut-fig .rock.t-ok::after { content: "✓"; background: var(--good); color: #0d2417; }
+.tut-fig .rock.t-miss { filter: grayscale(.6) brightness(.8); }
+.tut-fig .rock.t-miss::after { content: "✕"; background: var(--danger); color: #2a0b0b; }
+.tut-typed { display: inline-block; margin: 10px 0 2px; padding: 4px 10px; border-radius: 6px; background: var(--panel2); border: 1px solid var(--line);
+  font-weight: 800; letter-spacing: .08em; text-transform: uppercase; font-size: 14px; }
+.tut-sep { height: 1px; background: var(--line); margin: 12px 0; }
+@media (max-width: 640px) { .tut-body { grid-template-columns: 1fr; } }
+body.mobile .tut-body { grid-template-columns: 1fr; gap: 12px; }
+body.mobile .tutdlg { padding: 14px 14px 16px; }
+body.mobile .tutdlg h2 { font-size: 19px; }
+body.mobile .tut-steps { font-size: 13.5px; }
+body.mobile .tut-foot { flex-direction: column-reverse; align-items: stretch; gap: 8px; }
+body.mobile .tut-foot .btn { padding: 12px; font-size: 15px; }
+
+/* Fit to screen (desktop): the scene and the puzzle stay in view together, so nothing scrolls away mid-battle.
+   fitScreen() first lets the battle scene give up some sky, then scales #screen down (or up in fullscreen). */
+body.fit .log { min-height: 0; max-height: 3.4em; overflow: hidden; }
+body.fit #app { padding-bottom: 8px; }
+body.tight .side .box.keys { display: none; }   /* short windows: the key legend gives way before anything is scaled down */
+/* darts intro figure: the whole six-column wall has to fit the example box */
+.tut-fig .dartcols { gap: 3px; margin: 0 0 8px; justify-content: flex-start; }
+.tut-fig .dartcol { padding: 3px; gap: 3px; border-width: 1px; }
+.tut-fig .dartcol .tile, body.mobile .tut-fig .dartcol .tile { --tile-size: 30px; font-size: 15px; }
 </style>
 </head>
 <body>
@@ -1452,6 +1544,11 @@ V=W):0),x=(b+=u+=y)*M.cos(A*H++),g+=x+x*E*(a*a*d%2-1),n&&++n>z&&(b+=v,C+=v,n=0),
 const SFX = {"sel": [0.5, 0, 560, 0, 0.01, 0.05, 1, 1.2], "bad": [0.6, 0, 130, 0.005, 0.08, 0.12, 2, 1, -1, 0, 0, 0, 0, 0, 0, 0.1], "ok": [0.6, 0, 880, 0, 0.03, 0.16, 1, 1.5, 0, 0, 440, 0.05], "hit1": [0.9, 0, 180, 0, 0.02, 0.1, 4, 1.2, -5, 0, 0, 0, 0, 0.8, 0, 0.1], "hit2": [1, 0, 170, 0, 0.04, 0.16, 4, 1.2, -5, 0, 0, 0, 0, 0.8, 0, 0.1], "hit3": [1.2, 0, 95, 0.01, 0.12, 0.45, 4, 1.6, -2, 0, 0, 0, 0, 1.2, 0, 0.3, 0.08], "zap": [0.7, 0, 1300, 0, 0.03, 0.16, 2, 1, -30, 0, 0, 0, 0, 0.3], "clang": [0.7, 0, 640, 0, 0.01, 0.24, 1, 0.6, 0, 0, 0, 0, 0, 0, 180, 0, 0, 0.6, 0.02], "heal": [0.5, 0, 520, 0.02, 0.1, 0.26, 0, 1, 2, 0, 260, 0.09], "fire": [0.8, 0, 200, 0.03, 0.08, 0.24, 4, 1.2, 3, 0, 0, 0, 0, 0.9, 0, 0.1], "venom": [0.7, 0, 180, 0.02, 0.1, 0.22, 3, 1, -1, 0, 0, 0, 0, 0, 12, 0, 0, 0.7, 0, 0.4], "foe": [0.9, 0, 140, 0, 0.03, 0.15, 4, 1.4, -4, 0, 0, 0, 0, 0.9, 0, 0.2], "curse": [0.7, 0, 440, 0.03, 0.2, 0.36, 2, 1.4, -3, 0, -110, 0.12, 0, 0, 6, 0, 0.06, 0.7, 0, 0.3], "dead": [0.8, 0, 400, 0, 0.05, 0.26, 5, 0.5, -8, 0, 0, 0, 0, 0.2, 0, 0.2], "win": [0.6, 0, 523, 0.01, 0.26, 0.32, 1, 1.2, 0, 0, 262, 0.08, 0.16], "lose": [0.7, 0, 330, 0.02, 0.3, 0.5, 2, 1.5, -1.2, 0, -80, 0.15, 0, 0, 0, 0.1]};
 let SOUND_ON = (() => { try { return localStorage.getItem('zg-sound') !== '0'; } catch (e) { return true; } })();
 let AC = null; const SFX_BUF = {};
+// Playtest: attack sounds were too punchy. They now play at well under half the level through a low-pass filter
+// (soft: true), and one master volume (pause menu) scales everything.
+let VOLUME = (() => { try { const v = parseFloat(localStorage.getItem('zg-vol')); if (v >= 0 && v <= 1) return v; } catch (e) { /* no storage */ } return 0.8; })();
+const ATK_VOL = 0.4;
+function setVolume(v) { VOLUME = clamp(v, 0, 1); try { localStorage.setItem('zg-vol', String(VOLUME)); } catch (e) { /* no storage */ } }
 function audioUnlock() {
   if (!SOUND_ON) return;
   try { if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume().catch(() => {}); } catch (e) { /* no audio */ }
@@ -1463,16 +1560,17 @@ function sfx(name, o = {}) {
     let buf = SFX_BUF[name];
     if (!buf) { const smp = zzfxG(...SFX[name]); buf = AC.createBuffer(1, smp.length, 44100); buf.getChannelData(0).set(smp); SFX_BUF[name] = buf; }
     const src = AC.createBufferSource(), g = AC.createGain();
-    src.buffer = buf; src.playbackRate.value = o.rate || 1; g.gain.value = 1.5 * (o.vol == null ? 1 : o.vol);
-    src.connect(g); g.connect(AC.destination); src.start(AC.currentTime + (o.delay || 0));
+    src.buffer = buf; src.playbackRate.value = o.rate || 1; g.gain.value = 1.5 * VOLUME * (o.vol == null ? 1 : o.vol);
+    if (o.soft) { const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1700; lp.Q.value = 0.4; src.connect(lp); lp.connect(g); } else src.connect(g);
+    g.connect(AC.destination); src.start(AC.currentTime + (o.delay || 0));
   } catch (e) { /* sound is optional */ }
 }
 const HERO_SFX = { erazem: 'clang', klepec: 'clang', vida: 'heal', ajda: 'clang', perun: 'zap', svarog: 'clang', mokos: 'heal', kresnik: 'fire', veles: 'venom', dazbog: 'fire', stribog: 'zap', kurent: 'clang', jurij: 'heal', krpan: 'hit2', matjaz: 'clang' };
 function cardSound(o) {
   const rate = o.tier === 3 ? .78 : o.tier === 2 ? .9 : 1.06;
-  if (o.foe) { sfx(o.tier > 1 ? 'curse' : 'foe'); if (o.tier === 3 && o.value) sfx('hit3', { delay: .15, vol: .8 }); return; }
-  sfx(HERO_SFX[o.art] || 'hit1', { rate });
-  if (o.art !== 'mokos' && o.art !== 'jurij') sfx(o.tier === 3 ? 'hit3' : o.tier === 2 ? 'hit2' : 'hit1', { delay: .12, vol: .9 });
+  if (o.foe) { sfx(o.tier > 1 ? 'curse' : 'foe', { soft: true, vol: ATK_VOL }); if (o.tier === 3 && o.value) sfx('hit3', { delay: .15, soft: true, vol: ATK_VOL * .7 }); return; }
+  sfx(HERO_SFX[o.art] || 'hit1', { rate, soft: true, vol: ATK_VOL });
+  if (o.art !== 'mokos' && o.art !== 'jurij') sfx(o.tier === 3 ? 'hit3' : o.tier === 2 ? 'hit2' : 'hit1', { delay: .12, soft: true, vol: ATK_VOL * .65 });
 }
 function toggleSound() {
   SOUND_ON = !SOUND_ON; try { localStorage.setItem('zg-sound', SOUND_ON ? '1' : '0'); } catch (e) { /* no storage */ }
@@ -1676,7 +1774,7 @@ const S = {
   screen: 'title', mode: 'real',
   know: (() => { try { const v = localStorage.getItem('zg-know'); if (LEVELS[v]) return v; } catch (e) { /* no storage */ } return 'malcek'; })(),
   xp: 0, meterBonus: 0,
-  battle: null, ev: null, suggest: true,
+  battle: null, ev: null, suggest: true, tutOn: true,
   mobile: (() => { try { const v = localStorage.getItem('zg-mobile'); if (v != null) return v === '1'; } catch (e) { /* no storage */ }
     const coarse = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches);
     const touchPhone = (navigator.maxTouchPoints || 0) > 0 && Math.min(screen.width, screen.height) < 820;
@@ -1699,6 +1797,7 @@ function go(screen, arg) {
   mountShell();
   ({ title: renderTitle, pick: renderPick, travel: renderTravel, ending: renderEnding, battle: startBattle, chest: startChest, trap: startTrap, darts: startDarts, gallery: renderGallery, hero: renderHeroMoment })[screen](arg);
   window.scrollTo(0, 0);
+  fitScreen();
 }
 
 // Top bar: always visible, holds the mobile/desktop switch
@@ -1706,12 +1805,17 @@ function renderTopbar() {
   return h('div', { class: 'topbar' },
     h('div', { class: 'tb-logo' }, 'Za', h('span', { class: 'dot' }, '·'), 'govor'),
     h('span', { class: 'tb-sp' }),
+    TIMED[S.screen] ? h('button', { class: 'btn small tb-btn tb-pause', title: 'Premor (Esc): čas se ustavi, uganka se zakrije', 'aria-label': 'Premor', onclick: () => setPause(true) },
+      tbIcon('M3 2h3v10H3zM8 2h3v10H8z'), h('span', { class: 'lbl' }, 'Premor'), h('kbd', {}, 'Esc')) : null,
+    S.mobile ? null : h('button', { class: 'btn small tb-btn tb-fs' + (isFs() ? ' on' : ''), 'aria-pressed': isFs() ? 'true' : 'false', title: 'Celozaslonski način', 'aria-label': 'Celozaslonski način', onclick: toggleFullscreen },
+      tbIcon(isFs() ? 'M5 1v4H1v1.6h5.6V1zM9 13V9h4V7.4H7.4V13zM1 9h4v4h1.6V7.4H1zM13 5H9V1H7.4v5.6H13z' : 'M1 1h5v1.6H2.6V6H1zM13 13H8v-1.6h3.4V8H13zM1 13V8h1.6v3.4H6V13zM13 1v5h-1.6V2.6H8V1z'), h('span', { class: 'lbl' }, isFs() ? 'Zapri cel zaslon' : 'Cel zaslon')),
     h('button', { class: 'btn small tb-sound' + (SOUND_ON ? ' on' : ''), 'aria-pressed': SOUND_ON ? 'true' : 'false', title: 'Zvočni učinki', 'aria-label': 'Zvočni učinki', onclick: toggleSound },
       '♪ Zvok', h('span', { class: 'pill' }, SOUND_ON ? 'VKLOP' : 'IZKLOP')),
     h('button', { class: 'btn small tb-mobile' + (S.mobile ? ' on' : ''), 'aria-pressed': S.mobile ? 'true' : 'false',
       title: 'Preklopi med mobilnim in namiznim prikazom', onclick: toggleMobile },
       h('span', { class: 'phone' }), 'Mobilni prikaz', h('span', { class: 'pill' }, S.mobile ? 'VKLOP' : 'IZKLOP')));
 }
+function tbIcon(d) { const s = svgEl('svg', { viewBox: '0 0 14 14', 'aria-hidden': 'true' }); s.append(svgEl('path', { d, fill: 'currentColor' })); return s; }
 function toggleMobile() {
   S.mobile = !S.mobile;
   try { localStorage.setItem('zg-mobile', S.mobile ? '1' : '0'); } catch (e) { /* no storage */ }
@@ -1729,6 +1833,7 @@ function toggleMobile() {
   else if (scr === 'gallery') renderGallery();
   else if (scr === 'hero') renderHeroMoment();
   else renderTitle();
+  fitScreen();
 }
 
 // ============================================================ title
@@ -1756,6 +1861,9 @@ function renderTitle() {
       know('molj', 'Križanke kot v časopisu: zemljepis, književnost, glasba, antika. V mreži nobene pomoči, v križanki ena razkrita črka.')),
     LV().proposals ? h('label', { class: 'toggle' }, h('input', { type: 'checkbox', checked: S.suggest, onchange: e => { S.suggest = e.target.checked; } }),
       'Predlogi besed med igro (lažje — dobro za učenje)') : null,
+    h('label', { class: 'toggle' }, h('input', { type: 'checkbox', checked: S.tutOn, onchange: e => { S.tutOn = e.target.checked; } }),
+      'Razlaga pred vsako novo vrsto uganke (čas medtem stoji)',
+      h('button', { class: 'btn small', style: { 'margin-left': '6px' }, onclick: e => { e.preventDefault(); resetTuts(); e.target.textContent = 'Razlage se bodo pokazale znova'; e.target.disabled = true; } }, 'Pokaži razlage znova')),
     h('label', { class: 'toggle' }, h('input', { type: 'checkbox', checked: S.testMode, onchange: e => { S.testMode = e.target.checked; } }),
       'Preizkusni način: 200 zlatnikov, postaje in pokrajine lahko preskočiš'),
     h('div', { class: 'row', style: { 'justify-content': 'flex-start', 'flex-wrap': 'wrap' } },
@@ -1766,7 +1874,8 @@ function renderTitle() {
       h('span', {}, h('kbd', {}, 'a–ž')), h('span', {}, 'tipkaj besedo; pot v mreži se poišče sama'),
       h('span', {}, 'miška'), h('span', {}, 'vleci čez sosednje črke ali klikaj eno za drugo (klik na zadnjo potrdi)'),
       h('span', {}, h('kbd', {}, 'Enter')), h('span', {}, 'potrdi besedo'),
-      h('span', {}, h('kbd', {}, 'Backspace'), ' ', h('kbd', {}, 'Esc')), h('span', {}, 'briši črko · počisti besedo (Esc na prazni besedi = premor)'),
+      h('span', {}, h('kbd', {}, 'Backspace'), ' ', h('kbd', {}, 'Del')), h('span', {}, 'briši črko · počisti besedo'),
+      h('span', {}, h('kbd', {}, 'Esc')), h('span', {}, 'premor: čas se ustavi, uganka se zakrije'),
       h('span', {}, h('kbd', {}, 'presledek')), h('span', {}, 'izreci zagovor, ko je poln'),
       h('span', {}, h('kbd', {}, '←'), ' ', h('kbd', {}, '→')), h('span', {}, 'izberi cilj (v križanki: premik po mreži)'),
       h('span', {}, h('kbd', {}, '1'), ' ', h('kbd', {}, '2')), h('span', {}, 'namig · premešaj mrežo'),
@@ -1919,8 +2028,9 @@ function startBattle(node) {
   ensureSolvable();
   buildBattleDom();
   log(`${node.title}: ${B.enemies.map(e => e.name).join(', ')}.`);
-  { const b = B; setTimeout(() => { if (B === b && !B.over) { autoItems('start'); dartStrike(); } }, 700); }
-  if (def.ambush) setTimeout(() => { if (S.battle === B) openCrossword('ambush', def.ambush); }, 400);
+  { const b = B; later(() => { if (B === b && !B.over) { autoItems('start'); dartStrike(); } }, 700); }
+  if (def.ambush) later(() => { if (S.battle === B) openCrossword('ambush', def.ambush); }, 400);
+  else showTut('mesh');
 }
 
 const nodeBg = node => node.bg || NODE_BG[node.id];
@@ -1932,8 +2042,7 @@ function buildBattleDom() {
   SCR.append(battle = h('div', { class: 'battle' },
     h('div', { class: 'bhead' },
       h('div', { class: 't' }, B.node.title, h('small', {}, B.node.sub)),
-      h('div', { class: 'meta', ref: el => UI.meta = el }),
-      h('button', { class: 'btn small', onclick: () => togglePause() }, 'Premor')),
+      h('div', { class: 'meta', ref: el => UI.meta = el })),
     h('div', { class: 'scene' + (nodeBg(B.node) ? ' hasbg' : ''), style: nodeBg(B.node) ? { 'background-image': `linear-gradient(rgba(14,16,26,.36), rgba(14,16,26,.16)), url(${BG[nodeBg(B.node)]})` } : {}, ref: el => UI.scene = el },
       S.mobile ? coach : null,   // first, so actors, the target marker and cards paint over it
       h('div', { class: 'party', ref: el => UI.party = el }),
@@ -2062,7 +2171,7 @@ function renderSide() {
         h('span', { class: 'sw' }), h('span', {}, h('b', {}, hr.ini), ' ', hr.name, ' · ', hr.role),
         h('span', { class: 'zz' }, S.heroes[i].down ? 'padel' : asleep(i) ? 'spi' : ''))))),
     h('div', { class: 'box keys' },
-      h('kbd', {}, 'Enter'), h('span', {}, 'potrdi'), h('kbd', {}, 'Esc'), h('span', {}, 'počisti / premor'),
+      h('kbd', {}, 'Enter'), h('span', {}, 'potrdi'), h('kbd', {}, 'Del'), h('span', {}, 'počisti'), h('kbd', {}, 'Esc'), h('span', {}, 'premor'),
       h('kbd', {}, '← →'), h('span', {}, 'cilj')));
 }
 
@@ -2088,8 +2197,8 @@ function renderCoach() {
 
 // ------------------------------------------------------------ cards + floats
 function actorCenter(el, scene = UI.scene) {
-  const s = scene.getBoundingClientRect(), r = el.getBoundingClientRect();
-  return { x: r.left - s.left + r.width / 2, top: r.top - s.top, bottom: r.bottom - s.top };
+  const s = scene.getBoundingClientRect(), r = el.getBoundingClientRect(), k = (scene.offsetWidth && s.width / scene.offsetWidth) || 1;
+  return { x: (r.left - s.left + r.width / 2) / k, top: (r.top - s.top) / k, bottom: (r.bottom - s.top) / k };
 }
 function spawnCard(actorEl, o, ctx = UI) {
   if (!actorEl || !ctx.cards) return;
@@ -2463,7 +2572,7 @@ function resolveWord(w, path) {
     spawnCard(e.el, { tier: 2, foe: true, name: e.name, move: 'Hrani se s ponovitvijo', value: `napad ${e.atk}` });
   });
 
-  acts.forEach((a, n) => { a.n = n; setTimeout(() => { if (B && S.battle === B && !B.over) heroAct(a, w); }, n * 220); });
+  acts.forEach((a, n) => { a.n = n; later(() => { if (B && S.battle === B && !B.over) heroAct(a, w); }, n * 220); });
 
   // bookkeeping
   B.words++; B.stats.words++;
@@ -2605,7 +2714,7 @@ function damageEnemy(e, amount, opts = {}) {
     if (drop) floatOn(e.el, `+${drop} zlatnikov`, 'crit');
     log(`${e.name} je ${e.f ? 'premagana' : 'premagan'}: vsak junak +${e.xp} XP` + (drop ? `, +${drop} zlatnikov.` : '.'));
     gainXp(e.xp, null, true); retarget();
-    const b = B; setTimeout(() => { if (B === b) checkEnd(); }, 650);
+    const b = B; later(() => { if (B === b) checkEnd(); }, 650);
   }
   renderEnemies();
   return a;
@@ -2628,13 +2737,13 @@ function hurtParty(amount, src, all) {
   }
   autoItems('tick');
   renderPartyHp();
-  const b = B; if (!living().length) setTimeout(() => { if (B === b) checkEnd(); }, 400);
+  const b = B; if (!living().length) later(() => { if (B === b) checkEnd(); }, 400);
   return a;
 }
 function heroFalls(k) {
   const st = S.heroes[k]; st.down = true; st.hp = 0; delete B.sleep[k];
   log(`${HEROES[k].name} obleži, dokler ga ne obudi vodnjak, junak ali napoj.`); fb(`${HEROES[k].name}: zdravja je zmanjkalo. Te črke so ugasnile.`, 'err');
-  setTimeout(() => { if (B && S.battle === B) { renderParty(); renderPuzzle(); renderSide(); } }, 350);
+  later(() => { if (B && S.battle === B) { renderParty(); renderPuzzle(); renderSide(); } }, 350);
 }
 
 function gainXp(n, k, each) {           // k = hero index; without it the XP is split among the heroes still standing, or with `each` everyone gets all of it
@@ -2709,7 +2818,7 @@ function calmAfterWord() {
     e.charge += e.calmStep;
     if (e.charge >= 0.999) { e.charge = 0; acting.push(e); }
   });
-  acting.forEach((e, n) => setTimeout(() => { if (B && S.battle === B && !B.over) enemyAct(e); }, 650 + n * 700));
+  acting.forEach((e, n) => later(() => { if (B && S.battle === B && !B.over) enemyAct(e); }, 650 + n * 700));
   renderEnemies();
 }
 
@@ -2756,12 +2865,7 @@ function battleTick(dt) {
   }
 }
 
-function togglePause() {
-  if (!B || B.over) return;
-  B.paused = !B.paused;
-  renderPuzzle();
-}
-window.addEventListener('blur', () => { if (B && S.screen === 'battle' && S.mode === 'real' && !B.paused && !B.over) togglePause(); });
+// pause: see setPause() in the playtest round 2 block
 
 // ------------------------------------------------------------ hint + shuffle
 function useHint() {
@@ -2949,6 +3053,7 @@ function openCrossword(kind, id, opts = {}) {
   // Opened by a tap or key press, this also opens the phone keyboard; opened by an enemy, the player taps the grid.
   focusCwInput();
   if (S.mobile) UI.puzzle.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  fitSoon(); showTut(kind);
 }
 const cellKey = (e, p) => (e.row + (e.dir === 'D' ? p : 0)) + ',' + (e.col + (e.dir === 'A' ? p : 0));
 // Pressing a clue, a cell or a banner button must not blur the input first: the blur redraws the banner,
@@ -2968,7 +3073,7 @@ function renderCrossword() {
       : `${D.title} — vsaka pravilna beseda sproži napad, cela križanka še mogočnejšega.`,
     lock: C.id === 'zmaj' ? 'Lintvern te sili v zmajevo uganko. Mreža je zaprta — uganeš geslo, se rešiš takoj.' : 'Vrtinec! Reši križanko ali ugani geslo, da se izviješ. Mreža je zaprta.',
     ambush: 'Zaseda! Vsaka pravilna beseda je udarec, preden te opazijo.' }[C.kind];
-  const btn = C.kind === 'finisher' ? h('button', { class: 'btn small', onclick: () => { closeCrossword(); fb('Zagovor prekinjen — moč ostane shranjena.', 'warn'); } }, 'Prekliči ', h('kbd', {}, 'Esc'))
+  const btn = C.kind === 'finisher' ? h('button', { class: 'btn small', onclick: () => { closeCrossword(); fb('Zagovor prekinjen — moč ostane shranjena.', 'warn'); } }, 'Prekliči zagovor')
     : C.kind === 'ambush' ? h('button', { class: 'btn small', onclick: () => cwFail() }, 'Preskoči')
     : C.timer === Infinity ? h('button', { class: 'btn small', onclick: () => cwFail() }, 'Predaj se (prejmi udarec)') : null;
   UI.puzzle.append(h('div', { class: 'cwhead' }, h('span', { class: 'k ' + C.kind }, label), h('h3', {}, head), h('span', { class: 'grow' }), btn));
@@ -3221,15 +3326,15 @@ function cwFail() {
     log('Opazili so te. Bitka se nadaljuje brez nadaljnje prednosti.'); fb('Opazili so te.', 'warn');
   }
 }
-function closeCrossword() { B.cw = null; UI.cwTimer = null; renderPuzzle(); renderSide(); renderWord(); }
+function closeCrossword() { B.cw = null; UI.cwTimer = null; renderPuzzle(); renderSide(); renderWord(); fitSoon(); if (!B.over) showTut('mesh'); }
 
 
 // ------------------------------------------------------------ battle end
 function checkEnd() {
   if (!B || B.over || S.screen !== 'battle') return;
   const b = B;   // timers must act on this battle only, even if the player has moved on
-  if (!living().length) { B.over = true; setTimeout(() => { if (B === b) showResult(false); }, 700); }
-  else if (B.enemies.every(e => e.hp <= 0)) { B.over = true; if (B.cw) closeCrossword(); setTimeout(() => { if (B === b) showResult(true); }, 900); }
+  if (!living().length) { B.over = true; later(() => { if (B === b) showResult(false); }, 700); }
+  else if (B.enemies.every(e => e.hp <= 0)) { B.over = true; if (B.cw) closeCrossword(); later(() => { if (B === b) showResult(true); }, 900); }
 }
 function showResult(win) {
   sfx(win ? 'win' : 'lose', { delay: .3 });
@@ -3275,12 +3380,10 @@ function battleKey(e) {
   if (!B) return;
   const k = e.key;
   if (k === 'Escape') {
-    e.preventDefault();
-    if (B.cw && B.cw.kind === 'finisher') { closeCrossword(); fb('Zagovor prekinjen — moč ostane shranjena.', 'warn'); return; }
-    if (!B.cw && (B.typed || B.path.length)) { clearWord(); return; }
-    togglePause(); return;
+    e.preventDefault(); setPause(true); return;   // normally caught earlier by the capture listener
   }
   if (B.paused || B.over) return;
+  if (k === 'Delete') { e.preventDefault(); if (!B.cw) clearWord(); return; }
   if (B.cw) {
     if (k === 'Tab') { e.preventDefault(); cwNext(e.shiftKey ? -1 : 1); return; }
     if (k === 'Enter') { e.preventDefault(); cwNext(); return; }
@@ -3318,6 +3421,7 @@ function startChest(node) {
   S.ev = { node, kind: 'chest', item, letters: letters.map(ch => ({ ch, used: false })), sel: [], time: t, timeMax: t,
     done: false, found: [], msg: '', msgKind: '' };
   renderChest();
+  showTut('chest');
 }
 function renderChest() {
   const E = S.ev; SCR.innerHTML = '';
@@ -3338,7 +3442,7 @@ function renderChest() {
       E.done ? h('div', {}, h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')))
       : h('div', { class: 'row', style: { 'justify-content': 'flex-start', 'flex-wrap': 'wrap' } },
         h('button', { class: 'btn small', onclick: chestBack }, '⌫ Briši'),
-        h('button', { class: 'btn small', onclick: chestClear }, 'Počisti ', h('kbd', {}, 'Esc')),
+        h('button', { class: 'btn small', onclick: chestClear }, 'Počisti ', h('kbd', {}, 'Del')),
         h('button', { class: 'btn small', onclick: () => { E.letters = shuffle(E.letters.map((l, i) => ({ ...l, i }))); chestRemap(); } }, 'Premešaj')),
       null)));
 }
@@ -3409,6 +3513,7 @@ function startTrap(node) {
   S.ev = { node, kind: 'trap', time: 0, fall: (real ? 16 : 32) * (has('pisanica') ? 1.5 : 1), used: new Set(), broken: 0, hits: 0, dmg: 0, done: false, word: '',
     rocks: letters.map((ch, i) => ({ ch, lane: [14, 38, 62, 86][i], spawn: 0.5 + i * 0.3, y: -60, state: 'wait', el: null })) };
   renderTrap();
+  showTut('trap');
 }
 function renderTrap() {
   const E = S.ev; SCR.innerHTML = '';
@@ -3439,7 +3544,7 @@ function renderTrapStat() {
   const left = E.rocks.filter(r => r.state === 'wait' || r.state === 'fall').length;
   UI.trapStat.textContent = `Razbite: ${E.broken} · zadetki: ${E.hits} · še ${left} od ${E.rocks.length} skal`;
 }
-function trapFb(text, kind) { if (kind === 'err') sfx('bad'); else if (kind === 'ok') sfx('hit2'); UI.trapFb.className = 'fb ' + (kind || ''); UI.trapFb.textContent = text; }
+function trapFb(text, kind) { if (kind === 'err') sfx('bad'); else if (kind === 'ok') sfx('hit2', { soft: true, vol: ATK_VOL }); UI.trapFb.className = 'fb ' + (kind || ''); UI.trapFb.textContent = text; }
 function trapSubmit() {
   const E = S.ev; if (E.done || !UI.trapInput) return;
   const typed = [...UI.trapInput.value].map(normLetter).filter(Boolean).join('');
@@ -3947,6 +4052,7 @@ function startDarts(node) {
   const cols = [...word].map(ch => { const col = [ch]; while (col.length < DART_ROWS) { const x = BAG[rnd(BAG.length)]; if (!col.includes(x)) col.push(x); } return shuffle(col); });
   S.ev = { node, kind: 'darts', word, cols, sel: [], time: t, timeMax: t, done: false, msg: '', msgKind: '' };
   renderDarts();
+  showTut('darts');
 }
 const dartsGuess = () => S.ev.sel.map((r, c) => S.ev.cols[c][r]).join('');
 function renderDarts() {
@@ -3967,7 +4073,7 @@ function renderDarts() {
       E.done ? h('div', {}, h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')))
       : h('div', { class: 'row', style: { 'justify-content': 'flex-start', 'flex-wrap': 'wrap' } },
         h('button', { class: 'btn small', onclick: () => { E.sel.pop(); renderDarts(); } }, '⌫ Briši'),
-        h('button', { class: 'btn small', onclick: () => { E.sel = []; renderDarts(); } }, 'Počisti ', h('kbd', {}, 'Esc')),
+        h('button', { class: 'btn small', onclick: () => { E.sel = []; renderDarts(); } }, 'Počisti ', h('kbd', {}, 'Del')),
         h('span', { class: 'muted', style: { 'align-self': 'center' } }, `najmanj ${MINW()} črke`)))));
 }
 // a letter can be taken in the next free column, or changed in a column already used (later letters are dropped)
@@ -3980,7 +4086,7 @@ function dartsKey(e) {
   if (E.done) { if (e.key === 'Enter') finishEvent(); return; }
   if (e.key === 'Enter') { e.preventDefault(); dartsSubmit(); return; }
   if (e.key === 'Backspace') { e.preventDefault(); E.sel.pop(); renderDarts(); return; }
-  if (e.key === 'Escape') { E.sel = []; renderDarts(); return; }
+  if (e.key === 'Delete') { E.sel = []; renderDarts(); return; }
   const ch = letterKey(e); if (!ch) return;
   e.preventDefault();
   const c = E.sel.length, r = c < E.cols.length ? E.cols[c].indexOf(ch) : -1;
@@ -4018,6 +4124,273 @@ function dartStrike() {
   log(`Obrnjene puščice zadenejo vsakega sovražnika za ${d}.`); sfx('hit2');
   B.enemies.filter(e => e.hp > 0).forEach(e => damageEnemy(e, d));
 }
+// ============================================================ playtest round 2: pause, puzzle intros, fullscreen, fit to screen
+// One hold switch for the whole game: while the player pauses or reads a puzzle intro, no clock runs
+// (battle, crossword, chest, rock slide, delayed attacks) and the puzzle itself is blurred.
+const G = { paused: false, tut: null, pauseEl: null, hadFocus: false };
+const held = () => G.paused || !!G.tut;
+
+// Delayed game actions run on the game clock, so they wait while the game is held.
+const LATER = [];
+function later(fn, ms) { LATER.push({ fn, t: ms / 1000 }); }
+function runLater(dt) {
+  if (!LATER.length) return;
+  const due = [];
+  for (const j of LATER) { j.t -= dt; if (j.t <= 0) due.push(j); }
+  for (const j of due) LATER.splice(LATER.indexOf(j), 1);
+  for (const j of due) { try { j.fn(); } catch (err) { console.error(err); } }
+}
+
+const TIMED = { battle: 1, chest: 1, trap: 1, darts: 1 };
+function pausable() {
+  if (S.bagEl) return false;
+  if (S.screen === 'battle') return !!B && !B.over;
+  if (S.screen === 'chest' || S.screen === 'trap' || S.screen === 'darts') return !!S.ev && !S.ev.done;
+  return false;
+}
+function applyHeld() { document.body.classList.toggle('held', held()); }
+function syncTopbar() { const tb = $('.topbar'); if (tb) tb.replaceWith(renderTopbar()); }
+function dropFocus() {
+  const a = document.activeElement;
+  G.hadFocus = isTextInput(a);
+  if (a && a !== document.body && a.blur) a.blur();
+}
+function refocusPuzzle(always) {
+  if (!(always || G.hadFocus || !S.mobile)) return;
+  if (S.screen === 'battle' && B && B.cw) focusCwInput();
+  else if (S.screen === 'trap' && S.ev && !S.ev.done && UI.trapInput) UI.trapInput.focus();
+}
+
+// ------------------------------------------------------------ pause
+function setPause(on) {
+  on = !!on;
+  if (on === G.paused || (on && (G.tut || !pausable()))) return;
+  G.paused = on;
+  if (on) {
+    dropFocus();
+    let first;
+    const vol = h('output', {}, Math.round(VOLUME * 100) + ' %');
+    G.pauseEl = h('div', { class: 'overlay pause', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Premor' }, h('div', { class: 'dialog' },
+      h('h2', {}, 'Premor'),
+      h('div', { class: 'muted' }, 'Čas stoji. Uganka je zakrita, dokler ne nadaljuješ.'),
+      h('div', { class: 'pause-actions' },
+        h('button', { class: 'btn primary', ref: el => first = el, onclick: () => setPause(false) }, 'Nadaljuj ', h('kbd', {}, 'Esc')),
+        h('button', { class: 'btn', onclick: () => showTut(curTutKind(), true) }, 'Kako se igra'),
+        S.mobile ? null : h('button', { class: 'btn', onclick: toggleFullscreen }, 'Cel zaslon: vklop / izklop')),
+      h('label', { class: 'volrow' }, 'Glasnost',
+        h('input', { type: 'range', min: 0, max: 100, step: 5, value: Math.round(VOLUME * 100), 'aria-label': 'Glasnost zvočnih učinkov',
+          oninput: e => { setVolume(e.target.value / 100); vol.textContent = Math.round(VOLUME * 100) + ' %'; },
+          onchange: () => sfx('hit1', { soft: true, vol: ATK_VOL }) }), vol)));
+    document.body.append(G.pauseEl);
+    first.focus();
+  } else {
+    G.pauseEl.remove(); G.pauseEl = null;
+    refocusPuzzle(false);
+  }
+  applyHeld();
+}
+function togglePause() { setPause(!G.paused); }
+// leaving the window mid-puzzle pauses a timed game instead of letting the clock run out unseen
+window.addEventListener('blur', () => { if (S.mode === 'real' && !held()) setPause(true); });
+
+// ------------------------------------------------------------ puzzle intros ("Kako se igra")
+const TUT_SEEN = new Set((() => { try { return JSON.parse(localStorage.getItem('zg-tut') || '[]'); } catch (e) { return []; } })());
+function saveTutSeen() { try { localStorage.setItem('zg-tut', JSON.stringify([...TUT_SEEN])); } catch (e) { /* no storage */ } }
+function resetTuts() { TUT_SEEN.clear(); saveTutSeen(); }
+const curTutKind = () => S.screen === 'battle' ? (B && B.cw ? B.cw.kind : 'mesh') : S.screen;
+const K = t => h('kbd', {}, t);
+
+// Figures are built from the real game pieces (tiles, cells, rocks, the chest sprite) in a solved state.
+function figMesh() {
+  const L = 'kvoreadlsitm', path = [1, 2, 6, 5], size = 40, gap = 5, own = ROSTER.krpan;
+  const pts = path.map(i => `${(i % 4) * (size + gap) + size / 2},${Math.floor(i / 4) * (size + gap) + size / 2}`).join(' ');
+  const svg = svgEl('svg', { class: 'pathsvg' });
+  svg.append(svgEl('polyline', { points: pts, fill: 'none', stroke: '#5fd38d', 'stroke-width': 5, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: 0.6 }));
+  return [
+    h('div', { class: 'meshwrap' },
+      h('div', { class: 'mesh' }, [...L].map((ch, i) => h('div', { class: 'tile' + (path.includes(i) ? ' sel valid' : '') + (i === 6 || i === 8 ? ' own' : ''), style: { '--c': own.c } },
+        i === 6 || i === 8 ? h('span', { class: 'ini' }, own.ini || own.name[0]) : null, ch))), svg),
+    h('div', { class: 'tut-res ok' }, h('b', {}, 'VODA'), ' — štiri sosednje črke, prava beseda. Črka D je obarvana, zato napade ', own.name, '.')];
+}
+function figCross() {
+  // KRUH across is solved (green); MUHA down is half typed (black)
+  const rows = ['..m..', 'kruh.', '..h..', '..?..'], cls = { '1,0': 'ok', '1,1': 'ok', '1,2': 'ok', '1,3': 'ok', '0,2': 'typed', '2,2': 'typed', '3,2': 'cur' };
+  const cells = [];
+  rows.forEach((row, r) => [...row].forEach((ch, c) => cells.push(ch === '.' ? h('div', { class: 'cell void' })
+    : h('div', { class: 'cell ' + (cls[r + ',' + c] || '') }, r === 1 && c === 0 ? h('i', {}, '1') : r === 0 ? h('i', {}, '2') : null, h('b', {}, ch === '?' ? '' : ch)))));
+  return [
+    h('div', { class: 'cwgrid', style: { 'grid-template-columns': 'repeat(5, var(--cell))' } }, cells),
+    h('div', { class: 'curclue' }, h('b', {}, '1 vodoravno'), 'Vsakdanji ___, pečen iz moke'),
+    h('div', { class: 'tut-key' },
+      h('i', { style: { background: 'var(--good)' } }), h('span', {}, 'prava beseda: napad se sproži'),
+      h('i', { style: { background: '#16171c', border: '1px solid var(--line)' } }), h('span', {}, 'vpisano, a še ni prav: nič se ne zgodi'))];
+}
+function figChest() {
+  const tiles = w => h('div', { class: 'letters' }, [...w].map(ch => h('div', { class: 'tile' }, ch)));
+  const guess = (w, n, cls) => h('div', { class: 'guess ' + cls }, Array.from({ length: n }, (_, k) => h('span', { class: 'lt' }, w[k] || '')));
+  return [
+    tiles('lokab'), h('div', { class: 'tut-arrow' }, 'Namig: plava po nebu'),
+    h('div', { class: 'tut-row' }, objEl('skrinja', 1), h('div', {}, guess('oblak', 5, 'ok'), h('div', { class: 'tut-res ok' }, h('b', {}, 'OBLAK'), ' — vse črke: skrinja se odpre.'))),
+    h('div', { class: 'tut-sep' }),
+    h('div', { class: 'tut-row' }, objEl('skrinja', 0), h('div', {}, guess('bok', 5, 'part'), h('div', { class: 'tut-res part' }, h('b', {}, 'BOK'), ' — prava, a krajša beseda: le del nagrade.')))];
+}
+function figTrap() {
+  const rocks = (word, all) => h('div', { class: 'tut-rocks' }, [...all].map(ch => h('div', { class: 'rock ' + (word.includes(ch) ? 't-ok' : 't-miss'), style: { 'background-image': `url(${ART.skala})` } }, ch)));
+  return [
+    rocks('kruh', 'kruh'), h('div', { class: 'tut-typed' }, 'kruh'),
+    h('div', { class: 'tut-res ok' }, h('b', {}, 'KRUH'), ' vsebuje vse štiri črke: ves plaz se razbije.'),
+    h('div', { class: 'tut-sep' }),
+    rocks('ura', 'kruh'), h('div', { class: 'tut-typed' }, 'ura'),
+    h('div', { class: 'tut-res part' }, h('b', {}, 'URA'), ' razbije U in R. Skali K in H te oplazita.')];
+}
+function figDarts() {
+  const wall = (cols, sel) => h('div', { class: 'dartcols' }, cols.map((col, c) => h('div', { class: 'dartcol' }, [...col].map((ch, r) => h('div', { class: 'tile' + (sel[c] === r ? ' sel' : '') }, ch)))));
+  const cols = ['kso', 'ermu', 'eauo', 'spjk', 'aten', 'rvlm'].map(x => x.slice(0, 3));
+  return [
+    wall(cols, [0, 1, 1, 0, 0, 0]),
+    h('div', { class: 'tut-res part' }, h('b', {}, 'KRASAR'), ' ni beseda: če jo pošlješ, poletijo vse puščice nate.'),
+    h('div', { class: 'tut-sep' }),
+    wall(cols, [0, 1, 1, 0]),
+    h('div', { class: 'tut-res part' }, h('b', {}, 'KRAS'), ' — prava beseda iz prvih štirih stolpcev: štiri puščice se obrnejo, dve te zadeneta.')];
+}
+function tutCross(kind) {
+  const real = S.mode === 'real', C = B && B.cw, geslo = !!(C && C.D && C.D.style === 'geslo'), secs = C && C.timerMax !== Infinity ? Math.round(C.timerMax) : 0;
+  const lead = { finisher: 'Zagovor je poln. Vsaka pravilno rešena beseda je napad, cela križanka pa še mogočnejši udarec.',
+    lock: 'Sovražnik te je ujel v križanko. Mreža črk je zaprta, dokler križanke ne rešiš.',
+    ambush: 'Tokrat udariš prvi. Vsaka pravilno rešena beseda je udarec, preden te sovražniki opazijo.' }[kind];
+  const time = kind === 'finisher' ? (real ? 'Časa ni, a sovražniki napadajo naprej, le pol počasneje. Križanko lahko prekličeš; moč zagovora ostane.' : 'Časa ni in sovražniki čakajo. Križanko lahko prekličeš; moč zagovora ostane.')
+    : !secs ? 'V mirnem načinu časa ni.'
+    : kind === 'lock' ? `Rdeča črta nad križanko je čas (${secs} s). Ko poteče, sovražnik udari z vso močjo.`
+    : `Rdeča črta nad križanko je čas (${secs} s). Ko poteče, te opazijo in bitka se nadaljuje v mreži črk.`;
+  return { title: { finisher: 'Zagovor: križanka', lock: 'Zaklepanje: križanka', ambush: 'Zaseda: križanka' }[kind], lead, fig: figCross(), calm: kind === 'finisher' || !secs, time,
+    steps: [
+      S.mobile ? ['Tapni mrežo, da se odpre tipkovnica. Rumeno polje kaže opis označene besede.'] : ['Rumeno polje kaže opis označene besede. Vpiši odgovor.'],
+      ['Prava beseda pozeleni in takoj sproži napad. Črne črke pomenijo, da beseda še ni prava.'],
+      S.mobile ? ['Tapni drugo besedo v mreži, da jo izbereš. Gumb »Razkrij črko« pokaže eno črko.'] : [K('Tab'), ' skoči na naslednjo besedo, ', K('?'), ' razkrije eno črko (število je omejeno).'],
+      geslo ? ['Zlat stolpec skriva geslo. Če ga uganeš, je križanka rešena takoj.'] : null] };
+}
+const TUT = {
+  mesh: () => ({ title: 'Mreža črk', lead: 'Iz sosednjih črk sestavi slovensko besedo. Vsaka beseda je napad na sovražnika.', fig: figMesh(), calm: S.mode !== 'real',
+    time: S.mode === 'real' ? 'Sovražniki napadajo sproti. Ko sovražnik zažari, sledi udarec, zato so hitre besede vredne več kot popolne.' : 'V mirnem načinu sovražniki počakajo na tvojo besedo.',
+    steps: [
+      S.mobile ? ['Vleci ali tapkaj po sosednjih črkah, tudi poševno.'] : ['Tipkaj besedo; pot po sosednjih črkah se poišče sama. Lahko tudi vlečeš z miško.'],
+      S.mobile ? [`Pritisni Pošlji. Beseda ima vsaj ${MINW()} črke; daljša udari močneje.`] : [K('Enter'), ` pošlje besedo. Imeti mora vsaj ${MINW()} črke; daljša udari močneje.`],
+      ['Barvne črke pripadajo junakom: ko jih uporabiš, napade junak te barve.'],
+      S.mobile ? ['Vsaka črka polni zagovor. Ko je poln, gumb Izreci zagovor odpre križanko za mogočen udarec.'] : ['Vsaka črka polni zagovor. Ko je poln, ', K('presledek'), ' odpre križanko za mogočen udarec.']] }),
+  finisher: () => tutCross('finisher'), lock: () => tutCross('lock'), ambush: () => tutCross('ambush'),
+  chest: () => ({ title: 'Zaklenjena skrinja', lead: 'Iz premešanih črk sestavi skrito besedo. Namig pove, kaj iščeš.', fig: figChest(),
+    time: `Rdeča črta je čas (${Math.round(S.ev.timeMax)} s). Ko poteče, skrinja ostane zaklenjena.`,
+    steps: [
+      S.mobile ? ['Tapkaj črke v pravem vrstnem redu.'] : ['Tipkaj črke ali klikaj nanje.'],
+      S.mobile ? ['Pritisni Pošlji. Prva prava beseda zaključi dogodek.'] : [K('Enter'), ' odda besedo. Prva prava beseda zaključi dogodek.'],
+      ['Beseda iz vseh črk odpre skrinjo in prinese celo nagrado. Krajša prava beseda prinese le del.']] }),
+  darts: () => ({ title: 'Puščice v zidu', lead: 'Zid črk v stolpcih. Iz vsakega stolpca vzemi eno črko, od leve proti desni.', fig: figDarts(),
+    time: `Rdeča črta je čas (${Math.round(S.ev.timeMax)} s). Ko poteče, poletijo vse puščice nate.`,
+    steps: [
+      S.mobile ? ['Tapni eno črko v prvem stolpcu, nato v drugem in tako naprej.'] : ['Tipkaj črke ali klikaj nanje: najprej prvi stolpec, nato drugi in tako naprej.'],
+      ['Besedo lahko pošlješ, še preden prideš do zadnjega stolpca. Vsaka črka prave besede obrne eno puščico proti sovražnikom naslednje bitke.'],
+      ['Puščice, ki ostanejo, zadenejo družino. Beseda, ki ne obstaja, ne obrne nobene.']] }),
+  trap: () => ({ title: 'Plaz kamenja', lead: 'S pobočja padajo skale. Vsaka nosi črko in ena sama beseda jih lahko razbije.', fig: figTrap(),
+    time: `Skale padajo ${Math.round(S.ev.fall)} s. Šteje prva prava beseda; če ne pošlješ nobene, skale udarijo s polno močjo.`,
+    steps: [
+      ['Poglej črke na skalah.'],
+      [S.mobile ? 'Vpiši eno besedo in pritisni Pošlji.' : 'Vpiši eno besedo in jo pošlji.', ' Vsebuje naj čim več teh črk; v besedi so lahko kjerkoli.'],
+      ['Skale s črkami iz besede se razbijejo. Ostale te oplazijo.']] }),
+};
+function showTut(kind, force) {
+  if (G.tut || !TUT[kind]) return false;
+  if (!force && (!S.tutOn || TUT_SEEN.has(kind))) return false;
+  TUT_SEEN.add(kind); saveTutSeen();
+  const T = TUT[kind](), fromPause = G.paused;
+  if (!fromPause) dropFocus();
+  let first;
+  const el = h('div', { class: 'overlay tut', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Kako se igra: ' + T.title }, h('div', { class: 'dialog tutdlg' },
+    h('div', { class: 'tut-k' }, 'Kako se igra', h('span', { class: 'stop' }, 'čas stoji')),
+    h('h2', {}, T.title),
+    h('p', { class: 'tut-lead' }, T.lead),
+    h('div', { class: 'tut-body' },
+      h('figure', { class: 'tut-fig' }, h('div', { class: 'tut-cap' }, 'Primer rešene uganke'), T.fig),
+      h('div', {},
+        h('ol', { class: 'tut-steps' }, T.steps.filter(Boolean).map(s => h('li', {}, h('span', {}, s)))),
+        h('p', { class: 'tut-time' + (T.calm ? ' calm' : '') }, T.time))),
+    h('div', { class: 'tut-foot' },
+      h('span', { class: 'muted' }, fromPause ? 'Čas stoji tudi v premoru.' : 'Čas steče šele, ko začneš. Razlaga je vedno na voljo v premoru.'),
+      h('button', { class: 'btn primary', ref: b => first = b, onclick: closeTut }, fromPause ? 'Nazaj ' : 'Začni ', K('Enter')))));
+  document.body.append(el);
+  G.tut = { kind, el, fromPause };
+  applyHeld();
+  first.focus();
+  return true;
+}
+function closeTut() {
+  const T = G.tut; if (!T) return;
+  T.el.remove(); G.tut = null;
+  applyHeld();
+  if (T.fromPause && G.pauseEl) { const b = $('.btn.primary', G.pauseEl); if (b) b.focus(); }
+  else refocusPuzzle(true);
+  fitSoon();
+}
+
+// Overlay keys come first (capture), so nothing typed reaches the puzzle underneath, and Esc pauses from anywhere,
+// including the crossword and rock-slide text fields.
+window.addEventListener('keydown', e => {
+  if (G.tut || G.paused) {
+    const onControl = e.target && e.target.closest && e.target.closest('.overlay button, .overlay input');
+    if (e.key === 'Escape' || (!onControl && (e.key === 'Enter' || e.key === ' '))) { e.preventDefault(); if (G.tut) closeTut(); else setPause(false); }
+    e.stopImmediatePropagation();
+    return;
+  }
+  if (e.key === 'Escape' && !S.overlayKey && pausable()) { e.preventDefault(); e.stopImmediatePropagation(); setPause(true); }
+}, true);
+
+// ------------------------------------------------------------ fullscreen + fit to screen
+function toast(text) {
+  const old = $('.toast'); if (old) old.remove();
+  const t = h('div', { class: 'toast', role: 'status' }, text);
+  document.body.append(t); setTimeout(() => t.remove(), 6500);
+}
+const isFs = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+function toggleFullscreen() {
+  const fail = () => toast('Celozaslonski način tukaj ni na voljo. Odpri prototip v svojem zavihku ali pritisni F11; prikaz se oknu prilagodi tudi brez tega.');
+  try {
+    if (isFs()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
+    const el = document.documentElement, rq = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (!rq) return fail();
+    const p = rq.call(el); if (p && p.catch) p.catch(fail);
+  } catch (e) { fail(); }
+}
+const FIT = { battle: 1, result: 1, chest: 1, trap: 1, darts: 1, travel: 1, hero: 1, pick: 1 };
+const SCENE_H = 330, SCENE_MIN = 240, APP_W = 1000, APP_PAD = 32;
+let ZOOM = 1, fitRaf = 0;
+function fitScreen() {
+  if (!SCR) return;
+  const on = !S.mobile && !!FIT[S.screen], fs = isFs();
+  const scene = SCR.querySelector('.battle > .scene');
+  SCR.style.zoom = ''; app.style.maxWidth = ''; if (scene) scene.style.height = '';
+  document.body.classList.toggle('fit', on); document.body.classList.remove('tight');
+  ZOOM = 1;
+  if (!on) return;
+  const top = SCR.getBoundingClientRect().top + window.scrollY;
+  const avail = window.innerHeight - top - 12;
+  let need = SCR.offsetHeight;
+  if (need < 40 || avail < 200) return;
+  if (need > avail) { document.body.classList.add('tight'); need = SCR.offsetHeight; }
+  if (scene && need > avail) { const cut = Math.min(need - avail, SCENE_H - SCENE_MIN); scene.style.height = (SCENE_H - cut) + 'px'; need -= cut; }
+  const zw = (window.innerWidth - APP_PAD) / (APP_W - APP_PAD);
+  const z = clamp(Math.min(avail / need, fs ? Math.min(zw, 2) : 1), 0.6, 2);
+  if (Math.abs(z - 1) < 0.015) return;
+  ZOOM = Math.round(z * 1000) / 1000;
+  SCR.style.zoom = ZOOM;
+  app.style.maxWidth = Math.round(APP_PAD + (APP_W - APP_PAD) * ZOOM) + 'px';
+}
+function fitSoon() { cancelAnimationFrame(fitRaf); fitRaf = requestAnimationFrame(() => { fitScreen(); if (S.screen === 'travel') layoutTravel(); }); }
+// content that grows after the last fit (a taller crossword, more word proposals) must not push the page into scrolling
+if (window.ResizeObserver) new ResizeObserver(() => {
+  if (S.mobile || !FIT[S.screen] || !SCR) return;
+  if (document.documentElement.scrollHeight > window.innerHeight + 2 && ZOOM > 0.6) fitSoon();
+}).observe(app);
+window.addEventListener('resize', fitSoon);
+for (const ev of ['fullscreenchange', 'webkitfullscreenchange']) document.addEventListener(ev, () => { syncTopbar(); fitSoon(); });
 
 // ============================================================ global input + loop
 document.addEventListener('keydown', e => {
@@ -4037,7 +4410,7 @@ document.addEventListener('keydown', e => {
     if (E.done) { if (e.key === 'Enter') finishEvent(); return; }
     if (e.key === 'Enter') { e.preventDefault(); chestSubmit(); return; }
     if (e.key === 'Backspace') { e.preventDefault(); chestBack(); return; }
-    if (e.key === 'Escape') { chestClear(); return; }
+    if (e.key === 'Delete') { e.preventDefault(); chestClear(); return; }
     const ch = letterKey(e); if (ch) { e.preventDefault(); chestType(ch); }
     return;
   }
@@ -4048,18 +4421,22 @@ let lastT = performance.now();
 function frame(t) {
   const dt = Math.min(0.1, (t - lastT) / 1000); lastT = t;
   try {
-    if (S.screen === 'battle') battleTick(dt);
-    else if (S.screen === 'chest') chestTick(dt);
-    else if (S.screen === 'darts') dartsTick(dt);
-    else if (S.screen === 'trap') trapTick(dt);
-    else if (S.screen === 'travel') travelTick(dt);
+    if (held()) { /* pause or puzzle intro: every clock stands still */ }
+    else {
+      runLater(dt);
+      if (S.screen === 'battle') battleTick(dt);
+      else if (S.screen === 'chest') chestTick(dt);
+      else if (S.screen === 'darts') dartsTick(dt);
+      else if (S.screen === 'trap') trapTick(dt);
+      else if (S.screen === 'travel') travelTick(dt);
+    }
   } catch (err) { console.error(err); }
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 
 </script>
