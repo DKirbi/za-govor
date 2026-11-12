@@ -956,8 +956,7 @@ function renderTitle() {
     onclick: () => { S.know = id; try { localStorage.setItem('zg-know', id); } catch (e) { /* no storage */ } go('title'); } },
     h('h3', {}, LEVELS[id].name), h('p', {}, text));
   SCR.append(h('div', { class: 'title' },
-    h('div', { class: 'logo' }, 'Za', h('span', { class: 'dot' }, '·'), 'govor'),
-    h('div', { class: 'tagline' }, 'Besedna igra s slovanskimi bogovi — prototip mini iger'),
+    titleStage(),
     inspiredLine(),
     h('div', { class: 'folk-rule' }),
     h('div', { class: 'note' }, 'Novo: pot po Sloveniji. Začneš z enim junakom in hodiš od Ptuja do Ljubljanskega gradu, kjer čaka zmaj. Na poti srečaš sovražnike, skrinje, plazove, vodnjake, krošnjarje in nove junake (v družini so največ štirje, bog le eden). Zdravje se po bitki ne vrne samo: junaki se pozdravijo pri vodnjaku. Zlatnike zapraviš pri krošnjarju za napoje, strupe in predmete. ',
