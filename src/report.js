@@ -16,7 +16,7 @@ const saveList = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); }
 const REJECTED = loadList(RJ_KEY);   // [{ w, where, n, t, s }] newest first; s = session
 const REPORTS = loadList(RP_KEY);    // [{ w, where, note, t, sent }]
 const cleanWord = s => [...String(s || '').trim()].map(normLetter).filter(Boolean).join('');
-const WHERE = { mreza: 'mreža črk', skrinja: 'skrinja', plaz: 'plaz kamenja', puscice: 'puščice', vpisana: 'vpisana' };
+const WHERE = { mreza: 'mreža črk', skrinja: 'skrinja', plaz: 'plaz kamenja', puscice: 'konice', vpisana: 'vpisana' };
 
 // called wherever the game says a word is not in its dictionary
 function noteRejected(raw, where) {

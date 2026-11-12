@@ -203,10 +203,10 @@ everyone).
   part of the XP and gold.
 - **Rock slide:** every falling rock carries a letter and you have one word. Rocks whose
   letters are in it break (XP and gold for each); the rest graze the party for half damage.
-- **Darts (*Puščice v zidu*):** six columns of letters; take one from each column, left to
+- **Spikes trap (*Past s konicami*):** six slots of letters; take one from each slot, left to
   right, and send a word. A shorter word may be sent early, and nothing stops you from
-  sending a word that does not exist. Every letter of a real word turns one dart against the
-  enemies of the next battle; the darts left over hit the party.
+  sending a word that does not exist. Every letter of a real word sets one spike against the
+  enemies of the next battle; the spikes left unset hit the party.
 - **Well:** every hero is healed and the fallen stand up again.
 - **Pedlar:** four potions or poisons and two relics for gold.
 - **Shrine:** three gods offer themselves; one may join.
@@ -239,7 +239,7 @@ Malček is the game as it was before the levels were added.
 
 - **No Pošlji in the letter mesh.** Lift your finger after a drag, or tap the last letter
   again; a string that is not a word lets go of its letters. A tap on a proposal plays it.
-  The chest, the rock slide and darts keep *Pošlji*, because they take one deliberate word.
+  The chest, the rock slide and spikes keep *Pošlji*, because they take one deliberate word.
 - **In-game Slovene keyboard** for crosswords and the rock slide: the 25 letters in their
   QWERTZ places with Č, Š, Ž as plain keys. The phone's own keyboard stays closed, so the
   screen never jumps, nothing autocorrects, and every phone behaves the same.
@@ -265,7 +265,7 @@ The word list is still the prototype's (see [Language data and sources](#languag
 so players will meet real Slovene words it does not know. The game helps catch them:
 
 - **Every word it turns down is remembered** on the device (the last 40): in the letter
-  mesh, the chest, the rock slide and darts. The first rejection of a visit says where to
+  mesh, the chest, the rock slide and spikes. The first rejection of a visit says where to
   report it.
 - **Prijavi besedo** in the pause window (`Esc` / *Premor*) and **Prijavi manjkajočo
   besedo** on *O igri* list those words; one tap reports a word, with an optional
@@ -297,9 +297,9 @@ Confirmed words go into `data/allow.json` (lemma → forms); then rebuild the wo
 | --- | --- | --- |
 | Start menu | `↑` `↓` and `Enter`; `Esc` goes back from any page under it | Tap; *← Nazaj na glavni meni* at the top of every page |
 | Make a word | Type it; the path is found for you. Č, Š, Ž must be typed as themselves (a Slovene keyboard layout), c/s/z never stand in for them | Drag across tiles, or tap them one by one |
-| Send the word | `Enter` | Lift the finger after a drag, or tap the last letter again (*Pošlji* on desktop, and in chest, rock slide and darts) |
+| Send the word | `Enter` | Lift the finger after a drag, or tap the last letter again (*Pošlji* on desktop, and in chest, rock slide and spikes) |
 | Clear the word | `Delete` | *Počisti* |
-| Pause (battle, crosswords, chest, rock slide, darts) | `Esc` | *Premor* in the top bar |
+| Pause (battle, crosswords, chest, rock slide, spikes) | `Esc` | *Premor* in the top bar |
 | Remove the last letter | `Backspace` | *Briši* |
 | Speak the zagovor (meter full) | `Space` | *Izreci zagovor* |
 | Hint / reshuffle / look into the bag | `1` / `2` / `3` | *Namig* / *Premešaj* / *Torba* |
@@ -360,7 +360,7 @@ CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 | `tests/crossword-generator.test.js` | 4,200 generated crosswords on all three levels: no letter clashes or stray letters, connected grids, everything fits 9×9, only that level's clue banks, short words in enemy crosswords, the gold column spells the keyword |
 | `tests/levels.test.js` | Each knowledge level: chosen on *Nova pot* and saved when the journey starts, hints and proposals, word count and coaching tips, shortest word, crossword bank, letter counts, revealed letters (and half power), mouse clicks reaching the crossword |
 | `tests/keyword.test.js` | Guessing the keyword early ends the crossword and fires the zagovor; in Povodni mož's whirlpool *urska* with a plain s stays black and *urška* breaks it |
-| `tests/phone.test.js` | On a 390×844 touch screen: the mesh sends without *Pošlji* (second tap, lifted drag, non-words clear), the in-game keyboard types crosswords and the rock slide with the system keyboard closed, wrong entries stay black and correct ones fire, chest partial rewards, darts fit 360 px, *Premor*, and the Android back button |
+| `tests/phone.test.js` | On a 390×844 touch screen: the mesh sends without *Pošlji* (second tap, lifted drag, non-words clear), the in-game keyboard types crosswords and the rock slide with the system keyboard closed, wrong entries stay black and correct ones fire, chest partial rewards, spikes fit 360 px, *Premor*, and the Android back button |
 | `tests/menu.test.js` | The start menu: items with and without a journey, `↑` `↓` `Enter` `Esc`, *← Nazaj na glavni meni* on every page; *Nova pot* copy, figures, *Predlogi besed* under Malček only, explanations on by default, test mode as a developer option, choices that only count once the journey starts; *Kako igrati* controls per device and the puzzle carousel (buttons, keys, tabs, swipe); heroes and their cards; no *Nadaljuj pot* after the ending; phone fit and the Android back button |
 | `tests/credits.test.js` | Words for Evil is credited on *O igri* (*Navdih*, then *Zasluge* with every source and a Steam link) and on the ending, whose link opens *O igri* at *Navdih*; the line fits a 360 px phone; Esc and the Android back button leave the credits |
 | `tests/report.test.js` | *Prijavi besedo*: rejected words are remembered (mesh, chest), the pause screen and *O igri* list them, one tap posts word, place, note and level to the Google Form (intercepted), typing works while paused, known words are not sent, the queue waits without a form and goes out once there is one, lists survive a reload, the panel fits a 360 px phone; *jasa* and base forms are accepted |
@@ -380,7 +380,7 @@ za-govor/
 ├── src/
 │   ├── index.src.html        # page template with placeholders
 │   ├── game.js               # battles, crosswords, chest, rock slide, heroes (no framework)
-│   ├── journey.js            # the road: regions, stops, party, items, pedlar, bag, darts
+│   ├── journey.js            # the road: regions, stops, party, items, pedlar, bag, spikes
 │   ├── playtest.js           # pause, puzzle intros, fullscreen, fit to screen
 │   ├── mobile.js             # phone specifics: in-game keyboard, haptics, Android back button
 │   ├── credits.js            # Navdih and Zasluge: the Words for Evil credit and every source
@@ -480,7 +480,7 @@ za-govor/
     (`data/myth.json`) and reviewed reports (`data/allow.json`), minus foreign words
     (`data/deny.json`: Croatian and English text Sloleks picked up from the corpus, and
     English or French citation forms in the dictionaries, such as *house* or *jeep*).
-  - *Suggested* (proposals, hints, word counts, darts and rock-slide words): 186,510 forms
+  - *Suggested* (proposals, hints, word counts, spikes and rock-slide words): 186,510 forms
     of words that are hand-checked in Sloleks or listed in Franček, common in the Gigafida
     2.0 corpus (frequency ≥ 1,000), standard, and not in `data/never-suggest.json` (vulgar
     words and slurs, matched exactly, so *ritem* and *riti* are not caught by *rit*).

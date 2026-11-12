@@ -129,7 +129,7 @@ const CONTROLS_DESK = [
     [['←', '→'], 'izberi sovražnika, ki ga napadeš'], [['1', '2', '3'], 'namig · premešaj mrežo · torba']]],
   ['Križanka', [[['a–ž'], 'vpiši odgovor'], [['Tab', 'Enter'], 'naslednja beseda (Shift + Tab: prejšnja)'], [['←', '↑', '↓', '→'], 'premik po mreži'],
     [['Backspace'], 'briši črko'], [['?'], 'razkrij črko (število je omejeno)']]],
-  ['Skrinja, puščice in plaz', [[['a–ž'], 'tipkaj črke ali klikaj nanje'], [['Enter'], 'pošlji besedo'], [['Backspace', 'Del'], 'briši črko · počisti besedo']]],
+  ['Skrinja, konice in plaz', [[['a–ž'], 'tipkaj črke ali klikaj nanje'], [['Enter'], 'pošlji besedo'], [['Backspace', 'Del'], 'briši črko · počisti besedo']]],
 ];
 const CONTROLS_PHONE = [
   ['Povsod', [['Premor', 'gumb zgoraj ustavi čas in zakrije uganko; igra se ustavi tudi, ko jo zapustiš'], ['Nazaj', 'tipka nazaj na Androidu ustavi uganko, zapre okno ali te vrne v meni']]],
@@ -137,7 +137,7 @@ const CONTROLS_PHONE = [
   ['Mreža črk', [['Vleci', 'po sosednjih črkah, tudi poševno, in spusti: beseda se pošlje sama'], ['Tapkaj', 'črko za črko; zadnjo tapni še enkrat'],
     ['Predlog', 'tap na predlog ga pošlje'], ['Gumbi', 'Zagovor, Namig, Premešaj in Torba so pod mrežo']]],
   ['Križanka in plaz', [['Tipkovnica', 'slovenska tipkovnica v igri, s Č, Š in Ž'], ['Naprej', 'skoči na naslednjo besedo; izbereš jo lahko tudi s tapom v mreži'], ['Razkrij črko', 'pokaže eno črko']]],
-  ['Skrinja in puščice', [['Tapkaj', 'črke v pravem vrstnem redu'], ['Pošlji', 'odda besedo; prva prava beseda šteje']]],
+  ['Skrinja in konice', [['Tapkaj', 'črke v pravem vrstnem redu'], ['Pošlji', 'odda besedo; prva prava beseda šteje']]],
 ];
 function controlsEl() {
   const keys = ks => Array.isArray(ks) ? ks.map((k, i) => [i ? ' ' : null, h('kbd', {}, k)]) : h('b', {}, ks);
@@ -156,7 +156,7 @@ function howtoSlides() {
       lead: 'Križanko odpre poln zagovor (mogočen udarec), sovražnikovo zaklepanje (mreža črk je zaprta, dokler je ne rešiš) ali zaseda (udariš prvi). Vsaka pravilno rešena beseda je napad.',
       time: 'Pri zagovoru časa ni. Pri zaklepanju in zasedi kaže rdeča črta nad križanko, koliko časa ostane; v mirnem načinu časa ni.' },
     { id: 'chest', short: 'Skrinja', ...T('chest'), time: 'Rdeča črta je čas. Ko poteče, skrinja ostane zaklenjena. V mirnem načinu je časa dvakrat več.' },
-    { id: 'darts', short: 'Puščice', ...T('darts'), time: 'Rdeča črta je čas. Ko poteče, poletijo vse puščice nate. V mirnem načinu je časa dvakrat več.' },
+    { id: 'darts', short: 'Konice', ...T('darts'), time: 'Rdeča črta je čas. Ko poteče, sprožijo vse konice nate. V mirnem načinu je časa dvakrat več.' },
     { id: 'trap', short: 'Plaz', ...T('trap'), time: 'Skale padajo nekaj sekund. Šteje prva prava beseda; če ne pošlješ nobene, udarijo s polno močjo.' },
   ];
 }

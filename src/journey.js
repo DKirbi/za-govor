@@ -229,7 +229,7 @@ function renderTravel() {
       cap = stop.kind === 'boss' ? 'Šef' : stop.kind === 'elite' ? 'Zaseda' : 'Sovražniki';
     } else if (stop.kind === 'chest') { body = objEl('skrinja', stop.done ? 1 : 0); cap = stop.done ? '' : 'Skrinja'; }
     else if (stop.kind === 'trap') { if (stop.done) return; body = objEl('plaz'); cap = 'Plaz'; }
-    else if (stop.kind === 'darts') { body = objEl('puscice', stop.done ? 1 : 0); cap = stop.done ? '' : 'Puščice'; }
+    else if (stop.kind === 'darts') { body = objEl('puscice', stop.done ? 1 : 0); cap = stop.done ? '' : 'Konice'; }
     else if (stop.kind === 'well') { body = objEl('vodnjak', stop.done ? 1 : 0); cap = 'Vodnjak'; }
     else if (stop.kind === 'shop') { body = objEl('krosnjar', 0, 'mirror npc'); cap = 'Krošnjar'; }
     else if (stop.kind === 'god') { body = objEl('svetisce', 0, 'npc'); cap = 'Svetišče'; }
@@ -316,7 +316,7 @@ function promptFor(stop) {
     return { text: `${lead}: ${names}.`, actions: [{ label: 'V boj', primary: true, fn: () => stopBattle(stop) }, ...skip] };
   }
   if (stop.kind === 'chest') return { text: 'Ob poti leži zaklenjena skrinja. Odpre jo prava beseda.', actions: [{ label: 'Odpri skrinjo', primary: true, fn: () => go('chest', { id: 'skrinja', stop }) }, { label: 'Pusti jo', fn: () => pass() }] };
-  if (stop.kind === 'darts') return { text: 'Iz starega zidu merijo puščice. Kdor jih zagovori s pravo besedo, jih obrne proti sovražniku.', actions: [{ label: 'Stopi pred zid', primary: true, fn: () => go('darts', { id: 'puscice', stop }) }, ...skip] };
+  if (stop.kind === 'darts') return { text: 'Iz starega zidu molijo konice. Kdor jih zagovori s pravo besedo, jih nastavi proti sovražniku.', actions: [{ label: 'Stopi pred zid', primary: true, fn: () => go('darts', { id: 'puscice', stop }) }, ...skip] };
   if (stop.kind === 'trap') return { text: 'S pobočja se usuje plaz kamenja!', actions: [{ label: 'Brani se z besedami', primary: true, fn: () => go('trap', { id: 'plaz', stop }) }, ...skip] };
   if (stop.kind === 'well') {
     const hurt = S.heroes.some(st => st.down || st.hp < st.maxHp), fallen = S.heroes.some(st => st.down);
@@ -415,18 +415,18 @@ function renderGalleryExtras(wrap) {
   const fig = (id, cap, frame) => h('figure', {}, objEl(id, frame), cap);
   wrap.append(h('h2', {}, 'Na poti'),
     h('p', { class: 'lead' }, 'Postaje ob poti imajo svoje sličice: skrinja (zaprta in odprta), vodnjak, plaz kamenja, svetišče, krošnjar in kažipot do naslednje pokrajine.'),
-    h('div', { class: 'gobjs' }, fig('skrinja', 'skrinja'), fig('skrinja', 'odprta skrinja', 1), fig('vodnjak', 'vodnjak'), fig('plaz', 'plaz kamenja'), fig('puscice', 'puščice'), fig('svetisce', 'svetišče'), fig('krosnjar', 'krošnjar'), fig('kazipot', 'kažipot')),
+    h('div', { class: 'gobjs' }, fig('skrinja', 'skrinja'), fig('skrinja', 'odprta skrinja', 1), fig('vodnjak', 'vodnjak'), fig('plaz', 'plaz kamenja'), fig('puscice', 'konice'), fig('svetisce', 'svetišče'), fig('krosnjar', 'krošnjar'), fig('kazipot', 'kažipot')),
     h('h2', {}, 'Predmeti'),
     h('p', { class: 'lead' }, 'Predmeti delujejo ves čas, napoji in strupi se porabijo. Dobiš jih v skrinjah, pri krošnjarju in od šefov.'),
     h('div', { class: 'itemlist gitems' }, WORLD.items.map(it => h('div', { class: 'itemrow' }, itemIcon(it.id),
       h('div', {}, h('b', {}, it.name, h('em', {}, it.kind === 'relic' ? 'predmet' : it.poison ? 'strup' : 'napoj')), h('span', {}, it.text)), h('span', { class: 'price' }, h('i', { class: 'coin' }), it.price)))));
 }
 
-// ============================================================ darts: one letter from every column
-// The third timed event. A wall of letters in columns: build a word from left to right by taking
-// one letter from each column. You may send it before the last column — a shorter word turns
-// fewer darts — and nothing stops you from sending a word that does not exist. Darts you turn
-// fly at the enemies of the next battle; the others hit the party.
+// ============================================================ spikes trap (darts): one letter from every slot
+// The third timed event. A wall with slots, each holding a letter: build a word from left to right by taking
+// one letter from each slot. You may send it before the last slot — a shorter word sets
+// fewer spikes — and nothing stops you from sending a word that does not exist. Spikes you set
+// strike the enemies of the next battle; the others hit the party.
 const DART_COLS = 6, DART_ROWS = 3, DART_DMG = 3, DART_XP = 7, DART_GOLD = 2, DART_STRIKE = 4;
 let DART_WORDS = null;
 function startDarts(node) {
@@ -442,10 +442,10 @@ function renderDarts() {
   const E = S.ev; SCR.innerHTML = '';
   const guess = dartsGuess(), n = E.sel.length;
   SCR.append(h('div', { class: 'event darts' },
-    h('div', { class: 'bhead' }, h('div', { class: 't' }, 'Puščice v zidu', h('small', {}, 'dogodek na čas')), h('div', { class: 'meta' }, `Družina ${S.partyHp}/${S.maxHp}`)),
+    h('div', { class: 'bhead' }, h('div', { class: 't' }, 'Past s konicami', h('small', {}, 'dogodek na čas')), h('div', { class: 'meta' }, `Družina ${S.partyHp}/${S.maxHp}`)),
     h('div', { class: 'panel' },
       h('div', { class: 'chestbox' }, objEl('puscice', E.done ? 1 : 0, 'big'),
-        h('div', {}, 'Iz vsakega stolpca vzemi eno črko, od leve proti desni, in pošlji besedo. Vsaka črka prave besede obrne eno puščico proti sovražnikom naslednje bitke; puščice, ki ostanejo, zadenejo družino. Pošlješ lahko tudi krajšo besedo. Če beseda ne obstaja, poletijo vse nate.')),
+        h('div', {}, 'Iz vsake reže vzemi eno črko, od leve proti desni, in pošlji besedo. Vsaka črka prave besede nastavi eno konico proti sovražnikom naslednje bitke; konice, ki ostanejo nenastavljene, zadenejo družino. Pošlješ lahko tudi krajšo besedo. Če beseda ne obstaja, se sprožijo vse konice nate.')),
       h('div', { class: 'timer', style: { margin: '14px 0 4px' } }, h('i', { ref: el => UI.evTimer = el, style: { width: clamp(100 * E.time / E.timeMax, 0, 100) + '%' } })),
       h('div', { class: 'sendrow' },
         h('div', { class: 'guess' }, E.cols.map((_, c) => h('span', { class: 'lt' }, c < n ? E.cols[c][E.sel[c]] : ''))),
@@ -482,28 +482,28 @@ function dartsEnd(turned, text, kind) {
   E.xp = turned * DART_XP; E.gold = turned && S.run ? gainGold(turned * DART_GOLD) : 0; E.strike = turned * DART_STRIKE;
   if (E.xp) gainXp(E.xp, null, true);
   if (turned) S.strike = E.strike;
-  E.msg = text + (turned ? ` Vsak junak +${E.xp} XP` + (E.gold ? `, +${E.gold} zlatnikov` : '') + `; v naslednji bitki puščice zadenejo vsakega sovražnika za ${E.strike}.` : '') + (E.dmg ? ` Družina −${E.dmg}.` : '');
+  E.msg = text + (turned ? ` Vsak junak +${E.xp} XP` + (E.gold ? `, +${E.gold} zlatnikov` : '') + `; v naslednji bitki nastavljene konice zadenejo vsakega sovražnika za ${E.strike}.` : '') + (E.dmg ? ` Družina −${E.dmg}.` : '');
   E.msgKind = kind; sfx(turned === E.cols.length ? 'win' : turned ? 'ok' : 'bad');
   renderDarts();
 }
 function dartsSubmit() {
   const E = S.ev; if (E.done) return;
   const w = dartsGuess(); if (w.length < MINW()) return;
-  if (!WORDS.has(w)) { noteRejected(w, 'puscice'); return dartsEnd(0, `»${UP(w)}« ni beseda: vse puščice poletijo (prava je bila ${UP(E.word)}).` + rejectHint().replace(' v premoru', ' na začetnem zaslonu'), 'err'); }
-  if (w.length === E.cols.length) return dartsEnd(w.length, `${UP(w)}! Vse puščice se obrnejo.`, 'ok');
-  dartsEnd(w.length, `${UP(w)} obrne ${w.length} od ${E.cols.length} puščic; ostale poletijo nate.`, 'warn');
+  if (!WORDS.has(w)) { noteRejected(w, 'puscice'); return dartsEnd(0, `»${UP(w)}« ni beseda: vse konice se sprožijo nate (prava je bila ${UP(E.word)}).` + rejectHint().replace(' v premoru', ' na začetnem zaslonu'), 'err'); }
+  if (w.length === E.cols.length) return dartsEnd(w.length, `${UP(w)}! Vse konice se nastavijo.`, 'ok');
+  dartsEnd(w.length, `${UP(w)} nastavi ${w.length} od ${E.cols.length} konic; ostale se sprožijo nate.`, 'warn');
 }
 function dartsTick(dt) {
   const E = S.ev; if (!E || E.done) return;
   E.time -= dt;
   if (UI.evTimer) UI.evTimer.style.width = clamp(100 * E.time / E.timeMax, 0, 100) + '%';
-  if (E.time <= 0) dartsEnd(0, `Prepozno: vse puščice poletijo. Skrita beseda je bila ${UP(E.word)}.`, 'err');
+  if (E.time <= 0) dartsEnd(0, `Prepozno: vse konice se sprožijo. Skrita beseda je bila ${UP(E.word)}.`, 'err');
 }
-// the darts turned at the wall open the next battle
+// the spikes set at the wall open the next battle
 function dartStrike() {
   if (!S.strike || !B) return;
   const d = S.strike; S.strike = 0;
-  spawnCard(leadEl(), { tier: 2, c: 'var(--gold)', name: 'Puščice', move: 'Obrnjene puščice', value: `−${d} vsakemu` });
-  log(`Obrnjene puščice zadenejo vsakega sovražnika za ${d}.`); sfx('hit2');
+  spawnCard(leadEl(), { tier: 2, c: 'var(--gold)', name: 'Konice', move: 'Nastavljene konice', value: `−${d} vsakemu` });
+  log(`Nastavljene konice zadenejo vsakega sovražnika za ${d}.`); sfx('hit2');
   B.enemies.filter(e => e.hp > 0).forEach(e => damageEnemy(e, d));
 }

@@ -123,10 +123,10 @@ function figDarts() {
   const cols = ['kso', 'ermu', 'eauo', 'spjk', 'aten', 'rvlm'].map(x => x.slice(0, 3));
   return [
     wall(cols, [0, 1, 1, 0, 0, 0]),
-    h('div', { class: 'tut-res part' }, h('b', {}, 'KRASAR'), ' ni beseda: če jo pošlješ, poletijo vse puščice nate.'),
+    h('div', { class: 'tut-res part' }, h('b', {}, 'KRASAR'), ' ni beseda: če jo pošlješ, sprožijo vse konice nate.'),
     h('div', { class: 'tut-sep' }),
     wall(cols, [0, 1, 1, 0]),
-    h('div', { class: 'tut-res part' }, h('b', {}, 'KRAS'), ' — prava beseda iz prvih štirih stolpcev: štiri puščice se obrnejo, dve te zadeneta.')];
+    h('div', { class: 'tut-res part' }, h('b', {}, 'KRAS'), ' — prava beseda iz prvih štirih rež: štiri konice se nastavijo, dve te zadeneta.')];
 }
 function tutCross(kind) {
   const real = S.mode === 'real', C = B && B.cw, geslo = !!(C && C.D && C.D.style === 'geslo'), secs = C && C.timerMax !== Infinity ? Math.round(C.timerMax) : 0;
@@ -161,12 +161,12 @@ const TUT = {
       S.mobile ? ['Tapkaj črke v pravem vrstnem redu.'] : ['Tipkaj črke ali klikaj nanje.'],
       S.mobile ? ['Pritisni Pošlji. Prva prava beseda zaključi dogodek.'] : [K('Enter'), ' odda besedo. Prva prava beseda zaključi dogodek.'],
       ['Beseda iz vseh črk odpre skrinjo in prinese celo nagrado. Krajša prava beseda prinese le del.']] }),
-  darts: () => ({ title: 'Puščice v zidu', lead: 'Zid črk v stolpcih. Iz vsakega stolpca vzemi eno črko, od leve proti desni.', fig: figDarts(),
-    time: `Rdeča črta je čas${evSecs('timeMax')}. Ko poteče, poletijo vse puščice nate.`,
+  darts: () => ({ title: 'Past s konicami', lead: 'Zid z režami. Iz vsake reže vzemi eno črko, od leve proti desni.', fig: figDarts(),
+    time: `Rdeča črta je čas${evSecs('timeMax')}. Ko poteče, sprožijo vse konice nate.`,
     steps: [
-      S.mobile ? ['Tapni eno črko v prvem stolpcu, nato v drugem in tako naprej.'] : ['Tipkaj črke ali klikaj nanje: najprej prvi stolpec, nato drugi in tako naprej.'],
-      ['Besedo lahko pošlješ, še preden prideš do zadnjega stolpca. Vsaka črka prave besede obrne eno puščico proti sovražnikom naslednje bitke.'],
-      ['Puščice, ki ostanejo, zadenejo družino. Beseda, ki ne obstaja, ne obrne nobene.']] }),
+      S.mobile ? ['Tapni eno črko v prvi reži, nato v drugi in tako naprej.'] : ['Tipkaj črke ali klikaj nanje: najprej prva reža, nato druga in tako naprej.'],
+      ['Besedo lahko pošlješ, še preden prideš do zadnje reže. Vsaka črka prave besede nastavi eno konico proti sovražnikom naslednje bitke.'],
+      ['Konice, ki ostanejo nenastavljene, zadenejo družino. Beseda, ki ne obstaja, ne nastavi nobene.']] }),
   trap: () => ({ title: 'Plaz kamenja', lead: 'S pobočja padajo skale. Vsaka nosi črko in ena sama beseda jih lahko razbije.', fig: figTrap(),
     time: `Skale padajo ${S.ev ? Math.round(S.ev.fall) + ' s' : 'nekaj sekund'}. Šteje prva prava beseda; če ne pošlješ nobene, skale udarijo s polno močjo.`,
     steps: [
