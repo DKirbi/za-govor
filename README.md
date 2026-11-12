@@ -32,6 +32,7 @@ full game is planned in Godot 4.7 for Windows, macOS, Linux, Android and iOS —
 ## Contents
 - [Play the prototype](#play-the-prototype)
 - [Phone and Android](#phone-and-android)
+- [Missing words](#missing-words)
 - [How it plays](#how-it-plays)
 - [Controls](#controls)
 - [Build from source](#build-from-source)
@@ -244,6 +245,37 @@ npm run android:apk     # -> android/app/build/outputs/apk/debug/app-debug.apk
 npm run android:open    # or open the project in Android Studio
 ```
 
+## Missing words
+The word list is still the prototype's (see [Language data and sources](#language-data-and-sources)),
+so players will meet real Slovene words it does not know. The game helps catch them:
+
+- **Every word it turns down is remembered** on the device (the last 40): in the letter
+  mesh, the chest, the rock slide and darts. The first rejection of a visit says where to
+  report it.
+- **Prijavi besedo** in the pause window (`Esc` / *Premor*) and **Prijavi manjkajočo
+  besedo** on the start screen list those words; one tap reports a word, with an optional
+  note (meaning, dialect). A word can also be typed. Words the game already knows are not sent.
+- **Reports go to a Google Form**, whose answers land in a spreadsheet, with an e-mail per
+  answer. They carry only the word, where it was turned down, the note, and the level,
+  pace and device type: no names or e-mail addresses. Until the form is set up, or while
+  offline, reports wait on the device and the list can be copied.
+
+**Connect the form:** create a form with four short-answer questions, *Beseda*, *Kje*,
+*Opomba* and *Podatki* (none required, no sign-in, no e-mail collection), link it to a
+Sheet, then take *⋮ → Get pre-filled link*. Its ID (`/forms/d/e/<ID>/viewform`) and the four
+`entry.<number>` values go into `REPORT_FORM` at the top of `src/report.js`.
+
+**Process the reports:** download the Sheet as CSV and run
+
+```sh
+python3 tools/check_reports.py responses.csv [--lexicon forms.txt ...]
+```
+
+It counts reports per word and marks each as already accepted, found in a given word list
+(for example the forms extracted from Sloleks), or missing, with a Fran.si link. Confirmed
+words go into `data/allow.json` (lemma → forms); then run `python3 tools/build_dict.py` and
+`python3 build.py`.
+
 ## Controls
 | Action | Keyboard | Mouse / touch |
 | --- | --- | --- |
@@ -290,7 +322,7 @@ The tests open the built page in headless Chrome and play it through a test hook
 ```sh
 npm install
 python3 build.py
-npm test                                  # all seven test files
+npm test                                  # all eight test files
 CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 ```
 
@@ -301,6 +333,7 @@ CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 | `tests/keyword.test.js` | Guessing the keyword early ends the crossword and fires the zagovor; in Povodni mož's whirlpool *urska* with a plain s stays black and *urška* breaks it |
 | `tests/phone.test.js` | On a 390×844 touch screen: the mesh sends without *Pošlji* (second tap, lifted drag, non-words clear), the in-game keyboard types crosswords and the rock slide with the system keyboard closed, wrong entries stay black and correct ones fire, chest partial rewards, darts fit 360 px, *Premor*, and the Android back button |
 | `tests/credits.test.js` | Words for Evil is credited on the start screen, the *Zasluge* screen (with every source and a Steam link) and the ending; the line fits a 360 px phone; Esc and the Android back button leave the credits |
+| `tests/report.test.js` | *Prijavi besedo*: rejected words are remembered (mesh, chest), the pause screen and start screen list them, one tap posts word, place, note and level to the Google Form (intercepted), typing works while paused, known words are not sent, the queue waits without a form and goes out once there is one, lists survive a reload, the panel fits a 360 px phone; *jasa* and base forms are accepted |
 | `tests/journey.test.js` | The road: choosing the first hero, walking to a stop, one enemy for one hero, no healing after a battle, a hero joining, the chest's gold and item, the well, the pedlar, using a potion, the bag pausing the battle, the shrine and the one-god rule, swapping with a full party, all 45 hero moves, the dragon and the ending |
 | `tests/desktop.test.js` | A keyboard playthrough: c/s/z are not accepted for č/š/ž, first battle, result and hero screens, chest, finisher, Lintvern's letter lock and forced crossword, ambush, rock slide, and no console errors anywhere |
 
@@ -319,17 +352,20 @@ za-govor/
 │   ├── playtest.js           # pause, puzzle intros, fullscreen, fit to screen
 │   ├── mobile.js             # phone specifics: in-game keyboard, haptics, Android back button
 │   ├── credits.js            # Zasluge: the Words for Evil credit and every source
+│   ├── report.js             # Prijavi besedo: rejected words, reports to a Google Form
 │   ├── art-extra.js          # generated pixel art (tools/art_extra.py)
 │   └── game.css              # styles, desktop and phone layouts
 ├── android/                  # Capacitor 8 Android project (npm run android:open)
 ├── capacitor.config.json     # app id, name, webDir: dist
 ├── .github/workflows/        # android-apk.yml: debug APK on every push
 ├── data/
-│   ├── dict.json             # battle word list: 9,867 base words → 46,094 forms
+│   ├── dict.json             # battle word list: 9,869 base words → 48,145 forms
+│   ├── allow.json            # reported words checked by hand, merged into dict.json
 │   ├── clues.json            # crossword clue banks per knowledge level, mythology keywords
 │   └── world.json            # the journey: regions, stops, enemy pools, items
 ├── tools/
 │   ├── build_dict.py         # builds data/dict.json
+│   ├── check_reports.py      # checks the words players reported (CSV from the form's Sheet)
 │   ├── cluebank.py           # the three clue banks; validates and builds data/clues.json
 │   ├── art_extra.py          # draws the new heroes, road objects, item icons and backgrounds (needs Pillow)
 │   └── readme-shots.js       # regenerates docs/images/
@@ -384,7 +420,10 @@ za-govor/
   sources such as Michal Měchura's lemmatization lists, ODbL, and Wiktionary), filtered by
   frequency with [wordfreq](https://github.com/rspeer/wordfreq) (Apache-2.0; used only to
   filter, no frequency data is shipped). Kept: lowercase words of 3–9 letters whose form
-  or base word is common, minus a short profanity list, plus the mythology and enemy names.
+  or base word is common, and the base form of every word with an accepted form (before
+  that, 2,051 base forms such as *jasa*, *vabiti* and *copata* were missing), minus a short
+  profanity list, plus the mythology and enemy names and the reviewed reports in
+  `data/allow.json`.
   **The real game will use [Sloleks 3](https://www.clarin.si/repository/xmlui/handle/11356/1745)
   (CC BY-SA 4.0)** instead.
 - **Crossword clues:** all 835 clues (359 Malček, 219 Učenjak, 257 Knjižni molj) were

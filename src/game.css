@@ -888,3 +888,26 @@ body.mobile .muted { color: #b3ad9f; }
 body.mobile .credits p { font-size: 14px; }
 /* a 36 px tap area that does not push the sentence's lines apart */
 body.mobile .linkbtn { min-height: 36px; padding: 0; margin: -9px 0 -9px 2px; vertical-align: baseline; }
+
+/* ---------- Prijavi besedo: report a word the game turned down ---------- */
+.dialog.reportdlg { width: min(620px, 94vw); max-height: 92vh; max-height: 92dvh; overflow: auto; }
+.report h2 { font-size: 21px; margin-bottom: 4px; }
+.report > p { margin: 6px 0 10px; line-height: 1.45; }
+.rejlist { margin: 10px 0 12px; }
+.rejlist .rl-h { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); margin-bottom: 6px; }
+.rejlist .rjchips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-start; }
+.rejlist .prop { font-size: 13.5px; }
+.rejlist .prop small { font-weight: 600; color: var(--dim); }
+.rejlist .prop small.old { font-style: italic; }
+.rejlist .prop.done { cursor: default; border-color: var(--good); color: var(--good); }
+.rejlist .rl-tip { font-size: 12.5px; margin-top: 6px; }
+.reportrow { display: grid; grid-template-columns: 1fr 1.6fr auto; gap: 8px; align-items: center; }
+.reportrow input { min-width: 0; background: var(--bg2); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; font: inherit; font-size: 15px; }
+.reportrow input:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+.report .rp-count { font-size: 13px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.rp-open .pill { margin-left: 6px; font-size: 11px; font-weight: 800; padding: 1px 7px; border-radius: 99px; background: var(--gold); color: #1d1608; }
+.title-links { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 12px 0 4px; }
+.title-links .muted { font-size: 13px; }
+body.mobile .reportrow { grid-template-columns: 1fr; }
+body.mobile .reportrow input { min-height: 44px; font-size: 16px; }   /* 16 px keeps phones from zooming into the field */
+body.mobile .rejlist .prop { min-height: 40px; }

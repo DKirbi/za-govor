@@ -981,6 +981,8 @@ function renderTitle() {
     h('label', { class: 'toggle' }, h('input', { type: 'checkbox', checked: S.tutOn, onchange: e => { S.tutOn = e.target.checked; } }),
       'Razlaga pred vsako novo vrsto uganke (čas medtem stoji)',
       h('button', { class: 'btn small', style: { 'margin-left': '6px' }, onclick: e => { e.preventDefault(); resetTuts(); e.target.textContent = 'Razlage se bodo pokazale znova'; e.target.disabled = true; } }, 'Pokaži razlage znova')),
+    h('div', { class: 'title-links' }, reportButton(openReportWindow, 'Prijavi manjkajočo besedo'),
+      h('span', { class: 'muted' }, 'Je igra zavrnila pravo slovensko besedo? Sporoči nam jo.')),
     h('label', { class: 'toggle' }, h('input', { type: 'checkbox', checked: S.testMode, onchange: e => { S.testMode = e.target.checked; } }),
       'Preizkusni način: 200 zlatnikov, postaje in pokrajine lahko preskočiš'),
     h('div', { class: 'row', style: { 'justify-content': 'flex-start', 'flex-wrap': 'wrap' } },
@@ -1647,7 +1649,8 @@ function submitWord() {
   const w = pathWord(B.path);
   if (w.length < MINW()) { fb(`Beseda mora imeti vsaj ${MINW()} črke.`, 'warn'); return; }
   if (!WORDS.has(w)) {
-    fb(`»${UP(w)}« ni v slovarju.`, 'err'); shakeEl(UI.word);
+    noteRejected(w, 'mreza');
+    fb(`»${UP(w)}« ni v slovarju.` + rejectHint(), 'err'); shakeEl(UI.word);
     if (S.mobile) { const b = B, p = B.path.join(); setTimeout(() => { if (B === b && !B.over && B.path.join() === p) clearWord(); }, 650); }
     return;
   }
@@ -2609,7 +2612,8 @@ function chestSubmit() {
     E.msg = `${UP(guess)} je prava beseda, a ne iz vseh črk (skrita je bila ${UP(E.item.w)}). Skrinja se le priškrne: vsak junak +${xp} XP` + (gold ? `, +${gold} zlatnikov` : '') + '.';
     E.msgKind = 'warn';
   } else {
-    E.msg = `»${UP(guess)}« ni beseda.`; E.msgKind = 'err';
+    noteRejected(guess, 'skrinja');
+    E.msg = `»${UP(guess)}« ni beseda.` + rejectHint(); E.msgKind = 'err';
   }
   if (!E.done) { E.sel = []; E.letters.forEach(l => l.used = false); }
   renderChest();
@@ -2677,7 +2681,7 @@ function trapSubmit() {
   UI.trapInput.value = '';
   if (typed.length < MINW()) { trapFb(`Beseda mora imeti vsaj ${MINW()} črke.`, 'warn'); return; }
   let cands = WORDS.has(typed) ? [typed] : [];
-  if (!cands.length) { trapFb(`»${UP(typed)}« ni v slovarju.`, 'err'); return; }
+  if (!cands.length) { noteRejected(typed, 'plaz'); trapFb(`»${UP(typed)}« ni v slovarju.` + rejectHint(), 'err'); return; }
   const w = cands[0], open = E.rocks.filter(r => r.state === 'wait' || r.state === 'fall');
   const hit = open.filter(r => w.includes(r.ch)), miss = open.filter(r => !w.includes(r.ch));
   hit.forEach(r => { r.state = 'broken'; if (r.el) r.el.classList.add('broken'); });
@@ -2791,6 +2795,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 
