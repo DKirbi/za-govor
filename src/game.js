@@ -1,6 +1,6 @@
 
 'use strict';
-/* Za govor — UX prototype of the mini-games.
+/* Za govor! — UX prototype of the mini-games.
    Art pass 1: Perun, Svarog and Veles have pixel sprites and painted folk-art cards.
    Everyone else is still a square with a name. */
 
@@ -913,7 +913,7 @@ function go(screen, arg) {
 // Top bar: always visible, holds the mobile/desktop switch
 function renderTopbar() {
   return h('div', { class: 'topbar' },
-    h('div', { class: 'tb-logo' }, 'Za', h('span', { class: 'dot' }, '·'), 'govor'),
+    h('div', { class: 'tb-logo' }, 'Za govor', h('span', { class: 'dot' }, '!')),
     h('span', { class: 'tb-sp' }),
     TIMED[S.screen] ? h('button', { class: 'btn small tb-btn tb-pause', title: 'Premor (Esc): čas se ustavi, uganka se zakrije', 'aria-label': 'Premor', onclick: () => setPause(true) },
       tbIcon('M3 2h3v10H3zM8 2h3v10H8z'), h('span', { class: 'lbl' }, 'Premor'), h('kbd', {}, 'Esc')) : null,

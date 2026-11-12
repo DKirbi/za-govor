@@ -1,6 +1,6 @@
 
 // ============================================================ credits ("Zasluge")
-// Za govor is inspired by Words for Evil (Chromosphere Games, 2014). The game says so in three
+// Za govor! is inspired by Words for Evil (Chromosphere Games, 2014). The game says so in three
 // places: a line on the start screen, the ending after the dragon, and this screen, which also
 // lists every source the prototype uses.
 const WFE = { title: 'Words for Evil', by: 'Chromosphere Games', person: 'Dylan Loney', year: 2014,
@@ -8,19 +8,19 @@ const WFE = { title: 'Words for Evil', by: 'Chromosphere Games', person: 'Dylan 
 const extLink = (href, text) => h('a', { href, target: '_blank', rel: 'noopener noreferrer' }, text, h('span', { 'aria-hidden': 'true' }, ' ↗'));
 // one line, used on the start screen and on the ending
 const inspiredLine = () => h('p', { class: 'inspired' },
-  'Za govor je nastal po navdihu igre ', h('i', {}, WFE.title), ` (${WFE.by}, ${WFE.year}). `,
+  h('i', {}, 'Za govor!'), ' je nastal po navdihu igre ', h('i', {}, WFE.title), ` (${WFE.by}, ${WFE.year}). `,
   h('button', { class: 'linkbtn', onclick: () => go('credits') }, 'Zasluge'));
 
 function renderCredits() {
   const sec = (title, ...kids) => h('section', {}, h('h3', {}, title), ...kids);
   SCR.append(h('div', { class: 'title credits' },
     h('div', { class: 'logo' }, 'Zasluge'),
-    h('div', { class: 'tagline' }, 'Za govor — besedna igra s slovanskimi bogovi in slovenskim ljudskim izročilom'),
+    h('div', { class: 'tagline' }, h('i', {}, 'Za govor!'), ' — besedna igra s slovanskimi bogovi in slovenskim ljudskim izročilom'),
     h('div', { class: 'folk-rule' }),
     sec('Navdih',
-      h('p', {}, 'Za govor je nastal po navdihu igre ', h('b', {}, h('i', {}, WFE.title)),
+      h('p', {}, h('i', {}, 'Za govor!'), ' je nastal po navdihu igre ', h('b', {}, h('i', {}, WFE.title)),
         `, ki jo je leta ${WFE.year} izdal studio ${WFE.by} (${WFE.person}). Od nje izhaja zamisel o igri vlog, v kateri se junaki bojujejo z besedami iz mreže črk, barva črk pa določa, kateri junak napade.`),
-      h('p', {}, 'Za govor je samostojna igra z lastnimi junaki, slikami, ugankami in besedili v slovenščini. Z avtorji igre ', h('i', {}, WFE.title), ' ni uradno povezana.'),
+      h('p', {}, h('i', {}, 'Za govor!'), ' je samostojna igra z lastnimi junaki, slikami, ugankami in besedili v slovenščini. Z avtorji igre ', h('i', {}, WFE.title), ' ni uradno povezana.'),
       h('p', {}, extLink(WFE.url, `${WFE.title} na Steamu`))),
     sec('Besede in uganke',
       h('p', {}, 'Besede, ki jih igra sprejme, in njihove osnovne oblike so iz ',
