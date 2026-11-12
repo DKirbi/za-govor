@@ -53,8 +53,12 @@ Download or clone the repository and open **`dist/index.html`** in any modern br
 46,000-word dictionary, the art and the sound, is inside that one file; no server or
 internet connection is needed.
 
-The interface is in Slovene. On a phone or tablet the *Mobilni prikaz* layout switches on
-by itself; the switch in the top bar changes it at any time.
+The interface is in Slovene. A phone or tablet gets the phone layout (*Mobilni prikaz*) by
+itself; there is no switch. For development, add `?prikaz=telefon` or `?prikaz=namizje` to the
+address to force one (Chrome's device mode is detected as a phone without it).
+
+The version of the build is at the bottom of the start screen (`zaprta alfa · v0.8.0 · <commit>`).
+See [CHANGELOG.md](CHANGELOG.md) for what each version brought and how versions are numbered.
 
 ## How it plays
 **The start screen is a short menu:** *Nadaljuj pot* (while a journey is under way, with the
@@ -102,8 +106,8 @@ Ljubljana castle is the last battle.
   for the full lists.
 - **Intros and pause:** the first time each puzzle appears, a *Kako se igra* panel explains
   it with a solved example and the clock waits until you press *Začni*. `Esc` pauses any
-  timed screen; while paused the letters are blurred. *Cel zaslon* in the top bar goes
-  fullscreen, and on desktop the game scales so the scene and the puzzle fit the window.
+  timed screen; while paused the letters are blurred. *Cel zaslon* (in *Nastavitve* and
+  the pause window) goes fullscreen, and on desktop the game scales so the scene and the puzzle fit the window.
 - **Test mode** (a developer switch on *Nova pot*) starts with 200 gold, offers every hero
   and lets you skip stops and regions.
 
@@ -235,7 +239,7 @@ after you play words (they strike every few moves).
 Malček is the game as it was before the levels were added.
 
 ## Phone and Android
-*Mobilni prikaz* (on by itself on touch screens) is the phone version of the game:
+*Mobilni prikaz* (chosen by itself on touch screens) is the phone version of the game:
 
 - **No Pošlji in the letter mesh.** Lift your finger after a drag, or tap the last letter
   again; a string that is not a word lets go of its letters. A tap on a proposal plays it.
@@ -243,7 +247,7 @@ Malček is the game as it was before the levels were added.
 - **In-game Slovene keyboard** for crosswords and the rock slide: the 25 letters in their
   QWERTZ places with Č, Š, Ž as plain keys. The phone's own keyboard stays closed, so the
   screen never jumps, nothing autocorrects, and every phone behaves the same.
-- **Premor** is a labelled button in the top bar; the game also pauses when it goes to the
+- **Premor** is a labelled button in the puzzle's header; the game also pauses when it goes to the
   background, and the Android back button pauses instead of closing the game.
 - Thumb-size targets (40 px and up), secondary text at least 12 px with 4.5:1 contrast,
   safe areas for notches and gesture bars, light haptics on Android.
@@ -295,11 +299,12 @@ Confirmed words go into `data/allow.json` (lemma → forms); then rebuild the wo
 ## Controls
 | Action | Keyboard | Mouse / touch |
 | --- | --- | --- |
-| Start menu | `↑` `↓` and `Enter`; `Esc` goes back from any page under it | Tap; *← Nazaj na glavni meni* at the top of every page |
+| Start menu | `↑` `↓` and `Enter`; `Esc` goes back from any page under it | Tap; *← Nazaj na glavni meni* stays at the top of every page |
 | Make a word | Type it; the path is found for you. Č, Š, Ž must be typed as themselves (a Slovene keyboard layout), c/s/z never stand in for them | Drag across tiles, or tap them one by one |
 | Send the word | `Enter` | Lift the finger after a drag, or tap the last letter again (*Pošlji* on desktop, and in chest, rock slide and darts) |
 | Clear the word | `Delete` | *Počisti* |
-| Pause (battle, crosswords, chest, rock slide, darts) | `Esc` | *Premor* in the top bar |
+| Pause (battle, crosswords, chest, rock slide, darts) | `Esc` | *Premor* at the right of the puzzle's header |
+| Sound, volume, fullscreen | — | *Nastavitve* in the main menu (sound and volume also in the pause window) |
 | Remove the last letter | `Backspace` | *Briši* |
 | Speak the zagovor (meter full) | `Space` | *Izreci zagovor* |
 | Hint / reshuffle / look into the bag | `1` / `2` / `3` | *Namig* / *Premešaj* / *Torba* |
@@ -361,12 +366,12 @@ CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 | `tests/levels.test.js` | Each knowledge level: chosen on *Nova pot* and saved when the journey starts, hints and proposals, word count and coaching tips, shortest word, crossword bank, letter counts, revealed letters (and half power), mouse clicks reaching the crossword |
 | `tests/keyword.test.js` | Guessing the keyword early ends the crossword and fires the zagovor; in Povodni mož's whirlpool *urska* with a plain s stays black and *urška* breaks it |
 | `tests/phone.test.js` | On a 390×844 touch screen: the mesh sends without *Pošlji* (second tap, lifted drag, non-words clear), the in-game keyboard types crosswords and the rock slide with the system keyboard closed, wrong entries stay black and correct ones fire, chest partial rewards, darts fit 360 px, *Premor*, and the Android back button |
-| `tests/menu.test.js` | The start menu: items with and without a journey, `↑` `↓` `Enter` `Esc`, *← Nazaj na glavni meni* on every page; *Nova pot* copy, figures, *Predlogi besed* under Malček only, explanations on by default, test mode as a developer option, choices that only count once the journey starts; *Kako igrati* controls per device and the puzzle carousel (buttons, keys, tabs, swipe); heroes and their cards; no *Nadaljuj pot* after the ending; phone fit and the Android back button |
+| `tests/menu.test.js` | The start menu: items with and without a journey, no top bar, the version at the bottom, `↑` `↓` `Enter` `Esc`, *← Nazaj na glavni meni* on every page and sticky while *O igri* scrolls, one way back on a hero card; *Nastavitve* (sound off is remembered and greys out the volume, fullscreen only on a computer); *Nova pot* copy, figures, *Predlogi besed* under Malček only, explanations on by default, test mode as a developer option, choices that only count once the journey starts; *Kako igrati* controls per device and the puzzle carousel (buttons, keys, tabs, swipe); heroes and their cards; no *Nadaljuj pot* after the ending; phone fit and the Android back button |
 | `tests/credits.test.js` | Words for Evil is credited on *O igri* (*Navdih*, then *Zasluge* with every source and a Steam link) and on the ending, whose link opens *O igri* at *Navdih*; the line fits a 360 px phone; Esc and the Android back button leave the credits |
 | `tests/report.test.js` | *Prijavi besedo*: rejected words are remembered (mesh, chest), the pause screen and *O igri* list them, one tap posts word, place, note and level to the Google Form (intercepted), typing works while paused, known words are not sent, the queue waits without a form and goes out once there is one, lists survive a reload, the panel fits a 360 px phone; *jasa* and base forms are accepted |
 | `tests/journey.test.js` | The road: choosing the first hero, walking to a stop, one enemy for one hero, no healing after a battle, a hero joining, the chest's gold and item, the well, the pedlar, using a potion, the bag pausing the battle, the shrine and the one-god rule, swapping with a full party, all 45 hero moves, the dragon and the ending |
 | `tests/lexicon.test.js` | The word list in the browser: over a million forms accepted and a common part suggested, the 217-word coverage set accepted and its non-words (Croatian, English, made up) refused, the reported words (*jasa*, *loj*, *runa*, *seks*) and *ritem*/*ritual*/*riti*, vulgar words accepted but never suggested, mythology names, *deny.json*, non-standard forms, base forms (*ljudje* → *človek*), headwords Sloleks lacks (*zborišča*, *sedemkotnik*), and at 4× slower CPU a mesh walk under 50 ms and a lookup under 20 µs |
-| `tests/title.test.js` | The title scene: the *Za govor!* heading and tab title, whole-number scaling (3× at 1280 px, 4× at 1920, 2× on a phone), square wordmark pixels, full width with no sideways scrolling (also at an odd width), right under the top bar, room left for the menu, the wordmark standing still, sparks rising in whole art pixels and not restarting when the start screen is rebuilt, a still picture with reduced motion |
+| `tests/title.test.js` | The title scene: the *Za govor!* heading and tab title, whole-number scaling (3× at 1280 px, 4× at 1920, 2× on a phone), square wordmark pixels, full width with no sideways scrolling (also at an odd width), starting at the top of the page (below a phone's status bar), room left for the menu, the wordmark standing still, sparks rising in whole art pixels and not restarting when the start screen is rebuilt, a still picture with reduced motion |
 | `tests/desktop.test.js` | A keyboard playthrough: c/s/z are not accepted for č/š/ž, first battle, result and hero screens, chest, finisher, Lintvern's letter lock and forced crossword, ambush, rock slide, and no console errors anywhere |
 
 Screenshots from each run land in `test-output/` (ignored by git).
