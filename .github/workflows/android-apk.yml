@@ -37,7 +37,7 @@ jobs:
           java-version: '21'        # Capacitor 8 compiles with Java 21
           cache: gradle
 
-      - uses: android-actions/setup-android@v3
+      # The Android SDK comes preinstalled on GitHub's Ubuntu runners (ANDROID_HOME is set).
 
       - name: Install
         run: npm ci
