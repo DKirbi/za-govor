@@ -1,5 +1,11 @@
 apply plugin: 'com.android.application'
 
+// The app's version comes from package.json, the one place it is set (see CHANGELOG.md):
+// versionName is the semantic version, versionCode grows with it (0.8.0 -> 800, 1.2.3 -> 10203),
+// so every new version installs over the previous one.
+def zgVersion = new groovy.json.JsonSlurper().parse(file('../../package.json')).version
+def zgCode = zgVersion.tokenize('.-+').take(3).collect { it as int }.with { it[0] * 10000 + it[1] * 100 + it[2] }
+
 android {
     namespace = "com.dkirbi.zagovor"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -7,8 +13,8 @@ android {
         applicationId "com.dkirbi.zagovor"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode zgCode
+        versionName zgVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
