@@ -1,90 +1,168 @@
-# Za govor — progression design (updated 11 Nov 2026, evening state)
+# Za govor — journey and progression design (updated 12 Nov 2026)
 
 Prototype: https://claude.ai/artifact/NTdMnud7X8Um2p38G1fVnb
 
+This replaces the earlier "three starters and cursed-god bosses" proposal. Everything below is built in the browser prototype unless marked *not built*.
+
 ## Status at a glance
-- **Confirmed by the user:** starters Krpan, Jurij, Kurent; a freed god thanks the heroes and lends their power the next time they meet (next run); Veles **and Perun** (the god who fought him most) become playable after the finale; Veles's attacks and presence are stronger than anyone's; enemies attack slower; every hero has their own health bar; a fallen hero stays down for the run (greyscale, lying down); only a few heroes can revive; heroes level up to level 3 (highest HP, attacks grow with longer words).
-- **Built in the prototype:** per-hero health, levels and XP; fallen heroes; Mokoš's revive; slower enemies; hero moments (section 5). The party in battle is still Perun, Svarog, Mokoš, Kresnik (four heroes).
-- **Not yet built:** party of three with the starters, meeting and swapping heroes on the map, cursed-god boss fights, items, Veles and Perun as post-finale unlocks.
+- **Decided by the user (11 Nov):** the 2D side-scrolling journey is the point of the game; the levels are places in Slovenia visited one after another, with no level list; the dragon at Ljubljana castle is the final battle; healing happens only at special places such as wells; the player starts with one character; four is the most in a party; only one god per play, and gods are stronger; Erasmus of Lueg (Erazem Predjamski) is a new character and more should be explored; all characters are unlocked; there are items with mythical Slavic names; merchants sell potions, poisons and attack boosts; traps, chests and wells have their own sprites; the web prototype is expanded for fast testing and Godot stays the end goal.
+- **12 Nov (built):** the darts event (*Puščice v zidu*), the start screen with silhouettes and three known starters, attacks for the healers, every potion used automatically.
+- **Evening fixes (built):** partial healing outside wells, automatic potions, wells raise the fallen, gold and XP from every enemy, one-word chests and rock slides with partial outcomes, Krpan as the first starter with unlocks.
+- **Built:** the journey (ten regions, 48 stops), choosing the first hero, meeting and swapping heroes, the shrine with one god, wells, the pedlar, gold, 23 items, random regional enemies, sprites for every stop, four new heroes, battle abilities for all fifteen heroes.
+- **Parked:** cursed gods as bosses (section 7 of the old design). Gods are simply powerful companions now.
+- **Not balance-tested:** the journey runs end to end in automated tests, but nobody has played it through for difficulty.
 
-## 1. The idea in one paragraph
-Morana's winter has cursed the gods: they no longer hear human speech and guard their lands as bosses. You set out with three ordinary folk heroes. Words are the charm (zagovor) that breaks the curse. A freed god thanks the heroes and promises to lend their power the next time they meet; they can be picked up in the next run. Each run is one turn of the year (Kolo leta). Perun and Veles, the eternal rivals, are the last two curses; both become playable only after the finale.
+## 1. The journey
+One road, walked left to right. The party stands still and the world scrolls past; the background pans slowly across the landmark of the region. Walking stops at every stop and a prompt offers what can be done there. A signpost at the end of each region leads to the next.
 
-## 2. Party rules (proposed)
-- **Cap: three heroes in the party.** The letter mesh then has three hero colours plus neutral tiles.
-- **Meeting a hero on the road** (a map node): take them if you have a free slot, otherwise swap one out or walk on. A hero you leave behind keeps their level and can be met again later in the same run.
-- **Items stay with the party**, not with the hero who leaves.
+| # | Region | Landmark in the background | Hero of the place (lore; heroes now appear at random) | Stops | Enemies |
+| --- | --- | --- | --- | --- | --- |
+| 1 | Ptuj | castle above the snowy town | Kurent | battle, hero, chest, battle | Škrat, Vešča |
+| 2 | Peca | King Matjaž's cave | Kralj Matjaž | battle, rock slide, hero, well, battle | Perkmandeljc, Škrat, Pesjan |
+| 3 | Triglav | the three peaks | Ajdovska deklica | battle, rock slide, hero, pedlar, battle | Pesjan, Perkmandeljc, Vešča |
+| 4 | Bled | island church, castle on the cliff | Kresnik (fallback) | battle, chest, **shrine**, well, battle | Vodna vila, Vešča, Škrat |
+| 5 | Trnovski gozd | moonlit forest | Martin Krpan | battle, chest, hero, battle | Mora, Volkodlak, Vešča |
+| 6 | Piranske soline | salt pans, Piran at sunset | Lepa Vida | battle, pedlar, hero, well, battle | Vodna vila, Pesjan, Mora |
+| 7 | Predjamski grad | the castle in the cliff | Erazem Predjamski | battle, rock slide, hero, chest, ambush | Zmajev mladič, Perkmandeljc, Volkodlak |
+| 8 | Ljubljansko barje | pile dwellings in the mist | Zeleni Jurij | battle, well, hero, pedlar, battle | Škrat, Mora, Volkodlak, Vodna vila |
+| 9 | Ljubljanica | Tromostovje | Peter Klepec | battle, hero, well, **boss: Povodni mož** | Vodna vila, Mora |
+| 10 | Ljubljanski grad | the castle wall at sunset | — | pedlar, well, **boss: Lintvern** | — |
 
-## 3. Health, falling and reviving (built)
-- **Own health per hero**, shown as a bar with numbers under each sprite; the bar turns gold under 50 % and red under 25 %. The shield is still shared by the party.
-- **Base health at level 1:** Perun 28, Svarog 34, Mokoš 26, Kresnik 26; planned: Krpan 34, Jurij 24, Kurent 28, Matjaž 32, Dažbog 28, Stribog 26, Veles 36.
-- **Who gets hit:** a normal enemy attack hits one random standing hero. Attacks that hit everyone (Lintvern's Ognjeni dih, a failed forced crossword) are split evenly.
-- **Falling:** at 0 health the hero lies down in greyscale and stays down for the rest of the run. Their letters turn grey and no longer trigger attacks. The battle is lost when all heroes are down.
-- **After a won battle** the heroes still standing recover fully; fallen heroes stay fallen.
-- **Reviving (rare):** Mokoš's tier-3 move Materina roka lifts one fallen hero at 40 % health, once per battle. Planned: Zeleni Jurij's Jurjevo does the same once per run. Nobody else revives.
-- **Prototype convenience:** after a lost battle the heroes return to the state they had when it started, so it can be retried. "Nova pot" on the start screen resets all heroes.
+- **Random enemies:** each battle draws its enemies from the region's pool. One enemy while the party is a single hero, two after that. The very first fight is always one Škrat with the tutorial tips.
+- **Scaling:** enemy health +10 % and attack +6 % per region (bosses are fixed).
+- **Hero stops are random:** any folk hero you have not met on this journey may stand there, not only the hero of the place; if none is left, the stop becomes a well.
+- **Data:** regions, stop order, enemy pools and items live in `data/world.json`, so the Godot game can read the same file.
 
-## 4. Levels (built)
-- **Three levels per hero.** XP is earned by the hero who attacks (word length × repeat factor × (1 + tier)); enemy and crossword XP is shared by the heroes still standing. Level 2 at 50 XP, level 3 at 140 XP.
-- **Health:** ×1.25 at level 2, ×1.6 at level 3 (highest).
-- **Attack:** ×1.15 at level 2, ×1.3 at level 3.
-- **Long words:** from level 2, every letter beyond the fourth adds 4 % power; at level 3 it adds 10 % (an 8-letter word at level 3 hits ×1.82).
-- Level is shown as three dots under each hero, and on the hero screen after a battle.
+## 2. Party rules
+- **Start screen:** all fifteen characters are shown. On a fresh game only **Martin Krpan, Zeleni Jurij and Kurent** are known and can start; the other twelve are nameless silhouettes. You pick one.
+- **Meeting unlocks:** a character you meet on the road becomes known (remembered in the browser) and can start a later journey. That currently includes the three gods who offer themselves at the shrine. (Test mode shows everyone.)
+- **Heroes are met at random:** each hero stop holds a random folk hero you have not met on this journey, preferring ones not yet unlocked.
+- **At most four** travel together. A fifth can only take somebody's place; a hero who has fallen can be left behind this way ("Zapusti").
+- **One god per journey.** At the shrine on Bled three random gods offer themselves and one may join.
+- **A hero who joins** arrives at the party's average level.
+- **Gods are stronger:** attack ×1.35 (Veles ×1.5) and about a quarter more health than folk heroes.
+- **Letter mesh:** the share of coloured tiles grows with the party (30 % with one hero, 46 %, 56 %, 62 % with four).
 
-## 5. Hero moments (built)
-One screen, three occasions: after every won battle (opens on the hero who struck last, shows level and health, a fallen hero lies down), when a new hero is met (greeting; preview from the gallery), and when a curse lifts (the violet tint clears, the god thanks the heroes; preview from the gallery). The sprite breathes in stepped frames with an aura and rising motes. Beside it the hero's card: folk-art portrait on the front, a "Obrni karto" button flips it to a two-paragraph backstory. Veles is drawn one size larger with a bigger aura. Backstories for all eleven heroes are first drafts and need a folklore check.
+## 3. Health, falling and healing
+- Every hero has their own health bar. **Health does not come back after a battle.**
+- **Wells are the main healing:** drinking restores every hero to full and raises the fallen. There are six wells on the road.
+- **Heroes' healing is partial:** the skills of Mokoš and Zeleni Jurij (and Mokoš's zagovor) never lift a hero above 70 % of their health.
+- **Healers attack too, weakly at first:** every move of Mokoš and Zeleni Jurij now also hits the target. Their hit starts at roughly half of a fighter's and grows with each level (Mokoš 1.8 → 2.2 → 2.6, Jurij 1.6 → 2.0 → 2.4, against about 3 for the others), so they catch up later while still healing.
+- **Potions and poisons work by themselves; there is no tool belt.** The bag only shows what the party carries.
 
-## 6. Roster
-| Tier | Hero | Role in battle | How you get them |
-| --- | --- | --- | --- |
-| Starter | Martin Krpan | Slow, heavy single hits; tier 3 stuns a boss | Start of every run |
-| Starter | Zeleni Jurij | Small, frequent heals; tier 3 unlocks letters and (once per run) revives | Start of every run |
-| Starter | Kurent | Low damage, stun and delay | Start of every run |
-| Road | Kresnik | Fire damage over time | Met in Act I–II |
-| Road | Kralj Matjaž | Shield for the whole party | Asleep under Peca; wake him with a crossword |
-| God | Svarog | Damage + shield | Cursed boss, Act I; from the next run |
-| God | Mokoš | Strong heals, cleanses, revives once per battle | Cursed boss, Act II; from the next run |
-| God | Stribog | Hits all enemies, reshuffles the mesh | Cursed boss, Act III; from the next run |
-| God | Dažbog | Light: next word counts double | Cursed boss, Act III; from the next run |
-| After the finale | Perun | Highest burst, chain lightning | Cursed boss, Act IV; playable after the finale |
-| After the finale | Veles | Poison, hits all; strongest attacks of all (×1.4), most health | Final boss; playable after the finale |
-
-Starters have ×0.8 attack and learn their domain words by level 3. Gods have ×1.2 attack; Veles ×1.4.
-
-## 7. Cursed gods as bosses (proposed)
-- **Look:** the same sprite with a cold violet tint and a dark aura. Veles is larger than the others.
-- **Fight:** the god uses their own three moves against you, plus one language-stealing special (Svarog melts letters to ash, Mokoš floods a row, Stribog reshuffles your mesh, Dažbog blinds tiles, Perun locks the long words, Veles swaps letters).
-- **Breaking the curse:** the boss crossword's hidden keyword (geslo) is the god's true name. Solving it ends the fight early and counts as "curse lifted".
-- **Perun and Veles:** if one is in your party when you fight the other, both sides hit harder (×1.25).
-
-## 8. Enemy pace (built)
-Real-time attack intervals are 30 % longer: Škrat 8.5 s, Mora 10.5 s, Volkodlak 11 s, Vodna vila 9 s, Povodni mož 12.5 s, Lintvern 11.5 s (9.5 s in phase two). In calm mode enemies act every fourth word instead of every third (Vodna vila and Lintvern's second phase every third instead of every second).
-
-## 9. Items (proposed)
-Three party slots, found in chests, bought from a pedlar (krošnjar) or dropped by bosses.
-
-| Item | Effect |
+| Item | Used when |
 | --- | --- |
-| Lectovo srce | Heals 3 after every 5-letter word |
-| Kurentov zvonec | First enemy attack of each battle is delayed |
-| Pisanica | Shield +5 at battle start |
-| Idrijska čipka | Words with Č, Š or Ž get +25 % |
-| Krpanova sol | Repeated words lose less power |
-| Praprotno seme | Word proposals cost nothing; shows one extra |
-| Zlatorogova roža | Once per run: a hero survives a lethal hit with 1 health |
-| Lipov list | Crossword timers +8 s |
-| Panjska končnica | Cards of the wearer always show the tier above (and +10 % damage) |
-| Kresna bakla | Burning lasts one word longer |
+| Živa voda | a hero drops to 30 % health or less (+60 % of their health) |
+| Mrtva voda | a hero has fallen |
+| Vesnin venec | a hero is at half health or less and the shield is gone (once per battle) |
+| Morin prah | a hero is at 40 % or less (once per battle) |
+| Rusalkina solza | four or more letters are locked, or a hero is asleep |
+| Triglavov napoj, Perunova medica, Kresna žerjavica, Velesov strup, Volčja jagoda | a battle begins: one of them in an ordinary battle (in this order), all of them against an ambush or a boss. The poison goes to the enemy with the most health, the berry to the one that hits hardest |
 
-## 10. Backgrounds
-- **In the prototype (own pixel art, 384×120):** Barje, Temni gozd, Ljubljanica, Ljubljanski grad.
-- **To draw next:** Triglav and the Alps in snow, Bled or Bohinj, Ptuj at carnival, Bela krajina birch groves, Kras with burja-bent pines and Škocjan caves, Peca with Matjaž's cave, the world tree's roots for Veles.
-- **Free packs for placeholders** (check each licence): ansimuz "Forest Background" (OpenGameArt, CC0), Macrune12 "Pixel Art Parallax Forest" (itch.io, CC0), the "CC0 Backgrounds" collection on OpenGameArt.
+- **A fallen hero stays down** until a well, a hero's skill (Mokoš's Materina roka once per battle, Zeleni Jurij's Jurjevo once per journey) or *Mrtva voda* raises them. Until then their letters are grey, and they can be left behind when a new hero is met.
+- After a lost battle the prototype still lets you try again from the state before the fight; "Konec poti" ends the run.
 
-## 11. Art status
-Sprites and three card paintings for all eleven heroes; sprites and two cards for the six prototype enemies. Not drawn: Pehtra baba, Morana, Triglav; proper cursed-god boss sprites (currently a tint); a drawn "fallen" frame per hero (currently the idle frame rotated).
+## 3a. Rewards
+- **Every defeated enemy** drops gold at once (4 + a share of its XP) and gives its full XP to every hero still standing.
+- **Chest (one word):** the hidden word, or any real word from all the letters, opens it: 50 XP for every hero, 15–25 gold, one item, and a half-full zagovor in the next battle. A real word that leaves letters unused ends the chest with a share of the reward (XP and gold in proportion to the letters used, no item). Running out of time gives nothing.
+- **Rock slide (one word):** the rocks whose letters are in the word break (8 XP for every hero and 3 gold per rock); the others graze the party for half damage (4 each). A word with every letter breaks the whole slide. If no word is sent, every rock lands with full force (8 each).
 
-## 12. Still to decide
-1. Party of three in the mesh: keep neutral tiles, or give every tile a hero colour?
-2. Which cursed god is the first boss on the current prototype path (suggestion: cursed Svarog at Ljubljanski grad after Lintvern)?
-3. Should standing heroes recover fully after each battle, or only partly?
+## 3b. Darts: *Puščice v zidu* (new mini-event)
+- A wall of letters: **six columns of three letters**. Take one letter from each column, strictly left to right, and send the word. 35 s (70 s in calm mode).
+- A hidden six-letter word always exists, but **you may send early**: a real word of 3–5 letters counts for that many darts. **A word that does not exist can be sent too** — then every dart misses.
+- Each letter of a real word turns one dart: 7 XP for every hero, 2 gold, and **4 damage to every enemy at the start of the next battle** (so the full word opens the next fight with −24 to each enemy). Darts that are not turned hit the party for 3 each.
+- Like the chest and the rock slide it has a *Kako se igra* intro with a solved example, and Esc pauses it (Delete clears the letters).
+- On the road it stands in Trnovski gozd, at Predjamski grad and before the dragon. It has its own sprite (a wall with dart holes).
+
+## 4. Levels (unchanged)
+Three levels per hero: level 2 at 50 XP, level 3 at 140 XP; health ×1.25 / ×1.6, attack ×1.15 / ×1.3, and long words add 4 % / 10 % per letter beyond the fourth.
+
+## 5. Roster — all playable
+| | Hero | Health | What they do | Moves (1 → 3 tiles) |
+| --- | --- | --- | --- | --- |
+| Folk | Martin Krpan | 36 | Heavy single hits; the big move stuns | Zamah → Kobilica → Lipov kij |
+| Folk | Zeleni Jurij | 26 | Small heals; unlocks letters; revives once per journey | Popek → Brstenje → Jurjevo |
+| Folk | Kurent | 30 | Little damage; stuns, then delays every enemy | Zvonec → Ježevka → Pregon zime |
+| Folk | Kresnik | 28 | Fire that keeps burning | Žerjavica → Plamen → Kresni ogenj |
+| Folk | Kralj Matjaž | 34 | Shield for the party | Meč → Kraljeva vojska → Prebujenje |
+| **New** | **Erazem Predjamski** | 34 | The secret tunnel: the next enemy attack misses; the big move adds a shield | Češnje → Skrivni rov → Trdnjava v skali |
+| **New** | **Peter Klepec** | 30 | Every big move makes him 12 % stronger for the rest of the battle | Pastirska palica → Izruvano drevo → Vilin dar |
+| **New** | **Lepa Vida** | 26 | Her song lowers enemy attack, the big move for all of them | Hrepenenje → Morska pena → Pesem z obale |
+| **New** | **Ajdovska deklica** | 38 | Turns the target to stone (stun) | Prerokba → Skalni obraz → Okamnitev |
+| God | Perun | 36 | Highest burst; the big move chains to every enemy | Blisk → Grom → Nevihta |
+| God | Svarog | 42 | Hit plus shield | Kladivo → Kovani ščit → Nebeška kovačnica |
+| God | Mokoš | 34 | Heals, cleanses letters, revives once per battle | Kapljica → Vir → Materina roka |
+| God | Dažbog | 36 | His light makes the next word ×1.5 or ×2 | Žarek → Jutranja zarja → Sončni voz |
+| God | Stribog | 34 | Hits every enemy; the big move cleans the mesh | Sapica → Burja → Vihar |
+| God | Veles | 46 | Hardest hits, poison; the big move strikes everyone | Kačji pik → Medvedja šapa → Korenine sveta |
+
+Every hero has ten domain words that hit ×1.5 (Erazem: *grad, vitez, jama, rov, češnja*…).
+
+**Characters worth exploring next:** Zlatorog (as a guide or a rare companion), Veronika Deseniška and the Counts of Celje (a Celje region), Pegam and Lambergar (a duel as a boss fight), Desetnica (the tenth daughter who must wander — fits a travelling game), Rojenice and Sojenice (fate spirits at a crossroads stop), Kralj Samo, Miklova Zala, Rokovnjači (highwaymen as enemies), Jarnik's Divji mož, Morana and Vesna as seasonal figures.
+
+## 6. Enemies
+The six drawn enemies stay. Four regional enemies reuse their sprites with a colour shift (new sprites are a task for the next art pass):
+
+| Enemy | Sprite of | Health / attack | Special |
+| --- | --- | --- | --- |
+| Vešča (witch) | Mora, green | 26 / 4 | *Zli pogled*: a hero falls asleep |
+| Perkmandeljc (mine dwarf) | Škrat, blue-grey | 30 / 5 | *Zasutje*: buries four letters |
+| Pesjan (dog-headed raider) | Volkodlak, brown | 52 / 7 | *Lov*: a heavy hit on everyone |
+| Zmajev mladič (the olm of Postojna, once believed to be a dragon's young) | Lintvern, pale | 40 / 6 | *Jamski prah*: buries four letters |
+
+## 7. Items
+Gold (*zlatniki*) comes from battles (about 7–25 per fight) and chests (15–25). The pedlar (a *krošnjar* from Ribnica) shows four potions or poisons and two relics. Chests hold one random item; ambushes and bosses drop one too (bosses always a relic).
+
+**Relics — work all the time, one of each**
+
+| Item | Price | Effect |
+| --- | --- | --- |
+| Perunova sekira | 60 | All hero attacks +15 % |
+| Kamen Alatir | 60 | Highest health of every hero +20 % |
+| Zlatorogova roža | 55 | Once per journey a hero survives a lethal hit with 1 health |
+| Stribogova piščal | 50 | Enemies attack 15 % slower |
+| Dažbogov kolut | 50 | Words of six or more letters +25 % |
+| Svarogovo kladivo | 45 | Every battle starts with a shield of 8 |
+| Mokošino vreteno | 45 | The zagovor fills 30 % faster |
+| Velesov rog | 40 | Gold from battles and chests +50 % |
+| Kurentov zvonec | 35 | The first enemy attack of every battle is late |
+| Idrijska čipka | 35 | Words with Č, Š or Ž hit another 25 % harder |
+| Krpanova sol | 30 | Repeated words lose less power |
+| Praprotno seme | 30 | One more hint in every battle |
+| Belokranjska pisanica | 30 | Half as much time again at chests and rock slides |
+
+**Potions and poisons — used up automatically (see section 3 for when)**
+
+| Item | Price | Effect |
+| --- | --- | --- |
+| Mrtva voda | 70 | Raises a fallen hero with half health, by itself |
+| Živa voda | 40 | Drunk automatically by a hero at 30 % health or less: +60 % health |
+| Triglavov napoj | 35 | Fills the zagovor at once |
+| Velesov strup (poison) | 30 | The target loses health for a long time |
+| Morin prah (poison) | 30 | Every enemy falls asleep for a while |
+| Perunova medica | 25 | The next three words hit 50 % harder |
+| Volčja jagoda (poison) | 25 | The target attacks 30 % weaker for the rest of the battle |
+| Kresna žerjavica | 25 | Every enemy burns |
+| Vesnin venec | 20 | Party shield +15 |
+| Rusalkina solza | 15 | Cleans locked letters and wakes sleeping heroes |
+
+On the name *Perun's Hammer*: in the sources Perun's weapon is an axe (and the thunder-stone), so the relic is **Perunova sekira**; the hammer belongs to the smith, **Svarogovo kladivo**. Easy to rename if the hammer is preferred.
+
+## 8. Art added (11 Nov, afternoon)
+- **Heroes (48×48, idle + attack):** Erazem (open helmet with a red plume, moustache, red tabard, shield; the attack throws the cherries he pelted his besiegers with), Peter Klepec (straw hat, barefoot, an uprooted tree), Lepa Vida (long dark hair, red ribbon, linen in her hand; sea foam), Ajdovska deklica (larger, half turned to stone, edelweiss in her hair; stone fist). Each has three painted cards and a backstory.
+- **Road objects:** chest (closed and open), well (bucket down and up), rock slide with a warning board, shrine (carved idol with two fires), pedlar with a loaded *krošnja*, signpost; a rock for the rock-slide mini-game; a gold coin.
+- **Item icons:** 23 icons, 16×16.
+- **Backgrounds (384×120):** Ptuj, Peca, Triglav, Bled, Piranske soline, Predjamski grad, next to the four older ones.
+- Everything is generated by `tools/art_extra.py` and is still prototype art to fix the direction.
+
+## 9. Towards Godot
+- `data/world.json` (regions, stops, items) and `data/clues.json` are already engine-neutral. The hero kits, enemy patterns and item effects are small switch statements in `src/game.js` / `src/journey.js` and map one to one onto GDScript `match` blocks.
+- The travel screen is a camera-less scroller (party fixed, world offset), which is a `ParallaxBackground` plus one `Node2D` per stop in Godot.
+- Sprite sheets are plain PNG frames (idle | attack), ready for `AnimatedSprite2D`.
+
+## 10. Still to decide
+1. Gods as starters: a god met at the shrine is now unlocked like anyone else. Keep, or should gods never start?
+2. Left out for now, as in the original game: a tool belt for choosing potions by hand, and more potions (slow time and others).
+3. Journey length: ten regions and 19 battles is long for one sitting. Save points, or a shorter road?
+4. Should a hero you leave behind be met again later, or are they gone (as now)?
+5. Which regions come next (Bela krajina, Celje, Kras and Škocjan, Kočevski rog, Prekmurje)?

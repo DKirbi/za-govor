@@ -1,8 +1,9 @@
 # Za govor
 
-**A Slovene word-puzzle RPG with heroes from Slavic mythology.** Chain letters into
-Slovene words to make Perun, Svarog, Mokoš and Kresnik attack, solve crosswords to speak a
-*zagovor* (a folk charm), and fight the creatures of Slovene folklore. The game is
+**A Slovene word-puzzle RPG with heroes from Slavic mythology and Slovene folklore.** Walk
+across Slovenia from Ptuj to Ljubljana castle, chain letters into Slovene words to make
+your heroes attack, solve crosswords to speak a *zagovor* (a folk charm), and fight the
+creatures of Slovene folklore on the way to the dragon. The game is
 inspired by [Words for Evil](https://store.steampowered.com/app/335790) (Chromosphere Games, 2014) and exists to show
 how rich and playful the Slovene language is.
 
@@ -13,13 +14,17 @@ how rich and playful the Slovene language is.
 The name is a play on words: read as one word, *zagovor* is a spoken charm; read as two,
 *za govor* means "for speech".
 
-**Status:** playable browser prototype of all the mini-games (one page, no install). The
+**Status:** playable browser prototype of the whole journey and all the mini-games (one page, no install). The
 full game is planned in Godot 4.7 for Windows, macOS, Linux, Android and iOS — see
 [docs/platform-roadmap.md](docs/platform-roadmap.md).
 
 <p>
   <img src="docs/images/battle-desktop.png" alt="Battle in the dark forest: four heroes with pixel sprites, a painted folk-art attack card above Perun, the letter mesh below" width="640">
   <img src="docs/images/crossword-phone.png" alt="Crossword on a phone: rows of everyday words, a gold column hiding the keyword PERUN" width="220">
+</p>
+
+<p>
+  <img src="docs/images/road.png" alt="The road at Ptuj: one hero walks through the snow towards a škrat, the castle above the town behind them; below, the party strip with three free places" width="640">
 </p>
 
 ## Contents
@@ -46,17 +51,47 @@ The interface is in Slovene. On a phone or tablet the *Mobilni prikaz* layout sw
 by itself; the switch in the top bar changes it at any time.
 
 ## How it plays
-The prototype is one short journey along the Ljubljanica, from the marshes to the
-castle:
+The game is **one side-scrolling journey** through places in Slovenia. You choose one hero
+and walk; the road stops you at enemies, chests, rock slides, wells, pedlars and other
+heroes. There is no level list — the road leads from region to region, and the dragon at
+Ljubljana castle is the last battle.
 
-| # | Stop | What happens |
-| --- | --- | --- |
-| 1 | **Barje** | Battle: two *škrati* — learn the letter mesh |
-| 2 | **Skrinja** | Timed chest: rebuild a hidden word |
-| 3 | **Temni gozd** | Battle: Mora (puts heroes to sleep) and Volkodlak (feeds on repeated words) |
-| 4 | **Plaz kamenja** | Timed rock slide: break falling rocks with words |
-| 5 | **Ljubljanica** | Ambush crossword, then Vodna vila (floods letters) and Povodni mož (boss) |
-| 6 | **Ljubljanski grad** | Lintvern, the Ljubljana dragon (boss, two phases) |
+| # | Region | Legend of the place | On the road |
+| --- | --- | --- | --- |
+| 1 | **Ptuj** | Kurent | two battles, a chest |
+| 2 | **Peca** | Kralj Matjaž | two battles, a rock slide, a well |
+| 3 | **Triglav** | Ajdovska deklica | two battles, a rock slide, a pedlar |
+| 4 | **Bled** | a shrine of the old gods: one god may join | two battles, a chest, a well |
+| 5 | **Trnovski gozd** | Martin Krpan | two battles, a chest |
+| 6 | **Piranske soline** | Lepa Vida | two battles, a pedlar, a well |
+| 7 | **Predjamski grad** | Erazem Predjamski | a battle, a rock slide, a chest, an ambush |
+| 8 | **Ljubljansko barje** | Zeleni Jurij | two battles, a well, a pedlar |
+| 9 | **Ljubljanica** | Peter Klepec | a battle, a well, **Povodni mož** (boss) |
+| 10 | **Ljubljanski grad** | — | a pedlar, a well, **Lintvern**, the Ljubljana dragon (final boss) |
+
+- **Walking:** press `→` (or *Naprej*) and the party walks to the next stop; a prompt offers
+  what can be done there (`Enter` for the main choice, `Esc` to walk past where that is allowed).
+- **The party:** you pick one hero. On a fresh game Martin Krpan, Zeleni Jurij and Kurent
+  are known; everyone else is a silhouette until you meet them on the road, which unlocks
+  them for later journeys. Up to four travel together; a fifth can only take somebody's
+  place. **Only one god** may travel with you — gods hit harder.
+- **Health stays as it is after a battle.** **Wells** heal everyone fully and raise the
+  fallen. Healers (Mokoš, Zeleni Jurij) heal only up to 70 % of health, and they attack as
+  well — weakly at first, stronger with every level.
+- **Potions and poisons are used automatically:** a badly hurt hero drinks *Živa voda*, a
+  fallen one is raised by *Mrtva voda*, battle potions are opened when a fight begins.
+- **Enemies are random:** every battle draws from the enemies of its region, and they grow
+  stronger from region to region.
+- **Gold and items:** battles and chests pay gold; the pedlar sells potions, poisons and
+  relics with names from Slavic myth and Slovene folklore (*Perunova sekira*, *Živa voda*,
+  *Velesov strup*, *Zlatorogova roža*…). See [docs/progression-design.md](docs/progression-design.md)
+  for the full lists.
+- **Intros and pause:** the first time each puzzle appears, a *Kako se igra* panel explains
+  it with a solved example and the clock waits until you press *Začni*. `Esc` pauses any
+  timed screen; while paused the letters are blurred. *Cel zaslon* in the top bar goes
+  fullscreen, and on desktop the game scales so the scene and the puzzle fit the window.
+- **Test mode** (a switch on the start screen) starts with 200 gold and lets you skip stops
+  and regions.
 
 ### Battles: the letter mesh
 - A 5×6 grid of Slovene letters (Scrabble letter distribution, balanced vowels). Chain
@@ -79,18 +114,31 @@ castle:
   the letters you have started.
 
 ### Heroes
+All fifteen characters are playable. Nine are folk heroes, six are gods (stronger; one per
+journey).
+
 | Hero | Role | Moves (small → big) |
 | --- | --- | --- |
-| **Perun** — god of thunder | Highest damage; big move chains lightning to every enemy | Blisk → Grom → Nevihta |
-| **Svarog** — heavenly smith | Damage plus a shield for the party | Kladivo → Kovani ščit → Nebeška kovačnica |
-| **Mokoš** — mother earth | Heals; overheal becomes shield; cleanses; big move revives a fallen hero | Kapljica → Vir → Materina roka |
-| **Kresnik** — sun hero | Fire: damage that keeps burning | Žerjavica → Plamen → Kresni ogenj |
+| **Martin Krpan** | Heavy single hits; the big move stuns | Zamah → Kobilica → Lipov kij |
+| **Zeleni Jurij** | Small heals; unlocks letters; revives once per journey | Popek → Brstenje → Jurjevo |
+| **Kurent** | Stuns and delays enemies | Zvonec → Ježevka → Pregon zime |
+| **Kresnik** | Fire: damage that keeps burning | Žerjavica → Plamen → Kresni ogenj |
+| **Kralj Matjaž** | Shield for the party | Meč → Kraljeva vojska → Prebujenje |
+| **Erazem Predjamski** | The next enemy attack misses; shield | Češnje → Skrivni rov → Trdnjava v skali |
+| **Peter Klepec** | Grows stronger with every big move | Pastirska palica → Izruvano drevo → Vilin dar |
+| **Lepa Vida** | Lowers enemy attack | Hrepenenje → Morska pena → Pesem z obale |
+| **Ajdovska deklica** | Turns the target to stone (stun) | Prerokba → Skalni obraz → Okamnitev |
+| **Perun** (god) | Highest burst; big move chains lightning to every enemy | Blisk → Grom → Nevihta |
+| **Svarog** (god) | Damage plus a shield | Kladivo → Kovani ščit → Nebeška kovačnica |
+| **Mokoš** (god) | Heals, cleanses, revives once per battle | Kapljica → Vir → Materina roka |
+| **Dažbog** (god) | His light strengthens the next word | Žarek → Jutranja zarja → Sončni voz |
+| **Stribog** (god) | Hits every enemy | Sapica → Burja → Vihar |
+| **Veles** (god) | Hardest hits, poison | Kačji pik → Medvedja šapa → Korenine sveta |
 
 Each hero has their own health bar and levels up to level 3 (more health, stronger
-attacks, extra power for long words). A hero who falls stays down for the rest of the
-run; only Mokoš can bring one back. The gallery (*Liki in karte* on the start screen)
-shows all eleven planned heroes — also Veles, Dažbog, Stribog, Kurent, Zeleni Jurij,
-Martin Krpan and Kralj Matjaž — with sprites, cards and backstories.
+attacks, extra power for long words). The gallery (*Liki, predmeti in ozadja* on the start
+screen) shows every hero with sprites, cards and backstory, the road objects, all items and
+the ten backgrounds.
 
 ### Enemies
 Enemies attack in real time, telegraphed by a glowing wind-up. Their strongest moves
@@ -104,6 +152,10 @@ Enemies attack in real time, telegraphed by a glowing wind-up. Their strongest m
 | Vodna vila | 30 | *Poplava*: floods letters so they can't be used |
 | Povodni mož (boss) | 110 | *Vrtinec*: forces a crossword with the mesh closed |
 | Lintvern (boss) | 180 | *Pepel* locks letters; *Ognjeni dih* hits everyone; at half health a forced *Zmajeva uganka* crossword |
+
+Four regional enemies reuse these sprites in other colours for now: **Vešča** (puts a hero
+to sleep), **Perkmandeljc** and **Zmajev mladič** (bury letters), **Pesjan** (a heavy hit on
+everyone).
 
 ### Crosswords and the zagovor
 - Every letter you play fills the **zagovor meter** (30 letters). When it's full, a
@@ -129,12 +181,21 @@ Enemies attack in real time, telegraphed by a glowing wind-up. Their strongest m
   Malček, two on Učenjak, one on Knjižni molj. A word finished with a revealed letter still
   fires, at half power, and revealed keyword letters don't count as guessed.
 
-### Between battles
-- **Chest:** rebuild a hidden word from scrambled letters before time runs out (40 s, 80 s
-  in calm mode). Every real word you find pays 3 XP per letter; the hidden word opens the
-  chest for 50 XP and starts the next battle with a half-full zagovor meter.
-- **Rock slide:** every falling rock carries a letter; type any word containing it before
-  it lands. Long words break several rocks.
+### On the road
+- **Chest:** one word from scrambled letters before time runs out (40 s, 80 s in calm
+  mode). The hidden word opens the chest: XP for every hero, gold, one item and a half-full
+  zagovor meter in the next battle. A real word that leaves letters unused ends it with
+  part of the XP and gold.
+- **Rock slide:** every falling rock carries a letter and you have one word. Rocks whose
+  letters are in it break (XP and gold for each); the rest graze the party for half damage.
+- **Darts (*Puščice v zidu*):** six columns of letters; take one from each column, left to
+  right, and send a word. A shorter word may be sent early, and nothing stops you from
+  sending a word that does not exist. Every letter of a real word turns one dart against the
+  enemies of the next battle; the darts left over hit the party.
+- **Well:** every hero is healed and the fallen stand up again.
+- **Pedlar:** four potions or poisons and two relics for gold.
+- **Shrine:** three gods offer themselves; one may join.
+- **Bag:** `T` on the road, `3` in a battle. It only shows what you carry; the heroes use it themselves.
 
 ### Two difficulty choices
 **Pace** (*Težavnost*): **real-time** (recommended) has no countdown — enemies attack at
@@ -159,10 +220,12 @@ Malček is the game as it was before the levels were added.
 | --- | --- | --- |
 | Make a word | Type it; the path is found for you. Č, Š, Ž must be typed as themselves (a Slovene keyboard layout), c/s/z never stand in for them | Drag across tiles, or tap them one by one |
 | Send the word | `Enter` | *Pošlji* |
-| Clear the word / pause | `Esc` (clears first, pauses on an empty word) | *Počisti* / *Premor* |
+| Clear the word | `Delete` | *Počisti* |
+| Pause (battle, crosswords, chest, rock slide, darts) | `Esc` | *Premor* in the top bar |
 | Remove the last letter | `Backspace` | *Briši* |
 | Speak the zagovor (meter full) | `Space` | *Izreci zagovor* |
-| Hint / reshuffle | `1` / `2` | *Namig* / *Premešaj* |
+| Hint / reshuffle / look into the bag | `1` / `2` / `3` | *Namig* / *Premešaj* / *Torba* |
+| Walk on the road, confirm a stop | `→` or `Enter` (`Esc` = walk past, `T` = bag) | *Naprej* and the buttons of the stop |
 | Crossword: reveal a letter | `?` | *Razkrij črko* |
 | Crossword: next entry, move | `Enter` or `Tab`, arrow keys | Tap a cell or a clue; the phone keyboard opens |
 
@@ -197,7 +260,7 @@ The tests open the built page in headless Chrome and play it through a test hook
 ```sh
 npm install
 python3 build.py
-npm test                                  # all five test files
+npm test                                  # all six test files
 CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 ```
 
@@ -207,6 +270,7 @@ CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 | `tests/levels.test.js` | Each knowledge level: chosen and saved on the title screen, hints and proposals, word count and coaching tips, shortest word, crossword bank, letter counts, revealed letters (and half power), mouse clicks reaching the crossword |
 | `tests/keyword.test.js` | Guessing the keyword early ends the crossword and fires the zagovor; in Povodni mož's whirlpool *urska* with a plain s stays black and *urška* breaks it |
 | `tests/phone.test.js` | On a 390×844 touch screen: *Pošlji* is visible and works, wrong entries stay black, correct ones turn green and fire, phone-keyboard composition input, chest partial rewards, rock slide input |
+| `tests/journey.test.js` | The road: choosing the first hero, walking to a stop, one enemy for one hero, no healing after a battle, a hero joining, the chest's gold and item, the well, the pedlar, using a potion, the bag pausing the battle, the shrine and the one-god rule, swapping with a full party, all 45 hero moves, the dragon and the ending |
 | `tests/desktop.test.js` | A keyboard playthrough: c/s/z are not accepted for č/š/ž, first battle, result and hero screens, chest, finisher, Lintvern's letter lock and forced crossword, ambush, rock slide, and no console errors anywhere |
 
 Screenshots from each run land in `test-output/` (ignored by git).
@@ -219,27 +283,36 @@ za-govor/
 ├── dist/index.html           # the playable prototype (built, committed)
 ├── src/
 │   ├── index.src.html        # page template with placeholders
-│   ├── game.js               # all game code (no framework)
+│   ├── game.js               # battles, crosswords, chest, rock slide, heroes (no framework)
+│   ├── journey.js            # the road: regions, stops, party, items, pedlar, bag, darts
+│   ├── playtest.js           # pause, puzzle intros, fullscreen, fit to screen
+│   ├── art-extra.js          # generated pixel art (tools/art_extra.py)
 │   └── game.css              # styles, desktop and phone layouts
 ├── data/
 │   ├── dict.json             # battle word list: 9,867 base words → 46,094 forms
-│   └── clues.json            # crossword clue banks per knowledge level, mythology keywords
+│   ├── clues.json            # crossword clue banks per knowledge level, mythology keywords
+│   └── world.json            # the journey: regions, stops, enemy pools, items
 ├── tools/
 │   ├── build_dict.py         # builds data/dict.json
 │   ├── cluebank.py           # the three clue banks; validates and builds data/clues.json
+│   ├── art_extra.py          # draws the new heroes, road objects, item icons and backgrounds (needs Pillow)
 │   └── readme-shots.js       # regenerates docs/images/
 ├── tests/                    # headless Chrome tests (puppeteer-core)
 └── docs/
     ├── concept-summary.md    # decisions, art and audio direction, sources
-    ├── progression-design.md # party, health, levels, roster, items
+    ├── progression-design.md # the journey, party rules, roster, enemies, items
     ├── platform-roadmap.md   # plan for desktop, phone and tablet releases
     └── images/               # README screenshots
 ```
 
 ## How the prototype works
 - **One file, no dependencies.** Plain JavaScript with a tiny `h()` element helper; no
-  framework or bundler. `build.py` inlines the CSS, the two JSON data files and the script
+  framework or bundler. `build.py` inlines the CSS, the three JSON data files and the scripts
   into one HTML page.
+- **The journey.** `data/world.json` lists the regions in travel order with their stops,
+  enemy pools and local hero, and all items. On the travel screen the party stands still
+  and the stops slide towards it; the background pans slowly across the region's landmark.
+  The same file is meant to feed the Godot game.
 - **Dictionary.** `data/dict.json` maps each base word (lemma) to its forms. At start-up
   the game builds a set of forms, a form → lemma map (for the repeat penalty and the "base
   form" hint) and a trie. Finding every word in the mesh is a depth-first search over the
@@ -321,6 +394,7 @@ in [docs/progression-design.md](docs/progression-design.md) and
   cursed-god bosses, items, backgrounds.
 - [Platform roadmap](docs/platform-roadmap.md) — from browser prototype to Windows, macOS,
   Linux, Android and iOS.
+- [Playtest notes](docs/playtest-notes.md) — what each test round found and what changed
 
 ## Licence
 No licence has been chosen yet, so all rights are reserved by the author. Third-party

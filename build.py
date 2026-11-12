@@ -1,25 +1,33 @@
-"""Build the single-file prototype: inline CSS, word data and JS into dist/index.html.
+"""Build the single-file prototype: inline CSS, data and JS into dist/index.html.
 
     python3 build.py
 
-Inputs:  src/index.src.html (template), src/game.css, src/game.js,
-         data/dict.json (battle word list), data/clues.json (crossword clue bank)
+Inputs:  src/index.src.html (template), src/game.css,
+         src/game.js (battles, crosswords, events) with two generated/added parts spliced in:
+           src/art-extra.js (pixel art from tools/art_extra.py), src/journey.js (the road) and
+           src/playtest.js (pause, puzzle intros, fullscreen, fit to screen),
+         data/dict.json (battle word list), data/clues.json (crossword clue bank),
+         data/world.json (regions and items of the journey)
 Output:  dist/index.html — open it in any modern browser, no server needed.
 """
 import pathlib
 
 root = pathlib.Path(__file__).parent
-template = (root / 'src/index.src.html').read_text(encoding='utf-8')
-dictionary = (root / 'data/dict.json').read_text(encoding='utf-8')
-clues = (root / 'data/clues.json').read_text(encoding='utf-8')
-for name, text in (('dict.json', dictionary), ('clues.json', clues)):
+read = lambda rel: (root / rel).read_text(encoding='utf-8')
+template = read('src/index.src.html')
+data = {'/*__DICT__*/': read('data/dict.json'), '/*__CLUES__*/': read('data/clues.json'), '/*__WORLD__*/': read('data/world.json')}
+for name, text in data.items():
     assert '</script' not in text, f'{name} would close its <script> tag'
 
-out = (template
-       .replace('/*__CSS__*/', (root / 'src/game.css').read_text(encoding='utf-8'))
-       .replace('/*__DICT__*/', dictionary)
-       .replace('/*__CLUES__*/', clues)
-       .replace('/*__JS__*/', (root / 'src/game.js').read_text(encoding='utf-8')))
+js = read('src/game.js')
+for mark, rels in (('/*__ART_EXTRA__*/', ['src/art-extra.js']), ('/*__JOURNEY__*/', ['src/journey.js', 'src/playtest.js'])):
+    assert js.count(mark) == 1, f'{mark} must appear exactly once in src/game.js'
+    js = js.replace(mark, ''.join(read(rel) for rel in rels))
+
+out = template.replace('/*__CSS__*/', read('src/game.css'))
+for mark, text in data.items():
+    out = out.replace(mark, text)
+out = out.replace('/*__JS__*/', js)
 
 (root / 'dist').mkdir(exist_ok=True)
 (root / 'dist/index.html').write_text(out, encoding='utf-8')

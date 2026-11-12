@@ -47,7 +47,7 @@ run(async () => {
     await typeText(page, start.slice(0, 2)); await sleep(150);
     const props = await page.evaluate(() => /Predlogi:/.test((document.querySelector('.props') || {}).textContent || ''));
     check(props === ex.proposals, `${name}: word proposals ${ex.proposals ? 'shown' : 'not shown'} while typing`);
-    await page.keyboard.press('Escape'); await sleep(100);
+    await page.keyboard.press('Delete'); await sleep(100);
 
     // shortest word
     const three = await page.evaluate(() => {
@@ -64,7 +64,7 @@ run(async () => {
       await typeText(page, three); await page.keyboard.press('Enter'); await sleep(250);
       const w1 = await page.evaluate(() => window.__ZG.B.words);
       check((w1 === w0 + 1) === (ex.minWord === 3), `${name}: a 3-letter word ${ex.minWord === 3 ? 'counts' : 'is too short'}`, three);
-      if (w1 === w0) await page.keyboard.press('Escape');
+      if (w1 === w0) await page.keyboard.press('Delete');
       await sleep(400);
     }
 

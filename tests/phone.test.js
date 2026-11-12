@@ -77,7 +77,7 @@ run(async () => {
   }
   check(await page.evaluate(() => !window.__ZG.B.cw), 'the whole crossword can be finished on the phone');
 
-  // 3. Chest: a shorter real word gives a partial reward, the hidden word opens it
+  // 3. Chest: one word. A shorter real word ends it with a partial reward, the hidden word opens it
   await page.evaluate(() => window.__ZG.go('chest', window.__ZG.NODES[1])); await sleep(300);
   const chest = await page.evaluate(() => {
     const E = window.__ZG.S.ev, letters = E.letters.map(l => l.ch), W = window.__ZG.WORDS;
@@ -94,8 +94,10 @@ run(async () => {
   if (chest.partial) {
     await tapWord(chest.partial);
     await page.tap('.sendrow .btn.send'); await sleep(200);
-    const found = await page.evaluate(() => window.__ZG.S.ev.found);
-    check(found.length === 1 && found[0].xp === chest.partial.length * 3, 'a real but wrong word gives 3 XP per letter', chest.partial);
+    const part = await page.evaluate(() => { const E = window.__ZG.S.ev; return { done: E.done, win: E.win, partial: E.partial }; });
+    check(part.done && !part.win && part.partial && part.partial.xp > 0 && part.partial.xp < 50, 'a real word that does not use every letter ends the chest with a partial reward', JSON.stringify(part));
+    await page.evaluate(() => { const Z = window.__ZG; Z.go('chest', Z.NODES[1]); }); await sleep(300);
+    chest.answer = await page.evaluate(() => window.__ZG.S.ev.item.w);
   }
   await tapWord(chest.answer);
   await page.tap('.sendrow .btn.send'); await sleep(200);
