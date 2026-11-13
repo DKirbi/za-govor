@@ -1,11 +1,12 @@
 
 // ============================================================ main menu and the pages under it
 // The start screen is a short menu: Nadaljuj pot (while a journey is under way), Nova pot,
-// Dosežki in junaki, Kako igrati and O igri. Each page under it has one way back, at the top
-// ("← Nazaj na glavni meni"); Esc and the Android back button do the same.
+// Dosežki in junaki, Kako igrati, Nastavitve and O igri, with the version of the build at the bottom.
+// Each page under it has one way back, a link at the top ("← Nazaj na glavni meni") that stays in
+// view while the page scrolls; Esc and the Android back button do the same.
 // Difficulty is chosen on Nova pot only, and only takes effect when the new journey starts:
 // a journey under way keeps the pace and knowledge level it began with.
-const MENU_PAGES = { newrun: 1, howto: 1, about: 1, heroes: 1 };
+const MENU_PAGES = { newrun: 1, howto: 1, about: 1, heroes: 1, settings: 1 };
 
 function menuItems() {
   const R = S.run, items = [];
@@ -13,6 +14,7 @@ function menuItems() {
   items.push({ id: 'new', label: 'Nova pot', fn: () => go('newrun') },
     { id: 'heroes', label: 'Dosežki in junaki', fn: () => go('heroes') },
     { id: 'howto', label: 'Kako igrati', fn: () => go('howto') },
+    { id: 'settings', label: 'Nastavitve', fn: () => go('settings') },
     { id: 'about', label: 'O igri', fn: () => go('about') });
   return items;
 }
@@ -27,7 +29,8 @@ function renderTitle() {
       h('button', { class: 'mm-item', 'data-id': it.id, ref: el => { if (it.id === S.menuSel) cur = el; },
         onfocus: () => { S.menuSel = it.id; },
         onclick: () => { S.menuSel = it.id; sfx('sel'); it.fn(); } },
-        h('span', { class: 'mm-label' }, it.label), it.sub ? h('span', { class: 'mm-sub' }, `(${it.sub})`) : null)))))));
+        h('span', { class: 'mm-label' }, it.label), it.sub ? h('span', { class: 'mm-sub' }, `(${it.sub})`) : null))))),
+    versionLine('mm-version')));
   // keyboard players land on the menu ready to move; on a phone nothing is pre-focused
   if (cur && !S.mobile) cur.focus({ preventScroll: true });
 }
@@ -41,7 +44,16 @@ function menuKey(e) {
   if (k === 'Enter' && !e.repeat && !(e.target && e.target.classList && e.target.classList.contains('mm-item'))) { e.preventDefault(); btns[i].click(); }
 }
 
+// The version of this build (semantic versioning, see CHANGELOG.md): stage, number and, for bug reports, the commit.
+const STAGE = BUILD.stage || '';
+function versionLine(cls) {
+  return h('p', { class: cls, title: `Različica ${BUILD.version}${BUILD.commit ? ', gradnja ' + BUILD.commit : ''}` },
+    STAGE ? h('span', {}, STAGE) : null, STAGE ? ' · ' : null, h('span', {}, 'v' + BUILD.version),
+    BUILD.commit ? h('span', { class: 'commit' }, ' · ' + BUILD.commit) : null);
+}
+
 // ------------------------------------------------------------ pages: the way back and the heading
+// The way back is the page's only header: it sticks to the top of the screen while the page scrolls.
 function crumb(label = 'Nazaj na glavni meni', to = () => go('title')) {
   return h('nav', { class: 'crumbs', 'aria-label': 'Nazaj' },
     h('button', { class: 'crumb', onclick: () => { sfx('sel', { rate: .9, vol: .5 }); to(); } },
@@ -222,7 +234,8 @@ function renderAbout(at) {
     pageH1('O igri'),
     h('p', { class: 'lead' }, h('i', {}, 'Za govor!'), ' je besedna igra vlog s slovanskimi bogovi in junaki slovenskega ljudskega izročila. Junaki se bojujejo z besedami: prava beseda je napad, daljša udari močneje.'),
     h('p', {}, 'Pot vodi po Sloveniji, od Ptuja do Ljubljanskega gradu, kjer čaka zmaj. Začneš z enim junakom. Na poti srečaš sovražnike, skrinje, plazove, vodnjake, krošnjarje in nove junake; v družini so največ štirje, bog le eden. Zdravje se po bitki ne vrne samo: junaki se pozdravijo pri vodnjaku. Zlatnike zapraviš pri krošnjarju za napoje, strupe in predmete.'),
-    h('p', { class: 'muted' }, 'To je prototip. Igra še nastaja in se po vsakem preizkusu spremeni.'),
+    h('p', { class: 'muted' }, STAGE === 'zaprta alfa' ? 'Igra je v zaprti alfi: igrajo jo povabljeni preizkuševalci. Še nastaja in se po vsakem preizkusu spremeni.' : 'Igra še nastaja in se po vsakem preizkusu spremeni.'),
+    versionLine('about-version'),
     sec('navdih', 'Navdih', creditInspiration()),
     sec('besede', 'Manjkajoča beseda',
       h('p', {}, 'Je igra zavrnila pravo slovensko besedo? Sporoči nam jo, da jo dodamo.'),
@@ -230,6 +243,23 @@ function renderAbout(at) {
     sec('zasluge', 'Zasluge', creditSources())));
   focusPage();
   if (at) { const t = $('#o-' + at); if (t) requestAnimationFrame(() => t.scrollIntoView({ block: 'start' })); }
+}
+
+// ------------------------------------------------------------ Nastavitve
+// Sound for now; on a computer also fullscreen (a phone app is always full screen).
+function renderSettings() {
+  SCR.append(h('div', { class: 'page settings' },
+    crumb(),
+    pageH1('Nastavitve'),
+    h('section', {}, h('h2', {}, 'Zvok'), soundControls()),
+    S.mobile ? null : h('section', {}, h('h2', {}, 'Zaslon'),
+      h('label', { class: 'toggle' },
+        h('input', { type: 'checkbox', class: 'set-fs', checked: isFs(), onchange: e => {
+          if (e.target.checked !== isFs()) toggleFullscreen();
+          setTimeout(() => { e.target.checked = isFs(); }, 500);   // where fullscreen is refused, the box goes back
+        } }),
+        h('span', {}, 'Cel zaslon', h('small', {}, 'Igra zapolni ves zaslon. Enako naredi tipka F11.'))))));
+  focusPage();
 }
 
 // ------------------------------------------------------------ Dosežki in junaki

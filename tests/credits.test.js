@@ -34,7 +34,7 @@ run(async () => {
 
   // phone: the line wraps inside the screen and Zasluge is a comfortable tap target
   await page.setViewport({ width: 360, height: 780, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
-  await page.evaluate(() => { if (!window.__ZG.S.mobile) document.querySelector('.tb-mobile').click(); }); await sleep(200);
+  await page.evaluate(() => window.__ZG.setLayout(true)); await sleep(250);
   await page.evaluate(() => { const Z = window.__ZG; Z.newRun('krpan'); Z.go('ending'); }); await sleep(200);
   const ph = await page.evaluate(() => { const p = document.querySelector('.ending .inspired'), b = p.querySelector('.linkbtn').getBoundingClientRect();
     return { right: Math.round(p.getBoundingClientRect().right), vw: innerWidth, wide: document.documentElement.scrollWidth, btnH: Math.round(b.height) }; });

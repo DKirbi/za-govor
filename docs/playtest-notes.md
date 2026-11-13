@@ -19,7 +19,7 @@
   the player presses *Začni*. Shown once per puzzle type (remembered between visits); a
   start-screen switch turns them off and a button shows them again.
 - **Pause:** Esc pauses everywhere a clock runs, also from inside text fields; a *Premor*
-  button sits in the top bar. The pause panel has *Nadaljuj*, *Kako se igra*, fullscreen
+  button sits in the top bar (since v0.8.0: at the right of the puzzle's header). The pause panel has *Nadaljuj*, *Kako se igra*, fullscreen
   and a volume slider. Leaving the window pauses a real-time game.
 - **No cheating in pause:** while paused or reading an intro, the letter mesh, word bar,
   crossword, chest letters, darts and rocks are blurred beyond reading and typing does not
@@ -29,7 +29,7 @@
 - **Sound:** attack sounds play at about 40 % of their old level through a low-pass
   filter; a master volume (default 80 %) is in the pause panel. Still tuned without
   listening, so check by ear.
-- **Fullscreen and fit to screen:** *Cel zaslon* button in the top bar. On desktop the
+- **Fullscreen and fit to screen:** *Cel zaslon* button in the top bar (since v0.8.0: in *Nastavitve* and the pause window). On desktop the
   game screens always fit the window height: the battle scene first gives up sky
   (330 → 240 px), the key legend hides, then the screen scales down (to 60 % at most) so
   the scene and the puzzle are visible together without scrolling; in fullscreen it

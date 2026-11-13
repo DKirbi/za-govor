@@ -271,17 +271,6 @@ h1, h2, h3 { margin: 0; }
   .chips { justify-content: flex-start; }
 }
 
-/* ---------- Top bar (every screen) ---------- */
-.topbar { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 10px;
-  padding: 8px 0 10px; margin-bottom: 4px; background: var(--bg); border-bottom: 1px solid var(--line); }
-.tb-logo { font-weight: 800; font-size: 17px; }
-.tb-logo .dot { color: var(--gold); padding: 0 .06em; }
-.tb-sp { flex: 1; }
-.tb-mobile { display: inline-flex; align-items: center; gap: 8px; touch-action: manipulation; }
-.tb-mobile .phone { width: 10px; height: 16px; border: 2px solid currentColor; border-radius: 3px; }
-.tb-mobile .pill { font-size: 10px; font-weight: 800; letter-spacing: .04em; padding: 1px 6px; border-radius: 99px; background: var(--bg2); color: var(--dim); }
-.tb-mobile.on { border-color: var(--gold); color: var(--gold); }
-.tb-mobile.on .pill { background: var(--gold); color: #1d1608; }
 #screen { padding-top: 6px; }
 
 /* ---------- HP numbers, word proposals ---------- */
@@ -516,10 +505,6 @@ body.mobile .card.folk.t1 { width: 100px; } body.mobile .card.folk.t2 { width: 1
 .card.folk.foecard .cap { background: #2c2230; color: #f2e6f4; border-color: #0f0b14; }
 .card.folk.foecard .cap .vl { color: #ff9a9a; }
 .card.folk.foecard.t3 .pic { box-shadow: 0 2px 0 #0f0b14, 0 0 24px rgba(200, 50, 70, .55), 0 12px 26px rgba(0,0,0,.6); }
-.tb-sound { display: inline-flex; align-items: center; gap: 6px; touch-action: manipulation; }
-.tb-sound .pill { font-size: 10px; font-weight: 800; letter-spacing: .04em; padding: 1px 6px; border-radius: 99px; background: var(--bg2); color: var(--dim); }
-.tb-sound.on { border-color: var(--good); color: var(--good); } .tb-sound.on .pill { background: var(--good); color: #0d2417; }
-body.mobile .tb-mobile { font-size: 0; gap: 4px; } body.mobile .tb-mobile .pill, body.mobile .tb-sound { font-size: 10px; }
 .gallery h2 { font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); margin: 8px 0 -4px; }
 .gboards.two { grid-template-columns: repeat(2, 1fr); }
 .gstage .foeside { right: 9%; bottom: 26px; }
@@ -614,12 +599,13 @@ body.mobile .choices.three { grid-template-columns: 1fr; }
 .curclue .revbtn + .kbbtn { margin-left: 0; }
 
 /* Phone battle: the whole letter grid stays above the sticky action bar without scrolling.
-   The battle fills the space under the top bar and only the scene gives way (240 → 170 px);
-   on shorter phones it stops at 170 px and the page scrolls as before. */
+   The battle is exactly as tall as the screen below its top, and only the scene gives way: it takes the
+   spare height, and shrinks (to 170 px at least) when the word bar grows, so the letter grid never moves
+   under a finger mid-drag. On shorter phones it stops at 170 px and the page scrolls as before. */
 body.mobile #app:has(.battle) { padding-bottom: 0; }
-body.mobile .battle { display: flex; flex-direction: column; max-height: calc(100dvh - var(--battle-top, 57px)); }
+body.mobile .battle { display: flex; flex-direction: column; height: calc(100dvh - var(--battle-top, 57px)); }
 body.mobile .battle > * { flex-shrink: 0; }
-body.mobile .battle > .scene { flex-shrink: 1; min-height: 170px; }
+body.mobile .battle > .scene { flex: 1 1 auto; min-height: 170px; }
 /* the tip sits over the sky, under the actors and cards, and lets taps through */
 .scene > .coach { position: absolute; top: 8px; left: 8px; right: 8px; pointer-events: none;
   font-size: 12px; line-height: 1.35; padding: 6px 9px; background: rgba(22, 30, 52, .92); border: 1px solid #34466e; }
@@ -750,23 +736,27 @@ body.held .puzzle, body.held .wordbar, body.held .event .panel, body.held .lanes
 .volrow { display: flex; align-items: center; gap: 12px; margin-top: 16px; color: var(--dim); font-size: 13px; }
 .volrow input { flex: 1; accent-color: var(--gold); min-width: 0; }
 .volrow output { width: 3.2em; text-align: right; font-variant-numeric: tabular-nums; }
+.volrow.off { opacity: .45; }
+/* sound on/off + volume (soundControls): in Nastavitve and in the pause window */
+.dialog .soundctl { margin-top: 14px; padding-top: 4px; border-top: 1px solid var(--line); }
+.dialog .soundctl .toggle { color: var(--ink); min-height: 40px; }
+.dialog .soundctl .toggle input { width: 18px; height: 18px; }
+.dialog .soundctl .toggle small { display: none; }
+.dialog .soundctl .volrow { margin-top: 6px; }
+.settings .volrow { max-width: 440px; min-height: 44px; margin: 4px 0 0 30px; font-size: 14px; }
+body.mobile .volrow input { min-height: 32px; }
 
-.tb-btn { display: inline-flex; align-items: center; gap: 6px; touch-action: manipulation; }
-.tb-btn svg { width: 14px; height: 14px; flex: none; }
-.tb-btn.on { border-color: var(--gold); color: var(--gold); }
-body.mobile .tb-btn .lbl, body.mobile .tb-btn kbd { display: none; }
-body.mobile .tb-btn { padding: 6px 8px; }
-/* phones: the pause is a labelled thumb-size button, not a bare icon; the sound and view
-   switches shrink to icon + state so it fits beside them (from 360 px wide) */
-body.mobile .tb-btn.tb-pause { min-height: 40px; padding: 6px 12px; gap: 6px; font-size: 14px; font-weight: 700;
+/* Premor: at the right end of a timed puzzle's header (src/playtest.js pauseBtn). On a phone it is a labelled,
+   thumb-size gold button, not a bare icon. */
+.bhead .pausebtn { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; }
+.bhead .meta ~ .pausebtn { margin-left: 2px; }
+.pausebtn svg { width: 12px; height: 12px; }
+/* phone: title and Premor share the first row, the levels and pace line goes under them */
+body.mobile .bhead:has(.pausebtn) { flex-wrap: wrap; row-gap: 0; }
+body.mobile .bhead:has(.pausebtn) .meta { order: 3; flex-basis: 100%; margin: -2px 0 0; }
+body.mobile .bhead .meta ~ .pausebtn { margin-left: auto; }
+body.mobile .btn.small.pausebtn { min-height: 40px; padding: 6px 12px; font-size: 14px; font-weight: 700; flex: none;
   border-color: var(--gold); color: var(--gold); background: color-mix(in srgb, var(--gold) 12%, var(--panel2)); }
-body.mobile .tb-btn.tb-pause .lbl { display: inline; }
-body.mobile .tb-btn.tb-pause svg { width: 13px; height: 13px; }
-body.mobile .topbar .tb-sound { font-size: 15px; gap: 4px; padding: 6px 8px; min-height: 40px; } body.mobile .tb-sound .lbl { display: none; }
-body.mobile .topbar .tb-mobile { min-height: 40px; padding: 6px 8px; }
-@media (max-width: 374px) { body.mobile .tb-logo { font-size: 15px; } body.mobile .topbar { gap: 5px; }
-  body.mobile .tb-btn.tb-pause { padding: 6px 9px; } body.mobile .topbar .tb-sound, body.mobile .topbar .tb-mobile { padding: 6px 6px; } }
-body.mobile .topbar { gap: 6px; }
 
 .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 95; width: max-content; max-width: min(560px, 92vw);
   background: var(--panel2); border: 1px solid var(--gold); border-radius: 10px; padding: 10px 14px; font-size: 13.5px; line-height: 1.4;
@@ -860,12 +850,12 @@ body.mobile .chestbox { gap: 10px; align-items: flex-start; font-size: 13.5px; l
 :root { --sat: var(--safe-area-inset-top, env(safe-area-inset-top, 0px)); --sab: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
   --sal: var(--safe-area-inset-left, env(safe-area-inset-left, 0px)); --sar: var(--safe-area-inset-right, env(safe-area-inset-right, 0px)); }
 body.mobile #app { padding-left: max(10px, var(--sal)); padding-right: max(10px, var(--sar)); padding-bottom: max(18px, var(--sab)); }
-body.mobile .topbar { padding-top: max(8px, var(--sat)); }
+body.mobile #app { padding-top: max(10px, var(--sat)); }
 body.mobile .side, body.mobile .event > .vkbd { padding-bottom: max(6px, var(--sab)); }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body.mobile { overscroll-behavior-y: contain; -webkit-tap-highlight-color: transparent; }
 /* Touch targets: nothing you must hit under time pressure is smaller than 40 px */
-body.mobile .btn.small:not(.tb-btn):not(.tb-sound):not(.tb-mobile) { min-height: 40px; padding: 8px 12px; font-size: 13.5px; }
+body.mobile .btn.small:not(.pausebtn) { min-height: 40px; padding: 8px 12px; font-size: 13.5px; }
 body.mobile .prop { min-height: 36px; padding: 6px 12px; font-size: 13.5px; }
 body.mobile .prop-x { min-width: 36px; min-height: 36px; font-size: 20px; }
 body.mobile .kbbtn { min-height: 36px; padding: 6px 12px; font-size: 13px; }
@@ -909,8 +899,8 @@ body.mobile .reportrow input { min-height: 44px; font-size: 16px; }   /* 16 px k
 body.mobile .rejlist .prop { min-height: 40px; }
 
 /* ---------- Main menu (start screen) ---------- */
-.menu { display: flex; flex-direction: column; align-items: center; min-height: calc(100vh - 92px); min-height: calc(100dvh - 92px);
-  padding: clamp(20px, 7vh, 80px) 0 clamp(20px, 6vh, 56px); }
+.menu { display: flex; flex-direction: column; align-items: center; min-height: calc(100vh - 38px); min-height: calc(100dvh - 38px);
+  padding: clamp(20px, 7vh, 80px) 0 0; }
 .menu-logo { font-size: clamp(52px, 8.5vw, 80px); line-height: 1; text-align: center; }
 .menu-rule { width: 144px; margin: 20px auto 0; }
 .mainmenu { width: 100%; margin: auto 0; padding-top: clamp(24px, 6vh, 64px); }
@@ -932,14 +922,26 @@ body.mobile .rejlist .prop { min-height: 40px; }
   .mm-item:hover .mm-sub { color: var(--gold); }
 }
 .mm-item:active { transform: translateY(1px); }
-body.mobile .menu { padding-top: 32px; }
+body.mobile .menu { padding-top: 32px; min-height: calc(100dvh - max(10px, var(--sat)) - max(18px, var(--sab)) - 6px); }
+/* the version of the build, at the bottom of the start screen (semantic versioning, see CHANGELOG.md) */
+.mm-version { margin: 28px 0 0; color: var(--dim); font-size: 12px; letter-spacing: .05em; text-align: center; font-variant-numeric: tabular-nums; }
+.mm-version .commit, .about-version .commit { opacity: .6; }
+.about-version { margin: -2px 0 0; color: var(--dim); font-size: 12.5px; font-variant-numeric: tabular-nums; }
 body.mobile .menu-logo { font-size: 54px; }
 body.mobile .mm-item { width: min(100%, 340px); min-height: 60px; font-size: 28px; }
 
 /* ---------- Pages under the menu: the way back, headings, sections ---------- */
 .page { max-width: 760px; margin: 0 auto 56px; }
 .page.setup { margin-bottom: 0; }
-.crumbs { margin: 2px 0 6px; }
+/* The way back is the header of every page under the menu: it stays at the top of the screen while the page
+   scrolls, on a band of the page colour that fades into the content below it. */
+.crumbs { position: sticky; top: 0; z-index: 30; margin: 2px -16px 6px; padding: 4px 16px 2px; background: var(--bg); }
+.crumbs::after { content: ''; position: absolute; left: 0; right: 0; top: 100%; height: 14px; pointer-events: none;
+  background: linear-gradient(var(--bg), color-mix(in srgb, var(--bg) 0%, transparent)); }
+/* on a phone it also covers the status bar once the page has scrolled under it */
+body.mobile #app:has(.crumbs), body.mobile #app:has(.crumbs) #screen { padding-top: 0; }
+body.mobile .hm:has(> .crumbs) { margin-top: 0; }
+body.mobile .crumbs { margin: 0 -10px 6px; padding: max(8px, var(--sat)) 10px 2px; }
 .crumb { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 14px 6px 6px; margin-left: -6px; border: 0; border-radius: 8px;
   background: none; color: var(--dim); font-size: 15px; font-weight: 600; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 .crumb .arr { color: var(--gold); font-size: 20px; line-height: 1; transition: transform .12s; }
@@ -950,7 +952,7 @@ body.mobile .mm-item { width: min(100%, 340px); min-height: 60px; font-size: 28p
 .page .lead { font-size: 16px; line-height: 1.55; max-width: 62ch; margin: 0 0 10px; }
 .page p { line-height: 1.55; max-width: 66ch; }
 .page section { margin-top: 36px; }
-.page section[id] { scroll-margin-top: 64px; }
+.page section[id] { scroll-margin-top: 72px; }
 .page h2 { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 0 0 12px; font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); }
 .page .tag { padding: 2px 9px; border: 1px solid var(--line); border-radius: 99px; background: var(--bg2); color: var(--dim);
   font-size: 11px; font-weight: 700; letter-spacing: .02em; text-transform: none; }
@@ -993,10 +995,10 @@ body.mobile .mm-item { width: min(100%, 340px); min-height: 60px; font-size: 28p
 .subopt { padding: 2px 14px 4px; border: 2px solid var(--gold); border-top: 0; border-radius: 0 0 var(--radius) var(--radius); background: color-mix(in srgb, var(--gold) 5%, var(--bg2)); }
 .subopt[hidden] { display: none; }
 .set-opts { display: grid; gap: 2px; margin-top: 28px; }
-.setup .toggle { align-items: flex-start; min-height: 44px; margin: 0; padding: 10px 0; color: var(--ink); }
-.setup .toggle input { flex: none; width: 20px; height: 20px; margin: 1px 0 0; }
-.setup .toggle > span { display: grid; gap: 2px; font-size: 15px; font-weight: 600; }
-.setup .toggle small { font-size: 13px; font-weight: 400; line-height: 1.4; color: var(--dim); }
+.setup .toggle, .settings .toggle { align-items: flex-start; min-height: 44px; margin: 0; padding: 10px 0; color: var(--ink); }
+.setup .toggle input, .settings .toggle input { flex: none; width: 20px; height: 20px; margin: 1px 0 0; }
+.setup .toggle > span, .settings .toggle > span { display: grid; gap: 2px; font-size: 15px; font-weight: 600; }
+.setup .toggle small, .settings .toggle small { font-size: 13px; font-weight: 400; line-height: 1.4; color: var(--dim); }
 .setup .note { margin: 24px 0 0; }
 /* the next step stays in reach while the choices scroll: a bar at the bottom of the window */
 .cta-row { position: sticky; bottom: 0; z-index: 5; display: flex; align-items: center; gap: 12px; margin-top: 16px; padding: 20px 0 16px;
@@ -1072,7 +1074,7 @@ body.mobile .car-slide { padding: 14px 14px 16px; }
 .title-stage + .mainmenu { position: relative; z-index: 1; margin-top: -56px; padding-top: 0; }
 body.mobile .title-stage + .mainmenu { margin-top: -40px; }
 .title-stage * { image-rendering: pixelated; image-rendering: crisp-edges; image-rendering: pixelated; }
-.ts-frame { position: absolute; left: 50%; top: 0; width: calc(480 * var(--u)); height: calc(160 * var(--u)); margin-left: calc(-240 * var(--u)); }
+.ts-frame { position: absolute; left: 50%; top: var(--sat-px, 0px); width: calc(480 * var(--u)); height: calc(160 * var(--u)); margin-left: calc(-240 * var(--u)); }
 .ts-frame.placed { left: var(--fx); margin-left: 0; }
 .ts-art { position: absolute; inset: 0; }
 .ts-l { position: absolute; inset: 0; background-repeat: no-repeat; background-size: calc(480 * var(--u)) calc(160 * var(--u)); }
@@ -1974,10 +1976,9 @@ function cardSound(o) {
   sfx(HERO_SFX[o.art] || 'hit1', { rate, soft: true, vol: ATK_VOL });
   if (o.art !== 'mokos' && o.art !== 'jurij') sfx(o.tier === 3 ? 'hit3' : o.tier === 2 ? 'hit2' : 'hit1', { delay: .12, soft: true, vol: ATK_VOL * .65 });
 }
-function toggleSound() {
-  SOUND_ON = !SOUND_ON; try { localStorage.setItem('zg-sound', SOUND_ON ? '1' : '0'); } catch (e) { /* no storage */ }
-  audioUnlock(); const tb = $('.topbar'); if (tb) tb.replaceWith(renderTopbar());
-  setTimeout(() => sfx('ok'), 60);
+function setSound(on) {
+  SOUND_ON = !!on; try { localStorage.setItem('zg-sound', SOUND_ON ? '1' : '0'); } catch (e) { /* no storage */ }
+  audioUnlock(); setTimeout(() => sfx('ok'), 60);
 }
 let SEL_N = 0, CARD_Z = 10;
 function spriteEl(id, c, cls = '') {
@@ -2179,7 +2180,12 @@ const S = {
   mode: (() => { try { const v = localStorage.getItem('zg-mode'); if (v === 'real' || v === 'calm') return v; } catch (e) { /* no storage */ } return 'real'; })(),
   battle: null, ev: null, suggest: true, menuSel: null, setup: null,
   tutOn: (() => { try { return localStorage.getItem('zg-tutorials') !== '0'; } catch (e) { return true; } })(),
-  mobile: (() => { try { const v = localStorage.getItem('zg-mobile'); if (v != null) return v === '1'; } catch (e) { /* no storage */ }
+  // Phone or desktop layout is decided once, by the device. There is no switch any more: turning a phone into the
+  // desktop layout broke the game. An old stored choice (zg-mobile) is dropped. For development, ?prikaz=telefon
+  // or ?prikaz=namizje in the address forces one (Chrome's device mode is detected as a phone by itself).
+  mobile: (() => { try { localStorage.removeItem('zg-mobile'); } catch (e) { /* no storage */ }
+    const want = new URLSearchParams(location.search).get('prikaz');
+    if (want === 'telefon' || want === 'namizje') return want === 'telefon';
     const coarse = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches);
     const touchPhone = (navigator.maxTouchPoints || 0) > 0 && Math.min(screen.width, screen.height) < 820;
     return coarse || touchPhone; })(),
@@ -2191,9 +2197,13 @@ const xpNeed = () => 100 * S.level;
 // Č, Š and Ž are letters of their own: only č matches č, c never stands in for it.
 const letterEq = (tile, typed) => tile === typed;
 
+// Version of this build, filled in by build.py from package.json and git (see CHANGELOG.md).
+const BUILD = {"version": "0.8.0", "stage": "zaprta alfa", "commit": ""};
 const app = $('#app');
-let SCR = null;   // current screen container (below the top bar)
-function mountShell() { app.innerHTML = ''; app.append(renderTopbar(), SCR = h('div', { id: 'screen' })); }
+let SCR = null;   // current screen container
+// There is no top bar: pages under the menu have a sticky way back, timed puzzles a Premor button in their header,
+// and sound (and fullscreen on a computer) is under Nastavitve.
+function mountShell() { app.innerHTML = ''; app.append(SCR = h('div', { id: 'screen' })); }
 function go(screen, arg) {
   const prev = S.screen;
   S.screen = screen;
@@ -2204,30 +2214,14 @@ function go(screen, arg) {
   if (screen !== 'battle') { S.battle = null; B = null; }
   mountShell();
   ({ title: renderTitle, newrun: renderNewRun, howto: renderHowto, about: renderAbout, heroes: renderHeroes, pick: renderPick, travel: renderTravel, ending: renderEnding,
-    battle: startBattle, chest: startChest, trap: startTrap, darts: startDarts, gallery: renderGallery, hero: renderHeroMoment })[screen](arg);
+    settings: renderSettings, battle: startBattle, chest: startChest, trap: startTrap, darts: startDarts, gallery: renderGallery, hero: renderHeroMoment })[screen](arg);
   window.scrollTo(0, 0);
   fitScreen();
 }
 
-// Top bar: always visible, holds the mobile/desktop switch
-function renderTopbar() {
-  return h('div', { class: 'topbar' },
-    h('div', { class: 'tb-logo' }, 'Za govor', h('span', { class: 'dot' }, '!')),
-    h('span', { class: 'tb-sp' }),
-    TIMED[S.screen] ? h('button', { class: 'btn small tb-btn tb-pause', title: 'Premor (Esc): čas se ustavi, uganka se zakrije', 'aria-label': 'Premor', onclick: () => setPause(true) },
-      tbIcon('M3 2h3v10H3zM8 2h3v10H8z'), h('span', { class: 'lbl' }, 'Premor'), h('kbd', {}, 'Esc')) : null,
-    S.mobile ? null : h('button', { class: 'btn small tb-btn tb-fs' + (isFs() ? ' on' : ''), 'aria-pressed': isFs() ? 'true' : 'false', title: 'Celozaslonski način', 'aria-label': 'Celozaslonski način', onclick: toggleFullscreen },
-      tbIcon(isFs() ? 'M5 1v4H1v1.6h5.6V1zM9 13V9h4V7.4H7.4V13zM1 9h4v4h1.6V7.4H1zM13 5H9V1H7.4v5.6H13z' : 'M1 1h5v1.6H2.6V6H1zM13 13H8v-1.6h3.4V8H13zM1 13V8h1.6v3.4H6V13zM13 1v5h-1.6V2.6H8V1z'), h('span', { class: 'lbl' }, isFs() ? 'Zapri cel zaslon' : 'Cel zaslon')),
-    h('button', { class: 'btn small tb-sound' + (SOUND_ON ? ' on' : ''), 'aria-pressed': SOUND_ON ? 'true' : 'false', title: 'Zvočni učinki', 'aria-label': 'Zvočni učinki', onclick: toggleSound },
-      h('span', { class: 'tb-note', 'aria-hidden': 'true' }, '♪'), h('span', { class: 'lbl' }, 'Zvok'), h('span', { class: 'pill' }, SOUND_ON ? 'VKLOP' : 'IZKLOP')),
-    h('button', { class: 'btn small tb-mobile' + (S.mobile ? ' on' : ''), 'aria-pressed': S.mobile ? 'true' : 'false',
-      title: 'Preklopi med mobilnim in namiznim prikazom', onclick: toggleMobile },
-      h('span', { class: 'phone' }), 'Mobilni prikaz', h('span', { class: 'pill' }, S.mobile ? 'VKLOP' : 'IZKLOP')));
-}
-function tbIcon(d) { const s = svgEl('svg', { viewBox: '0 0 14 14', 'aria-hidden': 'true' }); s.append(svgEl('path', { d, fill: 'currentColor' })); return s; }
-function toggleMobile() {
-  S.mobile = !S.mobile;
-  try { localStorage.setItem('zg-mobile', S.mobile ? '1' : '0'); } catch (e) { /* no storage */ }
+// Tests only (window.__ZG.setLayout): switch the layout and re-render the current screen in place, keeping game state.
+function setLayout(mobile) {
+  S.mobile = !!mobile;
   applyMobileClass();
   // re-render the current screen in place; game state is kept
   mountShell();
@@ -2245,6 +2239,7 @@ function toggleMobile() {
   else if (scr === 'howto') renderHowto();
   else if (scr === 'about') renderAbout();
   else if (scr === 'heroes') renderHeroes();
+  else if (scr === 'settings') renderSettings();
   else renderTitle();
   fitScreen();
 }
@@ -2306,9 +2301,10 @@ function renderHeroMoment(arg) {
       h('div', { class: 'hm-card' }, flip, h('div', { class: 'hm-actions' }, flipBtn))),
     kind === 'freed' ? h('div', { class: 'note' }, CHAR_ST[id] === 'konec' ? `${ch.name} se ti pridruži šele po koncu zgodbe — takrat lahko zaigraš tudi z njim.` : `${ch.name} se ti ne pridruži takoj: svojo moč ti posodi, ko se srečata v naslednji igri.`) : null,
     arg.info ? h('div', { class: 'note' }, arg.info(arg)) : null,
-    h('div', { class: 'row', style: { 'flex-wrap': 'wrap' } }, arg.actions
-      ? arg.actions(arg).map(a => h('button', { class: 'btn' + (a.primary ? ' primary' : ''), onclick: a.fn }, a.label, a.primary ? h('kbd', { style: { 'margin-left': '6px' } }, 'Enter') : null))
-      : h('button', { class: 'btn primary', onclick: () => arg.next() }, arg.nextLabel || 'Naprej ', h('kbd', {}, 'Enter'))));
+    // a page reached from a menu (arg.crumb) has one way back, the sticky link at the top; no second button at the bottom
+    arg.actions ? h('div', { class: 'row', style: { 'flex-wrap': 'wrap' } }, arg.actions(arg).map(a => h('button', { class: 'btn' + (a.primary ? ' primary' : ''), onclick: a.fn }, a.label, a.primary ? h('kbd', { style: { 'margin-left': '6px' } }, 'Enter') : null)))
+      : arg.crumb ? null
+      : h('div', { class: 'row', style: { 'flex-wrap': 'wrap' } }, h('button', { class: 'btn primary', onclick: () => arg.next() }, arg.nextLabel || 'Naprej ', h('kbd', {}, 'Enter'))));
   SCR.append(wrap);
   if (!arg.played) { arg.played = true; setTimeout(() => sfx(kind === 'freed' ? 'win' : 'heal', { vol: .8 }), 200); }
 }
@@ -2341,7 +2337,7 @@ function renderGallery() {
       h('h3', {}, ch.name, h('small', {}, ch.sub), h('span', { class: 'gtag', style: { '--tc': ST_LABEL[CHAR_ST[ch.id]][1] } }, ST_LABEL[CHAR_ST[ch.id]][0])), stage,
       h('div', { class: 'gbtns' }, [1, 2, 3].map(t => h('button', { class: 'btn', onclick: () => play(t) }, h('b', {}, '●'.repeat(t)), ch.moves[t - 1]))),
       h('div', { class: 'gbtns' },
-        h('button', { class: 'btn small', onclick: () => go('hero', { kind: 'meet', ids: [ch.id], next: () => go('gallery'), nextLabel: 'Nazaj v galerijo ' }) }, 'Prizor: srečanje'),
+        h('button', { class: 'btn small', onclick: () => go('hero', { kind: 'meet', ids: [ch.id], crumb: 'Nazaj v galerijo', next: () => go('gallery') }) }, 'Prizor: srečanje'),
         null),
       h('p', {}, ch.note), frames(ch.id, false),
       h('div', { class: 'gboards' }, [1, 2, 3].map(t => board(ch.id, t, `${t === 1 ? '1 črka' : t + ' črke'} · ${ch.moves[t - 1]}`)))));
@@ -2362,7 +2358,6 @@ function renderGallery() {
       h('p', {}, ch.note), frames(ch.id),
       h('div', { class: 'gboards two' }, ch.plays.map(pl => board(ch.id, pl[1], pl[0])))));
   });
-  wrap.append(h('div', { class: 'row', style: { 'justify-content': 'flex-start' } }, h('button', { class: 'btn small', onclick: () => go('heroes') }, 'Nazaj na junake')));
   SCR.append(wrap);
   focusPage();
 }
@@ -2414,7 +2409,7 @@ function buildBattleDom() {
   SCR.append(battle = h('div', { class: 'battle' },
     h('div', { class: 'bhead' },
       h('div', { class: 't' }, B.node.title, h('small', {}, B.node.sub)),
-      h('div', { class: 'meta', ref: el => UI.meta = el })),
+      h('div', { class: 'meta', ref: el => UI.meta = el }), pauseBtn()),
     h('div', { class: 'scene' + (nodeBg(B.node) ? ' hasbg' : ''), style: nodeBg(B.node) ? { 'background-image': `linear-gradient(rgba(14,16,26,.36), rgba(14,16,26,.16)), url(${BG[nodeBg(B.node)]})` } : {}, ref: el => UI.scene = el },
       S.mobile ? coach : null,   // first, so actors, the target marker and cards paint over it
       h('div', { class: 'party', ref: el => UI.party = el }),
@@ -3809,7 +3804,7 @@ function renderChest() {
   const E = S.ev; SCR.innerHTML = '';
   const guess = E.sel.map(i => E.letters[i].ch).join('');
   SCR.append(h('div', { class: 'event' },
-    h('div', { class: 'bhead' }, h('div', { class: 't' }, 'Zaklenjena skrinja', h('small', {}, 'dogodek na čas'))),
+    h('div', { class: 'bhead' }, h('div', { class: 't' }, 'Zaklenjena skrinja', h('small', {}, 'dogodek na čas')), pauseBtn()),
     h('div', { class: 'panel' },
       h('div', { class: 'chestbox' }, objEl('skrinja', E.done && E.win ? 1 : 0, 'big'),
         h('div', {}, h('div', {}, 'Iz črk sestavi besedo in jo pošlji. Imaš en poskus: beseda iz vseh črk odpre skrinjo, krajša prava beseda jo le priškrne in prinese del nagrade (daljša beseda, večji del).'),
@@ -3902,7 +3897,7 @@ function renderTrap() {
   const E = S.ev; SCR.innerHTML = '';
   SCR.append(h('div', { class: 'event' },
     h('div', { class: 'bhead' }, h('div', { class: 't' }, 'Plaz kamenja', h('small', {}, 'dogodek na čas')),
-      h('div', { class: 'meta' }, `Družina ${S.partyHp}/${S.maxHp}`)),
+      h('div', { class: 'meta' }, `Družina ${S.partyHp}/${S.maxHp}`), pauseBtn()),
     h('div', { class: 'panel' }, 'Vsaka skala nosi črko. Imaš eno besedo: skale, katerih črke so v njej, se razbijejo, druge te oplazijo. Beseda z vsemi črkami razbije ves plaz. Če ne pošlješ nobene, skale padejo s polno močjo.'),
     h('div', { class: 'lanes', ref: el => UI.lanes = el }, h('div', { class: 'ground' })),
     h('div', { class: 'panel' },
@@ -4449,7 +4444,7 @@ function renderDarts() {
   const E = S.ev; SCR.innerHTML = '';
   const guess = dartsGuess(), n = E.sel.length;
   SCR.append(h('div', { class: 'event darts' },
-    h('div', { class: 'bhead' }, h('div', { class: 't' }, 'Puščice v zidu', h('small', {}, 'dogodek na čas')), h('div', { class: 'meta' }, `Družina ${S.partyHp}/${S.maxHp}`)),
+    h('div', { class: 'bhead' }, h('div', { class: 't' }, 'Puščice v zidu', h('small', {}, 'dogodek na čas')), h('div', { class: 'meta' }, `Družina ${S.partyHp}/${S.maxHp}`), pauseBtn()),
     h('div', { class: 'panel' },
       h('div', { class: 'chestbox' }, objEl('puscice', E.done ? 1 : 0, 'big'),
         h('div', {}, 'Iz vsakega stolpca vzemi eno črko, od leve proti desni, in pošlji besedo. Vsaka črka prave besede obrne eno puščico proti sovražnikom naslednje bitke; puščice, ki ostanejo, zadenejo družino. Pošlješ lahko tudi krajšo besedo. Če beseda ne obstaja, poletijo vse nate.')),
@@ -4539,7 +4534,30 @@ function pausable() {
   return false;
 }
 function applyHeld() { document.body.classList.toggle('held', held()); }
-function syncTopbar() { const tb = $('.topbar'); if (tb) tb.replaceWith(renderTopbar()); }
+// Premor sits in the header of every timed puzzle (battle, chest, rock slide, darts), at its right end.
+// On a phone it is a labelled, thumb-size button; on a computer Esc does the same and the key is shown.
+function pauseBtn() {
+  const ic = svgEl('svg', { viewBox: '0 0 14 14', 'aria-hidden': 'true' }); ic.append(svgEl('path', { d: 'M3 2h3v10H3zM8 2h3v10H8z', fill: 'currentColor' }));
+  return h('button', { class: 'btn small pausebtn', title: 'Premor (Esc): čas se ustavi, uganka se zakrije', onclick: () => setPause(true) },
+    ic, h('span', {}, 'Premor'), S.mobile ? null : h('kbd', {}, 'Esc'));
+}
+// Sound on/off and the master volume: one control, in Nastavitve and in the pause window.
+function soundControls() {
+  let range, row;
+  const pct = () => Math.round(VOLUME * 100) + ' %';
+  const out = h('output', {}, pct());
+  const sync = () => { range.disabled = !SOUND_ON; row.classList.toggle('off', !SOUND_ON); };
+  const el = h('div', { class: 'soundctl' },
+    h('label', { class: 'toggle' },
+      h('input', { type: 'checkbox', class: 'snd-on', checked: SOUND_ON, onchange: e => { setSound(e.target.checked); sync(); } }),
+      h('span', {}, 'Zvočni učinki', h('small', {}, 'Udarci, uroki, skrinje in meni.'))),
+    row = h('label', { class: 'volrow' }, h('span', {}, 'Glasnost'),
+      range = h('input', { type: 'range', min: 0, max: 100, step: 5, value: Math.round(VOLUME * 100), 'aria-label': 'Glasnost zvočnih učinkov',
+        oninput: e => { setVolume(e.target.value / 100); out.textContent = pct(); },
+        onchange: () => sfx('hit1', { soft: true, vol: ATK_VOL }) }), out));
+  sync();
+  return el;
+}
 function dropFocus() {
   const a = document.activeElement;
   G.hadFocus = isTextInput(a);
@@ -4559,7 +4577,6 @@ function setPause(on) {
   if (on) {
     dropFocus();
     let first;
-    const vol = h('output', {}, Math.round(VOLUME * 100) + ' %');
     G.pauseEl = h('div', { class: 'overlay pause', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Premor' }, h('div', { class: 'dialog' },
       h('h2', {}, 'Premor'),
       h('div', { class: 'muted' }, 'Čas stoji. Uganka je zakrita, dokler ne nadaljuješ.'),
@@ -4567,11 +4584,8 @@ function setPause(on) {
         h('button', { class: 'btn primary', ref: el => first = el, onclick: () => setPause(false) }, 'Nadaljuj ', h('kbd', {}, 'Esc')),
         h('button', { class: 'btn', onclick: () => showTut(curTutKind(), true) }, 'Kako se igra'),
         reportButton(),
-        S.mobile ? null : h('button', { class: 'btn', onclick: toggleFullscreen }, 'Cel zaslon: vklop / izklop')),
-      h('label', { class: 'volrow' }, 'Glasnost',
-        h('input', { type: 'range', min: 0, max: 100, step: 5, value: Math.round(VOLUME * 100), 'aria-label': 'Glasnost zvočnih učinkov',
-          oninput: e => { setVolume(e.target.value / 100); vol.textContent = Math.round(VOLUME * 100) + ' %'; },
-          onchange: () => sfx('hit1', { soft: true, vol: ATK_VOL }) }), vol)));
+        S.mobile ? null : h('button', { class: 'btn', onclick: toggleFullscreen }, isFs() ? 'Zapri cel zaslon' : 'Cel zaslon')),
+      soundControls()));
     document.body.append(G.pauseEl);
     first.focus();
   } else {
@@ -4785,7 +4799,11 @@ if (window.ResizeObserver) new ResizeObserver(() => {
   if (document.documentElement.scrollHeight > window.innerHeight + 2 && ZOOM > 0.6) fitSoon();
 }).observe(app);
 window.addEventListener('resize', () => { fitSoon(); if (S.screen === 'howto' && UI.car) UI.car.fit(); });
-for (const ev of ['fullscreenchange', 'webkitfullscreenchange']) document.addEventListener(ev, () => { syncTopbar(); fitSoon(); });
+// the fullscreen switch in Nastavitve follows the real state (Esc or F11 can change it too)
+for (const ev of ['fullscreenchange', 'webkitfullscreenchange']) document.addEventListener(ev, () => {
+  const fs = $('.set-fs'); if (fs) fs.checked = isFs();
+  fitSoon();
+});
 // ============================================================ phone specifics ("Mobilni prikaz")
 // Everything a phone or tablet needs beyond the layout: an in-game Slovene keyboard, so
 // crosswords and the rock slide never depend on the system keyboard (it covers half the
@@ -4933,7 +4951,7 @@ function reportWord(raw, where, note = '') {
 function reportMeta(r) {
   const rej = REJECTED.find(x => x.w === r.w);
   return [LV().name, S.mode === 'real' ? 'realni čas' : 'mirni način', window.Capacitor ? 'Android' : S.mobile ? 'telefon' : 'namizje',
-    rej ? `zavrnjena ${rej.n}×` : 'vpisana'].join(' · ');
+    rej ? `zavrnjena ${rej.n}×` : 'vpisana', 'v' + BUILD.version + (BUILD.commit ? '+' + BUILD.commit : '')].join(' · ');
 }
 // Google Forms takes a plain form POST. no-cors gives no answer to read, so "sent" means the request
 // left the device; a network or policy failure keeps the report queued for the next try.
@@ -5052,11 +5070,12 @@ function reportButton(onclick = openReportInPause, label = 'Prijavi besedo') {
 
 // ============================================================ main menu and the pages under it
 // The start screen is a short menu: Nadaljuj pot (while a journey is under way), Nova pot,
-// Dosežki in junaki, Kako igrati and O igri. Each page under it has one way back, at the top
-// ("← Nazaj na glavni meni"); Esc and the Android back button do the same.
+// Dosežki in junaki, Kako igrati, Nastavitve and O igri, with the version of the build at the bottom.
+// Each page under it has one way back, a link at the top ("← Nazaj na glavni meni") that stays in
+// view while the page scrolls; Esc and the Android back button do the same.
 // Difficulty is chosen on Nova pot only, and only takes effect when the new journey starts:
 // a journey under way keeps the pace and knowledge level it began with.
-const MENU_PAGES = { newrun: 1, howto: 1, about: 1, heroes: 1 };
+const MENU_PAGES = { newrun: 1, howto: 1, about: 1, heroes: 1, settings: 1 };
 
 function menuItems() {
   const R = S.run, items = [];
@@ -5064,6 +5083,7 @@ function menuItems() {
   items.push({ id: 'new', label: 'Nova pot', fn: () => go('newrun') },
     { id: 'heroes', label: 'Dosežki in junaki', fn: () => go('heroes') },
     { id: 'howto', label: 'Kako igrati', fn: () => go('howto') },
+    { id: 'settings', label: 'Nastavitve', fn: () => go('settings') },
     { id: 'about', label: 'O igri', fn: () => go('about') });
   return items;
 }
@@ -5078,7 +5098,8 @@ function renderTitle() {
       h('button', { class: 'mm-item', 'data-id': it.id, ref: el => { if (it.id === S.menuSel) cur = el; },
         onfocus: () => { S.menuSel = it.id; },
         onclick: () => { S.menuSel = it.id; sfx('sel'); it.fn(); } },
-        h('span', { class: 'mm-label' }, it.label), it.sub ? h('span', { class: 'mm-sub' }, `(${it.sub})`) : null)))))));
+        h('span', { class: 'mm-label' }, it.label), it.sub ? h('span', { class: 'mm-sub' }, `(${it.sub})`) : null))))),
+    versionLine('mm-version')));
   // keyboard players land on the menu ready to move; on a phone nothing is pre-focused
   if (cur && !S.mobile) cur.focus({ preventScroll: true });
 }
@@ -5092,7 +5113,16 @@ function menuKey(e) {
   if (k === 'Enter' && !e.repeat && !(e.target && e.target.classList && e.target.classList.contains('mm-item'))) { e.preventDefault(); btns[i].click(); }
 }
 
+// The version of this build (semantic versioning, see CHANGELOG.md): stage, number and, for bug reports, the commit.
+const STAGE = BUILD.stage || '';
+function versionLine(cls) {
+  return h('p', { class: cls, title: `Različica ${BUILD.version}${BUILD.commit ? ', gradnja ' + BUILD.commit : ''}` },
+    STAGE ? h('span', {}, STAGE) : null, STAGE ? ' · ' : null, h('span', {}, 'v' + BUILD.version),
+    BUILD.commit ? h('span', { class: 'commit' }, ' · ' + BUILD.commit) : null);
+}
+
 // ------------------------------------------------------------ pages: the way back and the heading
+// The way back is the page's only header: it sticks to the top of the screen while the page scrolls.
 function crumb(label = 'Nazaj na glavni meni', to = () => go('title')) {
   return h('nav', { class: 'crumbs', 'aria-label': 'Nazaj' },
     h('button', { class: 'crumb', onclick: () => { sfx('sel', { rate: .9, vol: .5 }); to(); } },
@@ -5273,7 +5303,8 @@ function renderAbout(at) {
     pageH1('O igri'),
     h('p', { class: 'lead' }, h('i', {}, 'Za govor!'), ' je besedna igra vlog s slovanskimi bogovi in junaki slovenskega ljudskega izročila. Junaki se bojujejo z besedami: prava beseda je napad, daljša udari močneje.'),
     h('p', {}, 'Pot vodi po Sloveniji, od Ptuja do Ljubljanskega gradu, kjer čaka zmaj. Začneš z enim junakom. Na poti srečaš sovražnike, skrinje, plazove, vodnjake, krošnjarje in nove junake; v družini so največ štirje, bog le eden. Zdravje se po bitki ne vrne samo: junaki se pozdravijo pri vodnjaku. Zlatnike zapraviš pri krošnjarju za napoje, strupe in predmete.'),
-    h('p', { class: 'muted' }, 'To je prototip. Igra še nastaja in se po vsakem preizkusu spremeni.'),
+    h('p', { class: 'muted' }, STAGE === 'zaprta alfa' ? 'Igra je v zaprti alfi: igrajo jo povabljeni preizkuševalci. Še nastaja in se po vsakem preizkusu spremeni.' : 'Igra še nastaja in se po vsakem preizkusu spremeni.'),
+    versionLine('about-version'),
     sec('navdih', 'Navdih', creditInspiration()),
     sec('besede', 'Manjkajoča beseda',
       h('p', {}, 'Je igra zavrnila pravo slovensko besedo? Sporoči nam jo, da jo dodamo.'),
@@ -5281,6 +5312,23 @@ function renderAbout(at) {
     sec('zasluge', 'Zasluge', creditSources())));
   focusPage();
   if (at) { const t = $('#o-' + at); if (t) requestAnimationFrame(() => t.scrollIntoView({ block: 'start' })); }
+}
+
+// ------------------------------------------------------------ Nastavitve
+// Sound for now; on a computer also fullscreen (a phone app is always full screen).
+function renderSettings() {
+  SCR.append(h('div', { class: 'page settings' },
+    crumb(),
+    pageH1('Nastavitve'),
+    h('section', {}, h('h2', {}, 'Zvok'), soundControls()),
+    S.mobile ? null : h('section', {}, h('h2', {}, 'Zaslon'),
+      h('label', { class: 'toggle' },
+        h('input', { type: 'checkbox', class: 'set-fs', checked: isFs(), onchange: e => {
+          if (e.target.checked !== isFs()) toggleFullscreen();
+          setTimeout(() => { e.target.checked = isFs(); }, 500);   // where fullscreen is refused, the box goes back
+        } }),
+        h('span', {}, 'Cel zaslon', h('small', {}, 'Igra zapolni ves zaslon. Enako naredi tipka F11.'))))));
+  focusPage();
 }
 
 // ------------------------------------------------------------ Dosežki in junaki
@@ -5382,11 +5430,18 @@ function layoutTitleStage() {
   // centre the scene on a whole screen pixel, or every art pixel would be smeared across two
   const fr = st.querySelector('.ts-frame');
   fr.style.setProperty('--fx', Math.round((width - TITLE_META.w * s) / 2) + 'px'); fr.classList.add('placed');
-  st.style.height = Math.min(full, Math.max(TITLE_META.h * 2 - 40, Math.round(window.innerHeight * (+st.dataset.maxvh || .72)))) + 'px';
-  // sit right under the top bar, whatever margins the start screen above it has
-  const bar = document.querySelector('.topbar');
+  // under a phone's status bar (edge-to-edge Android app) the sky simply continues, and the art starts below it
+  const sat = safeTop();
+  st.style.setProperty('--sat-px', sat + 'px');
+  st.style.height = (sat + Math.min(full, Math.max(TITLE_META.h * 2 - 40, Math.round(window.innerHeight * (+st.dataset.maxvh || .72))))) + 'px';
+  // the scene starts at the very top of the page, whatever margins the start screen has
   st.style.marginTop = '0px';
-  if (bar) st.style.marginTop = Math.round(bar.getBoundingClientRect().bottom - st.getBoundingClientRect().top) + 'px';
+  st.style.marginTop = -Math.round(st.getBoundingClientRect().top + window.scrollY) + 'px';
+}
+// height of the system status bar over the page (0 in a browser): measured, because --sat is a var() chain
+function safeTop() {
+  const p = h('div', { style: { position: 'absolute', visibility: 'hidden', height: 'var(--sat)' } });
+  document.body.append(p); const v = p.offsetHeight; p.remove(); return v;
 }
 window.addEventListener('resize', () => requestAnimationFrame(layoutTitleStage));
 
@@ -5400,7 +5455,7 @@ document.addEventListener('keydown', e => {
   if (S.screen === 'travel') { travelKey(e); return; }
   if (S.screen === 'ending') { if (e.key === 'Enter') { e.preventDefault(); resetRun(); go('title'); } return; }
   if (S.screen === 'result') { if (e.key === 'Enter') { e.preventDefault(); const w = !!(B && B.won); S.resultEl.remove(); afterResult(w); } return; }
-  if (S.screen === 'hero') { if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); const A = S.heroArg, acts = A.actions ? A.actions(A) : null; if (!acts) A.next(); else { const a = e.key === 'Enter' ? acts.find(x => x.primary) : acts[acts.length - 1]; if (a) a.fn(); } } else if (e.key === ' ') { e.preventDefault(); const b = document.querySelector('.hm-actions .btn'); if (b) b.click(); } return; }
+  if (S.screen === 'hero') { if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); const A = S.heroArg, acts = A.actions ? A.actions(A) : null; if (!acts) { if (e.key === 'Escape' || !A.crumb) A.next(); } else { const a = e.key === 'Enter' ? acts.find(x => x.primary) : acts[acts.length - 1]; if (a) a.fn(); } } else if (e.key === ' ') { e.preventDefault(); const b = document.querySelector('.hm-actions .btn'); if (b) b.click(); } return; }
   if (S.screen === 'battle') { battleKey(e); return; }
   if (S.screen === 'darts') { dartsKey(e); return; }
   if (S.screen === 'chest') {
@@ -5434,7 +5489,7 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { menuItems, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { menuItems, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 
 </script>

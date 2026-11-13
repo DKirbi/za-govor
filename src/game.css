@@ -264,17 +264,6 @@ h1, h2, h3 { margin: 0; }
   .chips { justify-content: flex-start; }
 }
 
-/* ---------- Top bar (every screen) ---------- */
-.topbar { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 10px;
-  padding: 8px 0 10px; margin-bottom: 4px; background: var(--bg); border-bottom: 1px solid var(--line); }
-.tb-logo { font-weight: 800; font-size: 17px; }
-.tb-logo .dot { color: var(--gold); padding: 0 .06em; }
-.tb-sp { flex: 1; }
-.tb-mobile { display: inline-flex; align-items: center; gap: 8px; touch-action: manipulation; }
-.tb-mobile .phone { width: 10px; height: 16px; border: 2px solid currentColor; border-radius: 3px; }
-.tb-mobile .pill { font-size: 10px; font-weight: 800; letter-spacing: .04em; padding: 1px 6px; border-radius: 99px; background: var(--bg2); color: var(--dim); }
-.tb-mobile.on { border-color: var(--gold); color: var(--gold); }
-.tb-mobile.on .pill { background: var(--gold); color: #1d1608; }
 #screen { padding-top: 6px; }
 
 /* ---------- HP numbers, word proposals ---------- */
@@ -509,10 +498,6 @@ body.mobile .card.folk.t1 { width: 100px; } body.mobile .card.folk.t2 { width: 1
 .card.folk.foecard .cap { background: #2c2230; color: #f2e6f4; border-color: #0f0b14; }
 .card.folk.foecard .cap .vl { color: #ff9a9a; }
 .card.folk.foecard.t3 .pic { box-shadow: 0 2px 0 #0f0b14, 0 0 24px rgba(200, 50, 70, .55), 0 12px 26px rgba(0,0,0,.6); }
-.tb-sound { display: inline-flex; align-items: center; gap: 6px; touch-action: manipulation; }
-.tb-sound .pill { font-size: 10px; font-weight: 800; letter-spacing: .04em; padding: 1px 6px; border-radius: 99px; background: var(--bg2); color: var(--dim); }
-.tb-sound.on { border-color: var(--good); color: var(--good); } .tb-sound.on .pill { background: var(--good); color: #0d2417; }
-body.mobile .tb-mobile { font-size: 0; gap: 4px; } body.mobile .tb-mobile .pill, body.mobile .tb-sound { font-size: 10px; }
 .gallery h2 { font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); margin: 8px 0 -4px; }
 .gboards.two { grid-template-columns: repeat(2, 1fr); }
 .gstage .foeside { right: 9%; bottom: 26px; }
@@ -607,12 +592,13 @@ body.mobile .choices.three { grid-template-columns: 1fr; }
 .curclue .revbtn + .kbbtn { margin-left: 0; }
 
 /* Phone battle: the whole letter grid stays above the sticky action bar without scrolling.
-   The battle fills the space under the top bar and only the scene gives way (240 → 170 px);
-   on shorter phones it stops at 170 px and the page scrolls as before. */
+   The battle is exactly as tall as the screen below its top, and only the scene gives way: it takes the
+   spare height, and shrinks (to 170 px at least) when the word bar grows, so the letter grid never moves
+   under a finger mid-drag. On shorter phones it stops at 170 px and the page scrolls as before. */
 body.mobile #app:has(.battle) { padding-bottom: 0; }
-body.mobile .battle { display: flex; flex-direction: column; max-height: calc(100dvh - var(--battle-top, 57px)); }
+body.mobile .battle { display: flex; flex-direction: column; height: calc(100dvh - var(--battle-top, 57px)); }
 body.mobile .battle > * { flex-shrink: 0; }
-body.mobile .battle > .scene { flex-shrink: 1; min-height: 170px; }
+body.mobile .battle > .scene { flex: 1 1 auto; min-height: 170px; }
 /* the tip sits over the sky, under the actors and cards, and lets taps through */
 .scene > .coach { position: absolute; top: 8px; left: 8px; right: 8px; pointer-events: none;
   font-size: 12px; line-height: 1.35; padding: 6px 9px; background: rgba(22, 30, 52, .92); border: 1px solid #34466e; }
@@ -743,23 +729,27 @@ body.held .puzzle, body.held .wordbar, body.held .event .panel, body.held .lanes
 .volrow { display: flex; align-items: center; gap: 12px; margin-top: 16px; color: var(--dim); font-size: 13px; }
 .volrow input { flex: 1; accent-color: var(--gold); min-width: 0; }
 .volrow output { width: 3.2em; text-align: right; font-variant-numeric: tabular-nums; }
+.volrow.off { opacity: .45; }
+/* sound on/off + volume (soundControls): in Nastavitve and in the pause window */
+.dialog .soundctl { margin-top: 14px; padding-top: 4px; border-top: 1px solid var(--line); }
+.dialog .soundctl .toggle { color: var(--ink); min-height: 40px; }
+.dialog .soundctl .toggle input { width: 18px; height: 18px; }
+.dialog .soundctl .toggle small { display: none; }
+.dialog .soundctl .volrow { margin-top: 6px; }
+.settings .volrow { max-width: 440px; min-height: 44px; margin: 4px 0 0 30px; font-size: 14px; }
+body.mobile .volrow input { min-height: 32px; }
 
-.tb-btn { display: inline-flex; align-items: center; gap: 6px; touch-action: manipulation; }
-.tb-btn svg { width: 14px; height: 14px; flex: none; }
-.tb-btn.on { border-color: var(--gold); color: var(--gold); }
-body.mobile .tb-btn .lbl, body.mobile .tb-btn kbd { display: none; }
-body.mobile .tb-btn { padding: 6px 8px; }
-/* phones: the pause is a labelled thumb-size button, not a bare icon; the sound and view
-   switches shrink to icon + state so it fits beside them (from 360 px wide) */
-body.mobile .tb-btn.tb-pause { min-height: 40px; padding: 6px 12px; gap: 6px; font-size: 14px; font-weight: 700;
+/* Premor: at the right end of a timed puzzle's header (src/playtest.js pauseBtn). On a phone it is a labelled,
+   thumb-size gold button, not a bare icon. */
+.bhead .pausebtn { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; }
+.bhead .meta ~ .pausebtn { margin-left: 2px; }
+.pausebtn svg { width: 12px; height: 12px; }
+/* phone: title and Premor share the first row, the levels and pace line goes under them */
+body.mobile .bhead:has(.pausebtn) { flex-wrap: wrap; row-gap: 0; }
+body.mobile .bhead:has(.pausebtn) .meta { order: 3; flex-basis: 100%; margin: -2px 0 0; }
+body.mobile .bhead .meta ~ .pausebtn { margin-left: auto; }
+body.mobile .btn.small.pausebtn { min-height: 40px; padding: 6px 12px; font-size: 14px; font-weight: 700; flex: none;
   border-color: var(--gold); color: var(--gold); background: color-mix(in srgb, var(--gold) 12%, var(--panel2)); }
-body.mobile .tb-btn.tb-pause .lbl { display: inline; }
-body.mobile .tb-btn.tb-pause svg { width: 13px; height: 13px; }
-body.mobile .topbar .tb-sound { font-size: 15px; gap: 4px; padding: 6px 8px; min-height: 40px; } body.mobile .tb-sound .lbl { display: none; }
-body.mobile .topbar .tb-mobile { min-height: 40px; padding: 6px 8px; }
-@media (max-width: 374px) { body.mobile .tb-logo { font-size: 15px; } body.mobile .topbar { gap: 5px; }
-  body.mobile .tb-btn.tb-pause { padding: 6px 9px; } body.mobile .topbar .tb-sound, body.mobile .topbar .tb-mobile { padding: 6px 6px; } }
-body.mobile .topbar { gap: 6px; }
 
 .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 95; width: max-content; max-width: min(560px, 92vw);
   background: var(--panel2); border: 1px solid var(--gold); border-radius: 10px; padding: 10px 14px; font-size: 13.5px; line-height: 1.4;
@@ -853,12 +843,12 @@ body.mobile .chestbox { gap: 10px; align-items: flex-start; font-size: 13.5px; l
 :root { --sat: var(--safe-area-inset-top, env(safe-area-inset-top, 0px)); --sab: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
   --sal: var(--safe-area-inset-left, env(safe-area-inset-left, 0px)); --sar: var(--safe-area-inset-right, env(safe-area-inset-right, 0px)); }
 body.mobile #app { padding-left: max(10px, var(--sal)); padding-right: max(10px, var(--sar)); padding-bottom: max(18px, var(--sab)); }
-body.mobile .topbar { padding-top: max(8px, var(--sat)); }
+body.mobile #app { padding-top: max(10px, var(--sat)); }
 body.mobile .side, body.mobile .event > .vkbd { padding-bottom: max(6px, var(--sab)); }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body.mobile { overscroll-behavior-y: contain; -webkit-tap-highlight-color: transparent; }
 /* Touch targets: nothing you must hit under time pressure is smaller than 40 px */
-body.mobile .btn.small:not(.tb-btn):not(.tb-sound):not(.tb-mobile) { min-height: 40px; padding: 8px 12px; font-size: 13.5px; }
+body.mobile .btn.small:not(.pausebtn) { min-height: 40px; padding: 8px 12px; font-size: 13.5px; }
 body.mobile .prop { min-height: 36px; padding: 6px 12px; font-size: 13.5px; }
 body.mobile .prop-x { min-width: 36px; min-height: 36px; font-size: 20px; }
 body.mobile .kbbtn { min-height: 36px; padding: 6px 12px; font-size: 13px; }
@@ -902,8 +892,8 @@ body.mobile .reportrow input { min-height: 44px; font-size: 16px; }   /* 16 px k
 body.mobile .rejlist .prop { min-height: 40px; }
 
 /* ---------- Main menu (start screen) ---------- */
-.menu { display: flex; flex-direction: column; align-items: center; min-height: calc(100vh - 92px); min-height: calc(100dvh - 92px);
-  padding: clamp(20px, 7vh, 80px) 0 clamp(20px, 6vh, 56px); }
+.menu { display: flex; flex-direction: column; align-items: center; min-height: calc(100vh - 38px); min-height: calc(100dvh - 38px);
+  padding: clamp(20px, 7vh, 80px) 0 0; }
 .menu-logo { font-size: clamp(52px, 8.5vw, 80px); line-height: 1; text-align: center; }
 .menu-rule { width: 144px; margin: 20px auto 0; }
 .mainmenu { width: 100%; margin: auto 0; padding-top: clamp(24px, 6vh, 64px); }
@@ -925,14 +915,26 @@ body.mobile .rejlist .prop { min-height: 40px; }
   .mm-item:hover .mm-sub { color: var(--gold); }
 }
 .mm-item:active { transform: translateY(1px); }
-body.mobile .menu { padding-top: 32px; }
+body.mobile .menu { padding-top: 32px; min-height: calc(100dvh - max(10px, var(--sat)) - max(18px, var(--sab)) - 6px); }
+/* the version of the build, at the bottom of the start screen (semantic versioning, see CHANGELOG.md) */
+.mm-version { margin: 28px 0 0; color: var(--dim); font-size: 12px; letter-spacing: .05em; text-align: center; font-variant-numeric: tabular-nums; }
+.mm-version .commit, .about-version .commit { opacity: .6; }
+.about-version { margin: -2px 0 0; color: var(--dim); font-size: 12.5px; font-variant-numeric: tabular-nums; }
 body.mobile .menu-logo { font-size: 54px; }
 body.mobile .mm-item { width: min(100%, 340px); min-height: 60px; font-size: 28px; }
 
 /* ---------- Pages under the menu: the way back, headings, sections ---------- */
 .page { max-width: 760px; margin: 0 auto 56px; }
 .page.setup { margin-bottom: 0; }
-.crumbs { margin: 2px 0 6px; }
+/* The way back is the header of every page under the menu: it stays at the top of the screen while the page
+   scrolls, on a band of the page colour that fades into the content below it. */
+.crumbs { position: sticky; top: 0; z-index: 30; margin: 2px -16px 6px; padding: 4px 16px 2px; background: var(--bg); }
+.crumbs::after { content: ''; position: absolute; left: 0; right: 0; top: 100%; height: 14px; pointer-events: none;
+  background: linear-gradient(var(--bg), color-mix(in srgb, var(--bg) 0%, transparent)); }
+/* on a phone it also covers the status bar once the page has scrolled under it */
+body.mobile #app:has(.crumbs), body.mobile #app:has(.crumbs) #screen { padding-top: 0; }
+body.mobile .hm:has(> .crumbs) { margin-top: 0; }
+body.mobile .crumbs { margin: 0 -10px 6px; padding: max(8px, var(--sat)) 10px 2px; }
 .crumb { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 14px 6px 6px; margin-left: -6px; border: 0; border-radius: 8px;
   background: none; color: var(--dim); font-size: 15px; font-weight: 600; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 .crumb .arr { color: var(--gold); font-size: 20px; line-height: 1; transition: transform .12s; }
@@ -943,7 +945,7 @@ body.mobile .mm-item { width: min(100%, 340px); min-height: 60px; font-size: 28p
 .page .lead { font-size: 16px; line-height: 1.55; max-width: 62ch; margin: 0 0 10px; }
 .page p { line-height: 1.55; max-width: 66ch; }
 .page section { margin-top: 36px; }
-.page section[id] { scroll-margin-top: 64px; }
+.page section[id] { scroll-margin-top: 72px; }
 .page h2 { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 0 0 12px; font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); }
 .page .tag { padding: 2px 9px; border: 1px solid var(--line); border-radius: 99px; background: var(--bg2); color: var(--dim);
   font-size: 11px; font-weight: 700; letter-spacing: .02em; text-transform: none; }
@@ -986,10 +988,10 @@ body.mobile .mm-item { width: min(100%, 340px); min-height: 60px; font-size: 28p
 .subopt { padding: 2px 14px 4px; border: 2px solid var(--gold); border-top: 0; border-radius: 0 0 var(--radius) var(--radius); background: color-mix(in srgb, var(--gold) 5%, var(--bg2)); }
 .subopt[hidden] { display: none; }
 .set-opts { display: grid; gap: 2px; margin-top: 28px; }
-.setup .toggle { align-items: flex-start; min-height: 44px; margin: 0; padding: 10px 0; color: var(--ink); }
-.setup .toggle input { flex: none; width: 20px; height: 20px; margin: 1px 0 0; }
-.setup .toggle > span { display: grid; gap: 2px; font-size: 15px; font-weight: 600; }
-.setup .toggle small { font-size: 13px; font-weight: 400; line-height: 1.4; color: var(--dim); }
+.setup .toggle, .settings .toggle { align-items: flex-start; min-height: 44px; margin: 0; padding: 10px 0; color: var(--ink); }
+.setup .toggle input, .settings .toggle input { flex: none; width: 20px; height: 20px; margin: 1px 0 0; }
+.setup .toggle > span, .settings .toggle > span { display: grid; gap: 2px; font-size: 15px; font-weight: 600; }
+.setup .toggle small, .settings .toggle small { font-size: 13px; font-weight: 400; line-height: 1.4; color: var(--dim); }
 .setup .note { margin: 24px 0 0; }
 /* the next step stays in reach while the choices scroll: a bar at the bottom of the window */
 .cta-row { position: sticky; bottom: 0; z-index: 5; display: flex; align-items: center; gap: 12px; margin-top: 16px; padding: 20px 0 16px;

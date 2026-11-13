@@ -75,10 +75,17 @@ function layoutTitleStage() {
   // centre the scene on a whole screen pixel, or every art pixel would be smeared across two
   const fr = st.querySelector('.ts-frame');
   fr.style.setProperty('--fx', Math.round((width - TITLE_META.w * s) / 2) + 'px'); fr.classList.add('placed');
-  st.style.height = Math.min(full, Math.max(TITLE_META.h * 2 - 40, Math.round(window.innerHeight * (+st.dataset.maxvh || .72)))) + 'px';
-  // sit right under the top bar, whatever margins the start screen above it has
-  const bar = document.querySelector('.topbar');
+  // under a phone's status bar (edge-to-edge Android app) the sky simply continues, and the art starts below it
+  const sat = safeTop();
+  st.style.setProperty('--sat-px', sat + 'px');
+  st.style.height = (sat + Math.min(full, Math.max(TITLE_META.h * 2 - 40, Math.round(window.innerHeight * (+st.dataset.maxvh || .72))))) + 'px';
+  // the scene starts at the very top of the page, whatever margins the start screen has
   st.style.marginTop = '0px';
-  if (bar) st.style.marginTop = Math.round(bar.getBoundingClientRect().bottom - st.getBoundingClientRect().top) + 'px';
+  st.style.marginTop = -Math.round(st.getBoundingClientRect().top + window.scrollY) + 'px';
+}
+// height of the system status bar over the page (0 in a browser): measured, because --sat is a var() chain
+function safeTop() {
+  const p = h('div', { style: { position: 'absolute', visibility: 'hidden', height: 'var(--sat)' } });
+  document.body.append(p); const v = p.offsetHeight; p.remove(); return v;
 }
 window.addEventListener('resize', () => requestAnimationFrame(layoutTitleStage));

@@ -23,7 +23,30 @@ function pausable() {
   return false;
 }
 function applyHeld() { document.body.classList.toggle('held', held()); }
-function syncTopbar() { const tb = $('.topbar'); if (tb) tb.replaceWith(renderTopbar()); }
+// Premor sits in the header of every timed puzzle (battle, chest, rock slide, darts), at its right end.
+// On a phone it is a labelled, thumb-size button; on a computer Esc does the same and the key is shown.
+function pauseBtn() {
+  const ic = svgEl('svg', { viewBox: '0 0 14 14', 'aria-hidden': 'true' }); ic.append(svgEl('path', { d: 'M3 2h3v10H3zM8 2h3v10H8z', fill: 'currentColor' }));
+  return h('button', { class: 'btn small pausebtn', title: 'Premor (Esc): čas se ustavi, uganka se zakrije', onclick: () => setPause(true) },
+    ic, h('span', {}, 'Premor'), S.mobile ? null : h('kbd', {}, 'Esc'));
+}
+// Sound on/off and the master volume: one control, in Nastavitve and in the pause window.
+function soundControls() {
+  let range, row;
+  const pct = () => Math.round(VOLUME * 100) + ' %';
+  const out = h('output', {}, pct());
+  const sync = () => { range.disabled = !SOUND_ON; row.classList.toggle('off', !SOUND_ON); };
+  const el = h('div', { class: 'soundctl' },
+    h('label', { class: 'toggle' },
+      h('input', { type: 'checkbox', class: 'snd-on', checked: SOUND_ON, onchange: e => { setSound(e.target.checked); sync(); } }),
+      h('span', {}, 'Zvočni učinki', h('small', {}, 'Udarci, uroki, skrinje in meni.'))),
+    row = h('label', { class: 'volrow' }, h('span', {}, 'Glasnost'),
+      range = h('input', { type: 'range', min: 0, max: 100, step: 5, value: Math.round(VOLUME * 100), 'aria-label': 'Glasnost zvočnih učinkov',
+        oninput: e => { setVolume(e.target.value / 100); out.textContent = pct(); },
+        onchange: () => sfx('hit1', { soft: true, vol: ATK_VOL }) }), out));
+  sync();
+  return el;
+}
 function dropFocus() {
   const a = document.activeElement;
   G.hadFocus = isTextInput(a);
@@ -43,7 +66,6 @@ function setPause(on) {
   if (on) {
     dropFocus();
     let first;
-    const vol = h('output', {}, Math.round(VOLUME * 100) + ' %');
     G.pauseEl = h('div', { class: 'overlay pause', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Premor' }, h('div', { class: 'dialog' },
       h('h2', {}, 'Premor'),
       h('div', { class: 'muted' }, 'Čas stoji. Uganka je zakrita, dokler ne nadaljuješ.'),
@@ -51,11 +73,8 @@ function setPause(on) {
         h('button', { class: 'btn primary', ref: el => first = el, onclick: () => setPause(false) }, 'Nadaljuj ', h('kbd', {}, 'Esc')),
         h('button', { class: 'btn', onclick: () => showTut(curTutKind(), true) }, 'Kako se igra'),
         reportButton(),
-        S.mobile ? null : h('button', { class: 'btn', onclick: toggleFullscreen }, 'Cel zaslon: vklop / izklop')),
-      h('label', { class: 'volrow' }, 'Glasnost',
-        h('input', { type: 'range', min: 0, max: 100, step: 5, value: Math.round(VOLUME * 100), 'aria-label': 'Glasnost zvočnih učinkov',
-          oninput: e => { setVolume(e.target.value / 100); vol.textContent = Math.round(VOLUME * 100) + ' %'; },
-          onchange: () => sfx('hit1', { soft: true, vol: ATK_VOL }) }), vol)));
+        S.mobile ? null : h('button', { class: 'btn', onclick: toggleFullscreen }, isFs() ? 'Zapri cel zaslon' : 'Cel zaslon')),
+      soundControls()));
     document.body.append(G.pauseEl);
     first.focus();
   } else {
@@ -269,4 +288,8 @@ if (window.ResizeObserver) new ResizeObserver(() => {
   if (document.documentElement.scrollHeight > window.innerHeight + 2 && ZOOM > 0.6) fitSoon();
 }).observe(app);
 window.addEventListener('resize', () => { fitSoon(); if (S.screen === 'howto' && UI.car) UI.car.fit(); });
-for (const ev of ['fullscreenchange', 'webkitfullscreenchange']) document.addEventListener(ev, () => { syncTopbar(); fitSoon(); });
+// the fullscreen switch in Nastavitve follows the real state (Esc or F11 can change it too)
+for (const ev of ['fullscreenchange', 'webkitfullscreenchange']) document.addEventListener(ev, () => {
+  const fs = $('.set-fs'); if (fs) fs.checked = isFs();
+  fitSoon();
+});

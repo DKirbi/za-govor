@@ -51,7 +51,7 @@ function reportWord(raw, where, note = '') {
 function reportMeta(r) {
   const rej = REJECTED.find(x => x.w === r.w);
   return [LV().name, S.mode === 'real' ? 'realni čas' : 'mirni način', window.Capacitor ? 'Android' : S.mobile ? 'telefon' : 'namizje',
-    rej ? `zavrnjena ${rej.n}×` : 'vpisana'].join(' · ');
+    rej ? `zavrnjena ${rej.n}×` : 'vpisana', 'v' + BUILD.version + (BUILD.commit ? '+' + BUILD.commit : '')].join(' · ');
 }
 // Google Forms takes a plain form POST. no-cors gives no answer to read, so "sent" means the request
 // left the device; a network or policy failure keeps the report queued for the next try.
