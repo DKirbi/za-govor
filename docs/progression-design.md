@@ -6,8 +6,8 @@ This replaces the earlier "three starters and cursed-god bosses" proposal. Every
 
 ## Status at a glance
 - **Decided by the user (11 Nov):** the 2D side-scrolling journey is the point of the game; the levels are places in Slovenia visited one after another, with no level list; the dragon at Ljubljana castle is the final battle; healing happens only at special places such as wells; the player starts with one character; four is the most in a party; only one god per play, and gods are stronger; Erasmus of Lueg (Erazem Predjamski) is a new character and more should be explored; all characters are unlocked; there are items with mythical Slavic names; merchants sell potions, poisons and attack boosts; traps, chests and wells have their own sprites; the web prototype is expanded for fast testing and Godot stays the end goal.
-- **13 Nov, v0.9.0 (built, "skill expansion and fixes"):** XP only from beaten enemies; levels 1–9, each with a skill point; three skills per hero, learned and upgraded three times at wells, shrines and pedlars (section 4); three heroes per journey, favouring the hero of each place; only a hero who joins is unlocked; the shrine's prayer, blessing and trial (section 2a); darts that only hurt.
-- **12 Nov (built):** the darts event (*Puščice v zidu*), the start screen with silhouettes and three known starters, attacks for the healers, every potion used automatically.
+- **13 Nov, v0.9.0 (built, "skill expansion and fixes"):** XP only from beaten enemies; levels 1–9, each with a skill point; three skills per hero, learned and upgraded three times at wells, shrines and pedlars (section 4); three heroes per journey, favouring the hero of each place; only a hero who joins is unlocked; the shrine's prayer, blessing and trial (section 2a); spikes that only hurt.
+- **12 Nov (built):** the darts event (*Puščice v zidu*, renamed *Past s konicami* on 13 Nov), the start screen with silhouettes and three known starters, attacks for the healers, every potion used automatically.
 - **Evening fixes (built):** partial healing outside wells, automatic potions, wells raise the fallen, gold and XP from every enemy, one-word chests and rock slides with partial outcomes, Krpan as the first starter with unlocks.
 - **Built:** the journey (ten regions, 48 stops), choosing the first hero, meeting and swapping heroes, the shrine with one god, wells, the pedlar, gold, 23 items, random regional enemies, sprites for every stop, four new heroes, battle abilities for all fifteen heroes.
 - **Back, in a new form (13 Nov):** cursed gods as bosses. A god you pray to at the shrine helps for three battles, then has to be beaten (section 2a).
@@ -73,13 +73,14 @@ One road, walked left to right. The party stands still and the world scrolls pas
 - **Chest (one word):** the hidden word, or any real word from all the letters, opens it: 15–25 gold, one item, and a half-full zagovor in the next battle. A real word that leaves letters unused ends the chest with a share of the gold (no item). Running out of time gives nothing.
 - **Rock slide (one word):** the rocks whose letters are in the word break (3 gold per rock); the others graze the party for half damage (4 each). A word with every letter breaks the whole slide. If no word is sent, every rock lands with full force (8 each).
 
-## 3b. Darts: *Puščice v zidu* (new mini-event)
-- A wall of letters: **six columns of three letters**. Take one letter from each column, strictly left to right, and send the word. 35 s (70 s in calm mode).
-- A hidden six-letter word always exists, but **you may send early**: a real word of 3–5 letters stops that many darts. **A word that does not exist can be sent too** — then no dart is stopped.
-- **The darts only hurt (13 Nov):** each letter of a real word stops one dart; the others fly at the heroes one at a time, spread over the party, each hit shown on its hero (3 damage, +1 every two regions). A word from every column still lets one dart graze (half damage). Darts never knock a hero out, and they do nothing for the next battle; there is no reward.
-- While the wall waits, it only warns: *Puščice se izstrelijo – pripravi se na umik!* The rules are in the intro (two rows of letters, so it fits a phone) and in the pause.
+## 3b. Spikes trap: *Past s konicami* (the darts of 12 Nov, renamed 13 Nov; ids stay `darts`/`puscice`)
+- A wall of letters: **six slots of three letters each**. Take one letter from each slot, strictly left to right, and send the word. 35 s (70 s in calm mode).
+- A hidden six-letter word always exists, but **you may send early**: a real word of 3–5 letters closes that many slots. **A word that does not exist can be sent too** — then no slot is closed.
+- **The spikes only hurt (13 Nov):** each letter of a real word closes one slot; the spikes of the open slots spring at the heroes one at a time, spread over the party, each hit shown on its hero (3 damage, +1 every two regions). A word from every slot still lets one spike graze (half damage). Spikes never knock a hero out, and they do nothing for the next battle; there is no reward.
+- While the wall waits, it only warns: *Konice se sprožijo – pripravi se na umik!* The rules are in the intro (two rows of letters, so it fits a phone) and in the pause.
 - Like the chest and the rock slide it has a *Kako se igra* intro with a solved example, and Esc pauses it (Delete clears the letters).
-- On the road it stands in Trnovski gozd, at Predjamski grad and before the dragon. It has its own sprite (a wall with dart holes).
+- On the road it stands in Trnovski gozd, at Predjamski grad and before the dragon. It has its own sprite (a stone wall with iron spikes coming out of the slots).
+- Internal ids stay `darts` and `puscice`, so saved runs, `data/world.json` and the missing-word reports keep working.
 
 ## 4. Levels, skill points and skills (13 Nov)
 - **Levels 1–9** at 0, 60, 140, 240, 360, 500, 660, 840 and 1050 XP. Each level adds 8 % health and 4 % attack, a little extra for long words (up to +10 % per letter beyond the fourth at level 9), and **one skill point**.

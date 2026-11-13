@@ -220,11 +220,11 @@ everyone).
   the next battle. A real word that leaves letters unused ends it with part of the gold.
 - **Rock slide:** every falling rock carries a letter and you have one word. Rocks whose
   letters are in it break (gold for each); the rest graze the party for half damage.
-- **Darts (*Puščice v zidu*):** six columns of letters; take one from each column, left to
+- **Spikes trap (*Past s konicami*):** six slots of letters; take one from each slot, left to
   right, and send a word. A shorter word may be sent early, and nothing stops you from
-  sending a word that does not exist. **The darts only hurt:** every letter of a real word
-  stops one dart and the rest fly at the heroes one by one (each hit shows on its hero);
-  even a word from every column lets one dart graze. Darts never knock a hero out.
+  sending a word that does not exist. **The spikes only hurt:** every letter of a real word
+  closes one slot and the other spikes spring at the heroes one by one (each hit shows on its
+  hero); even a word from every slot lets one spike graze. Spikes never knock a hero out.
 - **Well:** every hero is healed and the fallen stand up again.
 - **Pedlar:** four potions or poisons and two relics for gold.
 - **Shrine:** three gods are caught in a curse. Pray to one and for the next three battles
@@ -261,7 +261,7 @@ Malček is the game as it was before the levels were added.
 
 - **No Pošlji in the letter mesh.** Lift your finger after a drag, or tap the last letter
   again; a string that is not a word lets go of its letters. A tap on a proposal plays it.
-  The chest, the rock slide and darts keep *Pošlji*, because they take one deliberate word.
+  The chest, the rock slide and spikes keep *Pošlji*, because they take one deliberate word.
 - **In-game Slovene keyboard** for crosswords and the rock slide: the 25 letters in their
   QWERTZ places with Č, Š, Ž as plain keys. The phone's own keyboard stays closed, so the
   screen never jumps, nothing autocorrects, and every phone behaves the same.
@@ -287,7 +287,7 @@ The word list is still the prototype's (see [Language data and sources](#languag
 so players will meet real Slovene words it does not know. The game helps catch them:
 
 - **Every word it turns down is remembered** on the device (the last 40): in the letter
-  mesh, the chest, the rock slide and darts. The first rejection of a visit says where to
+  mesh, the chest, the rock slide and spikes. The first rejection of a visit says where to
   report it.
 - **Prijavi besedo** in the pause window (`Esc` / *Premor*) and **Prijavi manjkajočo
   besedo** on *O igri* list those words; one tap reports a word, with an optional
@@ -319,9 +319,9 @@ Confirmed words go into `data/allow.json` (lemma → forms); then rebuild the wo
 | --- | --- | --- |
 | Start menu | `↑` `↓` and `Enter`; `Esc` goes back from any page under it | Tap; *← Nazaj na glavni meni* stays at the top of every page |
 | Make a word | Type it; the path is found for you. Č, Š, Ž must be typed as themselves (a Slovene keyboard layout), c/s/z never stand in for them | Drag across tiles, or tap them one by one |
-| Send the word | `Enter` | Lift the finger after a drag, or tap the last letter again (*Pošlji* on desktop, and in chest, rock slide and darts) |
+| Send the word | `Enter` | Lift the finger after a drag, or tap the last letter again (*Pošlji* on desktop, and in chest, rock slide and spikes) |
 | Clear the word | `Delete` | *Počisti* |
-| Pause (battle, crosswords, chest, rock slide, darts) | `Esc` | *Premor* at the right of the puzzle's header |
+| Pause (battle, crosswords, chest, rock slide, spikes) | `Esc` | *Premor* at the right of the puzzle's header |
 | Sound, volume, fullscreen | — | *Nastavitve* in the main menu (sound and volume also in the pause window) |
 | Remove the last letter | `Backspace` | *Briši* |
 | Speak the zagovor (meter full) | `Space` | *Izreci zagovor* |
@@ -403,7 +403,7 @@ za-govor/
 ├── src/
 │   ├── index.src.html        # page template with placeholders
 │   ├── game.js               # battles, crosswords, chest, rock slide, heroes (no framework)
-│   ├── journey.js            # the road: regions, stops, party, items, pedlar, bag, darts
+│   ├── journey.js            # the road: regions, stops, party, items, pedlar, bag, spikes
 │   ├── playtest.js           # pause, puzzle intros, fullscreen, fit to screen
 │   ├── mobile.js             # phone specifics: in-game keyboard, haptics, Android back button
 │   ├── credits.js            # Navdih and Zasluge: the Words for Evil credit and every source
@@ -503,7 +503,7 @@ za-govor/
     (`data/myth.json`) and reviewed reports (`data/allow.json`), minus foreign words
     (`data/deny.json`: Croatian and English text Sloleks picked up from the corpus, and
     English or French citation forms in the dictionaries, such as *house* or *jeep*).
-  - *Suggested* (proposals, hints, word counts, darts and rock-slide words): 186,510 forms
+  - *Suggested* (proposals, hints, word counts, spikes and rock-slide words): 186,510 forms
     of words that are hand-checked in Sloleks or listed in Franček, common in the Gigafida
     2.0 corpus (frequency ≥ 1,000), standard, and not in `data/never-suggest.json` (vulgar
     words and slurs, matched exactly, so *ritem* and *riti* are not caught by *rit*).

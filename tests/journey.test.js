@@ -280,7 +280,7 @@ run(async () => {
   let d = await page.evaluate(() => { const E = window.__ZG.S.ev; return { word: E.word, cols: E.cols.length, rows: E.cols[0].length, ok: [...E.word].every((ch, c) => E.cols[c].includes(ch)),
     warn: document.querySelector('.darts .dart-warn').textContent, heroes: document.querySelectorAll('.dartparty .dp-hero').length }; });
   check(d.cols === 6 && d.rows === 3 && d.ok, 'the dart wall has six columns of three letters and hides a word', d.word);
-  check(d.warn === 'Puščice se izstrelijo – pripravi se na umik!' && d.heroes === 4, 'the wall warns instead of repeating the rules, and the whole party stands in front of it', JSON.stringify(d));
+  check(d.warn === 'Konice se sprožijo – pripravi se na umik!' && d.heroes === 4, 'the wall warns instead of repeating the rules, and the whole party stands in front of it', JSON.stringify(d));
   await page.evaluate(() => document.querySelectorAll('.dartcol')[2].querySelector('.tile').click());
   check(await page.evaluate(() => window.__ZG.S.ev.sel.length) === 0, 'a column cannot be taken before the ones to its left');
   for (const ch of d.word) await page.evaluate(c => document.dispatchEvent(new KeyboardEvent('keydown', { key: c, bubbles: true, cancelable: true })), ch);

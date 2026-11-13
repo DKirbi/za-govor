@@ -1,5 +1,5 @@
 {
-  "_about": "Lemmas the game accepts but never offers: vulgar words and slurs. A word is a word, so players may play them, but proposals, hints, word counts, darts and the rock slide never show them. Exact lemma match (Sloleks spelling), so ritem, ritual and riti (to dig) are unaffected by rit. tools/build_lexicon.py reports entries it cannot find.",
+  "_about": "Lemmas the game accepts but never offers: vulgar words and slurs. A word is a word, so players may play them, but proposals, hints, word counts, spikes and the rock slide never show them. Exact lemma match (Sloleks spelling), so ritem, ritual and riti (to dig) are unaffected by rit. tools/build_lexicon.py reports entries it cannot find.",
   "lemmas": [
     "rit", "jebati", "jebač", "jebiveter", "zajebati", "zajebavati", "najebati",
     "pička", "pičkin", "pizda", "kurec", "kurčev", "kurcati", "jošek", "joška",
