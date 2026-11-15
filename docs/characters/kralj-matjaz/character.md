@@ -1,6 +1,6 @@
 # Kralj Matjaž
 
-> **Status:** Folklore research started; character kit review OPEN.  
+ > **Status:** Core three-skill kit CONFIRMED by Game Director; detailed combat semantics and recruitment/story unlock decisions remain OPEN.  
 > **Character type:** Folklore hero / legendary king  
 > **Associated region:** Peca (Region 2)  
 > **Current prototype reference:** `src/game.js`, `docs/progression-design.md`, `data/world.json`
@@ -9,9 +9,9 @@
 
 Kralj Matjaž is a legendary sleeping king whose return is expected in a time of great need. In the best-known Koroška tradition, he sleeps with his warriors inside Mount Peca, waiting until his beard has wound around the stone table nine times. His return promises the restoration of justice and better times.
 
-**Existing gameplay identity (IMPLEMENTED prototype):** A party defender who combines sword damage with shields for the whole party. His third move is called *Prebujenje* and is associated with the linden tree coming into leaf.
+**Confirmed gameplay identity:** A leader and party-support defender. He fights with his sword, rallies his company to deal more damage, weakens incoming enemy attacks, and awakens to heal and protect the party while striking all enemies at the highest rank.
 
-This is a description of the current prototype, not an approved final character design.
+The skill values below are **CONFIRMED design decisions**. They are not yet confirmed as implemented in the prototype.
 
 ## 2. Folklore and historical context
 
@@ -39,17 +39,49 @@ A 2023 article by Marija Klobčar revisits the historical context and argues for
 | Identification with Matija Korvin | Widely repeated historical association, discussed by scholarship | Avoid presenting as a proven one-to-one identity |
 | Sword, shields, party protection, combat awakening | Game interpretation / current prototype | Requires Game Director review |
 
-## 3. Current prototype skills (IMPLEMENTED, NOT YET APPROVED)
+## 3. Confirmed skills
 
-The existing prototype lists the following three moves:
+The Game Director has confirmed the following three-skill kit and rank values. Each skill has one distinct folk-art illustration brief; see the skill folders under `folk-art/skills/`.
 
-| Order | Current name | Current prototype value / effect |
-|---|---|---|
-| 1 | Meč | `−6 · ščit +3` |
-| 2 | Kraljeva vojska | `−12 · ščit +8` |
-| 3 | Prebujenje | `−26 · ščit +16`; additional text: `lipa ozeleni` |
+### 3.1 Meč — direct attack and party protection
 
-The current character summary describes him as a party defender. The move names, damage, shield values, target rules, and awakening effect are all **OPEN for review**. Do not assume these are final or add unapproved mechanics.
+| Rank | Effect |
+|---|---|
+| 1 | Deals **6 damage** to one enemy. |
+| 2 | Deals **12 damage** to one enemy and grants **3 shield**. The shield reduces damage taken by the entire company of heroes from the next enemy attack. |
+| 3 | Deals **18 damage** to one enemy and grants **6 shield**. The shield reduces damage taken by the entire company of heroes from the next enemy attack. |
+
+The shield is a party-wide protection effect associated with the next enemy attack, not an ordinary individual shield value. Exact handling of multi-target attacks, shield consumption, and whether the reduction applies separately to each hero hit by that attack remain **OPEN implementation details**.
+
+### 3.2 Kraljeva vojska — rally the king's company
+
+**Fantasy:** Matjaž rallies his soldiers and inspires the whole company to fight harder.
+
+| Rank | Effect |
+|---|---|
+| 1 | Increases the damage of the next attack by every ally by **+3**. |
+| 2 | Increases the damage of the next attack by every ally by **+6**. |
+| 3 | Increases the damage of the next attack by every ally by **+10** and reduces enemy damage by **3** for the next **two enemy hits**. |
+
+The damage bonus applies to the next attack made by each ally, not just the next attack in the battle overall. Whether the enemy damage reduction is a global reduction to incoming hits or a debuff applied to each enemy, and how multi-target attacks consume the two-hit duration, remain **OPEN**.
+
+### 3.3 Prebujenje — the king awakens
+
+**Fantasy:** Matjaž awakens beneath Peca, restoring the strength and protection of his company. At the highest rank, his awakening also strikes every enemy.
+
+| Rank | Effect |
+|---|---|
+| 1 | Heals the entire party for **3 health** and grants **3 shield**. |
+| 2 | Heals the entire party for **6 health** and grants **6 shield**. |
+| 3 | Heals the entire party for **6 health**, grants **6 shield**, and deals **12 damage to every enemy**. |
+
+Whether the shield is a shared party-wide damage reduction or individual shield points, how healing interacts with fallen allies and health caps, and how the rank-3 area attack interacts with enemy defences remain **OPEN implementation details**.
+
+### Skill naming and thematic notes
+
+- **Meč**, **Kraljeva vojska**, and **Prebujenje** are the confirmed skill names.
+- The linden tree is a documented motif in some versions of the awakening tradition. It may appear in the *Prebujenje* folk-art depiction, but should not be treated as universal to every version of the legend.
+- Numerical values above are confirmed. No additional effects, targets, or status conditions should be added without approval.
 
 ## 4. Recruitment and progression
 
@@ -63,7 +95,11 @@ The current character summary describes him as a party defender. The move names,
 
 Artwork production is intentionally deferred until the full character roster has been reviewed.
 
-Existing prototype art direction note (not a final approval): crown, long grey beard, red cloak with ermine, and sword. The larger story-card concept shows him awakening beneath Peca, beard wound around the stone table, ravens overhead, and a linden tree coming into leaf.
+Existing prototype art direction note (not a final approval): crown, long grey beard, red cloak with ermine, and sword.
+
+**Confirmed folk-art subjects:** one distinct folk-art illustration for each of the three skills: *Meč*, *Kraljeva vojska*, and *Prebujenje*.
+
+**Confirmed final story illustration:** Kralj Matjaž asleep in the cave beneath Peca, surrounded by his sleeping soldiers, with his famous long beard wrapped around the stone table. The image should make the sleeping king and his company the central subject. Use the Peca cave tradition as its folkloric basis; do not invent architectural details or combine unrelated landmarks. Whether this is a final-game unlock card and its exact unlock condition remain OPEN.
 
 Keep the cave setting credible to Peca and the local Koroška landscape. Do not treat a modern tourist installation or bronze statue as a historical depiction of the legendary king.
 
@@ -72,17 +108,20 @@ Keep the cave setting credible to Peca and the local Koroška landscape. Do not 
 | Asset | Required | Status |
 |---|---:|---|
 | Gameplay character sprite | Yes | Existing prototype asset to locate/review |
-| Three skill illustrations | To be defined after skill review | Artwork deferred |
+| Folk-art skill illustration: Meč | Yes | Subject confirmed; artwork deferred |
+| Folk-art skill illustration: Kraljeva vojska | Yes | Subject confirmed; artwork deferred |
+| Folk-art skill illustration: Prebujenje | Yes | Subject confirmed; artwork deferred |
+| Final story illustration: sleeping king beneath Peca | Yes | Subject confirmed; unlock condition open; artwork deferred |
 | Story cards | To be defined after narrative review | Artwork deferred |
 | Folklore / regional references | Yes | Initial research recorded; further review needed |
 
 ## 7. Open decisions
 
-- Final combat role and identity: retain party defender / shield specialist or revise?
-- Review the three existing skills: *Meč*, *Kraljeva vojska*, *Prebujenje*.
-- Whether *Prebujenje* should be a skill activation, a state change, or simply the name of the strongest attack.
-- Whether the linden tree motif belongs in the skill kit, story cards, or both.
-- Exact rank effects, damage, shield values, target rules, and durations.
+- Exact implementation semantics for party-wide shield effects and multi-target attacks.
+- How *Kraljeva vojska*'s next-attack damage bonus is consumed for each ally.
+- Exact implementation semantics for the two-hit enemy damage reduction at rank 3.
+- Healing behaviour for fallen allies and allies already at their health cap.
+- Whether the final sleeping-king illustration is an unlockable story card, and its unlock condition.
 - Recruitment placement: guaranteed at Peca, exclusive to Peca, or random hero-stop pool.
 - Final Slovene skill naming and domain words.
 - Story-card subjects and unlock conditions.
@@ -91,7 +130,8 @@ Keep the cave setting credible to Peca and the local Koroška landscape. Do not 
 
 - Existing prototype data is in `src/game.js`; regional placement is in `data/world.json`.
 - `docs/progression-design.md` lists the current moves and values.
-- Do not alter implementation until the Game Director approves the reviewed kit.
+- The Game Director has approved the three-skill kit and rank values; implementation has not yet been updated.
+- Do not alter implementation until the remaining combat semantics are specified.
 - Keep documented Peca folklore distinct from game-only combat effects.
 
 ## 9. Sources
