@@ -38,7 +38,7 @@ The cherries and the precise details of the secret supply route belong to the po
 
 ## 3. Skills
 
-The agreed three-skill structure replaces the previous prototype kit. **Trdnjava v skali is superseded as a skill.**
+The agreed three-skill structure replaces the previous prototype kit. **The revised skill names and targeting decisions above are CONFIRMED; numeric balance and edge-case implementation remain OPEN.** **Trdnjava v skali is superseded as a skill.**
 
 ### 3.1 Meč — basic sword attack
 
@@ -52,7 +52,7 @@ The agreed three-skill structure replaces the previous prototype kit. **Trdnjava
 
 Exact damage coefficients and any additional rank-specific properties are **OPEN**. Do not add new effects without approval.
 
-**Name status:** *Meč* is a working name for the basic attack. A more action-oriented name such as *Zamah z mečem* may be considered during the Slovene naming pass.
+**Name status:** **Zamah z mečem** — confirmed by the Game Director.
 
 ### 3.2 Češnje — resourceful cherry attack and minor party healing
 
@@ -60,8 +60,8 @@ Exact damage coefficients and any additional rank-specific properties are **OPEN
 
 - Cherries deal less damage than his dedicated sword attack.
 - Damage should be medium relative to other support-oriented skills.
-- The skill also heals companions, but only by a small amount.
-- Exact damage coefficient, healing amount, number of targets, and rank scaling are **OPEN**.
+- The skill also heals Erazem's **adjacent allies only**, by a very small amount. Erazem himself is not healed.
+- Exact damage coefficient, healing amount, number of enemy targets, and rank scaling are **OPEN**. The ally-healing target rule is confirmed.
 
 The skill deliberately combines a humorous and recognisable element of the popular siege legend with a modest support effect. The healing is game fiction, not a claim about the historical legend.
 
@@ -78,7 +78,7 @@ The skill deliberately combines a humorous and recognisable element of the popul
 **Open implementation details**
 - Define whether the counterattack targets the enemy whose attack was evaded or another valid target.
 - Define how an area attack interacts with the evasion effect.
-- Define whether the adjacent ally also counterattacks. The current direction only explicitly grants the counterattack to Erazem.
+- **Confirmed:** the adjacent ally only evades; only Erazem counterattacks.
 - Define how “adjacent” is determined in the party formation.
 - Define whether the effect expires after the next enemy attack if that attack does not target Erazem or the protected ally.
 - Damage multipliers are agreed values for the counterattack, but the base damage calculation they multiply must be specified consistently with the combat system.
@@ -127,12 +127,12 @@ The special castle card is a game reward, not a claim that the historical Erazem
 
 ## 8. Open decisions
 
-- Final name for the basic sword attack: *Meč* or *Zamah z mečem* (or another natural Slovene name).
+- **Resolved:** basic sword attack name is *Zamah z mečem*.
 - Exact damage and healing values for Meč and Češnje.
 - Exact number of enemies hit by Češnje.
-- Whether cherry healing affects all companions or selected/all living companions; amount and target rules remain open.
+- **Resolved:** Češnje heal Erazem's adjacent allies only; exact amount and living/standing target handling remain open.
 - Counterattack target selection and AoE interaction for Skrivni rov.
-- Whether adjacent ally also counterattacks at rank 3.
+- **Resolved:** adjacent ally only evades at rank 3; only Erazem counterattacks.
 - Exact adjacency rule in party formation.
 - Exclusive recruitment at Predjamski grad versus general hero pool.
 - Whether the special Predjama Castle card can be earned on a later journey if missed.
