@@ -11,6 +11,7 @@ Each character has an individual folder containing their approved character spec
 | Ajdovska deklica | Folklore hero | Triglav — exclusive encounter | [Character specification](./ajdovska-deklica/character.md) |
 | Erazem Predjamski | Folklore / historical-legend hero | Predjamski grad — associated region; recruitment exclusivity open | [Character specification](./erazem-predjamski/character.md) |
 | Kralj Matjaž | Folklore hero / legendary king | Peca — exclusive recruitment location | [Character specification](./kralj-matjaz/character.md) |
+| Kresnik | Folklore hero / mythological figure | Bled — associated region; recruitment exclusivity open | [Character specification](./kresnik/character.md) |
 
 ## Documentation rules
 
