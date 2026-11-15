@@ -1,5 +1,7 @@
 # Folk-art skill depiction — Skrivni rov
 
-Provisional skill name from the current prototype. Artwork deferred until character review is complete.
+**Approved skill concept:** Erazem evades an incoming attack using his manoeuvrability and the hidden-route motif, then counterattacks at higher ranks.
 
-Potential visual subject: Predjama's hidden cave passages and the castle's connection to the karst underground. Keep actual cave geography credible and distinguish documented cave features from legendary supply-route details.
+Artwork production is deferred until the roster review is complete.
+
+Potential visual subject: Erazem emerging from a concealed passage and striking back. Keep the cave and castle geography credible; distinguish the legendary supply-route story from verified cave features.
