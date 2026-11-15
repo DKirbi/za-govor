@@ -1,5 +1,10 @@
-# Folk-art skill depiction — Trdnjava v skali
+# Superseded skill — Trdnjava v skali
 
-Provisional skill name from the current prototype. Artwork deferred until character review is complete.
+This was a skill name in the original browser prototype and is no longer part of Erazem's approved three-skill direction.
 
-Potential visual subject: the fortified castle integrated into the rock face. This should represent the specific architecture and geography of Predjama, not a generic fantasy fortress.
+Revised skill order:
+1. Meč
+2. Češnje
+3. Skrivni rov
+
+Do not create or use artwork for Trdnjava v skali unless the Game Director explicitly reintroduces it.
