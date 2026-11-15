@@ -1,6 +1,6 @@
 # Kralj Matjaž — final story illustration
 
-**Status:** Subject CONFIRMED; card format and unlock condition OPEN. Artwork deferred until the full roster review is complete.
+**Status:** Subject and unlock condition CONFIRMED; card format OPEN. Artwork deferred until the full roster review is complete.
 
 ## Final illustration: The sleeping king beneath Peca
 
@@ -19,5 +19,7 @@ Do not add the winter linden to this cave scene by default. It belongs to some t
 - Is this illustration a final story-card reward or a narrative illustration shown automatically?
 - If it is an unlockable card, what is its unlock condition?
 - Should the image show the beard wrapped once, several times, or in the nine-turn version?
+
+**Unlock condition (CONFIRMED):** Kralj Matjaž must be alive in the active party when the player wins the final encounter. This is the same survival condition used for the other characters' final illustrations.
 
 No artwork should be produced before the full character roster review is complete.
