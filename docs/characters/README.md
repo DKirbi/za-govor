@@ -9,6 +9,7 @@ Each character has an individual folder containing their approved character spec
 | Character | Type | Region / recruitment | Documentation |
 |---|---|---|---|
 | Ajdovska deklica | Folklore hero | Triglav — exclusive encounter | [Character specification](./ajdovska-deklica/character.md) |
+| Erazem Predjamski | Folklore / historical-legend hero | Predjamski grad — associated region; recruitment exclusivity open | [Character specification](./erazem-predjamski/character.md) |
 
 ## Documentation rules
 
