@@ -1,6 +1,6 @@
 # Kresnik
 
-> **Status:** Initial folklore research recorded; character kit review OPEN.  
+> **Status:** Folklore research recorded; core combat identity and three-skill direction CONFIRMED. Exact ranks, values, names and implementation details remain OPEN.  
 > **Character type:** Folklore hero / mythological figure  
 > **Current prototype reference:** `src/game.js`, `docs/progression-design.md`
 
@@ -8,7 +8,9 @@
 
 Kresnik is a complex figure in Slovenian folk tradition associated with fire, sparks, the sun, and the midsummer turning point of the year. In a prominent cycle of tales, he is a royal or princely hero who fights a snake, dragon, or other hostile being, rescues a woman or restores stolen wealth, and whose victory is followed by rain and a fertile harvest.
 
-**Existing gameplay identity (IMPLEMENTED prototype):** A fire-focused damage dealer. His current moves are *Žerjavica*, *Plamen*, and *Kresni ogenj*. The prototype describes burning enemies and an all-enemy burn effect at the strongest rank. This is existing implementation, not final design approval.
+**CONFIRMED gameplay identity:** Kresnik is a fire mage and monster-slayer. His attacks are relatively modest initially but continue dealing damage over time. He has a slight thematic connection to Perun, while remaining a distinct character. Do not merge their identities.
+
+**CONFIRMED matchup direction:** Kresnik's flaming sword strike deals double damage against dragons and serpents. Water-associated beings such as Povodni mož and vodna vila should be a source of increased vulnerability for him. The exact scope and implementation of these matchup modifiers remain OPEN.
 
 ## 2. Folklore and historical context
 
@@ -24,7 +26,7 @@ The Vurberg Castle Kresnik legend is one documented regional cycle, recorded in 
 
 ### Kresnik and Perun — interpretation, not settled fact
 
-Some scholars have compared Kresnik with Perun or with a wider Indo-European thunder-god pattern because of the fire, lightning, dragon-combat, and atmospheric motifs. The relationship is a scholarly reconstruction and remains debated. Do not present Kresnik simply as another name for Perun or merge their identities without an explicit creative decision.
+Some scholars have compared Kresnik with Perun or with a wider Indo-European thunder-god pattern because of the fire, lightning, dragon-combat, and atmospheric motifs. The relationship is a scholarly reconstruction and remains debated. The Game Director wants to leave room for a possible thematic relationship or bond, but Kresnik must remain distinct from Perun. Do not present Kresnik simply as another name for Perun or merge their identities.
 
 ### Folklore versus game fiction
 
@@ -36,23 +38,43 @@ Some scholars have compared Kresnik with Perun or with a wider Indo-European thu
 | Rescue of princess / restoration of stolen cattle or wealth | Documented in several tale variants | Do not combine every episode into one canonical story |
 | Victory followed by rain or golden harvest | Documented in some versions | Strong renewal / fertility motif |
 | Direct identity with Perun | Scholarly reconstruction / debated interpretation | Not a confirmed historical or religious fact |
-| Fire attacks, burning enemies and combat effects | Game interpretation / current prototype | Requires Game Director review |
+| Fire attacks, damage-over-time effects and gold generation | Game interpretation | Approved design direction; exact mechanics open |
 
-## 3. Current prototype skills (IMPLEMENTED, NOT YET APPROVED)
+## 3. Skills and combat mechanics
 
-| Order | Current name | Current prototype value / effect |
+### Confirmed skill direction
+
+| Order | Skill | Confirmed design |
 |---|---|---|
-| 1 | Žerjavica | `−7 · gori` |
-| 2 | Plamen | `−16 · gori` |
-| 3 | Kresni ogenj | `−34`; extra effect: all enemies burn |
+| 1 | Flaming sword — Slovene name OPEN | A flaming sword strike. Direct damage increases with rank and applies a damage-over-time burn. Against dragons and serpents, the sword strike deals 2× damage. |
+| 2 | **Kresna strela** | A fire bolt that chains between multiple enemies and applies a separate damage-over-time burn. |
+| 3 | Restorative skill — name OPEN | After an enemy damages Kresnik, he restores health equal to up to half of the damage received. He also grants the player gold equal to half of the amount of health restored. |
 
-The current prototype summary describes Kresnik as a solar hero focused on fire. These names, damage values, burn rules, target counts, and rank effects are **OPEN for review**. Do not assume these are final.
+### Damage-over-time rules — CONFIRMED direction, details OPEN
+
+- The first two attacks begin with comparatively low direct damage.
+- Each applies additional damage over time equal to the direct damage dealt by that attack.
+- The burn is distributed evenly over the next two or three enemy attacks.
+- Exact rank-to-duration mapping, rounding, stacking, refresh behaviour, and whether the burn triggers on every enemy attack or only selected enemy actions remain OPEN.
+- The 2× dragon/serpent modifier is confirmed for the flaming sword strike. Whether it also doubles the associated burn damage is OPEN.
+
+### Restorative skill — details OPEN
+
+- Trigger: an enemy damages Kresnik.
+- Healing: restore up to 50% of the damage received.
+- Gold: grant the player gold equal to 50% of the health restored.
+- OPEN: whether it triggers after every damage instance or once per enemy action; whether damage-over-time counts; whether the healing is capped by missing health; whether the skill has ranks/cooldown; and how fractional gold is rounded.
+- Do not interpret the gold as being deducted from an enemy or as a party-wide heal unless explicitly approved.
+
+### Previous prototype (IMPLEMENTED, SUPERSEDED as design direction)
+
+The old prototype used *Žerjavica*, *Plamen*, and *Kresni ogenj*, with damage values `−7`, `−16`, and `−34`, and burning effects. These are existing implementation details only. They are superseded as the approved skill direction and must not be treated as final balance or final names.
 
 ## 4. Recruitment and progression
 
 - Current roster lists Kresnik as the hero associated with Bled (Region 4, fallback).
 - The current hero-stop system uses a random pool of un-met folk heroes; regional association does not guarantee recruitment at Bled.
-- Whether Kresnik should be exclusive to Bled or available in the general hero pool is **OPEN**.
+- Whether Kresnik should be exclusive to Bled or available in the general hero pool is OPEN.
 - Current prototype base HP and attack progression should be inspected before balance changes. Do not infer final stats from the roster summary alone.
 
 ## 5. Art and narrative presentation
@@ -61,31 +83,34 @@ Artwork production is intentionally deferred until the full character roster has
 
 Existing prototype art note (not approved final art): golden hair like flames, red vest, and a torch. The largest card is described as a midsummer night with a bonfire, a burning wheel rolling down a hill, and a fern flower. These are current concept cues, not all verified as one unified Kresnik narrative. The fern flower and rolling wheel need separate folklore-source verification before being treated as authentic Kresnik attributes.
 
-Keep Kresnik distinct from the god Perun in visual identity. Do not automatically give him Perun's established thunder-god attributes or equipment.
+Keep Kresnik distinct from the god Perun in visual identity. A subtle relationship may be explored later, but should not be assumed in his core design.
 
 ## 6. Asset inventory
 
 | Asset | Required | Status |
 |---|---:|---|
 | Gameplay character sprite | Yes | Existing prototype asset to locate/review |
-| Three skill illustrations | To be defined after skill review | Artwork deferred |
+| Three skill illustrations | Yes | Subjects to follow the approved skill direction; artwork deferred |
 | Story cards | To be defined after narrative review | Artwork deferred |
 | Folklore / regional references | Yes | Initial research recorded; further review needed |
 
 ## 7. Open decisions
 
-- Final combat role: retain fire damage / burning specialist or revise?
-- Review the three existing skills: *Žerjavica*, *Plamen*, *Kresni ogenj*.
-- Exact rank effects, damage, burn duration, target rules, and stacking.
-- Whether Kresnik's kit should reflect the dragon-slayer / rescuer cycle, midsummer fire, or a deliberate combination.
+- Final Slovene name for the flaming sword skill and restorative skill.
+- Exact damage values and rank scaling for all three skills.
+- Whether the sword's 2× dragon/serpent modifier applies to direct damage only or to its burn as well.
+- Kresna strela chain target count, chain damage behaviour and rank scaling.
+- Burn duration by rank, stacking/refresh rules, and tick timing.
+- Restorative skill trigger frequency, DoT interaction, overheal handling, rank scaling and fractional-gold rounding.
+- Exact vulnerability modifiers against water-associated beings.
 - Recruitment placement: Bled-only, guaranteed at Bled, or general hero-stop pool.
 - Verify fern-flower and burning-wheel motifs before using them as Kresnik-specific folklore.
-- Final Slovene domain words and story-card subjects.
+- Final story-card subjects.
 
 ## 8. Implementation notes
 
 - Existing character data is in `src/game.js`; regional association is described in `docs/progression-design.md`.
-- Do not alter implementation until the Game Director approves the reviewed kit.
+- Do not alter implementation until the Game Director approves the reviewed kit and its exact rules.
 - Keep documented Kresnik traditions distinct from game-only fire abilities.
 - Apply the shared final-illustration condition once its subject and unlock art are approved: the character must survive the final encounter.
 
