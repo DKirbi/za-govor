@@ -1,5 +1,7 @@
 # Folk-art skill depiction — Češnje
 
-Provisional skill name from the current prototype. Artwork deferred until character review is complete.
+**Approved skill concept:** Erazem throws cherries at enemies. The attack deals medium damage and also provides a small amount of healing to companions.
 
-Review the legend's cherry-taunting episode before defining the final composition. Do not assume a literal cherry projectile is the approved gameplay action until the skill review is complete.
+Artwork production is deferred until the roster review is complete.
+
+The image should communicate Erazem's resourcefulness and the memorable cherry episode from the popular siege legend. The healing aspect is original gameplay fiction, not a folkloric claim.
