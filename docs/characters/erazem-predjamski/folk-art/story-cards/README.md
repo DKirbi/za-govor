@@ -1,11 +1,18 @@
-# Erazem Predjamski — folklore story cards
+# Erazem Predjamski — folk-art story cards
 
-Artwork production is deferred until the roster review is complete.
+Artwork production is deferred until the full roster review is complete.
 
-Potential story-card subjects to review:
-- **The Siege:** Erazem's resistance at Predjama; distinguish historical context from legendary duration and details.
-- **The Cherries:** the famous story of taunting the besiegers with fresh cherries.
-- **The Hidden Passage:** the cave system and legendary supply route.
-- **The Betrayal:** the servant's signal and Erazem's legendary death.
+## Skill depictions
+Create one distinct folk-art depiction for each approved skill:
+- **Meč:** Erazem striking with his sword.
+- **Češnje:** Erazem throwing cherries; the small healing effect is gameplay fiction.
+- **Skrivni rov:** Erazem using a hidden passage to evade an attack and counter.
 
-These are proposed story-card topics, not yet approved. Avoid presenting legendary details as verified history.
+## Special unlock — Predjama Castle
+A unique folk-art depiction of Erazem's castle, showing the real Predjama Castle integrated into its cliff setting.
+
+Unlock condition: Erazem must remain in the player's active surviving party until the final boss is defeated.
+
+This is a game reward. It must not imply that the historical Erazem survived the siege or that the popular legend ended in victory.
+
+**Status:** Artwork deferred.
