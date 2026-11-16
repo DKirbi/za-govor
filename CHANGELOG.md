@@ -54,6 +54,9 @@ Branch `0.11.0-alpha-fixes`, after testing 0.10.0 (#16).
   journey starts, each place stays with a chance set by Znanje (chests 60 / 45 / 30 %, wells
   75 / 55 / 40 % on Malček / Učenjak / Knjižni molj; `data/world.json → chance`). A journey always
   keeps at least one chest, and a well in each half of the road.
+- **Phone fixes:** the hero card's name sits under its picture again (the card grows with its
+  plate instead of a fixed height); a page-coloured strip behind the status bar, so a scrolled
+  hero screen does not show through the clock.
 
 ## 0.10.0 — 16 Nov 2026 · zaprta alfa · alpha fixes (playtest round 3)
 Branch `0.9.0-alpha-fixes`, stacked on 0.9.0 (#12). From the third playtest (two testers on phones)
