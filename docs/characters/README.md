@@ -2,7 +2,7 @@
 
 This directory is the central index for the playable character roster in **Za govor!**.
 
-Each character has an individual folder containing their approved character specification, folklore research, gameplay design, and art-asset organisation.
+Each reviewed character has an individual folder containing their character specification, folklore research, gameplay design, and art-asset organisation. This index currently lists completed character-review documents; characters that only have prototype roster entries are not presented as reviewed specifications.
 
 ## Character folders
 
@@ -13,6 +13,16 @@ Each character has an individual folder containing their approved character spec
 | Kralj Matjaž | Folklore hero / legendary king | Peca — exclusive recruitment location | [Character specification](./kralj-matjaz/character.md) |
 | Kresnik | Folklore hero / mythological figure | Bled — associated region; recruitment exclusivity open | [Character specification](./kresnik/character.md) |
 | Kurent | Living carnival / folklore figure | Ptuj — starting character | [Character specification](./kurent/character.md) |
+
+## Review status
+
+**Detailed character specifications available:** Ajdovska deklica, Erazem Predjamski, Kralj Matjaž, Kresnik and Kurent.
+
+**Review pending:** Lepa Vida and Peter Klepec currently have prototype roster entries and visual concepts, but no completed reviewed character specification. Their existing prototype material should be preserved and inspected when their reviews begin.
+
+## Shared combat rules
+
+System-wide action/status definitions, interruption behaviour and visual communication principles live in [Combat System Rules](../combat-system.md). Character specifications should reference that document and record only character-specific rules or exceptions.
 
 ## Documentation rules
 
