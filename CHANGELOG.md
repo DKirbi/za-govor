@@ -39,8 +39,8 @@ After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git
 ## 0.11.0 — 16 Nov 2026 · zaprta alfa · one difficulty, starter words, chests and wells by chance
 Branch `0.11.0-alpha-fixes`, after testing 0.10.0 (#16).
 - **Znanje is the one difficulty.** *Težavnost* is no longer a choice of its own on *Nova pot*:
-  Malček plays with the old Lahka rules (a lost battle is not the end, the fallen get up after a
-  win, weaker enemies), Učenjak with Srednja (a lost battle ends the journey), Knjižni molj with
+  Malček plays with the Lahka rules (one second chance per journey, see below; the fallen get up
+  after a win; weaker enemies), Učenjak with Srednja (a lost battle ends the journey), Knjižni molj with
   Težka (stronger enemies; a hero still down after a battle leaves). Each Znanje card says so.
   A saved journey keeps going on its Znanje; the separate setting is forgotten.
 - **Starter words.** While the help lasts, a battle's letter mesh opens with whole words laid in
@@ -48,7 +48,10 @@ Branch `0.11.0-alpha-fixes`, after testing 0.10.0 (#16).
   half of the road, Učenjak three (4, 3, 3) for the first quarter, Knjižni molj two three-letter
   words in the first region only. About half are words of the region in any of their forms. The
   battle log and (on Malček and Učenjak) the coach tip point them out; *Premešaj* lets them go.
-- **A new level heals the hero fully** (and still adds health and a skill point).
+- **A new level heals the hero fully** (and still adds health and a skill point), and **finishing a
+  region heals every hero still standing to full** (the fallen stay down, as at a well).
+- **Malček gets one second chance per journey:** the first lost battle brings the party back with
+  full health (no longer a third), the enemies still waiting; a second lost battle ends the journey.
 - **Chests and wells by chance, in every region.** Every region now has a place for a chest and
   for a well, including new chests at the start of Ljubljanica and Ljubljanski grad. When a
   journey starts, each place stays with a chance set by Znanje (chests 60 / 45 / 30 %, wells

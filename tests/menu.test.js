@@ -70,7 +70,7 @@ run(async () => {
   check(nr.malcek === 'Za učenje besed.' && nr.ucenjak === 'Zahtevnejše besede, malo pomoči.' && nr.molj === 'Za križankarje in pametnjakoviče.', 'the knowledge levels have one short line each');
   check(nr.sprites.length === 3 && nr.sprites.every(Boolean), 'each knowledge level has its own pixel figure');
   check(nr.blocks.join() === 'Tempo,Znanje', 'Nova pot asks for Tempo and Znanje only: Težavnost is part of Znanje', nr.blocks.join());
-  check(nr.stakes.length === 3 && /^Poraz ni konec poti/.test(nr.stakes[0]) && /^Poraz konča pot/.test(nr.stakes[1]) && /zapusti družino\.$/.test(nr.stakes[2]),
+  check(nr.stakes.length === 3 && /^Prvi poraz ni konec poti.*Drugi poraz konča pot/.test(nr.stakes[0]) && /^Poraz konča pot/.test(nr.stakes[1]) && /zapusti družino\.$/.test(nr.stakes[2]),
     'each knowledge level says what a lost battle and a fallen hero mean (Lahka, Srednja, Težka)', JSON.stringify(nr.stakes));
   check(nr.gap >= 48 && nr.line === 'solid', 'Tempo and Znanje are clearly apart, with a line between them', nr.gap + ' px');
   check(nr.sub.shown && /Predlogi besed med igro/.test(nr.sub.text) && nr.sub.under && nr.sub.checked, 'Predlogi besed sits right under Malček, on by default', JSON.stringify(nr.sub));
