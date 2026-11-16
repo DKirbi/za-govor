@@ -438,7 +438,7 @@ run(async () => {
   check(kits === 45, 'all 45 skills (15 heroes × 3), at stopnja 3, were played', String(kits));
 
   // the dragon at the castle ends the journey
-  await page.evaluate(() => { const Z = window.__ZG; Z.S.testMode = true; Z.S.mode = 'real'; Z.newRun('krpan'); Z.go('travel'); for (let i = 0; i < 80 && Z.S.run.ri < Z.WORLD.regions.length - 1; i++) Z.travelAct('skip'); Z.travelAct('skip'); Z.travelAct('skip'); Z.travelAct('skip'); });
+  await page.evaluate(() => { const Z = window.__ZG; Z.S.testMode = true; Z.S.mode = 'real'; Z.newRun('krpan'); Z.go('travel'); for (let i = 0; i < 80 && Z.S.run.ri < Z.WORLD.regions.length - 1; i++) Z.travelAct('skip'); for (let i = 0; i < 10 && (Z.S.run.stops.find(s => !s.passed) || {}).kind !== 'boss'; i++) Z.travelAct('skip'); });
   await sleep(200); await walk(page);
   s = await state(page);
   check(s.ri === 9 && /Lintvern/.test(s.prompt || ''), 'the last stop is Lintvern', s.prompt);

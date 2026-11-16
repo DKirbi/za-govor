@@ -92,10 +92,10 @@ Ljubljana castle is the last battle.
 | 4 | **Bled** | the old gods (an island shrine of Živa) | two battles, a chest, a well, a shrine (Dažbog or Mokoš) |
 | 5 | **Trnovski gozd** | Martin Krpan | two battles, a chest, spikes, a shrine (Veles or Mokoš) |
 | 6 | **Piranske soline** | Lepa Vida | two battles, a pedlar, a well, a shrine (Stribog or Dažbog) |
-| 7 | **Predjamski grad** | Erazem Predjamski | a battle, a rock slide, a chest, an ambush |
+| 7 | **Predjamski grad** | Erazem Predjamski | a battle, spikes, a rock slide, a chest, an ambush |
 | 8 | **Ljubljansko barje** | Zeleni Jurij | two battles, a well, a pedlar, a shrine (Veles or Mokoš) |
 | 9 | **Ljubljanica** | Peter Klepec | a battle, a well, **Povodni mož** (boss) |
-| 10 | **Ljubljanski grad** | — | a pedlar, a well, **Lintvern**, the Ljubljana dragon (final boss) |
+| 10 | **Ljubljanski grad** | — | a pedlar, a rock slide, spikes, a well, **Lintvern**, the Ljubljana dragon (final boss) |
 
 Only **three of the six shrines** stand on any one journey (picked at random, each for a
 different god), and only three heroes wait on the road, so no two journeys are alike.

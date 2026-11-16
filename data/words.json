@@ -1,5 +1,5 @@
 {
-  "note": "Words of each region for the puzzles on the road, a first list to be reviewed and filled in by hand. chest: [word, clue] for the locked chest (the word must be in the word list; clues are shown by Znanje: always on Malček, on some chests on Učenjak, never on Knjižni molj). rocks: words the rock slide builds its rocks from (hillside regions only). theme: words of the place, its enemies and its hero, for seeding the letter puzzles (not used yet: next branch). Region ids as in world.json.",
+  "note": "Words of each region for the puzzles on the road, a first list to be reviewed and filled in by hand. chest: [word, clue] for the locked chest (the word must be in the word list; clues are shown by Znanje: always on Malček, on some chests on Učenjak, never on Knjižni molj). rocks: words the rock slide builds its rocks from (regions with a rock slide: Peca, Triglav, Predjamski grad, Ljubljanski grad). theme: words of the place, its enemies and its hero, for seeding the letter puzzles (not used yet: next branch). Region ids as in world.json.",
   "regions": {
     "ptuj": {
       "chest": [
@@ -9,7 +9,13 @@
         ["kožuh", "Ovčja koža, ki jo nosi kurent"],
         ["grozdje", "Iz njega je vino"],
         ["vinograd", "Na pobočju zorijo grozdi"],
-        ["krof", "Pustna sladica z marmelado"]
+        ["krof", "Pustna sladica z marmelado"],
+        ["pust", "Čas mask, preden se začne post"],
+        ["orač", "Pustni lik, ki z lesenim plugom zaorje pomlad"],
+        ["vino", "V ptujski kleti zori že stoletja"],
+        ["grad", "Nad mestom stoji na griču"],
+        ["ples", "Kurenti ga plešejo od hiše do hiše"],
+        ["rusa", "Pustni lik, podoben konju, ki ga vodijo po vasi"]
       ],
       "theme": ["pust", "zvon", "maska", "krof", "kožuh", "vino", "grad", "zima", "ples", "hrup"]
     },
@@ -21,7 +27,11 @@
         ["brada", "Kralju raste okoli mize"],
         ["vojska", "Spi s kraljem pod goro"],
         ["rudnik", "Pod goro so v njem kopali svinec"],
-        ["svinec", "Težka siva kovina iz Mežice"]
+        ["svinec", "Težka siva kovina iz Mežice"],
+        ["krona", "Kralj jo nosi tudi v spanju"],
+        ["rudar", "Pod goro je kopal svinec"],
+        ["miza", "Okoli nje se ovija kraljeva brada"],
+        ["gora", "Kralj spi v njej"]
       ],
       "rocks": ["kralj", "krokar", "votlina", "rudnik", "vojska", "svinec", "brada"],
       "theme": ["kralj", "meč", "miza", "brada", "gora", "jama", "krokar", "vojska", "ruda", "spanje"]
@@ -34,7 +44,11 @@
         ["melišče", "Pobočje drobnega kamenja pod steno"],
         ["jezero", "Sedem jih je v dolini pod Triglavom"],
         ["koča", "Planinska … ti ponudi zavetje"],
-        ["zlatorog", "Beli gams z zlatimi rogovi"]
+        ["zlatorog", "Beli gams z zlatimi rogovi"],
+        ["plezalec", "Kdor se vzpne po steni"],
+        ["dolina", "V njej leži sedmero jezer"],
+        ["sneg", "Na vrhu leži še poleti"],
+        ["kamen", "Ajdovska deklica se je spremenila vanj"]
       ],
       "rocks": ["planika", "stena", "skala", "jezero", "melišče", "kamen", "sneg"],
       "theme": ["gora", "vrh", "skala", "kamen", "sneg", "gams", "rog", "stena", "pot", "led"]
@@ -47,7 +61,11 @@
         ["cerkev", "Stoji na otoku sredi jezera"],
         ["veslo", "Z njim poganjaš čoln"],
         ["labod", "Bela ptica na jezeru"],
-        ["stopnice", "Do cerkve na otoku jih je 99"]
+        ["stopnice", "Do cerkve na otoku jih je 99"],
+        ["zvon", "Pozvoniš mu in izrečeš željo"],
+        ["jezero", "Sredi njega je otok"],
+        ["grad", "Stoji na skali nad jezerom"],
+        ["čoln", "Z njim prideš na otok"]
       ],
       "theme": ["otok", "zvon", "čoln", "voda", "grad", "jezero", "veslo", "labod", "želja", "skala"]
     },
@@ -59,7 +77,11 @@
         ["medved", "Kosmat gospodar gozda"],
         ["burja", "Veter, ki piha v Vipavsko dolino"],
         ["tihotapec", "Kdor nosi blago mimo mitnice"],
-        ["lipa", "Iz njenega lesa je Krpanov kij"]
+        ["lipa", "Iz njenega lesa je Krpanov kij"],
+        ["sol", "Krpan jo je tovoril čez hribe"],
+        ["cesar", "Krpanu je dovolil tovoriti sol"],
+        ["smreka", "Iglasto drevo, ki je zeleno vse leto"],
+        ["volk", "Ponoči tuli v gozdu"]
       ],
       "theme": ["gozd", "drevo", "list", "sol", "kij", "lipa", "medved", "volk", "mrak", "kobila"]
     },
@@ -71,7 +93,11 @@
         ["školjka", "V njej raste biser"],
         ["ribič", "Zjutraj prinese mrežo polno rib"],
         ["sardela", "Majhna riba iz Jadrana"],
-        ["obala", "Kjer se kopno sreča z morjem"]
+        ["obala", "Kjer se kopno sreča z morjem"],
+        ["jadro", "Veter ga napne"],
+        ["ladja", "Pluje po morju"],
+        ["morje", "Slano in modro do obzorja"],
+        ["sol", "Na solinah jo pridobivajo iz morja"]
       ],
       "theme": ["sol", "morje", "val", "obala", "ladja", "riba", "galeb", "pena", "jadro", "sonce"]
     },
@@ -83,8 +109,13 @@
         ["kapnik", "Raste s stropa jame, kaplja za kapljo"],
         ["močeril", "Jamska žival, ki so jo imeli za zmajevega mladiča"],
         ["oklep", "Vitezova kovinska obleka"],
-        ["stolp", "Najvišji del gradu"]
+        ["stolp", "Najvišji del gradu"],
+        ["jama", "Za gradom vodi v podzemlje"],
+        ["rov", "Skrivna pot skozi skalo"],
+        ["top", "Z njim so streljali na grad"],
+        ["obleganje", "Trajalo je leto in dan"]
       ],
+      "rocks": ["vitez", "oklep", "stolp", "kapnik", "netopir", "češnja", "skala", "kamen"],
       "theme": ["grad", "jama", "rov", "vitez", "skala", "stolp", "oklep", "češnja", "tema", "kamen"]
     },
     "barje": {
@@ -95,7 +126,11 @@
         ["šota", "Gorivo, izkopano iz barja"],
         ["čaplja", "Dolgonoga ptica v plitvi vodi"],
         ["trstika", "Visoka trava ob vodi"],
-        ["deblak", "Čoln, izdolben iz enega debla"]
+        ["deblak", "Čoln, izdolben iz enega debla"],
+        ["megla", "Zjutraj leži nad močvirjem"],
+        ["žaba", "Rega v mlaki"],
+        ["kol", "Na njem stoji hiša v močvirju"],
+        ["blato", "Mehka mokra zemlja"]
       ],
       "theme": ["blato", "voda", "megla", "kol", "kolo", "šota", "trava", "čoln", "žaba", "ptica"]
     },
@@ -106,7 +141,13 @@
         ["ples", "Urška je šla nanj in se ni vrnila"],
         ["tržnica", "Plečnikove arkade ob reki"],
         ["zmaj", "Varuh mesta na mostu"],
-        ["čoln", "Z njim pluješ po reki"]
+        ["čoln", "Z njim pluješ po reki"],
+        ["pesnik", "Prešeren je bil …"],
+        ["nabrežje", "Ulica ob reki"],
+        ["vrba", "Drevo, ki se sklanja nad vodo"],
+        ["plesalec", "Povodni mož je bil spreten …"],
+        ["breg", "Rob reke"],
+        ["riba", "Plava pod mostom"]
       ],
       "theme": ["reka", "voda", "most", "ples", "val", "riba", "čoln", "vrtinec", "breg", "megla"]
     },
@@ -115,8 +156,17 @@
         ["vzpenjača", "Pelje te na grajski hrib"],
         ["obzidje", "Kamnit zid okoli gradu"],
         ["zmaj", "Na gradu čaka na koncu poti"],
-        ["stolp", "Z njega vidiš vse mesto"]
+        ["stolp", "Z njega vidiš vse mesto"],
+        ["kapela", "Grajska … svetega Jurija"],
+        ["ječa", "Grajski prostor za ujetnike"],
+        ["stražar", "Varuje grajska vrata"],
+        ["dvorišče", "Odprt prostor sredi gradu"],
+        ["razgled", "Z vrha stolpa sega daleč"],
+        ["luskina", "Zmajevo telo je pokrito z njimi"],
+        ["ogenj", "Zmaj ga bruha"],
+        ["krilo", "Zmaj ima dve"]
       ],
+      "rocks": ["obzidje", "stolp", "zmaj", "hrib", "kamen", "trdnjava", "stražar", "razgled"],
       "theme": ["grad", "zmaj", "stolp", "zid", "ogenj", "krilo", "luskina", "pepel", "hrib", "mesto"]
     }
   }

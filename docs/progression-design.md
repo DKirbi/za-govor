@@ -12,7 +12,7 @@ This replaces the earlier "three starters and cursed-god bosses" proposal. Every
 - **13 Nov, v0.9.0 (built, "skill expansion and fixes"):** XP only from beaten enemies; levels 1–9, each with a skill point; three heroes per journey, favouring the hero of each place; only a hero who joins is unlocked; spikes that only hurt.
 - **12 Nov (built):** the darts event (*Puščice v zidu*, renamed *Past s konicami* on 13 Nov), the start screen with silhouettes and three known starters, attacks for the healers, every potion used automatically.
 - **Evening fixes (built, 11 Nov):** partial healing outside wells, automatic potions, wells raise the fallen (no longer, 16 Nov), gold and XP from every enemy, one-word chests and rock slides with partial outcomes, Krpan as the first starter with unlocks.
-- **Built:** the journey (ten regions, 48 stops), choosing the first hero, meeting and swapping heroes, shrines of the gods, wells, the pedlar, gold, 23 items, random regional enemies, sprites for every stop, four new heroes, battle abilities for all fifteen heroes.
+- **Built:** the journey (ten regions, 54 stop slots; a journey keeps three hero stops and three shrines), choosing the first hero, meeting and swapping heroes, shrines of the gods, wells, the pedlar, gold, 23 items, random regional enemies, sprites for every stop, four new heroes, battle abilities for all fifteen heroes.
 - **Gods as challengers (16 Nov, replacing the cursed-god trial of 13 Nov):** a god you pray to lends a gift for the journey and comes for a challenge when it ends (section 2a).
 - **Not balance-tested:** the journey runs end to end in automated tests, but nobody has played it through for difficulty.
 
@@ -27,10 +27,10 @@ One road, walked left to right. The party stands still and the world scrolls pas
 | 4 | Bled | island church, castle on the cliff | — (Kresnik has no home and turns up anywhere) | battle, chest, shrine, well, battle | Vodna vila, Vešča, Škrat |
 | 5 | Trnovski gozd | moonlit forest | Martin Krpan | battle, chest, spikes, hero, shrine, battle | Mora, Volkodlak, Vešča |
 | 6 | Piranske soline | salt pans, Piran at sunset | Lepa Vida | battle, pedlar, hero, well, shrine, battle | Vodna vila, Pesjan, Mora |
-| 7 | Predjamski grad | the castle in the cliff | Erazem Predjamski | battle, spikes, hero, chest, ambush | Zmajev mladič, Perkmandeljc, Volkodlak |
+| 7 | Predjamski grad | the castle in the cliff | Erazem Predjamski | battle, spikes, hero, rock slide, chest, ambush | Zmajev mladič, Perkmandeljc, Volkodlak |
 | 8 | Ljubljansko barje | pile dwellings in the mist | Zeleni Jurij | battle, well, hero, pedlar, shrine, battle | Škrat, Mora, Volkodlak, Vodna vila |
 | 9 | Ljubljanica | Tromostovje | Peter Klepec | battle, hero, well, **boss: Povodni mož** | Vodna vila, Mora |
-| 10 | Ljubljanski grad | the castle wall at sunset | — | pedlar, spikes, well, **boss: Lintvern** | — |
+| 10 | Ljubljanski grad | the castle wall at sunset | — | pedlar, rock slide, spikes, well, **boss: Lintvern** | — |
 
 - **Random enemies:** each battle draws its enemies from the region's pool. One enemy while the party is a single hero, two after that. The very first fight is always one Škrat with the tutorial tips.
 - **Scaling:** enemy health +10 % and attack +6 % per region (bosses are fixed).
@@ -214,6 +214,7 @@ On the name *Perun's Hammer*: in the sources Perun's weapon is an axe (and the t
 8. Znanje scaling monster health overlaps Težavnost's ×0.85–×1.25: the combined formula needs deciding when building (§11.3). *Not built.*
 9. ~~Three-letter words~~ — **decided and built 16 Nov:** accepted on every tier (§11.3).
 10. ~~Save details~~ — **decided 16 Nov:** checkpoints are sparse by Znanje, so a replayed stretch after quitting is the cost of quitting; no per-stop saves, no seed, no special rule for quitting mid-battle (§11.11).
+11. Chests at Ljubljanica and Ljubljanski grad (and Peca, Triglav, Piran, Barje)? Their chest words are written, but those regions have no chest stop.
 
 ## 11. Decisions of 16 Nov, from the Round 3 playtest
 
@@ -253,17 +254,17 @@ The crossword grid stays as the progress display; input moves to a **letter whee
 - The wheel follows the same rules when it comes (§11.4).
 
 ### 11.6 Rock slide (*plaz*) redesign — *partly built*
-Built (v0.10.0): the rocks come from the region's rock words (`data/words.json`: Peca, Triglav), fall slower (22 s, calm mode 40 s), and the panel says the letters may stand anywhere in the word, in any order. *Not built (next branch, with the wheel):*
+Built (v0.10.0): the rocks come from the region's rock words (`data/words.json`: Peca, Triglav, Predjamski grad, Ljubljanski grad), fall slower (22 s, calm mode 40 s), and the panel says the letters may stand anywhere in the word, in any order. *Not built (next branch, with the wheel):*
 - **Same-screen start:** no scene switch — a brief screen shake with boulder-rolling sound, then the slide begins on the road (§11.10).
 - **All boulders visible at once, falling slowly.** The background is **blurred and darkened** during input so the task is clear.
 - **Input through the letter wheel** (the keyboard is gone).
 - **Blanks always shown** — `_ _ _ _ _ (0/5)`; letters taken from rocks and letters entered from the wheel both count into the word, and **more than one word is accepted**.
 - **Tier shapes:** *malček* — smaller rocks and more of them (more letter hints); harder tiers — bigger rocks, fewer of them; the hardest — **one single boulder** hurtling down with only one or two letters shown.
 - **Outcome:** a correct word grants minimal or no damage. **Built:** if the game has a meaning for the word it is shown; otherwise *Kaj pomeni?* appears next to it (§11.9).
-- **Placement:** rock slides appear only near the **hillsides** of regions (already so: Peca, Triglav).
+- **Placement:** rock slides appear only near the **hillsides** of regions: Peca, Triglav, the cliff of Predjamski grad and the castle hill of Ljubljanski grad (the last two added 16 Nov, v0.10.0).
 
 ### 11.7 Chests and traps — built (v0.10.0), except the wheel
-- **Far wider word pools:** each region has its own chest words with clues in `data/words.json` (a first list of 66 words, to review); a chest never repeats a word on one journey.
+- **Far wider word pools:** each region has its own chest words with clues in `data/words.json` (a first list of 114 words, 11–13 per region, to review); a chest never repeats a word on one journey. Chests stand at Ptuj, Bled, Trnovski gozd and Predjamski grad; the other regions' words wait for chests there (§10 item 11).
 - **The clue by Znanje:** always on *malček*, on about every other chest on *učenjak*, never on *knjižni molj*.
 - **Chest UI:** ✕ and *Pošlji* sit next to the assembled word; the text says a mistake can be cleared.
 - *Not built:* the letter wheel here too, with shorter words from the visible letters allowed (§11.4).
