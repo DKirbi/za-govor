@@ -822,41 +822,45 @@ const CHESTS = [
   { w: 'pisanica', clue: 'Poslikano jajce iz Bele krajine' },
 ];
 
-// ============================================================ knowledge levels
-// The second difficulty choice; pace (real-time or calm) is the first.
-// Malček: learning words — the original game. Učenjak: longer, harder words and few tips.
-// Knjižni molj: crosswords in the style of paper crosswords, and no hints anywhere: no Namig, no letters
-// revealed in crosswords, no clue at chests, and the buttons are not there at all (noHints).
+// ============================================================ knowledge levels (Znanje: the one difficulty)
+// Chosen on Nova pot together with pace (real-time or calm). Znanje sets both the puzzle help and the
+// combat consequences (DIFFS below; Težavnost was its own choice until 0.11.0 and is now part of Znanje):
+// Malček: learning words — the original game, Lahka consequences. Učenjak: longer, harder words and few tips,
+// Srednja consequences. Knjižni molj: crosswords in the style of paper crosswords, and no hints anywhere:
+// no Namig, no letters revealed in crosswords, no clue at chests, and the buttons are not there at all
+// (noHints); Težka consequences.
 // Three-letter words count on every level (16 Nov 2026).
+// starters: whole words laid in rows when a battle's letter mesh opens (plantStarters): their lengths, the
+// share that runs backwards, and how far into the road the help lasts (share of the regions; 0 = the first region only).
 // Crossword settings: fin = finisher crosswords, easy = ambush and forced (enemy) crosswords;
 // banks feed the grid, maxLen caps word length, rowMax / X / size shape the keyword column.
 // tools/cluebank.py mirrors the crossword settings to validate the clue banks.
 const LEVELS = {
-  malcek: { name: 'Malček', minWord: 3, hints: 3, proposals: true, meshCount: true, coach: true, reveals: 5, showLen: true,
+  malcek: { name: 'Malček', diff: 'lahka', starters: { lens: [5, 4, 4, 3], upto: 0.5, back: 0.25 }, minWord: 3, hints: 3, proposals: true, meshCount: true, coach: true, reveals: 5, showLen: true,
     fin:  { banks: ['malcek'], maxLen: 7, rowMax: 6, X: 3, size: 9, count: 6 },
     easy: { banks: ['malcek'], maxLen: 5, rowMax: 5, X: 2, size: 7, count: 4, d: 1 } },
-  ucenjak: { name: 'Učenjak', minWord: 3, hints: 1, proposals: false, meshCount: true, coach: true, reveals: 2, showLen: true,
+  ucenjak: { name: 'Učenjak', diff: 'srednja', starters: { lens: [4, 3, 3], upto: 0.25, back: 0.4 }, minWord: 3, hints: 1, proposals: false, meshCount: true, coach: true, reveals: 2, showLen: true,
     fin:  { banks: ['ucenjak'], maxLen: 9, rowMax: 8, X: 4, size: 9, count: 6 },
     easy: { banks: ['malcek'], maxLen: 6, rowMax: 6, X: 2, size: 7, count: 4 } },
-  molj: { name: 'Knjižni molj', minWord: 3, hints: 0, noHints: true, proposals: false, meshCount: false, coach: false, reveals: 0, showLen: false,
+  molj: { name: 'Knjižni molj', diff: 'tezka', starters: { lens: [3, 3], upto: 0, back: 0.5 }, minWord: 3, hints: 0, noHints: true, proposals: false, meshCount: false, coach: false, reveals: 0, showLen: false,
     fin:  { banks: ['molj', 'ucenjak'], maxLen: 9, rowMax: 8, X: 4, size: 9, count: 7 },
     easy: { banks: ['molj', 'ucenjak'], maxLen: 6, rowMax: 6, X: 2, size: 7, count: 4 } },
 };
 const LV = () => LEVELS[S.know] || LEVELS.malcek;
 
-// ============================================================ difficulty (Težavnost on Nova pot)
-// Decides what a lost battle means and what happens to a fallen hero, and scales the enemies' health.
+// ============================================================ combat consequences, set by Znanje (LEVELS[…].diff)
+// Decide what a lost battle means and what happens to a fallen hero, and scale the enemies' health.
 // Wells never raise the fallen: that takes a healer (Mokoš, Zeleni Jurij), Mrtva voda or a beaten god.
-//   lahka:   a lost battle is not the end — the party withdraws, gets up with a third of its health and the
+//   lahka (Malček):         a lost battle is not the end — the party withdraws, gets up with a third of its health and the
 //            enemies still block the road; after a won battle the fallen get up with a quarter of their health
-//   srednja: a lost battle ends the journey; the fallen stay down until someone raises them
-//   tezka:   a lost battle ends the journey; a hero still down when the battle ends leaves the party; enemies are tougher
+//   srednja (Učenjak):      a lost battle ends the journey; the fallen stay down until someone raises them
+//   tezka (Knjižni molj):   a lost battle ends the journey; a hero still down when the battle ends leaves the party; enemies are tougher
 const DIFFS = {
   lahka: { name: 'Lahka', foeHp: 0.85, withdraw: true, rise: 0.25, leave: false, text: 'Poraz ni konec poti: družina se umakne in poskusi znova. Padli po zmagi vstanejo.' },
   srednja: { name: 'Srednja', foeHp: 1, withdraw: false, rise: 0, leave: false, text: 'Poraz konča pot. Padli obležijo, dokler jih kdo ne obudi.' },
   tezka: { name: 'Težka', foeHp: 1.25, withdraw: false, rise: 0, leave: true, text: 'Močnejši sovražniki. Kdor pade in ga do konca bitke nihče ne obudi, zapusti družino.' },
 };
-const DIFF = () => DIFFS[S.diff] || DIFFS.srednja;
+const DIFF = () => DIFFS[LV().diff] || DIFFS.srednja;
 const MINW = () => LV().minWord;
 
 const FINISHER_FX = {
@@ -878,7 +882,7 @@ const leadEl = () => UI.heroEls[living()[0] || 0];
 const HERO_HP = { krpan: 36, jurij: 26, kurent: 30, matjaz: 34, kresnik: 28, erazem: 34, klepec: 30, vida: 26, ajda: 38, perun: 36, svarog: 42, mokos: 34, dazbog: 36, stribog: 34, veles: 46 };
 // ------------------------------------------------------------ levels, skill points and skills
 // A hero gains XP only by beating enemies (every defeated enemy gives its XP to each hero still standing).
-// Each new level adds health and a little attack, and one skill point.
+// Each new level adds health and a little attack, and one skill point, and heals the hero fully.
 // Each hero has three skills. A word with one, two or three of the hero's letters (so a longer word) fires
 // skill 1, 2 or 3 if the hero knows it; otherwise the strongest skill they know below it. Skill 1 is known
 // from the start; a skill point learns skill 2 (then 3) or raises a known skill to stopnja 2 and 3:
@@ -949,7 +953,6 @@ const S = {
   get level() { const l = living(); return l.length ? Math.round(l.reduce((a, k) => a + this.heroes[k].lvl, 0) / l.length) : 1; },
   screen: 'title',
   know: (() => { try { const v = localStorage.getItem('zg-know'); if (LEVELS[v]) return v; } catch (e) { /* no storage */ } return 'malcek'; })(),
-  diff: (() => { try { const v = localStorage.getItem('zg-diff'); if (v === 'lahka' || v === 'srednja' || v === 'tezka') return v; } catch (e) { /* no storage */ } return 'srednja'; })(),
   xp: 0, meterBonus: 0,
   mode: (() => { try { const v = localStorage.getItem('zg-mode'); if (v === 'real' || v === 'calm') return v; } catch (e) { /* no storage */ } return 'real'; })(),
   battle: null, ev: null, suggest: true, menuSel: null, setup: null,
@@ -1090,7 +1093,7 @@ function renderHeroMoment(arg) {
   const wrap = h('div', { class: 'hm', style: { '--c': ch.c } },
     arg.crumb ? crumb(arg.crumb, () => arg.next()) : null,
     h('div', {}, h('div', { class: 'kind' }, HM_KIND[kind]), h('h2', {}, ch.name, h('small', {}, ch.sub)),
-      hs ? h('div', { class: 'hstat' }, hs.down ? 'Obležal. Obudi ga junak z zdravilno močjo, mrtva voda ali premagan bog; vodnjak ne.' : [`Raven ${hs.lvl} · zdravje ${hs.hp}/${hs.maxHp}`, hs.leveled ? h('b', {}, ' · nova raven, +1 točka veščine!') : null,
+      hs ? h('div', { class: 'hstat' }, hs.down ? 'Obležal. Obudi ga junak z zdravilno močjo, mrtva voda ali premagan bog; vodnjak ne.' : [`Raven ${hs.lvl} · zdravje ${hs.hp}/${hs.maxHp}`, hs.leveled ? h('b', {}, ' · nova raven: polno zdravje, +1 točka veščine!') : null,
         hs.lvl < MAX_LV ? ` · do naslednje ravni še ${LV_XP[hs.lvl] - hs.xp} XP` : ' · najvišja raven']) : null),
     // what this moment means (unlocked, room in the party, a freed god) comes first, before the pictures
     kind === 'freed' ? h('div', { class: 'note' }, CHAR_ST[id] === 'konec' ? `${ch.name} se ti pridruži šele po koncu zgodbe — takrat lahko zaigraš tudi z njim.` : `${ch.name} se ti ne pridruži takoj: svojo moč ti posodi, ko se srečata na naslednji poti.`) : null,
@@ -1192,8 +1195,10 @@ function startBattle(node) {
   });
   for (let i = 0; i < ROWS * COLS; i++) B.grid.push(newTile());
   ensureSolvable();
+  plantStarters();
   buildBattleDom();
   log(`${node.title}: ${B.enemies.map(e => e.name).join(', ')}.`);
+  if (B.starters.length) log(starterLine());
   { const b = B; later(() => { if (B === b && !B.over) autoItems('start'); }, 700); }
   if (def.ambush) {
     // the ambush is announced first, so the crossword does not come out of nowhere
@@ -1244,7 +1249,7 @@ function buildBattleDom() {
 function renderMeta() {
   if (!UI.meta) return;
   const gifts = giftsNow(), bl = gifts.length ? ` · dar: ${gifts.map(g => GOD[g].name).join(', ')}` : '';
-  UI.meta.textContent = `Ravni ${S.heroes.map(x => x.down ? '†' : x.lvl).join(' · ')} · ${S.mode === 'real' ? 'Realni čas' : 'Mirni način'} · ${LV().name}${S.run ? ' · ' + DIFF().name : ''}${bl}`;
+  UI.meta.textContent = `Ravni ${S.heroes.map(x => x.down ? '†' : x.lvl).join(' · ')} · ${S.mode === 'real' ? 'Realni čas' : 'Mirni način'} · ${LV().name}${bl}`;
 }
 const asleep = hIdx => !!B.sleep[hIdx] || S.heroes[hIdx].down;   // a fallen hero's letters go grey too
 const holdsBack = k => !!(B && B.node.challenge && B.node.challenge.own && HEROES[k] && HEROES[k].id === B.node.challenge.god);
@@ -1361,8 +1366,9 @@ function log(text) {
   renderLog();
 }
 function renderLog() { if (UI.log) { UI.log.innerHTML = ''; B.logLines.forEach(l => UI.log.append(h('div', {}, l))); } }
+const STARTER_TIP = { text: 'V vrsticah mreže ležijo cele besede. Beri jih z leve ali z desne.' };
 function renderCoach() {
-  const tip = LV().coach ? (B.def.tips || []).find(t => B.words < t.until) : null;
+  const tip = !LV().coach ? null : (B.def.tips || []).find(t => B.words < t.until) || (B.starters && B.starters.length && !B.words ? STARTER_TIP : null);
   UI.coach.style.display = tip ? '' : 'none';
   if (UI.scene) UI.scene.classList.toggle('coaching', !!tip && S.mobile);
   if (tip) UI.coach.textContent = 'Namig: ' + (S.mobile && tip.m ? tip.m : tip.text);
@@ -1508,6 +1514,54 @@ function ensureSolvable(minWords = 18) {
   }
   return true;
 }
+
+// ------------------------------------------------------------ starter-help words (Znanje, §11.3)
+// While the help lasts, a battle's letter mesh opens with some whole words laid in straight rows, readable
+// left to right or right to left. LEVELS[…].starters sets their lengths (one word per row: Malček the most
+// and the longest, Knjižni molj two short ones), how often a word runs backwards, and how far into the road
+// the help lasts: the first half of the regions on Malček, the first quarter on Učenjak, the first region
+// on Knjižni molj (a reminder of what to do). Battles outside a journey always get it.
+// About half the words come from the region (data/words.json: chest, rock and theme words, in any of their
+// forms, so sklanjatve and spreganje too), the rest from every word the game may suggest; never two forms
+// of one base form in the same mesh. Shuffling the mesh (Premešaj) lets the words go.
+function starterLens() {
+  const st = LV().starters; if (!st) return [];
+  if (S.run) { const n = WORLD.regions.length, last = st.upto ? Math.round(n * st.upto) : 1; if (S.run.ri >= last) return []; }
+  return st.lens.slice(0, ROWS).filter(n => n <= COLS);
+}
+const STARTER_POOL = {}, REGION_FORMS = new Map();
+function starterPool(len) {
+  if (!STARTER_POOL[len]) STARTER_POOL[len] = LEX.suggestedWords(len, len).filter(w => w.length === len);
+  return STARTER_POOL[len];
+}
+function regionForms(len) {
+  const reg = S.run ? WORLD.regions[S.run.ri].id : null; if (!reg) return [];
+  const key = reg + ':' + len; if (REGION_FORMS.has(key)) return REGION_FORMS.get(key);
+  const W = REGION_WORDS[reg] || {};
+  const lemmas = new Set([...(W.chest || []).map(x => x[0]), ...(W.rocks || []), ...(W.theme || [])].map(w => LEMMA.get(w) || w));
+  const out = starterPool(len).filter(w => lemmas.has(LEMMA.get(w) || w));
+  REGION_FORMS.set(key, out); return out;
+}
+function plantStarters() {
+  B.starters = [];
+  const lens = starterLens(); if (!lens.length) return;
+  const back = LV().starters.back != null ? LV().starters.back : 0.5;
+  const rows = shuffle([...Array(ROWS).keys()]).slice(0, lens.length), used = new Set();
+  lens.forEach((len, n) => {
+    const local = regionForms(len), all = starterPool(len);
+    let w = null;
+    for (let t = 0; t < 40 && !w && all.length; t++) {
+      const c = pick(local.length && Math.random() < 0.5 ? local : all), lem = LEMMA.get(c) || c;
+      if (!used.has(lem)) { w = c; used.add(lem); }
+    }
+    if (!w) return;
+    const r = rows[n], c0 = rnd(COLS - len + 1), rev = Math.random() < back;
+    const cells = [...Array(len).keys()].map(k => r * COLS + c0 + k), path = rev ? cells.slice().reverse() : cells;
+    path.forEach((i, k) => { B.grid[i].ch = w[k]; });
+    B.starters.push({ w, row: r, col: c0, back: rev, path });
+  });
+}
+const starterLine = () => B.starters.length > 1 ? 'V vrsticah mreže ležijo cele besede – beri jih z leve ali z desne.' : 'V eni vrstici mreže leži cela beseda – beri jo z leve ali z desne.';
 
 // ------------------------------------------------------------ puzzle area (mesh or crossword)
 function renderPuzzle() {
@@ -2012,9 +2066,10 @@ function gainXp(n, k, each) {           // k = hero index; without it the XP is 
     st.xp += (k != null && k >= 0) || each ? n : Math.ceil(n / who.length);
     while (st.lvl < MAX_LV && st.xp >= LV_XP[st.lvl]) {
       st.lvl++; st.leveled = true; st.pts = (st.pts || 0) + 1;
-      const mh = heroMaxHp(HEROES[i].id, st.lvl); st.hp += mh - st.maxHp; st.maxHp = mh;
+      // a new level heals fully (16 Nov 2026): more health, and all of it
+      const mh = heroMaxHp(HEROES[i].id, st.lvl); st.maxHp = mh; st.hp = mh;
       chorus();
-      if (B) { log(`${HEROES[i].name}: raven ${st.lvl}! Več zdravja in +1 točka veščine (porabiš jo pri vodnjaku, svetišču ali krošnjarju).`); fb(`${HEROES[i].name} doseže raven ${st.lvl}: +1 točka veščine!`, 'ok');
+      if (B) { log(`${HEROES[i].name}: raven ${st.lvl}! Polno zdravje in +1 točka veščine (porabiš jo pri vodnjaku, svetišču ali krošnjarju).`); fb(`${HEROES[i].name} doseže raven ${st.lvl}: polno zdravje, +1 točka veščine!`, 'ok');
         if (UI.heroEls && UI.heroEls[i]) { floatOn(UI.heroEls[i], `raven ${st.lvl}`, 'heal'); UI.heroEls[i].classList.add('glow'); } renderPartyHp(); }
     }
   });
@@ -3004,6 +3059,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { planChests, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.diff = d; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 

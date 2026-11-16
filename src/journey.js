@@ -2,8 +2,9 @@
 // The game is a single side-scrolling road: region after region (data/world.json), each with
 // stops — battles with random enemies, chests, rock slides, wells, pedlars, heroes to meet and
 // shrines of challenge (src/shrines.js). You start with one hero; up to four travel together and only
-// one of them may be a god. Health does not come back after a battle: it is restored at wells, which
-// no longer raise the fallen (that takes a healer, Mrtva voda or a beaten god; see DIFFS in src/game.js).
+// one of them may be a god. Health does not come back after a battle: it is restored at wells (which
+// stand by chance, like chests: planStops) and by a new level; wells no longer raise the fallen (that takes
+// a healer, Mrtva voda or a beaten god; see DIFFS in src/game.js).
 const WORLD = JSON.parse($('#worlddata').textContent);
 const ITEMS = Object.fromEntries(WORLD.items.map(it => [it.id, it]));
 const TV_SPEED = 240;                      // walking speed, world pixels per second
@@ -193,21 +194,31 @@ function pickHero(regionId) {
   for (let i = 0; i < free.length; i++) { r -= w[i]; if (r <= 0) return free[i]; }
   return free[free.length - 1];
 }
-// Chests: not every chest stands on every journey. Each chest stop stays with a chance set by Težavnost
-// (data/world.json → chests: fewer on harder settings), and a journey always keeps at least one.
-const CHEST_ODDS = WORLD.chests || {};
-function planChests(diff = S.diff) {
-  const slots = WORLD.regions.map((r, i) => r.stops.includes('chest') ? i : -1).filter(i => i >= 0);
-  const p = CHEST_ODDS[diff] != null ? CHEST_ODDS[diff] : 0.7;
+// Chests and wells: every region has a slot for each (its stops in data/world.json), and not every slot
+// is filled on every journey. When the journey starts, each slot stays with a chance set by Znanje
+// (data/world.json → chance: fewer on higher Znanje). A journey always keeps at least one chest, and at
+// least one well in each half of the road, so the second half never goes without one.
+// Returns the indices of the regions where that stop stands on this journey.
+const CHANCE = WORLD.chance || {};
+function planStops(kind, know = S.know) {
+  const slots = WORLD.regions.map((r, i) => r.stops.includes(kind) ? i : -1).filter(i => i >= 0);
+  const odds = CHANCE[kind] || {}, p = odds[know] != null ? odds[know] : 0.6;
   const at = slots.filter(() => Math.random() < p);
-  if (!at.length && slots.length) at.push(pick(slots));
+  if (kind === 'well') {
+    const half = WORLD.regions.length / 2;
+    [slots.filter(i => i < half), slots.filter(i => i >= half)].forEach(part => {
+      if (part.length && !part.some(i => at.includes(i))) at.push(pick(part));
+    });
+  } else if (!at.length && slots.length) at.push(pick(slots));
   return at.sort((a, b) => a - b);
 }
+function planChests(know) { return planStops('chest', know); }
+function planWells(know) { return planStops('well', know); }
 function newRun(starterId) {
   S.run = { ri: 0, x: 0, endX: 0, stops: [], gold: S.testMode ? 200 : 20, relics: [], bag: {}, rozaUsed: false, jurijUsed: false,
     battles: 0, words: 0, firstBattle: true, met: [starterId], walking: false, prompt: null, starter: starterId, heroAt: null,
     shrines: null, prayer: null, challenged: false, gifts: [] };
-  S.run.heroAt = planHeroes(); S.run.shrines = planShrines(starterId); S.run.chestAt = planChests();
+  S.run.heroAt = planHeroes(); S.run.shrines = planShrines(starterId); S.run.chestAt = planChests(); S.run.wellAt = planWells();
   const g = takeNextGift(); if (g) S.run.gifts.push(g);   // the gift of a god beaten at the end of the last journey
   setParty([starterId]); S.meterBonus = 0;
   enterRegion(0);
@@ -222,9 +233,9 @@ function enemyGroup(reg, ri, kind) {
 function enterRegion(i) {
   const R = S.run, reg = WORLD.regions[i], gap = WORLD.stopGap;
   R.ri = i; R.x = 0; R.stops = []; R.prompt = null; R.walking = false;
-  // a hero stop, a shrine and a chest only stay in the regions picked for this journey
+  // a hero stop, a shrine, a chest and a well only stay in the regions picked for this journey
   const kinds = reg.stops.filter(kind => (kind !== 'hero' || !R.heroAt || R.heroAt.includes(i)) && (kind !== 'god' || (R.shrines && R.shrines[i]))
-    && (kind !== 'chest' || !R.chestAt || R.chestAt.includes(i)));
+    && (kind !== 'chest' || !R.chestAt || R.chestAt.includes(i)) && (kind !== 'well' || !R.wellAt || R.wellAt.includes(i)));
   kinds.forEach((kind, n) => {
     const stop = { kind, x: (n + 1) * gap, done: false, passed: false };
     if (kind === 'battle' || kind === 'elite' || kind === 'boss') stop.enemies = enemyGroup(reg, i, kind);

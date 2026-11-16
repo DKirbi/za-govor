@@ -6,13 +6,14 @@ This replaces the earlier "three starters and cursed-god bosses" proposal. Every
 
 ## Status at a glance
 - **Decided by the user (11 Nov):** the 2D side-scrolling journey is the point of the game; the levels are places in Slovenia visited one after another, with no level list; the dragon at Ljubljana castle is the final battle; healing happens only at special places such as wells; the player starts with one character; four is the most in a party; only one god per play, and gods are stronger; Erasmus of Lueg (Erazem Predjamski) is a new character and more should be explored; all characters are unlocked; there are items with mythical Slavic names; merchants sell potions, poisons and attack boosts; traps, chests and wells have their own sprites; the web prototype is expanded for fast testing and Godot stays the end goal.
+- **16 Nov, late — v0.11.0, branch `0.11.0-alpha-fixes` (built, after testing #16):** *Težavnost* merged into *Znanje* (§3c); **starter-help words** in the letter mesh (§11.3); a new level heals fully (§4); **chests and wells by chance in every region**, by Znanje (§1).
 - **16 Nov, evening — v0.10.0, PR #16 `0.9.0-alpha-fixes` (built):** the journey saved at checkpoints by Znanje and *Izhod* (§11.11); word input (§11.5); 3-letter words on every tier and no hints on knjižni molj (§11.3); chests and rock slides with region words (§11.6, §11.7, `data/words.json`); *Kaj pomeni?* and chips-only word reports (§11.9); hero-screen footer, puzzle names at stops, the signpost walking on, the ambush announced (§11.8, `zagovor-080-alpha-fixes.md`); credits (`zagovor-store-release.md`).
-- **16 Nov, afternoon (decided; what is still *not built*, section 11):** geographic word seeding; at most one recruitable hero per region; starter-help words by Znanje; the križanka on a letter wheel and the in-game keyboard removed (PC/tablet setting for the classic form); the full rock-slide redesign; post-match screen and folk cards; road encounters played in the scene (§11.10); Znanje scaling monster health.
+- **16 Nov, afternoon (decided; what is still *not built*, section 11):** geographic word seeding; at most one recruitable hero per region; ~~starter-help words by Znanje~~ (built in 0.11.0 on the mesh); the križanka on a letter wheel and the in-game keyboard removed (PC/tablet setting for the classic form); the full rock-slide redesign; post-match screen and folk cards; road encounters played in the scene (§11.10); Znanje scaling monster health.
 - **16 Nov, v0.9.0 (built, corrections to "skill expansion and fixes"):** skill 1 known from the start, points learn skills 2 and 3 or raise any skill to **stopnja 3** (stronger, longer effects, one extra effect per stopnja; section 4); a hero with a point to spend glows and a chorus sings; **shrines of challenge**, one god each, three per journey, the god's challenge when the journey ends (section 2a); **Težavnost** with three settings (section 3c); wells no longer raise the fallen; the tap-to-demo on hero screens is no longer announced.
 - **13 Nov, v0.9.0 (built, "skill expansion and fixes"):** XP only from beaten enemies; levels 1–9, each with a skill point; three heroes per journey, favouring the hero of each place; only a hero who joins is unlocked; spikes that only hurt.
 - **12 Nov (built):** the darts event (*Puščice v zidu*, renamed *Past s konicami* on 13 Nov), the start screen with silhouettes and three known starters, attacks for the healers, every potion used automatically.
 - **Evening fixes (built, 11 Nov):** partial healing outside wells, automatic potions, wells raise the fallen (no longer, 16 Nov), gold and XP from every enemy, one-word chests and rock slides with partial outcomes, Krpan as the first starter with unlocks.
-- **Built:** the journey (ten regions, 56 stop slots; a journey keeps three hero stops, three shrines and some of the six chests), choosing the first hero, meeting and swapping heroes, shrines of the gods, wells, the pedlar, gold, 23 items, random regional enemies, sprites for every stop, four new heroes, battle abilities for all fifteen heroes.
+- **Built:** the journey (ten regions, 56 stop slots; a journey keeps three hero stops, three shrines and some of the ten chests and ten wells), choosing the first hero, meeting and swapping heroes, shrines of the gods, wells, the pedlar, gold, 23 items, random regional enemies, sprites for every stop, four new heroes, battle abilities for all fifteen heroes.
 - **Gods as challengers (16 Nov, replacing the cursed-god trial of 13 Nov):** a god you pray to lends a gift for the journey and comes for a challenge when it ends (section 2a).
 - **Not balance-tested:** the journey runs end to end in automated tests, but nobody has played it through for difficulty.
 
@@ -29,22 +30,22 @@ One road, walked left to right. The party stands still and the world scrolls pas
 
 | # | Region | Landmark in the background | Hero of the place (6× more likely to wait there) | Stops | Enemies |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Ptuj | castle above the snowy town | Kurent | battle, hero, chest, battle | Škrat, Vešča |
-| 2 | Peca | King Matjaž's cave | Kralj Matjaž | battle, rock slide, hero, well, shrine, battle | Perkmandeljc, Škrat, Pesjan |
+| 1 | Ptuj | castle above the snowy town | Kurent | battle, hero, chest\*, well\*, battle | Škrat, Vešča |
+| 2 | Peca | King Matjaž's cave | Kralj Matjaž | battle, rock slide, chest\*, hero, well\*, shrine, battle | Perkmandeljc, Škrat, Pesjan |
 | 3 | Triglav | the three peaks | Ajdovska deklica | battle, rock slide, hero, pedlar, shrine, battle | Pesjan, Perkmandeljc, Vešča |
-| 4 | Bled | island church, castle on the cliff | — (Kresnik has no home and turns up anywhere) | battle, chest, shrine, well, battle | Vodna vila, Vešča, Škrat |
-| 5 | Trnovski gozd | moonlit forest | Martin Krpan | battle, chest, spikes, hero, shrine, battle | Mora, Volkodlak, Vešča |
-| 6 | Piranske soline | salt pans, Piran at sunset | Lepa Vida | battle, pedlar, hero, well, shrine, battle | Vodna vila, Pesjan, Mora |
-| 7 | Predjamski grad | the castle in the cliff | Erazem Predjamski | battle, spikes, hero, rock slide, chest, ambush | Zmajev mladič, Perkmandeljc, Volkodlak |
-| 8 | Ljubljansko barje | pile dwellings in the mist | Zeleni Jurij | battle, well, hero, pedlar, shrine, battle | Škrat, Mora, Volkodlak, Vodna vila |
-| 9 | Ljubljanica | Tromostovje | Peter Klepec | chest, battle, hero, well, **boss: Povodni mož** | Vodna vila, Mora |
-| 10 | Ljubljanski grad | the castle wall at sunset | — | chest, pedlar, rock slide, spikes, well, **boss: Lintvern** | — |
+| 4 | Bled | island church, castle on the cliff | — (Kresnik has no home and turns up anywhere) | battle, chest\*, shrine, well\*, battle | Vodna vila, Vešča, Škrat |
+| 5 | Trnovski gozd | moonlit forest | Martin Krpan | battle, chest\*, spikes, hero, well\*, shrine, battle | Mora, Volkodlak, Vešča |
+| 6 | Piranske soline | salt pans, Piran at sunset | Lepa Vida | battle, chest\*, pedlar, hero, well\*, shrine, battle | Vodna vila, Pesjan, Mora |
+| 7 | Predjamski grad | the castle in the cliff | Erazem Predjamski | battle, spikes, hero, rock slide, chest\*, well\*, ambush | Zmajev mladič, Perkmandeljc, Volkodlak |
+| 8 | Ljubljansko barje | pile dwellings in the mist | Zeleni Jurij | battle, chest\*, hero, pedlar, well\*, shrine, battle | Škrat, Mora, Volkodlak, Vodna vila |
+| 9 | Ljubljanica | Tromostovje | Peter Klepec | chest\*, battle, hero, well\*, **boss: Povodni mož** | Vodna vila, Mora |
+| 10 | Ljubljanski grad | the castle wall at sunset | — | chest\*, pedlar, rock slide, spikes, well\*, **boss: Lintvern** | — |
 
 - **Random enemies:** each battle draws its enemies from the region's pool. One enemy while the party is a single hero, two after that. The very first fight is always one Škrat with the tutorial tips.
 - **Scaling:** enemy health +10 % and attack +6 % per region (bosses are fixed).
 - **Three heroes per journey (13 Nov):** a hero always waits at Ptuj; two more regions with a hero stop are picked at random and the other hero stops are left out, so one journey never meets everyone. At a hero stop the hero of the place is six times as likely as anyone else, and heroes not yet unlocked twice as likely; if nobody is left, the stop becomes a well. **(16 Nov, stricter — see §11.2: at most one recruitable hero per region, randomized among the region's own heroes when several belong there. *Not built.*)**
 - **Shrines and heroes are planned per journey:** only three of the six shrines and three of the hero stops stay on any one journey (sections 1 and 2a).
-- **Chests by chance (16 Nov, v0.10.0):** each of the six chest stops (Ptuj, Bled, Trnovski gozd, Predjamski grad, Ljubljanica, Ljubljanski grad) stays on a journey with a chance set by Težavnost — Lahka 90 %, Srednja 70 %, Težka 50 % (`data/world.json → chests`) — and a journey always keeps at least one (on average about 5, 4 and 3 chests).
+- **Chests and wells by chance (16 Nov, v0.11.0; \* in the table):** every region has a place for a chest and a place for a well. When a journey starts, each place stays with a chance set by **Znanje** — chests 60 / 45 / 30 %, wells 75 / 55 / 40 % on malček / učenjak / knjižni molj (`data/world.json → chance`), on average about 6 / 4.5 / 3 chests and 7.5 / 5.5 / 4 wells. A journey always keeps at least one chest, and **a well in each half of the road**. The plan is kept in the save (`chestAt`, `wellAt`); a 0.10.0 save gets its wells planned when it loads. (In v0.10.0 only six regions had a chest, by Težavnost 90 / 70 / 50 %.)
 - **Data:** regions, stop order, enemy pools, items and save checkpoints live in `data/world.json`, the words of each region in `data/words.json`, so the Godot game can read the same files.
 
 ## 2. Party rules
@@ -74,7 +75,8 @@ One road, walked left to right. The party stands still and the world scrolls pas
 
 ## 3. Health, falling and healing
 - Every hero has their own health bar. **Health does not come back after a battle.**
-- **Wells are the main healing:** drinking restores every hero still standing to full. **Wells no longer raise the fallen (16 Nov).** There are six wells on the road.
+- **Wells are the main healing:** drinking restores every hero still standing to full. **Wells no longer raise the fallen (16 Nov).** Every region has a place for a well, kept by chance (§1).
+- **A new level heals the hero fully (16 Nov, v0.11.0)**, besides the extra health it brings.
 - **Heroes' healing is partial:** the skills of Mokoš and Zeleni Jurij (and Mokoš's zagovor) never lift a hero above 70 % of their health.
 - **Healers attack too, weakly at first:** every move of Mokoš and Zeleni Jurij now also hits the target. Their hit starts at roughly half of a fighter's and grows with each level (Mokoš 1.8 → 2.2 → 2.6, Jurij 1.6 → 2.0 → 2.4, against about 3 for the others), so they catch up later while still healing.
 - **Potions and poisons work by themselves; there is no tool belt.** The bag only shows what the party carries.
@@ -106,19 +108,19 @@ One road, walked left to right. The party stands still and the world scrolls pas
 - On the road it stands in Trnovski gozd, at Predjamski grad and before the dragon. It has its own sprite (a stone wall with iron spikes coming out of the slots); a new terrain sprite will come from the art branch.
 - Internal ids stay `darts` and `puscice`, so saved runs, `data/world.json` and the missing-word reports keep working.
 
-## 3c. Difficulty — *Težavnost* (16 Nov; `DIFFS` in `src/game.js`)
-Chosen on *Nova pot* above *Tempo* (pace) and *Znanje* (knowledge), remembered as `zg-diff`; default *Srednja*.
+## 3c. Difficulty — part of *Znanje* (16 Nov; `DIFFS` in `src/game.js`)
+**Since v0.11.0 there is one difficulty, *Znanje*.** *Težavnost* was its own choice on *Nova pot* in v0.9.0–0.10.0; its three settings now come with the three Znanje tiers (`LEVELS[…].diff`), and each Znanje card on *Nova pot* says what losing means. The old `zg-diff` setting is forgotten.
 
-| | Lahka | Srednja | Težka |
+| | malček → Lahka | učenjak → Srednja | knjižni molj → Težka |
 | --- | --- | --- | --- |
 | Enemy health (journey only) | ×0.85 | ×1 | ×1.25 |
 | Lost battle | **withdraw:** everyone gets up with a third of their health; the enemies still block the road (a god's godly version goes back into the shrine) | the journey ends | the journey ends |
 | A hero down when a battle is won | gets up with a quarter of their health | stays down | **leaves the party** |
 
-On *Težka* only a healer's skill or *Mrtva voda* during the battle (or a beaten god at its end) saves a fallen hero. A journey that ends removes its save (§11.11).
+On knjižni molj only a healer's skill or *Mrtva voda* during the battle (or a beaten god at its end) saves a fallen hero. A journey that ends removes its save (§11.11).
 
 ## 4. Levels, skill points and skills (13 Nov, stopnje 16 Nov)
-- **Levels 1–9** at 0, 60, 140, 240, 360, 500, 660, 840 and 1050 XP. Each level adds 8 % health and 4 % attack, a little extra for long words (up to +10 % per letter beyond the fourth at level 9), and **one skill point**.
+- **Levels 1–9** at 0, 60, 140, 240, 360, 500, 660, 840 and 1050 XP. Each level adds 8 % health and 4 % attack, a little extra for long words (up to +10 % per letter beyond the fourth at level 9), and **one skill point**, and **heals the hero fully** (v0.11.0).
 - **Three skills per hero.** A word with one, two or three of the hero's letters fires skill 1, 2 or 3 — if the hero knows it; otherwise the strongest skill they know below it, with +15 % for every letter beyond it. Skill 1 is known from the start.
 - **Spending points** (*Veščine*, at a well, a shrine or a pedlar): learning skill 2 (after 1) or skill 3 (after 2) costs one point. **Every known skill can be raised to stopnja 2 and 3**, one point each, and no further: stopnja 2 = +20 % power, effects 1.5× as long; stopnja 3 = +40 % power, effects 2× as long (`RANK_POW`, `RANK_DUR`). "Effects" are stuns, burns and poison, weakening and Erazem's dodges. Each stopnja also adds one fixed extra effect (`SKILL_UPS` in `src/skills.js`): *Kritični udarec* (30 % chance to hit double), *Na vse* (also hits every other enemy), *Zdravljenje* (heals the party a little), *Ščit*, *Omama* (stun), *Ogenj* (burn), *Oslabitev* (the target hits 1 weaker).
 - To max out one hero takes 8 points (2 + 3 + 3) — exactly what levels 2–9 give, so the starting hero can finish only on a full journey, and a newcomer never; every journey asks which skills to grow.
@@ -220,10 +222,10 @@ On the name *Perun's Hammer*: in the sources Perun's weapon is an axe (and the t
 5. Which regions come next (Bela krajina, Celje, Kras in Škocjan, Kočevski rog, Prekmurje)?
 6. *Praprotno seme* (one more hint per battle): on *knjižni molj*, which has no hints, it now gives nothing. Leave it, or repurpose it there?
 7. *Kaj pomeni?* (§11.9): built with Claude's proposals as defaults — one meanings file for the whole game, chips on the battle result instead of a button in the live word bar, two chip groups. Confirm or change.
-8. Znanje scaling monster health overlaps Težavnost's ×0.85–×1.25: the combined formula needs deciding when building (§11.3). *Not built.*
+8. ~~Znanje scaling monster health overlaps Težavnost's ×0.85–×1.25~~ — **settled 16 Nov:** Težavnost is part of Znanje now (§3c), so its ×0.85 / ×1 / ×1.25 enemy health *is* Znanje's scaling. Whether higher tiers need more on top is a balance question for the next test.
 9. ~~Three-letter words~~ — **decided and built 16 Nov:** accepted on every tier (§11.3).
 10. ~~Save details~~ — **decided 16 Nov:** checkpoints are sparse by Znanje, so a replayed stretch after quitting is the cost of quitting; no per-stop saves, no seed, no special rule for quitting mid-battle (§11.11).
-11. ~~Chests at Ljubljanica and Ljubljanski grad~~ — **decided and built 16 Nov:** a chest at the start of each, and every chest stands by chance, fewer on harder Težavnost (§1). Peca, Triglav, Piran and Barje have chest words but no chest stop. Open: should the chest odds follow Težavnost (as built) or Znanje?
+11. ~~Chests at Ljubljanica and Ljubljanski grad~~ — **decided and built 16 Nov:** a chest at the start of each. **Changed the same evening (v0.11.0):** every region has a place for a chest and for a well, each kept by chance **by Znanje** (Težavnost is part of Znanje now), with at least one chest and a well in each half of the road (§1).
 
 ## 11. Decisions of 16 Nov, from the Round 3 playtest
 
@@ -236,17 +238,17 @@ The letter pools of every letter puzzle (mesh, wheel, chest, rocks) favour words
 Hard cap: **one** recruitable hero per region. Where two or more heroes belong to a region, the one who appears is **randomized per journey**. The current journey table has one named hero per region, so this binds mostly future regions (a Celje region with Veronika Deseniška *and* the Counts, say).
 
 ### 11.3 Znanje tiers — *malček / učenjak / knjižni molj* (bookworm)
-Confirmed split: **Znanje** governs puzzle help, **Težavnost** governs combat consequences. Znanje also scales monster health; with more health, battles run longer and monsters get more attacks in, so higher tiers demand faster solving — tuned so that good team strategy keeps it challenging but not too hard. (Formula overlap with Težavnost: §10 item 8. *Not built.*)
+~~Split: **Znanje** governs puzzle help, **Težavnost** governs combat consequences.~~ **Changed 16 Nov, late (v0.11.0): Znanje is the one difficulty** — malček plays with Lahka's consequences, učenjak with Srednja's, knjižni molj with Težka's (§3c), so Znanje also scales monster health (×0.85 / ×1 / ×1.25). With more health, battles run longer and monsters get more attacks in, so higher tiers demand faster solving — tuned so that good team strategy keeps it challenging but not too hard.
 
 **Three-letter words count on every tier — built (v0.10.0).** The 4-letter minimum on *učenjak* and *knjižni molj* is removed. Three-letter words already deal the lowest damage (×1); watch for short-word spam on *knjižni molj* in the next balance test.
 
-**Starter-help words — *not built* (next branch, with the wheel):** puzzle boards open with some target words laid **in straight lines, readable forwards or backwards**, drawn also from inflected forms (*sklanjatve*, *spreganje*). Easier tiers get more starter words and longer ones; harder tiers get fewer and shorter ones, mostly three letters.
+**Starter-help words — built on the letter mesh (v0.11.0; `plantStarters` in `src/game.js`, `LEVELS[…].starters`):** when a battle's letter mesh opens, some whole words lie **in rows, readable from the left or the right**, one word per row. About half are words of the region (`data/words.json`: chest, rock and theme words) **in any of their forms** (*sklanjatve*, *spreganje*: VINA, GRADU, KROFI), the rest any word the game may suggest; never two forms of one base form in one mesh. The battle log says so; on malček and učenjak the coach tip does too until the first word is played (the very first battle keeps its own input tips). *Premešaj* lets the words go. Battles outside a journey always get the help. The wheel-križanka (§11.4) will take the same words when it is built.
 
 | | *malček* | *učenjak* | *knjižni molj* |
 | --- | --- | --- | --- |
-| How many starter words | the most | some | two or three |
-| Their length | 3-letter words and longer ones | 3- and 4-letter, a few longer | short, mostly 3-letter |
-| How long the help lasts | the first **half of the map** | the first **quarter of the map** | the **starting region only** — a reminder of what to do |
+| Starter words | four: 5, 4, 4 and 3 letters | three: 4, 3, 3 | two of 3 letters |
+| Running backwards | about a quarter | about 40 % | about half |
+| How long the help lasts | the first **half of the road** (Ptuj to Trnovski gozd) | the first **quarter** (Ptuj, Peca, Triglav) | the **starting region only** (Ptuj) — a reminder of what to do |
 
 **Hints — built (v0.10.0):** *malček* — Namig (3 per battle), Razkrij črko, chest clue always; *učenjak* — Namig (1), Razkrij črko (2), the chest clue on about every other chest; *knjižni molj* — **no hints anywhere**: no Namig (not even with *Praprotno seme*), no Razkrij črko, no chest clue, and the buttons are gone.
 
@@ -324,7 +326,7 @@ With this much reading (intros, bios, folk cards) and a long road, players must 
 | *učenjak* | every third | Triglav, Piranske soline |
 | *knjižni molj* | once, at the half | Trnovski gozd (after the shrines at Bled) |
 
-- **What is saved:** the party (heroes, health, XP, levels, skill points, stopnje), gold, bag and relics, the prayer and gift, the position on the road, the journey's plan (kept hero stops and shrines) and Težavnost / Znanje / Tempo. One slot (`zg-save`, with a format version); a save from an older build that no longer fits is dropped with a message.
+- **What is saved:** the party (heroes, health, XP, levels, skill points, stopnje), gold, bag and relics, the prayer and gift, the position on the road, the journey's plan (kept hero stops, shrines, chests and wells) and Znanje / Tempo (no Težavnost of its own since v0.11.0; a 0.10.0 save still loads and gets its wells planned). One slot (`zg-save`, with a format version); a save from an older build that no longer fits is dropped with a message.
 - **The result of a checkpoint battle says *Shranjeno*.** After closing the page, *Nadaljuj pot (Peca · shranjeno)* on the start screen continues from there; *Nova pot* says the saved journey will be removed.
 - **Izhod** replaces *Meni* in the road's header and is in the pause window of journey battles (and the Android back button on the road asks the same). It asks first and says where the game last saved: *»Napredek je shranjen po zadnji zmagi – Peca.«* — or, before the first save, *»Napredek še ni shranjen – prvo shranjevanje: Peca.«* Leaving mid-battle starts that battle again when the journey continues.
 - **A new, finished or lost journey removes the save.**

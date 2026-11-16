@@ -80,8 +80,8 @@ function pageKey(e) {
 const PACE = [
   { id: 'real', name: 'Realni čas', badge: 'priporočeno', text: 'Sovražniki napadajo sproti in počasi topijo zdravje družine.' },
   { id: 'calm', name: 'Mirni način', text: 'Brez časovnega pritiska, sovražniki napadejo na vsakih nekaj potez. Dogodki imajo dvojni čas.' }];
-// Težavnost: what a lost battle and a fallen hero mean (DIFFS in src/game.js)
-const DIFF_CHOICES = [{ id: 'lahka' }, { id: 'srednja', badge: 'priporočeno' }, { id: 'tezka' }];
+// Znanje is the one difficulty: puzzle help and what a lost battle and a fallen hero mean (LEVELS and DIFFS
+// in src/game.js). Težavnost was a separate choice until 0.11.0.
 const KNOW = [
   { id: 'malcek', text: 'Za učenje besed.' },
   { id: 'ucenjak', text: 'Zahtevnejše besede, malo pomoči.' },
@@ -89,15 +89,15 @@ const KNOW = [
 const setupVal = k => S.setup ? S.setup[k] : S[k];
 function applySetup() {
   const U = S.setup; if (!U) return;
-  S.mode = U.mode; S.know = U.know; S.diff = U.diff; S.suggest = U.suggest; S.testMode = U.testMode;
+  S.mode = U.mode; S.know = U.know; S.suggest = U.suggest; S.testMode = U.testMode;
   S.tutOn = U.tutOn; if (U.tutOn) resetTuts();      // explanations come back for every puzzle type on this journey
-  try { localStorage.setItem('zg-know', U.know); localStorage.setItem('zg-mode', U.mode); localStorage.setItem('zg-diff', U.diff); localStorage.setItem('zg-tutorials', U.tutOn ? '1' : '0'); } catch (e) { /* no storage */ }
+  try { localStorage.setItem('zg-know', U.know); localStorage.setItem('zg-mode', U.mode); localStorage.removeItem('zg-diff'); localStorage.setItem('zg-tutorials', U.tutOn ? '1' : '0'); } catch (e) { /* no storage */ }
   S.setup = null;
 }
 function setupNext() { sfx('sel'); go('pick'); }
 
 function renderNewRun() {
-  if (!S.setup) S.setup = { mode: S.mode, know: S.know, diff: S.diff, suggest: S.suggest, tutOn: S.tutOn, testMode: S.testMode };
+  if (!S.setup) S.setup = { mode: S.mode, know: S.know, suggest: S.suggest, tutOn: S.tutOn, testMode: S.testMode };
   const U = S.setup, R = S.run && !S.run.over ? S.run : null, saved = !R && SAVED ? regionName(SAVED.region) : null;
   const tick = () => h('span', { class: 'tick', 'aria-hidden': 'true' });
   const radio = (group, id, kids, cls = '') => h('label', { class: `choice ${cls}` + (U[group] === id ? ' on' : ''), 'data-group': group, 'data-id': id },
@@ -109,10 +109,6 @@ function renderNewRun() {
     crumb(),
     pageH1('Nova pot'),
     h('section', { class: 'set-block' },
-      h('h2', { id: 'set-diff' }, 'Težavnost'),
-      h('div', { class: 'choices three', role: 'radiogroup', 'aria-labelledby': 'set-diff' },
-        DIFF_CHOICES.map(d => radio('diff', d.id, [h('h3', {}, DIFFS[d.id].name, d.badge ? h('span', { class: 'badge' }, d.badge) : null), h('p', {}, DIFFS[d.id].text)])))),
-    h('section', { class: 'set-block' },
       h('h2', { id: 'set-pace' }, 'Tempo'),
       h('div', { class: 'choices', role: 'radiogroup', 'aria-labelledby': 'set-pace' },
         PACE.map(p => radio('mode', p.id, [h('h3', {}, p.name, p.badge ? h('span', { class: 'badge' }, p.badge) : null), h('p', {}, p.text)])))),
@@ -121,7 +117,7 @@ function renderNewRun() {
       h('div', { class: 'lv-grid', role: 'radiogroup', 'aria-labelledby': 'set-know' },
         KNOW.map(k => [
           radio('know', k.id, [h('span', { class: 'lv-art', 'aria-hidden': 'true' }, h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES['lv-' + k.id]})` } })),
-            h('h3', {}, LEVELS[k.id].name), h('p', {}, k.text)], 'lv'),
+            h('h3', {}, LEVELS[k.id].name), h('p', {}, k.text), h('p', { class: 'lv-stakes' }, DIFFS[LEVELS[k.id].diff].text)], 'lv'),
           LEVELS[k.id].proposals ? h('div', { class: 'subopt', 'data-for': k.id, hidden: U.know !== k.id },
             toggle('suggest', 'Predlogi besed med igro', 'Pod mrežo se pokažejo besede, ki jih lahko sestaviš.')) : null]))),
     h('div', { class: 'set-opts' },
@@ -267,7 +263,7 @@ function renderAbout(at) {
     crumb(),
     pageH1('O igri'),
     h('p', { class: 'lead' }, h('i', {}, 'Za govor!'), ' je besedna igra vlog s slovanskimi bogovi in junaki slovenskega ljudskega izročila. Junaki se bojujejo z besedami: prava beseda je napad, daljša udari močneje.'),
-    h('p', {}, 'Pot vodi po Sloveniji, od Ptuja do Ljubljanskega gradu, kjer čaka zmaj. Začneš z enim junakom. Na poti srečaš sovražnike, skrinje, plazove, vodnjake, krošnjarje, svetišča bogov in nove junake; v družini so največ štirje, bog le eden. Zdravje se po bitki ne vrne samo: junaki se pozdravijo pri vodnjaku. Zlatnike zapraviš pri krošnjarju za napoje, strupe in predmete.'),
+    h('p', {}, 'Pot vodi po Sloveniji, od Ptuja do Ljubljanskega gradu, kjer čaka zmaj. Začneš z enim junakom. Na poti srečaš sovražnike, skrinje, plazove, vodnjake, krošnjarje, svetišča bogov in nove junake; v družini so največ štirje, bog le eden. Zdravje se po bitki ne vrne samo: junaki se pozdravijo pri vodnjaku, ob novi ravni pa se pozdravijo do konca. Zlatnike zapraviš pri krošnjarju za napoje, strupe in predmete.'),
     h('p', { class: 'muted' }, STAGE === 'zaprta alfa' ? 'Igra je v zaprti alfi: igrajo jo povabljeni preizkuševalci. Še nastaja in se po vsakem preizkusu spremeni.' : 'Igra še nastaja in se po vsakem preizkusu spremeni.'),
     versionLine('about-version'),
     sec('avtor', 'Avtor', creditAuthor()),

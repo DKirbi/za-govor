@@ -59,6 +59,7 @@ run(async () => {
     const tog = label => [...document.querySelectorAll('.setup .toggle')].find(x => x.textContent.startsWith(label));
     return { real: t('real'), calm: t('calm'), malcek: t('malcek'), ucenjak: t('ucenjak'), molj: t('molj'),
       sprites: [...document.querySelectorAll('.lv-art .sp')].map(i => /data:image\/png/.test(i.style.backgroundImage)),
+      blocks: [...document.querySelectorAll('.set-block h2')].map(x => x.textContent), stakes: [...document.querySelectorAll('.lv-grid .lv-stakes')].map(x => x.textContent),
       gap: Math.round(knowH.top - blocks[0].bottom), line: getComputedStyle(document.querySelectorAll('.set-block')[1]).borderTopStyle,
       sub: { shown: !sub.hidden, text: sub.textContent, under: Math.abs(sr.top - mal.bottom) <= 3 && Math.abs(sr.left - mal.left) <= 1, checked: sub.querySelector('input').checked },
       tut: tog('Pokaži razlage ugank').querySelector('input').checked,
@@ -68,7 +69,10 @@ run(async () => {
   check(/^Brez časovnega pritiska, sovražniki napadejo/.test(nr.calm) && /Dogodki imajo dvojni čas\.$/.test(nr.calm), 'Mirni način is one short line: no time pressure, events get double time', nr.calm);
   check(nr.malcek === 'Za učenje besed.' && nr.ucenjak === 'Zahtevnejše besede, malo pomoči.' && nr.molj === 'Za križankarje in pametnjakoviče.', 'the knowledge levels have one short line each');
   check(nr.sprites.length === 3 && nr.sprites.every(Boolean), 'each knowledge level has its own pixel figure');
-  check(nr.gap >= 48 && nr.line === 'solid', 'Težavnost and Znanje are clearly apart, with a line between them', nr.gap + ' px');
+  check(nr.blocks.join() === 'Tempo,Znanje', 'Nova pot asks for Tempo and Znanje only: Težavnost is part of Znanje', nr.blocks.join());
+  check(nr.stakes.length === 3 && /^Poraz ni konec poti/.test(nr.stakes[0]) && /^Poraz konča pot/.test(nr.stakes[1]) && /zapusti družino\.$/.test(nr.stakes[2]),
+    'each knowledge level says what a lost battle and a fallen hero mean (Lahka, Srednja, Težka)', JSON.stringify(nr.stakes));
+  check(nr.gap >= 48 && nr.line === 'solid', 'Tempo and Znanje are clearly apart, with a line between them', nr.gap + ' px');
   check(nr.sub.shown && /Predlogi besed med igro/.test(nr.sub.text) && nr.sub.under && nr.sub.checked, 'Predlogi besed sits right under Malček, on by default', JSON.stringify(nr.sub));
   check(nr.tut, 'Pokaži razlage ugank is on by default');
   check(nr.dev.inBox && !nr.dev.checked && /razvoj/i.test(nr.dev.tag), 'Preizkusni način is kept, off, in a box marked as a developer option', JSON.stringify(nr.dev));
@@ -95,7 +99,7 @@ run(async () => {
   await page.evaluate(() => window.__ZG.go('newrun')); await sleep(150);
   check(await page.evaluate(() => document.querySelector('.choice.on[data-group="mode"]').dataset.id === 'real' && document.querySelector('.choice.on[data-group="know"]').dataset.id === 'malcek'), 'Nova pot opens with the current choices again');
   await page.click('.choice[data-id="calm"]'); await page.click('.choice[data-id="molj"]');
-  // the setup page is taller than the window since Težavnost came in: bring the toggle into view first
+  // the setup page can be taller than the window: bring the toggle into view first
   await page.$eval('.setup .toggle:not(.subopt .toggle) input', el => el.scrollIntoView({ block: 'center' }));
   await page.click('.setup .toggle:not(.subopt .toggle) input'); await sleep(100);   // Pokaži razlage ugank off
   await page.keyboard.press('Enter'); await sleep(200);

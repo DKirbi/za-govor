@@ -36,6 +36,25 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
+## 0.11.0 — 16 Nov 2026 · zaprta alfa · one difficulty, starter words, chests and wells by chance
+Branch `0.11.0-alpha-fixes`, after testing 0.10.0 (#16).
+- **Znanje is the one difficulty.** *Težavnost* is no longer a choice of its own on *Nova pot*:
+  Malček plays with the old Lahka rules (a lost battle is not the end, the fallen get up after a
+  win, weaker enemies), Učenjak with Srednja (a lost battle ends the journey), Knjižni molj with
+  Težka (stronger enemies; a hero still down after a battle leaves). Each Znanje card says so.
+  A saved journey keeps going on its Znanje; the separate setting is forgotten.
+- **Starter words.** While the help lasts, a battle's letter mesh opens with whole words laid in
+  rows, readable from the left or the right: Malček four (5, 4, 4 and 3 letters) for the first
+  half of the road, Učenjak three (4, 3, 3) for the first quarter, Knjižni molj two three-letter
+  words in the first region only. About half are words of the region in any of their forms. The
+  battle log and (on Malček and Učenjak) the coach tip point them out; *Premešaj* lets them go.
+- **A new level heals the hero fully** (and still adds health and a skill point).
+- **Chests and wells by chance, in every region.** Every region now has a place for a chest and
+  for a well, including new chests at the start of Ljubljanica and Ljubljanski grad. When a
+  journey starts, each place stays with a chance set by Znanje (chests 60 / 45 / 30 %, wells
+  75 / 55 / 40 % on Malček / Učenjak / Knjižni molj; `data/world.json → chance`). A journey always
+  keeps at least one chest, and a well in each half of the road.
+
 ## 0.10.0 — 16 Nov 2026 · zaprta alfa · alpha fixes (playtest round 3)
 Branch `0.9.0-alpha-fixes`, stacked on 0.9.0 (#12). From the third playtest (two testers on phones)
 and the decisions of 16 Nov.
@@ -59,9 +78,6 @@ and the decisions of 16 Nov.
   Knjižni molj; ✕ and *Pošlji* sit next to the word. **Rock slides** take their region's words,
   fall slower (22 s) and say the letters may stand anywhere. Rock slides now also on the cliff of
   Predjamski grad and the castle hill of Ljubljanski grad; 114 chest words in all.
-- **Chests by chance:** new chests at the start of Ljubljanica and of Ljubljanski grad (before the
-  pedlar). Each of the six chest stops stays on a journey with a chance set by *Težavnost* — Lahka
-  90 %, Srednja 70 %, Težka 50 % — and a journey always keeps at least one.
 - **Kaj pomeni?** A word found for the first time with no meaning yet can be asked about in one
   tap (battle result, chest, rock slide, spikes). **Pošlji besede** (pause, *O igri*) is chips
   only: missing words and new words, picked and sent together. Both go to the same Google Form
