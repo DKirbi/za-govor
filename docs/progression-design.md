@@ -95,6 +95,7 @@ One road, walked left to right. The party stands still and the world scrolls pas
 
 ## 3a. Rewards
 - **Experience comes only from beaten enemies (13 Nov):** every defeated enemy drops gold at once (4 + a share of its XP) and gives its full XP to every hero still standing. Words, crosswords, chests, rock slides and darts give no XP.
+- **Reviewed heroes earn XP from the fight (v0.12.0, first test):** for Ajdovska deklica, Erazem, Kralj Matjaž, Kresnik and Kurent a beaten enemy gives **attacks + damage + the enemy's level**: one XP for every skill they fired at it, one for every point of health they took off it (hits, their burns, counterattacks), plus its level (the region's number, 1–10; 1 in practice battles). Only heroes still standing when it falls get anything, as before. The weights are `XP_RULE` in `src/progression.js` (all 1 for this test). Other heroes keep the enemy's fixed XP. The log and the battle result show the parts (*napadi 2 · škoda 8 · raven 1*).
 - **Chest (one word):** the hidden word, or any real word from all the letters, opens it: 15–25 gold, one item, and a half-full zagovor in the next battle. A real word that leaves letters unused ends the chest with a share of the gold (no item). Running out of time gives nothing. **(v0.10.0: the word comes from the region's list in `data/words.json` and never repeats on one journey; the clue shows by Znanje; ✕ and Pošlji sit next to the word — §11.7.)**
 - **Rock slide (one word):** the rocks whose letters are in the word break (3 gold per rock); the others graze the party for half damage (4 each). A word with every letter breaks the whole slide. If no word is sent, every rock lands with full force (8 each). **(v0.10.0: region rock words, 22 s to fall, the rule stated in the panel; the full redesign — §11.6 — is *not built*.)**
 
@@ -128,20 +129,50 @@ On knjižni molj only a healer's skill or *Mrtva voda* during the battle (or a b
 - **Skill-point spending location:** the existing *Veščine* flow at a well, shrine or pedlar remains the intended place to learn and upgrade skills. The skill screen should show which skills are learned and the current rank of each.
 - **A hero with a point to spend glows:** a ring of light rises from the head (CSS `.hero.spr.glow`), seen in the party on the road, in battle and on the hero screens, and a short synthesised chorus (`chorus()` in `src/game.js`) sings when the point arrives.
 - **Outside a journey** (practice battles, the gallery, the codex), every skill is available at rank 1 for testing, unless the relevant test mode explicitly overrides this.
+- **Built in v0.12.0:** see §4a for the five reviewed heroes' rank values as implemented, the choices made where their specifications are OPEN, and §3a for their XP. Heroes whose reviews are pending were left exactly as they were (they still use the generic stopnje), as decided for this test.
 - **Scope note:** this is a focused testing pass for reviewed heroes' bespoke skill kits and their rank progression. It does not author new skills or upgrade effects for unreviewed heroes, and it does not change enemy progression or the separate god skill designs.
+
+## 4a. Reviewed heroes in the game (v0.12.0, testing pass)
+Built in `src/progression.js` from the reviewed specifications (`docs/characters/*/character.md` on `docs/reviewed-character-specifications`). Only these five changed; every other hero, god and enemy works as before (they keep `RANK_POW`, `RANK_DUR` and `SKILL_UPS`). Animations, art and folk-art cards are not part of this pass.
+
+**How the numbers are read.** Damage values are the base for a three-letter word at level 1; the word still multiplies them (length, šumnik, repeats, relics and potions, the hero's own words, the level's attack). Healing, shields, bonuses, reductions, delays, durations and charges are exact. A counterattack (no word) uses the level's attack only. **TEST** = the specification leaves the number OPEN; it is a placeholder for this test.
+
+| Hero | Skill 1 | Skill 2 | Skill 3 |
+| --- | --- | --- | --- |
+| Kurent | **Ježevka** 4 / 7 / 10; the target's next attack comes 1.5 / 2.5 / 3.5 s later | **Zvonci** (name OPEN): Kurent dances 2 s, out of the letter mesh (still hit); 1 / 2 / 3 enemies hit 3 / 4 / 5 weaker for 2 s | **Pregon zime**: every enemy attacks 3 / 4 / 4 s later; rank 2+: enemies tagged ghost, wind or cold (only Mora for now) take half their attack over 4 s and hit at half for those 4 s; rank 3: their next attack after that is halved too |
+| Kralj Matjaž | **Meč** 6 / 12 / 18; ranks 2–3: each hero hit by the next enemy attack takes 3 / 6 less | **Kraljeva vojska**: every hero's next attack +3 / +6 / +10; rank 3: the next two enemy blows −3 on each hero hit | **Prebujenje**: each standing hero +3 / +6 / +6 health, the fallen rise with 15 %, ward 3 / 6 / 6; rank 3: 12 damage to every enemy |
+| Kresnik | **Ognjeni meč** (name OPEN) 8 / 12 / 16, ×1.5 on dragons (Lintvern, Zmajev mladič); burns 2 a second for 3 / 3 / 5 s | **Kresna strela** 12 / 16 / 18, burns 2/s for 3 s; rank 3 jumps to the enemy beside the target for 8 | **Kresna moč** (name OPEN): the next enemy blow that hurts him gives back 25 / 50 / 70 % of it (rounded up, up to full health) and half of that in gold |
+| Erazem | **Zamah z mečem** 7 / 11 / 15 (TEST) | **Češnje** 5 / 7 / 9 (TEST, one target); the heroes beside him +1 / +2 / +3 (TEST), not Erazem | **Skrivni rov**: the next attack that reaches him misses; rank 2 counterattack 1.5× Zamah z mečem, rank 3 the hero beside him evades too and the counter is 1.75× |
+| Ajdovska deklica | **Metanje skal** 6 at one enemy; ranks 2 / 3: 5 / 8 at every enemy (TEST) | **Varstvo popotnikov**: the next 1 / 2 / 3 enemy attacks on the others land on her, halved (rounded up) | **Okamnitev**: 1 / 2 / 2 enemies skip their next 1 / 1 / 2 attacks; burns and poison go on |
+
+**Health per level:** Ajdovska deklica +10 % of her base a level (TEST; others +8 %: 68 against 62 at level 9). Kurent never less than +1 a level (the normal +8 % already gives him 2–3).
+
+**Choices made where the specifications are OPEN** (all easy to change in `src/progression.js`):
+- *Round* (Okamnitev) = one enemy attack: the enemy lets that attack pass, whatever kind it is.
+- Kraljeva vojska's bonus goes to every hero standing, Matjaž included, and is used on their next hit on their target. The ward (Meč, Prebujenje) does not add up: the bigger one stays until the next enemy attack. Prebujenje's healing does not go to the heroes it raises (they keep 15 %), and it can raise every time (no limit per battle).
+- Enemy attacks go through, in order: Skrivni rov, the attacker's weakness (Zvonci, Pregon zime), Matjaž's ward and his army's −3, the party's shield, then Varstvo popotnikov. With none of these in force, the old path is unchanged.
+- Skrivni rov waits for an attack that actually reaches Erazem (or, at rank 3, the hero after him in the party, else the one before); the counter goes to the attacker; either hero evading counts.
+- Varstvo popotnikov uses a charge only when another hero would be hurt; her own share is not halved; she can fall from it.
+- Kresna moč: one charge per use (up to 3), used by the next enemy blow that hurts Kresnik while he stays standing. Burns and poison never trigger it.
+- Zvonci picks the target first, then the hardest hitters. The weakening is taken from each hero the blow hits.
+- Reviewed heroes' heals go up to full health; the 70 % cap stays for Mokoš and Zeleni Jurij.
+- In calm mode Kresnik's burn is one tick (2) per word for as many words as seconds; Kurent's delays move the enemy's charge by the same share of its attack cycle.
+- Enemy tags: `zmaj` (Lintvern, Zmajev mladič) and `duh` (Mora). The specification asks not to guess the other wind / cold / ghost enemies, so none are tagged yet.
+
+**Not in this pass:** Ajdovska deklica only at Triglav and Kralj Matjaž only at Peca (recruitment), the final-boss story cards, enemy affinity tags beyond Mora, animations and art.
 
 ## 5. Roster — all playable
 | | Hero | Health | What they do | Moves (1 → 3 tiles) |
 | --- | --- | --- | --- | --- |
 | Folk | Martin Krpan | 36 | Heavy single hits; the big move stuns | Zamah → Kobilica → Lipov kij |
 | Folk | Zeleni Jurij | 26 | Small heals; unlocks letters; revives once per journey | Popek → Brstenje → Jurjevo |
-| Folk | Kurent | 30 | Little damage; stuns, then delays every enemy | Zvonec → Ježevka → Pregon zime |
-| Folk | Kresnik | 28 | Fire that keeps burning | Žerjavica → Plamen → Kresni ogenj |
-| Folk | Kralj Matjaž | 34 | Shield for the party | Meč → Kraljeva vojska → Prebujenje |
-| **New** | **Erazem Predjamski** | 34 | The secret tunnel: the next enemy attack misses; the big move adds a shield | Češnje → Skrivni rov → Trdnjava v skali |
+| Folk | Kurent | 30 | Delays the target's next attack; his bells weaken enemies; Pregon zime delays everyone (v0.12.0, §4a) | Ježevka → Zvonci → Pregon zime |
+| Folk | Kresnik | 28 | Fire that keeps burning, 1.5× on dragons; wins back part of a wound (v0.12.0, §4a) | Ognjeni meč → Kresna strela → Kresna moč |
+| Folk | Kralj Matjaž | 34 | Shield on each hero, a bonus for every hero's next attack, raises the fallen (v0.12.0, §4a) | Meč → Kraljeva vojska → Prebujenje |
+| **New** | **Erazem Predjamski** | 34 | Sword; cherries heal his neighbours; evades and strikes back (v0.12.0, §4a) | Zamah z mečem → Češnje → Skrivni rov |
 | **New** | **Peter Klepec** | 30 | Every big move makes him 12 % stronger for the rest of the battle | Pastirska palica → Izruvano drevo → Vilin dar |
 | **New** | **Lepa Vida** | 26 | Her song lowers enemy attack, the big move for all of them | Hrepenenje → Morska pena → Pesem z obale |
-| **New** | **Ajdovska deklica** | 38 | Turns the target to stone (stun) | Prerokba → Skalni obraz → Okamnitev |
+| **New** | **Ajdovska deklica** | 38 | Takes the others' blows (halved); turns enemies to stone (v0.12.0, §4a) | Metanje skal → Varstvo popotnikov → Okamnitev |
 | God | Perun | 36 | Highest burst; the big move chains to every enemy | Blisk → Grom → Nevihta |
 | God | Svarog | 42 | Hit plus shield | Kladivo → Kovani ščit → Nebeška kovačnica |
 | God | Mokoš | 34 | Heals, cleanses letters, revives once per battle | Kapljica → Vir → Materina roka |

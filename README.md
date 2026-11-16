@@ -175,13 +175,13 @@ journey).
 | --- | --- | --- |
 | **Martin Krpan** | Heavy single hits; the big move stuns | Zamah → Kobilica → Lipov kij |
 | **Zeleni Jurij** | Small heals; unlocks letters; revives once per journey | Popek → Brstenje → Jurjevo |
-| **Kurent** | Stuns and delays enemies | Zvonec → Ježevka → Pregon zime |
-| **Kresnik** | Fire: damage that keeps burning | Žerjavica → Plamen → Kresni ogenj |
-| **Kralj Matjaž** | Shield for the party | Meč → Kraljeva vojska → Prebujenje |
-| **Erazem Predjamski** | The next enemy attack misses; shield | Češnje → Skrivni rov → Trdnjava v skali |
+| **Kurent** | Delays enemy attacks; his bells weaken them | Ježevka → Zvonci → Pregon zime |
+| **Kresnik** | Fire that keeps burning; dragons take more; wins back part of a wound | Ognjeni meč → Kresna strela → Kresna moč |
+| **Kralj Matjaž** | Shield on each hero, a bonus for every hero's next attack, raises the fallen | Meč → Kraljeva vojska → Prebujenje |
+| **Erazem Predjamski** | Sword, cherries that heal his neighbours, evades and strikes back | Zamah z mečem → Češnje → Skrivni rov |
 | **Peter Klepec** | Grows stronger with every big move | Pastirska palica → Izruvano drevo → Vilin dar |
 | **Lepa Vida** | Lowers enemy attack | Hrepenenje → Morska pena → Pesem z obale |
-| **Ajdovska deklica** | Turns the target to stone (stun) | Prerokba → Skalni obraz → Okamnitev |
+| **Ajdovska deklica** | Takes the others' blows (halved); turns enemies to stone | Metanje skal → Varstvo popotnikov → Okamnitev |
 | **Perun** (god) | Highest burst; big move chains lightning to every enemy | Blisk → Grom → Nevihta |
 | **Svarog** (god) | Damage plus a shield | Kladivo → Kovani ščit → Nebeška kovačnica |
 | **Mokoš** (god) | Heals, cleanses, revives once per battle | Kapljica → Vir → Materina roka |

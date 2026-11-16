@@ -36,6 +36,24 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
+## 0.12.0 — 16 Nov 2026 · zaprta alfa · reviewed heroes: own skill ranks and XP from the fight
+Branch `feat/reviewed-hero-progression`. A testing pass for the five heroes with a reviewed character
+specification: **Ajdovska deklica, Erazem Predjamski, Kralj Matjaž, Kresnik and Kurent**. Everyone else is
+unchanged. No new animations or art.
+- **Their own skills, rank by rank.** Each of the three skills has its own rank 1–3 values from the
+  specification (for example Kurent's *Ježevka* 4 / 7 / 10 with a 1.5 / 2.5 / 3.5 s delay, Matjaž's *Meč*
+  6 / 12 / 18). The generic stopnja bonuses (+20 / +40 %, longer effects, an extra effect) no longer apply
+  to them. Skill points work as before: learn skill 2, then 3, and raise each to rank 3.
+- **New and renamed skills:** Kurent *Ježevka → Zvonci → Pregon zime*, Kresnik *Ognjeni meč → Kresna strela →
+  Kresna moč*, Erazem *Zamah z mečem → Češnje → Skrivni rov* (*Trdnjava v skali* is gone), Ajdovska deklica
+  *Metanje skal → Varstvo popotnikov → Okamnitev*. *Zvonci*, *Ognjeni meč* and *Kresna moč* are working names.
+- **XP from the fight:** a beaten enemy gives these heroes one XP per attack on it, one per point of damage
+  dealt to it, plus its level (the region's number). The battle log and the result show the parts.
+- **Health per level:** Ajdovska deklica grows a little more (+10 % a level, a test value); Kurent at least +1.
+- *Veščine* describes every rank of their skills.
+- Values the specifications leave open are placeholders, listed in `docs/progression-design.md` §4a.
+- New test: `tests/progression.test.js` (starts with Kurent against one škrat: 2 attacks + 8 damage + level 1 = 11 XP).
+
 ## 0.11.0 — 16 Nov 2026 · zaprta alfa · one difficulty, starter words, chests and wells by chance
 Branch `0.11.0-alpha-fixes`, after testing 0.10.0 (#16).
 - **Znanje is the one difficulty.** *Težavnost* is no longer a choice of its own on *Nova pot*:
