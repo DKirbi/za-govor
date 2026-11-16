@@ -1,4 +1,4 @@
-# Za govor! — concept summary (updated 12 Nov 2026)
+# Za govor! — concept summary (updated 16 Nov 2026)
 
 Full concept doc: https://claude.ai/artifact/SNNktnteBoppi5M4PMkzFF
 Playable UX prototype (browser; all party heroes and enemies have sprites, cards and sound): https://claude.ai/artifact/NTdMnud7X8Um2p38G1fVnb
@@ -7,17 +7,18 @@ Playable UX prototype (browser; all party heroes and enemies have sprites, cards
 - **The game is one 2D side-scrolling journey through Slovenia**, with no level list: Ptuj → Peca → Triglav → Bled → Trnovski gozd → Piranske soline → Predjamski grad → Ljubljansko barje → Ljubljanica → Ljubljanski grad. **Lintvern, the dragon at Ljubljana castle, is the final battle.**
 - **Start with one hero.** The hero choice (after *Nova pot*) shows all fifteen characters; on a fresh game only Martin Krpan, Zeleni Jurij and Kurent are known, the rest are silhouettes until met on the road (meeting unlocks them for later journeys). At most four in the party, only one god per journey; gods are stronger.
 - **New heroes:** Erazem Predjamski (Erasmus of Lueg), Peter Klepec, Lepa Vida, Ajdovska deklica.
-- **Healing is mainly at wells** (full heal, the fallen stand up). Heroes' healing skills stop at 70 % of health; a hero under 30 % drinks Živa voda automatically and the flask is used up. A fallen hero stays down until a well, a skill or Mrtva voda raises them, and can be left behind when a new hero is met.
+- **Healing is mainly at wells** (a full heal for those standing; since 16 Nov wells no longer raise the fallen). Heroes' healing skills stop at 70 % of health; a hero under 30 % drinks Živa voda automatically and the flask is used up. A fallen hero stays down until a healer's skill, Mrtva voda or a beaten god raises them, and can be left behind when a new hero is met; the difficulty can change that (below).
 - **Healers attack too** (Mokoš, Zeleni Jurij): weak at level 1, growing with each level.
-- **Skills (13 Nov, v0.9.0):** XP only from beaten enemies; levels 1–9 each bring a skill point; each hero's three skills (1, 2 or 3 of their letters in a word) are learned and then upgraded three times at wells, shrines and pedlars (crits, healing, hitting all, shields, stuns…). See `docs/progression-design.md` section 4.
+- **Skills (v0.9.0, corrected 16 Nov):** XP only from beaten enemies; levels 1–9 each bring a skill point, and a hero with a point to spend glows (a rising halo) while a short chorus sings. Each hero has three skills (1, 2 or 3 of their letters in a word, so longer words fire the stronger ones). Skill 1 is known from the start; points learn skills 2 and 3 or raise any skill to **stopnja 3** (more power, longer effects, one extra effect per stopnja) at wells, shrines and pedlars. See `docs/progression-design.md` section 4.
 - **Heroes per journey (13 Nov):** three (always Ptuj, plus two random regions), each place favouring its own legend; only a hero who joins is unlocked.
-- **Shrine (13 Nov):** pray to a god for a three-battle blessing, then beat the cursed god to unlock them.
+- **Shrines of challenge (16 Nov):** six shrines, one god each, three on every journey; the gods are shown only by their signs. Pray at one: the god answers and lends a gift for the journey; when the journey ends the god comes for a hard challenge (only their special). Win to unlock the god and keep the gift for the whole next journey. A party god meets their godly version at their own shrine (they do not strike it; a skill point if won). See section 2a of the progression doc.
+- **Difficulty (16 Nov):** *Lahka* (a lost battle is a withdrawal; the fallen get up after a win), *Srednja* (a lost battle ends the journey), *Težka* (tougher enemies; a hero still down when a battle ends leaves the party).
 - **All potions and poisons are used automatically** by the heroes (no tool belt for now; more potions such as slowing time are left out for now).
 - **Spikes trap (Past s konicami, the darts until 13 Nov):** six slots of letters, one letter per slot from left to right; a shorter word may be sent early and a wrong word can be sent too. Since 13 Nov the spikes only hurt: each letter of a real word closes one slot, the other spikes hit the heroes one by one, and even a full word lets one graze.
 - **Rewards:** every defeated enemy drops gold and gives its XP to all standing heroes; since 13 Nov that is the only XP. Chests and rock slides pay gold (chests an item too). Chests and rock slides take one word.
-- **Random enemies per region; stops on the road:** battles, chests, rock slides, wells, pedlars, heroes to meet, one shrine. Each has its own sprite.
+- **Random enemies per region; stops on the road:** battles, chests, rock slides, spikes, wells, pedlars, heroes to meet, shrines of the gods. Each has its own sprite.
 - **Items with Slavic and Slovene names:** 13 relics (Perunova sekira, Svarogovo kladivo, Velesov rog, Zlatorogova roža, Kamen Alatir…) and 10 potions and poisons (Živa voda, Mrtva voda, Perunova medica, Velesov strup, Volčja jagoda, Morin prah…), found in chests, dropped by bosses and sold by pedlars for gold.
-- **Superseded:** the fixed prototype path with a level list, the cap of three heroes, the three fixed starters, full recovery after every won battle, and cursed gods as bosses (parked).
+- **Superseded:** the fixed prototype path with a level list, the cap of three heroes, the three fixed starters, full recovery after every won battle, cursed gods as bosses and the three-battle blessing (replaced by the shrines of challenge), and wells that raise the fallen.
 - **Engine:** the web prototype is where things are tried quickly; Godot 4.7 remains the end goal. Journey data sits in `data/world.json` so both can read it.
 
 ## Start menu (12 Nov 2026)

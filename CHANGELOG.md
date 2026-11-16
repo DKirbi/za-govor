@@ -36,24 +36,46 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
-## 0.9.0 — 13 Nov 2026 · zaprta alfa · skill expansion and fixes
-- **Skills.** Experience comes only from beaten enemies. Levels go to 9; every level brings a
-  skill point. Each hero has three skills (one, two or three of their letters in a word):
-  skill 1 is known from the start, skills 2 and 3 are learned with points, and every skill can
-  then be upgraded three times (critical hits, healing, hitting every enemy, shields, stuns,
-  fire, weakening, more power). Points are spent in *Veščine* at wells, shrines and pedlars.
-- **Hero screens:** a *Veščine* button with the three skills, their upgrades and the XP to the
-  next level; the card shows known skills filled and the rest outlined (a star per upgrade);
-  tapping the hero plays the skills they know. The notice (unlocked, room in the party) is at
-  the top, and the skill pills are larger.
+## 0.9.0 — 16 Nov 2026 · zaprta alfa · skill expansion and fixes
+- **Skills and stopnje.** Experience comes only from beaten enemies. Levels go to 9; every
+  level brings a skill point. Each hero has three skills (one, two or three of their letters
+  in a word, so longer words fire the stronger skills). **Skill 1 is known from the start.** A
+  point learns skill 2 (then 3) or raises a known skill to **stopnja 2 and 3**: +20 % / +40 %
+  power, effects that last 1.5× / 2× as long, and one extra effect at each stopnja (critical
+  hits, healing, hitting every enemy, shields, stuns, fire, weakening). Points are spent in
+  *Veščine* at wells, shrines and pedlars.
+- **A hero with a point to spend glows:** a ring of light rises from the head (seen in the
+  party on the road, in battle and on the hero screens), and a short synthesised heavenly
+  chorus sings when the point arrives.
+- **Hero screens:** a *Veščine* button with the three skills, their stopnje and the XP to the
+  next level; the card shows known skills filled and the rest outlined (a star per stopnja
+  above 1). Tapping the hero still plays the skills they know, but the game no longer tells
+  the player (no *tapni junaka*). The notice (unlocked, room in the party) is at the top, and
+  the skill pills are larger.
 - **Heroes per journey:** three (always Ptuj, plus two random regions), each place favouring
   its own legend. **Only a hero who joins is unlocked**; greeting one is not enough.
-- **Shrine:** pray to one of three gods for a three-battle blessing, then beat the cursed god
-  to unlock them (losing the trial does not end the journey).
-- **Darts only hurt:** every letter of a real word stops a dart, the rest hit the heroes one by
-  one (each hit is shown on its hero), even a full word lets one graze, and nothing carries
-  into the next battle. While waiting the wall warns *Puščice se izstrelijo – pripravi se na
-  umik!* instead of repeating the rules; the intro is two rows shorter and *Začni* stays in view.
+- **Shrines of challenge (*Svetišče*).** Six shrines, each of one god and each with its own
+  look; a journey passes three of them. The gods are shown only by their signs (lightning,
+  anvil, spindle, sun, wind, horns). Pray at one shrine per journey: the god answers and lends
+  a gift for the rest of the journey (with every third skill fired). When the journey ends,
+  as the ending screen is left, the god comes for a hard challenge using only their special
+  (Perun: a chain of lightning, first hero hit hardest). Winning: the god speaks, raises the
+  fallen, gives everyone 250 XP, is unlocked (never joins by themselves), and the gift lasts
+  the whole next journey. A party god meets their godly version at their own shrine right
+  away; they do not strike it, and winning gives them a skill point at once and everyone
+  250 XP. The old three-battle blessing and cursed-god trial are gone.
+- **Difficulty (*Težavnost*) on *Nova pot*:** *Lahka* (enemies ×0.85; a lost battle is a
+  withdrawal and the journey goes on; the fallen get up after a won battle), *Srednja* (a lost
+  battle ends the journey; the fallen stay down until raised) and *Težka* (enemies ×1.25; a
+  hero still down when a battle ends leaves the party). Pace moved under its own heading,
+  *Tempo*. *Poskusi znova* after a lost battle is left only to practice battles and the test
+  mode.
+- **Wells no longer raise the fallen**; they heal those still standing.
+- **Spikes only hurt** (merged from #11, *Past s konicami*): every letter of a real word
+  closes a slot, the other spikes hit the heroes one by one (each hit shown on its hero),
+  even a full word lets one graze, nothing carries into the next battle. While waiting the
+  wall warns *Konice se sprožijo – pripravi se na umik!*; the intro is shorter and *Začni*
+  stays in view.
 - **Fix:** the word bar no longer grows with long words or many attacking heroes, so the letter
   grid never moves under a finger (letters shrink, chips use the tile initials on one line).
 - Chests and rock slides pay gold (and items) but no XP.

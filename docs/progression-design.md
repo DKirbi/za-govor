@@ -1,4 +1,4 @@
-# Za govor — journey and progression design (updated 13 Nov 2026, v0.9.0)
+# Za govor — journey and progression design (updated 16 Nov 2026, v0.9.0)
 
 Prototype: https://claude.ai/artifact/NTdMnud7X8Um2p38G1fVnb
 
@@ -6,11 +6,12 @@ This replaces the earlier "three starters and cursed-god bosses" proposal. Every
 
 ## Status at a glance
 - **Decided by the user (11 Nov):** the 2D side-scrolling journey is the point of the game; the levels are places in Slovenia visited one after another, with no level list; the dragon at Ljubljana castle is the final battle; healing happens only at special places such as wells; the player starts with one character; four is the most in a party; only one god per play, and gods are stronger; Erasmus of Lueg (Erazem Predjamski) is a new character and more should be explored; all characters are unlocked; there are items with mythical Slavic names; merchants sell potions, poisons and attack boosts; traps, chests and wells have their own sprites; the web prototype is expanded for fast testing and Godot stays the end goal.
-- **13 Nov, v0.9.0 (built, "skill expansion and fixes"):** XP only from beaten enemies; levels 1–9, each with a skill point; three skills per hero, learned and upgraded three times at wells, shrines and pedlars (section 4); three heroes per journey, favouring the hero of each place; only a hero who joins is unlocked; the shrine's prayer, blessing and trial (section 2a); spikes that only hurt.
+- **16 Nov, v0.9.0 (built, corrections to "skill expansion and fixes"):** skill 1 known from the start, points learn skills 2 and 3 or raise any skill to **stopnja 3** (stronger, longer effects, one extra effect per stopnja; section 4); a hero with a point to spend glows and a chorus sings; **shrines of challenge**, one god each, three per journey, the god's challenge when the journey ends (section 2a); **Težavnost** with three settings (section 3c); wells no longer raise the fallen; the tap-to-demo on hero screens is no longer announced.
+- **13 Nov, v0.9.0 (built, "skill expansion and fixes"):** XP only from beaten enemies; levels 1–9, each with a skill point; three heroes per journey, favouring the hero of each place; only a hero who joins is unlocked; spikes that only hurt.
 - **12 Nov (built):** the darts event (*Puščice v zidu*, renamed *Past s konicami* on 13 Nov), the start screen with silhouettes and three known starters, attacks for the healers, every potion used automatically.
-- **Evening fixes (built):** partial healing outside wells, automatic potions, wells raise the fallen, gold and XP from every enemy, one-word chests and rock slides with partial outcomes, Krpan as the first starter with unlocks.
-- **Built:** the journey (ten regions, 48 stops), choosing the first hero, meeting and swapping heroes, the shrine with one god, wells, the pedlar, gold, 23 items, random regional enemies, sprites for every stop, four new heroes, battle abilities for all fifteen heroes.
-- **Back, in a new form (13 Nov):** cursed gods as bosses. A god you pray to at the shrine helps for three battles, then has to be beaten (section 2a).
+- **Evening fixes (built, 11 Nov):** partial healing outside wells, automatic potions, wells raise the fallen (no longer, 16 Nov), gold and XP from every enemy, one-word chests and rock slides with partial outcomes, Krpan as the first starter with unlocks.
+- **Built:** the journey (ten regions, 48 stops), choosing the first hero, meeting and swapping heroes, shrines of the gods, wells, the pedlar, gold, 23 items, random regional enemies, sprites for every stop, four new heroes, battle abilities for all fifteen heroes.
+- **Gods as challengers (16 Nov, replacing the cursed-god trial of 13 Nov):** a god you pray to lends a gift for the journey and comes for a challenge when it ends (section 2a).
 - **Not balance-tested:** the journey runs end to end in automated tests, but nobody has played it through for difficulty.
 
 ## 1. The journey
@@ -19,7 +20,7 @@ One road, walked left to right. The party stands still and the world scrolls pas
 | # | Region | Landmark in the background | Hero of the place (6× more likely to wait there) | Stops | Enemies |
 | --- | --- | --- | --- | --- | --- |
 | 1 | Ptuj | castle above the snowy town | Kurent | battle, hero, chest, battle | Škrat, Vešča |
-| 2 | Peca | King Matjaž's cave | Kralj Matjaž | battle, rock slide, hero, well, battle | Perkmandeljc, Škrat, Pesjan |
+| 2 | Peca | King Matjaž's cave | Kralj Matjaž | battle, rock slide, hero, well, shrine, battle | Perkmandeljc, Škrat, Pesjan |
 | 3 | Triglav | the three peaks | Ajdovska deklica | battle, rock slide, hero, pedlar, battle | Pesjan, Perkmandeljc, Vešča |
 | 4 | Bled | island church, castle on the cliff | — (Kresnik has no home and turns up anywhere) | battle, chest, **shrine**, well, battle | Vodna vila, Vešča, Škrat |
 | 5 | Trnovski gozd | moonlit forest | Martin Krpan | battle, chest, hero, battle | Mora, Volkodlak, Vešča |
@@ -36,22 +37,32 @@ One road, walked left to right. The party stands still and the world scrolls pas
 
 ## 2. Party rules
 - **Start screen:** all fifteen characters are shown. On a fresh game only **Martin Krpan, Zeleni Jurij and Kurent** are known and can start; the other twelve are nameless silhouettes. You pick one.
-- **Joining unlocks (13 Nov):** a hero is unlocked for later journeys only when they join the party; greeting them and walking on leaves them unknown, so a full party has to choose whom to leave. A god is unlocked by beating them in the shrine's trial. (Test mode shows everyone.)
+- **Joining unlocks (13 Nov):** a hero is unlocked for later journeys only when they join the party; greeting them and walking on leaves them unknown, so a full party has to choose whom to leave. A god is unlocked by beating them in the challenge after praying at their shrine. (Test mode shows everyone.)
 - **At most four** travel together. A fifth can only take somebody's place; a hero who has fallen can be left behind this way ("Zapusti").
-- **One god per journey.** A god joins only if you beat them in an earlier journey's trial; then they can join at a shrine.
+- **One god per journey.** A god never joins on the road: a god beaten in a challenge is unlocked and can **start** a later journey.
 - **A hero who joins** brings half the party's average experience (and the skill points of the levels it gives); they know only skill 1.
 - **Gods are stronger:** attack ×1.35 (Veles ×1.5) and about a quarter more health than folk heroes.
 - **Letter mesh:** the share of coloured tiles grows with the party (30 % with one hero, 46 %, 56 %, 62 % with four).
 
-## 2a. The shrine: prayer, blessing, trial (13 Nov)
-- At the shrine on Bled three random gods are caught in a curse. **Pray to one** and for the **next three battles** the god fights beside you: a blow on every enemy when each battle starts (6 + 2 per region), and every word ×1.15. The battle header shows "blagoslov: *god* (*battles left*)".
-- **After the third battle** the curse turns the god against you: the cursed god (their own sprite, tinted) is fought at once, with their first and third skill as attacks (90 + 12 health per region).
-- **Win:** the curse breaks, the god thanks you ("Urok je zlomljen") and is **unlocked** for later journeys. **Lose:** the party withdraws, the god stays cursed and the journey goes on.
-- A god beaten in an earlier journey can also simply **join** at a shrine (still one god at a time).
+## 2a. Shrines of challenge — *Svetišče* (16 Nov; `src/shrines.js`)
+- **Six shrines, one god each, each with its own look** (`tools/art_extra.py`): Perun — a carved post with the thunder mark under an old oak; Svarog — a stone forge altar with an anvil; Mokoš — a spring in a ring of stones with a spindle; Dažbog — a sun disk on a tall pole; Stribog — a windswept cairn with streamers; Veles — a dark stone in the roots, crowned with ox horns, a snake beside it. **The gods are not shown, only their signs** (16×16): lightning, anvil, spindle, sun, wind, horns.
+- **Where:** Peca (Svarog or Perun), Triglav (Perun or Stribog), Bled (Dažbog or Mokoš), Trnovski gozd (Veles or Mokoš), Piranske soline (Stribog or Dažbog), Ljubljansko barje (Veles or Mokoš). A journey keeps **three** of these at random, each for a different god. A god who starts the journey always finds their own shrine on it.
+- **The page** is titled *Svetišče* ("posvečeno bogu Perunu"), with the shrine, the god's sign above it, what praying means and two buttons: *Pomoli se* / *Pojdi naprej*.
+- **One prayer per journey.** The god answers at once (Perun: *»Zagrmelo je. Tvoja molitev je uslišana. Preživi pot do konca in videl bom, ali si vreden te preizkušnje.«*) and lends a **gift for the rest of the journey**: every word that fires a third skill (three letters of one colour) also brings the god's power — Perun: lightning on every enemy (1.5× the strike's power); Svarog: shield (2.5×, cap 30); Mokoš: heals the party (3×, up to 70 %); Dažbog: the next word ×2; Stribog: hits everyone (1.2×) and clears locked letters and sleep; Veles: poisons every enemy. The battle header shows "dar: *god*". Other shrines on the same journey only let you bow.
+- **The challenge comes when the journey ends:** leaving the ending screen (button, Enter or Back) brings the god (*»Rekel sem, da bom videl. Zdaj pokaži.«*) and a battle against them in their holy light: 260 + 26 health per region (494 at the castle, against the dragon's 180), scaled by the difficulty; attack 5 + a third of the region; **only their special**:
+  - Perun, *Nevihta*: a chain of lightning through the whole party, 1.4× the attack on the first hero, then 0.3 less for each next (at least 0.4×).
+  - Svarog, *Nebeška kovačnica*: 2× on the first hero, 0.6× on the rest, three letters red-hot (locked).
+  - Mokoš, *Materina roka*: 0.8× on everyone; she takes the damage back as health.
+  - Dažbog, *Sončni voz*: 0.75× on everyone; the sun climbs and every blow is 1 stronger.
+  - Stribog, *Vihar*: 0.75× on everyone and the mesh is shuffled.
+  - Veles, *Korenine sveta*: 0.6× on everyone and four letters overgrown (locked).
+- **Losing is losing a battle;** at the end of a journey the god leaves without a word and the journey is over.
+- **Winning:** the god speaks a cryptic line (Perun: *»Hm … tebe si bom zapomnil. Ko bo naslednjič zagrmelo, se ozri v nebo.«*), **raises the fallen** (half health), gives every hero **250 XP**, is **unlocked** (never joins by themselves), and the **gift lasts the whole next journey** (stored in this browser as `zg-gift`, used up when the next journey starts).
+- **A god in the party:** at that god's own shrine the party meets the **godly version** at once — no prayer and no gift. The party god does not strike their other self (their letters only count for the party's common blow; the chip says "ne udari"). Winning gives the party god **a skill point at once** and every hero 250 XP; losing follows the difficulty. Other gods' shrines are closed to a party that travels with a god.
 
 ## 3. Health, falling and healing
 - Every hero has their own health bar. **Health does not come back after a battle.**
-- **Wells are the main healing:** drinking restores every hero to full and raises the fallen. There are six wells on the road.
+- **Wells are the main healing:** drinking restores every hero still standing to full. **Wells no longer raise the fallen (16 Nov).** There are six wells on the road.
 - **Heroes' healing is partial:** the skills of Mokoš and Zeleni Jurij (and Mokoš's zagovor) never lift a hero above 70 % of their health.
 - **Healers attack too, weakly at first:** every move of Mokoš and Zeleni Jurij now also hits the target. Their hit starts at roughly half of a fighter's and grows with each level (Mokoš 1.8 → 2.2 → 2.6, Jurij 1.6 → 2.0 → 2.4, against about 3 for the others), so they catch up later while still healing.
 - **Potions and poisons work by themselves; there is no tool belt.** The bag only shows what the party carries.
@@ -65,8 +76,19 @@ One road, walked left to right. The party stands still and the world scrolls pas
 | Rusalkina solza | four or more letters are locked, or a hero is asleep |
 | Triglavov napoj, Perunova medica, Kresna žerjavica, Velesov strup, Volčja jagoda | a battle begins: one of them in an ordinary battle (in this order), all of them against an ambush or a boss. The poison goes to the enemy with the most health, the berry to the one that hits hardest |
 
-- **A fallen hero stays down** until a well, a hero's skill (Mokoš's Materina roka once per battle, Zeleni Jurij's Jurjevo once per journey) or *Mrtva voda* raises them. Until then their letters are grey, and they can be left behind when a new hero is met.
-- After a lost battle the prototype still lets you try again from the state before the fight; "Konec poti" ends the run.
+- **A fallen hero stays down** until a hero's skill (Mokoš's Materina roka once per battle, Zeleni Jurij's Jurjevo once per journey), *Mrtva voda* or a beaten god raises them — or the difficulty decides otherwise (section 3c). Until then their letters are grey, and they can be left behind when a new hero is met.
+- *Poskusi znova* after a lost battle is only offered in practice battles and the test mode.
+
+## 3c. Difficulty — *Težavnost* (16 Nov; `DIFFS` in `src/game.js`)
+Chosen on *Nova pot* above *Tempo* (pace) and *Znanje* (knowledge), remembered as `zg-diff`; default *Srednja*.
+
+| | Lahka | Srednja | Težka |
+| --- | --- | --- | --- |
+| Enemy health (journey only) | ×0.85 | ×1 | ×1.25 |
+| Lost battle | **withdraw:** everyone gets up with a third of their health; the enemies still block the road (a god's godly version goes back into the shrine) | the journey ends | the journey ends |
+| A hero down when a battle is won | gets up with a quarter of their health | stays down | **leaves the party** |
+
+On *Težka* only a healer's skill or *Mrtva voda* during the battle (or a beaten god at its end) saves a fallen hero.
 
 ## 3a. Rewards
 - **Experience comes only from beaten enemies (13 Nov):** every defeated enemy drops gold at once (4 + a share of its XP) and gives its full XP to every hero still standing. Words, crosswords, chests, rock slides and darts give no XP.
@@ -82,13 +104,15 @@ One road, walked left to right. The party stands still and the world scrolls pas
 - On the road it stands in Trnovski gozd, at Predjamski grad and before the dragon. It has its own sprite (a stone wall with iron spikes coming out of the slots).
 - Internal ids stay `darts` and `puscice`, so saved runs, `data/world.json` and the missing-word reports keep working.
 
-## 4. Levels, skill points and skills (13 Nov)
+## 4. Levels, skill points and skills (13 Nov, stopnje 16 Nov)
 - **Levels 1–9** at 0, 60, 140, 240, 360, 500, 660, 840 and 1050 XP. Each level adds 8 % health and 4 % attack, a little extra for long words (up to +10 % per letter beyond the fourth at level 9), and **one skill point**.
 - **Three skills per hero.** A word with one, two or three of the hero's letters fires skill 1, 2 or 3 — if the hero knows it; otherwise the strongest skill they know below it, with +15 % for every letter beyond it. Skill 1 is known from the start.
-- **Spending points** (*Veščine*, at a well, a shrine or a pedlar): learning skill 2 (after 1) or skill 3 (after 2) costs one point; after that **every skill can be upgraded three times**, one point each. The upgrades are fixed per skill and bought in order (`SKILL_UPS` in `src/skills.js`): *Moč* (+25 % power), *Kritični udarec* (30 % chance to hit double), *Na vse* (also hits every other enemy), *Zdravljenje* (heals the party a little), *Ščit*, *Omama* (stun), *Ogenj* (burn), *Oslabitev* (the target hits 1 weaker).
-- To max out one hero takes 11 points; a journey gives the starting hero about 8, so every journey asks which skills to grow.
-- **Where to see it:** the *Veščine* button on every hero screen lists the three skills, their upgrades and the XP to the next level. On the card, known skills are filled, the others outlined, with a star per upgrade. Tapping the hero plays the skills they know, one after another.
-- **Outside a journey** (practice battles, the gallery, the codex) every skill is known and nothing is upgraded.
+- **Spending points** (*Veščine*, at a well, a shrine or a pedlar): learning skill 2 (after 1) or skill 3 (after 2) costs one point. **Every known skill can be raised to stopnja 2 and 3**, one point each, and no further: stopnja 2 = +20 % power, effects 1.5× as long; stopnja 3 = +40 % power, effects 2× as long (`RANK_POW`, `RANK_DUR`). "Effects" are stuns, burns and poison, weakening and Erazem's dodges. Each stopnja also adds one fixed extra effect (`SKILL_UPS` in `src/skills.js`): *Kritični udarec* (30 % chance to hit double), *Na vse* (also hits every other enemy), *Zdravljenje* (heals the party a little), *Ščit*, *Omama* (stun), *Ogenj* (burn), *Oslabitev* (the target hits 1 weaker).
+- To max out one hero takes 8 points (2 + 3 + 3) — exactly what levels 2–9 give, so the starting hero can finish only on a full journey, and a newcomer never; every journey asks which skills to grow.
+- **A hero with a point to spend glows:** a ring of light rises from the head (CSS `.hero.spr.glow`), seen in the party on the road, in battle and on the hero screens, and a short synthesised chorus (`chorus()` in `src/game.js`: "aah" voices on a rising C major chord, an echo and a high shimmer) sings when the point arrives.
+- **Where to see it:** the *Veščine* button on every hero screen lists the three skills, stopnja 2 and 3 and the XP to the next level. On the card, known skills are filled, the others outlined, with a star per stopnja above 1. Tapping the hero still plays the skills they know, one after another, but nothing on the screen says so (a gimmick, not a feature).
+- **Outside a journey** (practice battles, the gallery, the codex) every skill is known at stopnja 1.
+- **Open question:** the user described the skills as tied to "longer words". The game keeps the original rule (one, two or three of the hero's letters), which needs longer words for skills 2 and 3; switching to pure word length is a one-line change in `firedTier`.
 
 ## 5. Roster — all playable
 | | Hero | Health | What they do | Moves (1 → 3 tiles) |
@@ -163,7 +187,7 @@ On the name *Perun's Hammer*: in the sources Perun's weapon is an axe (and the t
 
 ## 8. Art added (11 Nov, afternoon)
 - **Heroes (48×48, idle + attack):** Erazem (open helmet with a red plume, moustache, red tabard, shield; the attack throws the cherries he pelted his besiegers with), Peter Klepec (straw hat, barefoot, an uprooted tree), Lepa Vida (long dark hair, red ribbon, linen in her hand; sea foam), Ajdovska deklica (larger, half turned to stone, edelweiss in her hair; stone fist). Each has three painted cards and a backstory.
-- **Road objects:** chest (closed and open), well (bucket down and up), rock slide with a warning board, shrine (carved idol with two fires), pedlar with a loaded *krošnja*, signpost; a rock for the rock-slide mini-game; a gold coin.
+- **Road objects:** chest (closed and open), well (bucket down and up), rock slide with a warning board, shrine (carved idol with two fires; since 16 Nov six god shrines and six god signs, section 2a), pedlar with a loaded *krošnja*, signpost; a rock for the rock-slide mini-game; a gold coin.
 - **Item icons:** 23 icons, 16×16.
 - **Backgrounds (384×120):** Ptuj, Peca, Triglav, Bled, Piranske soline, Predjamski grad, next to the four older ones.
 - Everything is generated by `tools/art_extra.py` and is still prototype art to fix the direction.
@@ -174,7 +198,7 @@ On the name *Perun's Hammer*: in the sources Perun's weapon is an axe (and the t
 - Sprite sheets are plain PNG frames (idle | attack), ready for `AnimatedSprite2D`.
 
 ## 10. Still to decide
-1. Gods as starters: a god beaten in the shrine's trial is unlocked like anyone else, so they can also start a journey. Keep, or should gods never start?
+1. Gods as starters: a god beaten in a challenge is unlocked like anyone else, so they can also start a journey. Keep, or should gods never start?
 2. Left out for now, as in the original game: a tool belt for choosing potions by hand, and more potions (slow time and others).
 3. Journey length: ten regions and 19 battles is long for one sitting. Save points, or a shorter road?
 4. Should a hero you leave behind be met again later, or are they gone (as now)?

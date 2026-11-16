@@ -70,22 +70,25 @@ the controls of the current device (keyboard and mouse, or touch) and shows ever
 carousel; *O igri* holds the description, the credits and *Prijavi manjkajočo besedo*.
 
 The game is **one side-scrolling journey** through places in Slovenia. You choose one hero
-and walk; the road stops you at enemies, chests, rock slides, wells, pedlars and other
-heroes. There is no level list — the road leads from region to region, and the dragon at
+and walk; the road stops you at enemies, chests, rock slides, wells, pedlars, shrines of
+the old gods and other heroes. There is no level list — the road leads from region to region, and the dragon at
 Ljubljana castle is the last battle.
 
 | # | Region | Legend of the place | On the road |
 | --- | --- | --- | --- |
 | 1 | **Ptuj** | Kurent | two battles, a chest |
-| 2 | **Peca** | Kralj Matjaž | two battles, a rock slide, a well |
-| 3 | **Triglav** | Ajdovska deklica | two battles, a rock slide, a pedlar |
-| 4 | **Bled** | a shrine of the old gods: pray to one, then face them | two battles, a chest, a well |
-| 5 | **Trnovski gozd** | Martin Krpan | two battles, a chest |
-| 6 | **Piranske soline** | Lepa Vida | two battles, a pedlar, a well |
+| 2 | **Peca** | Kralj Matjaž | two battles, a rock slide, a well, a shrine (Svarog or Perun) |
+| 3 | **Triglav** | Ajdovska deklica | two battles, a rock slide, a pedlar, a shrine (Perun or Stribog) |
+| 4 | **Bled** | the old gods (an island shrine of Živa) | two battles, a chest, a well, a shrine (Dažbog or Mokoš) |
+| 5 | **Trnovski gozd** | Martin Krpan | two battles, a chest, spikes, a shrine (Veles or Mokoš) |
+| 6 | **Piranske soline** | Lepa Vida | two battles, a pedlar, a well, a shrine (Stribog or Dažbog) |
 | 7 | **Predjamski grad** | Erazem Predjamski | a battle, a rock slide, a chest, an ambush |
-| 8 | **Ljubljansko barje** | Zeleni Jurij | two battles, a well, a pedlar |
+| 8 | **Ljubljansko barje** | Zeleni Jurij | two battles, a well, a pedlar, a shrine (Veles or Mokoš) |
 | 9 | **Ljubljanica** | Peter Klepec | a battle, a well, **Povodni mož** (boss) |
 | 10 | **Ljubljanski grad** | — | a pedlar, a well, **Lintvern**, the Ljubljana dragon (final boss) |
+
+Only **three of the six shrines** stand on any one journey (picked at random, each for a
+different god), and only three heroes wait on the road, so no two journeys are alike.
 
 - **Walking:** press `→` (or *Naprej*) and the party walks to the next stop; a prompt offers
   what can be done there (`Enter` for the main choice, `Esc` to walk past where that is allowed).
@@ -98,15 +101,20 @@ Ljubljana castle is the last battle.
   journey meets others. **Only a hero who joins is unlocked** for later journeys; greeting
   one and walking on is not enough, so a full party has to decide whom to leave.
 - **Levels and skills:** experience comes **only from beaten enemies**. Every new level
-  (up to 9) brings health and one **skill point**. Each hero has three skills: a word with
-  one, two or three of their letters fires skill 1, 2 or 3, if the hero knows it, and
-  otherwise the strongest one they know below it. Skill 1 is known from the start; skills 2
-  and 3 cost a point to learn, and every skill can then be upgraded three times (a critical
-  hit, healing, hitting every enemy, a shield, a stun, fire, weakening, or more power).
-  Points are spent in ***Veščine*** at a **well, a shrine or a pedlar**.
-- **Health stays as it is after a battle.** **Wells** heal everyone fully and raise the
-  fallen. Healers (Mokoš, Zeleni Jurij) heal only up to 70 % of health, and they attack as
-  well — weakly at first, stronger with every level.
+  (up to 9) brings health and one **skill point**; a hero with a point to spend **glows** — a
+  ring of light rises from their head, so it shows in the party — and a short heavenly chorus
+  sings when the point arrives. Each hero has three skills: a word with one, two or three of
+  their letters (so a longer word) fires skill 1, 2 or 3, if the hero knows it, and otherwise
+  the strongest one they know below it. **Skill 1 is known from the start.** A point either
+  learns skill 2 (then 3) or raises a known skill to **stopnja 2 and then 3**: +20 % / +40 %
+  power, effects that last 1.5× / 2× as long (stuns, burns, poison, weakening, dodges), and one
+  extra effect at each stopnja (a critical hit, healing, hitting every enemy, a shield, a
+  stun, fire or weakening). Points are spent in ***Veščine*** at a **well, a shrine or a pedlar**.
+- **Health stays as it is after a battle.** **Wells** heal everyone who is standing; they
+  **no longer raise the fallen**. A fallen hero gets up only through a healer's skill (Mokoš,
+  Zeleni Jurij), *Mrtva voda*, a beaten god — or, on *Lahka*, by themselves after a won battle
+  (see *Težavnost* below). Healers heal only up to 70 % of health, and they attack as well —
+  weakly at first, stronger with every level.
 - **Potions and poisons are used automatically:** a badly hurt hero drinks *Živa voda*, a
   fallen one is raised by *Mrtva voda*, battle potions are opened when a fight begins.
 - **Enemies are random:** every battle draws from the enemies of its region, and they grow
@@ -166,8 +174,9 @@ journey).
 
 Each hero has their own health bar and level (1–9: more health, slightly stronger attacks).
 After a battle, every hero's screen has a ***Veščine*** button with their three skills, what
-each upgrade adds and the XP to the next level; the card shows the skills they know filled
-and the others outlined, and tapping the hero plays the skills they know, one after another.
+stopnja 2 and 3 add and the XP to the next level; the card shows the skills they know filled
+and the others outlined (a star for stopnja 2, two for stopnja 3). Tapping the hero plays the
+skills they know, one after another — a quiet extra that the game does not announce.
 *Dosežki in junaki* lists every hero: the ones you have unlocked open their card and
 backstory, the others are silhouettes. A developer link there
 opens the full gallery with sprites, cards, road objects, all items and the ten backgrounds.
@@ -225,21 +234,48 @@ everyone).
   sending a word that does not exist. **The spikes only hurt:** every letter of a real word
   closes one slot and the other spikes spring at the heroes one by one (each hit shows on its
   hero); even a word from every slot lets one spike graze. Spikes never knock a hero out.
-- **Well:** every hero is healed and the fallen stand up again.
+- **Well:** every hero still standing is healed; the fallen stay down.
 - **Pedlar:** four potions or poisons and two relics for gold.
-- **Shrine:** three gods are caught in a curse. Pray to one and for the next three battles
-  the god fights beside you (a blow on every enemy when each battle starts, and ×1.15 on
-  every word). After the third battle the curse turns the god against you: beat them and
-  the god is unlocked for later journeys; lose and the party withdraws, the journey goes on.
-  A god beaten in an earlier journey can also simply join the party at a shrine.
+- **Shrine of challenge (*Svetišče*):** every shrine belongs to one god and has its own look
+  (Perun's carved post under an oak, Svarog's forge altar, Mokoš's spring with a spindle,
+  Dažbog's sun disk, Stribog's windswept cairn, Veles's horned stone in the roots). The gods
+  are not shown, only their signs: lightning, anvil, spindle, sun, wind, horns. **Pray at one
+  shrine per journey** and the god answers (*»Tvoja molitev je uslišana. Preživi pot do konca
+  in videl bom, ali si vreden te preizkušnje.«*) and lends a **gift for the rest of the
+  journey**: every word that fires a third skill (three letters of one colour) also brings the
+  god's power — Perun's lightning chains to every enemy, Svarog gives a big shield, Mokoš
+  heals, Dažbog doubles the next word, Stribog's wind hits everyone and clears the mesh, Veles
+  poisons every enemy.
+  **When the journey ends**, as you leave the ending screen, **the god comes for the
+  challenge**: a battle against a god far tougher than the dragon who only uses their special
+  (Perun's *Nevihta* is a chain of lightning through the whole party, the first hero hit
+  hardest). Losing is like losing any battle. Win, and the god speaks a cryptic word
+  (*»Hm … tebe si bom zapomnil.«*), raises the fallen, gives every hero 250 XP, is
+  **unlocked** for later journeys (a god never just joins), and the **gift lasts the whole
+  next journey**.
+  **With a god in the party**, that god's own shrine holds their **godly version**: no prayer
+  and no gift, the challenge starts at once and the party god does not strike their other
+  self. Winning gives the party god a skill point at once and every hero 250 XP. Other gods'
+  shrines stay closed to a party that travels with a god.
 - **Bag:** `T` on the road, `3` in a battle. It only shows what you carry; the heroes use it themselves.
 
-### Two difficulty choices
-Both are chosen on *Nova pot*, before the first hero, and hold for the whole journey: the
-choices only count once the journey starts, so looking at *Nova pot* in the middle of a
+### Difficulty, pace and knowledge
+All three are chosen on *Nova pot*, before the first hero, and hold for the whole journey:
+the choices only count once the journey starts, so looking at *Nova pot* in the middle of a
 journey changes nothing. The last choices are remembered for the next journey.
 
-**Pace** (*Težavnost*): **real-time** (recommended) has no countdown — enemies attack at
+**Difficulty** (*Težavnost*) decides what losing means and how tough enemies are:
+
+| | Lahka | Srednja (recommended) | Težka |
+| --- | --- | --- | --- |
+| Enemy health | ×0.85 | ×1 | ×1.25 |
+| A lost battle | The party withdraws: everyone gets up with a third of their health, the enemies still block the road, the journey goes on | The journey ends | The journey ends |
+| A hero who falls | Gets up after a won battle with a quarter of their health | Stays down until a healer, *Mrtva voda* or a beaten god raises them | Leaves the party if still down when the battle ends; only a healer's skill, *Mrtva voda* or a beaten god can save them in time |
+
+Trying a lost battle again from where it started (*Poskusi znova*) is left only for the
+practice battles and the test mode.
+
+**Pace** (*Tempo*): **real-time** (recommended) has no countdown — enemies attack at
 their own pace and wear the party down; **calm mode** (*mirni način*) only lets enemies act
 after you play words (they strike every few moves).
 
@@ -384,10 +420,10 @@ CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 | `tests/levels.test.js` | Each knowledge level: chosen on *Nova pot* and saved when the journey starts, hints and proposals, word count and coaching tips, shortest word, crossword bank, letter counts, revealed letters (and half power), mouse clicks reaching the crossword |
 | `tests/keyword.test.js` | Guessing the keyword early ends the crossword and fires the zagovor; in Povodni mož's whirlpool *urska* with a plain s stays black and *urška* breaks it |
 | `tests/phone.test.js` | On a 390×844 touch screen: the mesh sends without *Pošlji* (second tap, lifted drag, non-words clear), the in-game keyboard types crosswords and the rock slide with the system keyboard closed, wrong entries stay black and correct ones fire, chest partial rewards, darts fit 360 px, *Premor*, and the Android back button |
-| `tests/menu.test.js` | The start menu: items with and without a journey, no top bar, the version at the bottom, `↑` `↓` `Enter` `Esc`, *← Nazaj na glavni meni* on every page and sticky while *O igri* scrolls, one way back on a hero card; *Nastavitve* (sound off is remembered and greys out the volume, fullscreen only on a computer); *Nova pot* copy, figures, *Predlogi besed* under Malček only, explanations on by default, test mode as a developer option, choices that only count once the journey starts; *Kako igrati* controls per device and the puzzle carousel (buttons, keys, tabs, swipe); heroes and their cards; no *Nadaljuj pot* after the ending; phone fit and the Android back button |
+| `tests/menu.test.js` | The start menu: items with and without a journey, no top bar, the version at the bottom, `↑` `↓` `Enter` `Esc`, *← Nazaj na glavni meni* on every page and sticky while *O igri* scrolls, one way back on a hero card; *Nastavitve* (sound off is remembered and greys out the volume, fullscreen only on a computer); *Nova pot* copy (*Težavnost*, *Tempo*, *Znanje*), figures, *Predlogi besed* under Malček only, explanations on by default, test mode as a developer option, choices that only count once the journey starts; *Kako igrati* controls per device and the puzzle carousel (buttons, keys, tabs, swipe); heroes and their cards; no *Nadaljuj pot* after the ending; phone fit and the Android back button |
 | `tests/credits.test.js` | Words for Evil is credited on *O igri* (*Navdih*, then *Zasluge* with every source and a Steam link) and on the ending, whose link opens *O igri* at *Navdih*; the line fits a 360 px phone; Esc and the Android back button leave the credits |
 | `tests/report.test.js` | *Prijavi besedo*: rejected words are remembered (mesh, chest), the pause screen and *O igri* list them, one tap posts word, place, note and level to the Google Form (intercepted), typing works while paused, known words are not sent, the queue waits without a form and goes out once there is one, lists survive a reload, the panel fits a 360 px phone; *jasa* and base forms are accepted |
-| `tests/journey.test.js` | The road: the first hero, three heroes per journey (Ptuj and two random regions, each place favouring its own hero), only a hero who joins is unlocked, XP only from beaten enemies, levels bring skill points, *Veščine* at the well (learn, upgrade), a word fires the strongest skill the hero knows, an upgraded skill hits harder, the hero screen's *Veščine* button and tap-to-demo, the chest's gold and item, the pedlar, potions, the shrine's blessing and the cursed god's trial, a full party swap, darts that only hurt (spread over the heroes, never fatal), every hero's three skills fully upgraded, and the dragon |
+| `tests/journey.test.js` | The road: the first hero, three heroes per journey (Ptuj and two random regions, each place favouring its own hero), only a hero who joins is unlocked, XP only from beaten enemies, levels bring skill points, *Veščine* at the well (learn, stopnja 2 and 3, never past 3), a word fires the strongest skill the hero knows, a higher stopnja hits harder, the hero screen's *Veščine* button and the unannounced tap-to-demo, wells that heal but no longer raise the fallen, the chest's gold and item, the pedlar, potions, three shrines per journey each of another god, *Svetišče* with the god's sign (never the god), the prayer's answer and gift, Perun coming for the challenge as the ending is left, his chain of lightning, the god's last word, unlock, raised heroes and next-journey gift, a party god's godly version (not struck by the party god, a point and XP when beaten), heroes with points glowing on the road, the three difficulties (enemy health, withdrawing on Lahka, the end on Srednja, the fallen leaving on Težka), a full party swap, spikes that only hurt (spread over the heroes, never fatal), every hero's three skills at stopnja 3, and the dragon |
 | `tests/lexicon.test.js` | The word list in the browser: over a million forms accepted and a common part suggested, the 217-word coverage set accepted and its non-words (Croatian, English, made up) refused, the reported words (*jasa*, *loj*, *runa*, *seks*) and *ritem*/*ritual*/*riti*, vulgar words accepted but never suggested, mythology names, *deny.json*, non-standard forms, base forms (*ljudje* → *človek*), headwords Sloleks lacks (*zborišča*, *sedemkotnik*), and at 4× slower CPU a mesh walk under 50 ms and a lookup under 20 µs |
 | `tests/title.test.js` | The title scene: the *Za govor!* heading and tab title, whole-number scaling (3× at 1280 px, 4× at 1920, 2× on a phone), square wordmark pixels, full width with no sideways scrolling (also at an odd width), starting at the top of the page (below a phone's status bar), room left for the menu, the wordmark standing still, sparks rising in whole art pixels and not restarting when the start screen is rebuilt, a still picture with reduced motion |
 | `tests/desktop.test.js` | A keyboard playthrough: c/s/z are not accepted for č/š/ž, first battle, result and hero screens, chest, finisher, Lintvern's letter lock and forced crossword, ambush, rock slide, and no console errors anywhere |
