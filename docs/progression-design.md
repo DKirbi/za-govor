@@ -1,4 +1,4 @@
-# Za govor — journey and progression design (updated 16 Nov 2026, v0.10.0)
+# Za govor — journey and progression design (updated 16 Nov 2026, v0.11.0)
 
 Prototype: https://claude.ai/artifact/NTdMnud7X8Um2p38G1fVnb
 
@@ -8,7 +8,7 @@ This replaces the earlier "three starters and cursed-god bosses" proposal. Every
 - **Decided by the user (11 Nov):** the 2D side-scrolling journey is the point of the game; the levels are places in Slovenia visited one after another, with no level list; the dragon at Ljubljana castle is the final battle; healing happens only at special places such as wells; the player starts with one character; four is the most in a party; only one god per play, and gods are stronger; Erasmus of Lueg (Erazem Predjamski) is a new character and more should be explored; all characters are unlocked; there are items with mythical Slavic names; merchants sell potions, poisons and attack boosts; traps, chests and wells have their own sprites; the web prototype is expanded for fast testing and Godot stays the end goal.
 - **16 Nov, late — v0.11.0, branch `0.11.0-alpha-fixes` (built, after testing #16):** *Težavnost* merged into *Znanje* (§3c); **starter-help words** in the letter mesh (§11.3); a new level heals fully (§4); **chests and wells by chance in every region**, by Znanje (§1).
 - **16 Nov, evening — v0.10.0, PR #16 `0.9.0-alpha-fixes` (built):** the journey saved at checkpoints by Znanje and *Izhod* (§11.11); word input (§11.5); 3-letter words on every tier and no hints on knjižni molj (§11.3); chests and rock slides with region words (§11.6, §11.7, `data/words.json`); *Kaj pomeni?* and chips-only word reports (§11.9); hero-screen footer, puzzle names at stops, the signpost walking on, the ambush announced (§11.8, `zagovor-080-alpha-fixes.md`); credits (`zagovor-store-release.md`).
-- **16 Nov, afternoon (decided; what is still *not built*, section 11):** geographic word seeding; at most one recruitable hero per region; ~~starter-help words by Znanje~~ (built in 0.11.0 on the mesh); the križanka on a letter wheel and the in-game keyboard removed (PC/tablet setting for the classic form); the full rock-slide redesign; post-match screen and folk cards; road encounters played in the scene (§11.10); Znanje scaling monster health.
+- **16 Nov, afternoon (decided; what is still *not built*, section 11):** geographic word seeding; at most one recruitable hero per region; ~~starter-help words by Znanje~~ (built in 0.11.0 on the mesh); the križanka on a letter wheel and the in-game keyboard removed (PC/tablet setting for the classic form); the full rock-slide redesign; post-match screen and folk cards; road encounters played in the scene (§11.10); ~~Znanje scaling monster health~~ (settled in 0.11.0: Težavnost is part of Znanje).
 - **16 Nov, v0.9.0 (built, corrections to "skill expansion and fixes"):** skill 1 known from the start, points learn skills 2 and 3 or raise any skill to **stopnja 3** (stronger, longer effects, one extra effect per stopnja; section 4); a hero with a point to spend glows and a chorus sings; **shrines of challenge**, one god each, three per journey, the god's challenge when the journey ends (section 2a); **Težavnost** with three settings (section 3c); wells no longer raise the fallen; the tap-to-demo on hero screens is no longer announced.
 - **13 Nov, v0.9.0 (built, "skill expansion and fixes"):** XP only from beaten enemies; levels 1–9, each with a skill point; three heroes per journey, favouring the hero of each place; only a hero who joins is unlocked; spikes that only hurt.
 - **12 Nov (built):** the darts event (*Puščice v zidu*, renamed *Past s konicami* on 13 Nov), the start screen with silhouettes and three known starters, attacks for the healers, every potion used automatically.
@@ -32,7 +32,7 @@ One road, walked left to right. The party stands still and the world scrolls pas
 | --- | --- | --- | --- | --- | --- |
 | 1 | Ptuj | castle above the snowy town | Kurent | battle, hero, chest\*, well\*, battle | Škrat, Vešča |
 | 2 | Peca | King Matjaž's cave | Kralj Matjaž | battle, rock slide, chest\*, hero, well\*, shrine, battle | Perkmandeljc, Škrat, Pesjan |
-| 3 | Triglav | the three peaks | Ajdovska deklica | battle, rock slide, hero, pedlar, shrine, battle | Pesjan, Perkmandeljc, Vešča |
+| 3 | Triglav | the three peaks | Ajdovska deklica | battle, chest\*, rock slide, hero, pedlar, well\*, shrine, battle | Pesjan, Perkmandeljc, Vešča |
 | 4 | Bled | island church, castle on the cliff | — (Kresnik has no home and turns up anywhere) | battle, chest\*, shrine, well\*, battle | Vodna vila, Vešča, Škrat |
 | 5 | Trnovski gozd | moonlit forest | Martin Krpan | battle, chest\*, spikes, hero, well\*, shrine, battle | Mora, Volkodlak, Vešča |
 | 6 | Piranske soline | salt pans, Piran at sunset | Lepa Vida | battle, chest\*, pedlar, hero, well\*, shrine, battle | Vodna vila, Pesjan, Mora |
@@ -275,7 +275,7 @@ Built (v0.10.0): the rocks come from the region's rock words (`data/words.json`:
 - **Placement:** rock slides appear only near the **hillsides** of regions: Peca, Triglav, the cliff of Predjamski grad and the castle hill of Ljubljanski grad (the last two added 16 Nov, v0.10.0).
 
 ### 11.7 Chests and traps — built (v0.10.0), except the wheel
-- **Far wider word pools:** each region has its own chest words with clues in `data/words.json` (a first list of 114 words, 11–13 per region, to review); a chest never repeats a word on one journey. Chests stand at Ptuj, Bled, Trnovski gozd, Predjamski grad, Ljubljanica and Ljubljanski grad (the start of each of the last two), each by chance on a journey (§1).
+- **Far wider word pools:** each region has its own chest words with clues in `data/words.json` (a first list of 114 words, 11–13 per region, to review); a chest never repeats a word on one journey. Every region has a place for a chest (at the very start of Ljubljanica and Ljubljanski grad), kept on a journey by chance, by Znanje (§1; v0.11.0).
 - **The clue by Znanje:** always on *malček*, on about every other chest on *učenjak*, never on *knjižni molj*.
 - **Chest UI:** ✕ and *Pošlji* sit next to the assembled word; the text says a mistake can be cleared.
 - *Not built:* the letter wheel here too, with shorter words from the visible letters allowed (§11.4).
