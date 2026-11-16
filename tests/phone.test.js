@@ -200,6 +200,27 @@ run(async () => {
   check(back.pause[1] === true && back.resume[1] === false && back.gallery[1] === 'heroes' && back.heroes[1] === 'title' && back.title === 'exit',
     'Android back: pauses a battle, resumes it, steps back page by page to the start screen and only exits from there', JSON.stringify(back));
 
+  // Nova pot: what losing means runs full width under each level's figure and name, not in the figure's column
+  await page.evaluate(() => window.__ZG.go('newrun')); await new Promise(r => setTimeout(r, 300));
+  const stakes = await page.evaluate(() => [...document.querySelectorAll('.lv-grid > .choice')].map(c => {
+    const s = c.querySelector('.lv-stakes').getBoundingClientRect(), cr = c.getBoundingClientRect(), art = c.querySelector('.lv-art').getBoundingClientRect();
+    return { wide: s.width >= cr.width - 40, below: s.top >= art.bottom - 1, lines: Math.round(s.height / parseFloat(getComputedStyle(c.querySelector('.lv-stakes')).lineHeight)) }; }));
+  check(stakes.length === 3 && stakes.every(x => x.wide && x.below && x.lines <= 3), 'Nova pot on a phone: each level says what losing means in a full-width line under its figure', JSON.stringify(stakes));
+  await shot('phone-newrun');
+
+  // hero cards: the name, line and skills sit on the plate under the picture, never over it, and fit the card
+  await page.evaluate(() => { const Z = window.__ZG; Z.go('hero', { kind: 'meet', ids: ['vida'], sel: 0, next: () => Z.go('title') }); }); await new Promise(r => setTimeout(r, 500));
+  const card = await page.evaluate(() => { const f = document.querySelector('.hm .face.front'), svg = f.querySelector('svg').getBoundingClientRect(), fr = f.getBoundingClientRect();
+    return { nameBelowArt: f.querySelector('.plate b').getBoundingClientRect().top >= svg.bottom - 0.5, chipsInside: f.querySelector('.plate .mv').getBoundingClientRect().bottom <= fr.bottom - 1,
+      backSame: Math.abs(document.querySelector('.hm .face.rear').getBoundingClientRect().height - fr.height) < 1 }; });
+  check(card.nameBelowArt && card.chipsInside && card.backSame, 'hero card on a phone: the name sits under the picture, the skills fit, the back is as tall as the front', JSON.stringify(card));
+  await shot('phone-hero-card');
+  // a transparent status bar: a strip of the page colour sits behind it, so scrolled text does not show through
+  const bar = await page.evaluate(() => { document.documentElement.style.setProperty('--safe-area-inset-top', '32px'); const st = getComputedStyle(document.body, '::before');
+    const out = { pos: st.position, h: st.height, top: st.top, bg: st.backgroundColor }; document.documentElement.style.removeProperty('--safe-area-inset-top'); return out; });
+  check(bar.pos === 'fixed' && bar.h === '32px' && bar.top === '0px' && bar.bg !== 'rgba(0, 0, 0, 0)', 'on a phone a page-coloured strip covers the status bar area', JSON.stringify(bar));
+  await page.evaluate(() => window.__ZG.go('title'));
+
   check(errors.length === 0, 'no page or console errors', errors.join(' | '));
   return ctx;
 });
