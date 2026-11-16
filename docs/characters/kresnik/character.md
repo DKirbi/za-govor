@@ -46,24 +46,42 @@ Some scholars have compared Kresnik with Perun or with a wider Indo-European thu
 
 | Order | Skill | Confirmed design |
 |---|---|---|
-| 1 | Flaming sword — Slovene name OPEN | A flaming sword strike. Direct damage increases with rank and applies a damage-over-time burn. Against dragons and serpents, the sword strike deals 2× damage. |
-| 2 | **Kresna strela** | A fire bolt that chains between multiple enemies and applies a separate damage-over-time burn. |
-| 3 | Restorative skill — name OPEN | After an enemy damages Kresnik, he restores health equal to up to half of the damage received. He also grants the player gold equal to half of the amount of health restored. |
+| 1 | Flaming sword — Slovene name OPEN | A flaming sword strike. Direct damage increases with rank and applies a damage-over-time burn. Against dragons and serpents, only the direct strike is multiplied by 1.5×; burn damage is unchanged. |
+| 2 | **Kresna strela** | A fire bolt that hits one enemy at ranks 1–2 and chains to an adjacent enemy at rank 3. Applies a fixed burn of 2 damage per second for 3 seconds to affected enemies. |
+| 3 | Restorative skill — name OPEN | After an enemy damages Kresnik, he restores health equal to up to half of the damage received. He also grants the player gold equal to half of the amount of health restored. Both health restoration and gold are rounded up. |
 
-### Damage-over-time rules — CONFIRMED direction, details OPEN
+### Skill 1 — Flaming sword
 
-- The first two attacks begin with comparatively low direct damage.
-- Each applies additional damage over time equal to the direct damage dealt by that attack.
-- The burn is distributed evenly over the next two or three enemy attacks.
-- Exact rank-to-duration mapping, rounding, stacking, refresh behaviour, and whether the burn triggers on every enemy attack or only selected enemy actions remain OPEN.
-- The 2× dragon/serpent modifier is confirmed for the flaming sword strike. Whether it also doubles the associated burn damage is OPEN.
+| Rank | Direct damage | Direct damage vs. dragons / serpents | Burn | Total normal damage |
+|---|---:|---:|---|---:|
+| 1 | 8 | 12 | 2 damage/sec for 3 sec (6 total) | 14 |
+| 2 | 12 | 18 | 2 damage/sec for 3 sec (6 total) | 18 |
+| 3 | 16 | 24 | 2 damage/sec for 5 sec (10 total) | 26 |
 
-### Restorative skill — details OPEN
+- **CONFIRMED:** The dragon/serpent multiplier is 1.5× and applies only to the direct sword strike.
+- **CONFIRMED:** Burn damage is not multiplied.
+- Total damage assumes the target receives every burn tick.
+
+### Skill 2 — Kresna strela
+
+| Rank | Primary target | Adjacent target | Burn |
+|---|---:|---:|---|
+| 1 | 12 | — | 2 damage/sec for 3 sec |
+| 2 | 16 | — | 2 damage/sec for 3 sec |
+| 3 | 18 | 8 | 2 damage/sec for 3 sec on affected targets |
+
+- Maximum targets: two.
+- Ranks 1 and 2 hit only the primary target.
+- Rank 3 also hits one adjacent enemy for 8 direct damage.
+- Burn is 6 additional damage per affected enemy if all three seconds tick.
+- No dragon/serpent multiplier has been specified for Kresna strela.
+
+### Skill 3 — Restorative skill
 
 - Trigger: an enemy damages Kresnik.
-- Healing: restore up to 50% of the damage received.
-- Gold: grant the player gold equal to 50% of the health restored.
-- OPEN: whether it triggers after every damage instance or once per enemy action; whether damage-over-time counts; whether the healing is capped by missing health; whether the skill has ranks/cooldown; and how fractional gold is rounded.
+- Healing: restore up to 50% of the damage received, rounded up to the next whole health point.
+- Gold: grant the player 50% of the health actually restored, rounded up to the next whole gold.
+- **OPEN:** whether it triggers after every damage instance or once per enemy action; whether damage-over-time counts; whether healing is capped by missing health; and how the effect scales by rank.
 - Do not interpret the gold as being deducted from an enemy or as a party-wide heal unless explicitly approved.
 
 ### Previous prototype (IMPLEMENTED, SUPERSEDED as design direction)
