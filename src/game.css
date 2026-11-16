@@ -1114,7 +1114,6 @@ body.mobile .car-slide { padding: 14px 14px 16px; }
 .skillbtn { position: absolute; top: 8px; right: 8px; z-index: 4; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; background: color-mix(in srgb, var(--panel) 85%, transparent); }
 .skillbtn .i { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid currentColor; font: italic 700 12px/1 Georgia, serif; }
 .ptsbadge { min-width: 18px; height: 18px; padding: 0 5px; border-radius: 99px; display: inline-grid; place-items: center; background: var(--gold); color: #1d1608; font-size: 11px; font-weight: 800; }
-.spirit-tip { position: absolute; left: 0; right: 0; bottom: 4px; text-align: center; font-size: 11px; color: var(--faint); pointer-events: none; z-index: 1; }
 body.mobile .skillbtn { min-height: 40px; padding: 6px 12px; }
 
 /* ---------- Skills: the list (hero screens, Veščine) ---------- */
@@ -1131,7 +1130,10 @@ body.mobile .skillbtn { min-height: 40px; padding: 6px 12px; }
 .sk-dots { display: inline-flex; gap: 2px; }
 .sk-dots i { width: 8px; height: 8px; border-radius: 2px; background: var(--c); }
 .sk.off .sk-dots i { background: transparent; box-shadow: inset 0 0 0 1.5px var(--c); }
-.sk-state { margin-left: auto; font-size: 11.5px; color: var(--dim); }
+.sk-state { margin-left: auto; font-size: 11.5px; color: var(--dim); display: inline-flex; align-items: center; gap: 6px; }
+.rankpips { display: inline-flex; gap: 3px; }
+.rankpips i { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--c, var(--gold)); }
+.rankpips i.on { background: var(--c, var(--gold)); }
 .sk-text { margin: 4px 0 6px; font-size: 13.5px; line-height: 1.45; }
 .sk-ups { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; font-size: 12.5px; color: var(--faint); }
 .sk-ups li { position: relative; padding-left: 17px; line-height: 1.4; }
@@ -1156,3 +1158,41 @@ body.mobile .spirit.small { height: 150px; }
 body.mobile .spirit.small .hero.spr { --px: 2px; }
 @media (max-width: 640px) { .train-hero { grid-template-columns: 1fr; } }
 .page .skills section.sk { margin-top: 0; }
+
+/* ------------------------------------------------------------ skill points: a hero with a point to spend glows */
+/* a ring of light rises from the head, so it shows in the party on the road and in battle */
+.hero.spr.glow .sp { filter: drop-shadow(0 0 calc(var(--px) * 2) rgba(255, 226, 140, .75)); }
+.hero.spr.glow::after { content: ''; position: absolute; left: 27%; right: 27%; top: 0; height: 20%; border-radius: 50%; pointer-events: none; z-index: 2;
+  border: max(1px, var(--px)) solid rgba(255, 238, 176, .95); box-shadow: 0 0 calc(var(--px) * 4) rgba(255, 220, 120, .85), inset 0 0 calc(var(--px) * 3) rgba(255, 220, 120, .55);
+  animation: halo 1.9s ease-out infinite; }
+@keyframes halo { 0% { opacity: 0; transform: translateY(45%) scale(.6, .45) } 30% { opacity: 1 } 100% { opacity: 0; transform: translateY(-130%) scale(1.15, .5) } }
+@media (prefers-reduced-motion: reduce) { .hero.spr.glow::after { animation: none; opacity: .85; transform: translateY(-25%) scale(1, .5); } }
+
+/* ------------------------------------------------------------ Svetišče: the shrine of challenge */
+.godsign { image-rendering: pixelated; display: block; }
+.shrine-body { display: grid; grid-template-columns: 240px 1fr; gap: 18px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--c); border-radius: var(--radius); padding: 16px; }
+.shrine-art { position: relative; height: 250px; display: grid; place-items: end center; padding-bottom: 16px; overflow: hidden; border-radius: 10px;
+  background: radial-gradient(ellipse at 50% 26%, color-mix(in srgb, var(--c) 26%, transparent) 0%, transparent 58%), linear-gradient(180deg, #131724, #1d2130); }
+.shrine-art .godsign.big, .godspirit .godsign.big { position: absolute; top: 16px; left: 50%; width: 64px; height: 64px; margin-left: -32px; z-index: 1;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--c) 80%, #fff)); animation: signfloat 3.2s ease-in-out infinite; }
+.shrine-art.heard .godsign.big { width: 80px; height: 80px; margin-left: -40px; filter: drop-shadow(0 0 10px #ffe8a0) drop-shadow(0 0 22px color-mix(in srgb, var(--c) 70%, #fff)) brightness(1.15); }
+@keyframes signfloat { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-6px) } }
+.shrine-obj .obj.spr { --px: 3px; }
+.shrine-art .mote { position: absolute; bottom: 20px; width: 4px; height: 4px; background: color-mix(in srgb, var(--c) 60%, #fff); opacity: 0; animation: mote 4.2s linear infinite; }
+.shrine-art.heard .mote { background: #ffe8a0; animation-duration: 2.6s; }
+.shrine-text p { margin: 0 0 10px; line-height: 1.5; }
+.shrine-text p.muted { margin: 0; font-size: 13px; }
+.say.god { display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: start; }
+.say.god .godsign { width: 32px; height: 32px; margin-top: 3px; }
+.godsign.mini { display: inline-block; width: 16px; height: 16px; vertical-align: -3px; margin-right: 4px; }
+.godspirit { height: 300px; } .godspirit .hero.spr { --px: 4px; }
+@media (max-width: 760px) { .godspirit { height: 250px; } .godspirit .hero.spr { --px: 3px; } }
+body.mobile .godspirit { height: 250px; } body.mobile .godspirit .hero.spr { --px: 3px; }
+.godspirit .hero.spr .sp { filter: drop-shadow(0 0 3px rgba(255, 236, 160, .95)) drop-shadow(0 0 10px rgba(255, 214, 110, .55)); }
+.godspirit:not(.lit) .hero.spr .sp { filter: grayscale(.35) brightness(.75); }
+.godspirit:not(.lit) .godsign.big { opacity: .6; animation: none; }
+.godcome .lead, .godword .note { margin: 0; }
+.card .pt .godsign { width: 28px; height: 28px; }
+@media (max-width: 760px) { .shrine-body { grid-template-columns: 1fr; } .shrine-art { height: 250px; } }
+body.mobile .shrine-body { grid-template-columns: 1fr; padding: 12px; } body.mobile .shrine-art { height: 250px; } body.mobile .shrine-obj .obj.spr { --px: 3px; }
+@media (prefers-reduced-motion: reduce) { .godsign, .shrine-art .mote { animation: none !important; } }

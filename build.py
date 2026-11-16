@@ -11,7 +11,8 @@ Inputs:  src/index.src.html (template), src/game.css + src/title.css,
            src/credits.js (Navdih and Zasluge: the Words for Evil credit and all sources),
            src/report.js (Prijavi besedo: rejected words, reports to a Google Form),
            src/menu.js (the start menu and its pages: Nova pot, Dosežki in junaki, Kako igrati, Nastavitve, O igri),
-           src/skills.js (skill texts and upgrades, the skill list, Veščine where points are spent),
+           src/skills.js (skill texts and stopnje, the skill list, Veščine where points are spent),
+           src/shrines.js (svetišča izziva: prayers, the gods' gifts, the gods as challengers),
            src/art-title.js + src/title.js (the "Za govor!" title scene, art from tools/art_title.py),
          data/lexicon.bin (word list from tools/build_lexicon.py, inlined as base64),
          data/clues.json (crossword clue bank), data/world.json (regions and items of the journey)
@@ -30,7 +31,7 @@ for name, text in data.items():
 
 js = read('src/game.js')
 for mark, rels in (('/*__LEXICON__*/', ['src/lexicon.js']), ('/*__ART_EXTRA__*/', ['src/art-extra.js', 'src/art-title.js']),
-                   ('/*__JOURNEY__*/', ['src/journey.js', 'src/playtest.js', 'src/mobile.js', 'src/credits.js', 'src/report.js', 'src/menu.js', 'src/skills.js', 'src/title.js'])):
+                   ('/*__JOURNEY__*/', ['src/journey.js', 'src/playtest.js', 'src/mobile.js', 'src/credits.js', 'src/report.js', 'src/menu.js', 'src/skills.js', 'src/shrines.js', 'src/title.js'])):
     assert js.count(mark) == 1, f'{mark} must appear exactly once in src/game.js'
     js = js.replace(mark, ''.join(read(rel) for rel in rels))
 

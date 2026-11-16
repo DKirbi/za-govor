@@ -1,8 +1,9 @@
 // ============================================================ journey: one walk across Slovenia
 // The game is a single side-scrolling road: region after region (data/world.json), each with
 // stops — battles with random enemies, chests, rock slides, wells, pedlars, heroes to meet and
-// one shrine. You start with one hero; up to four travel together and only one of them may be
-// a god. Health does not come back after a battle: it is restored at wells.
+// shrines of challenge (src/shrines.js). You start with one hero; up to four travel together and only
+// one of them may be a god. Health does not come back after a battle: it is restored at wells, which
+// no longer raise the fallen (that takes a healer, Mrtva voda or a beaten god; see DIFFS in src/game.js).
 const WORLD = JSON.parse($('#worlddata').textContent);
 const ITEMS = Object.fromEntries(WORLD.items.map(it => [it.id, it]));
 const TV_SPEED = 240;                      // walking speed, world pixels per second
@@ -12,7 +13,7 @@ function has(id) { return !!(S.run && S.run.relics.includes(id)); }
 // Martin Krpan, Zeleni Jurij and Kurent can start the first journey. Everyone else is unknown
 // (a silhouette on the start screen) until they travel with you: a hero is unlocked for later
 // journeys when they join the party (greeting them is not enough), a god when you beat them in
-// the shrine's trial. Remembered in this browser.
+// the challenge after praying at their shrine. Remembered in this browser.
 const STARTERS = ['krpan', 'jurij', 'kurent'];
 const UNLOCKED = new Set(STARTERS);
 try { JSON.parse(localStorage.getItem('zg-unlocked') || '[]').forEach(id => { if (ROSTER[id]) UNLOCKED.add(id); }); } catch (e) { /* no storage */ }
@@ -194,8 +195,10 @@ function pickHero(regionId) {
 }
 function newRun(starterId) {
   S.run = { ri: 0, x: 0, endX: 0, stops: [], gold: S.testMode ? 200 : 20, relics: [], bag: {}, rozaUsed: false, jurijUsed: false,
-    battles: 0, words: 0, firstBattle: true, met: [starterId], walking: false, prompt: null, starter: starterId, heroAt: null, blessing: null };
-  S.run.heroAt = planHeroes();
+    battles: 0, words: 0, firstBattle: true, met: [starterId], walking: false, prompt: null, starter: starterId, heroAt: null,
+    shrines: null, prayer: null, challenged: false, gifts: [] };
+  S.run.heroAt = planHeroes(); S.run.shrines = planShrines(starterId);
+  const g = takeNextGift(); if (g) S.run.gifts.push(g);   // the gift of a god beaten at the end of the last journey
   setParty([starterId]); S.meterBonus = 0;
   enterRegion(0);
 }
@@ -209,15 +212,15 @@ function enemyGroup(reg, ri, kind) {
 function enterRegion(i) {
   const R = S.run, reg = WORLD.regions[i], gap = WORLD.stopGap;
   R.ri = i; R.x = 0; R.stops = []; R.prompt = null; R.walking = false;
-  // a hero stop only stays in the regions picked for this journey
-  const kinds = reg.stops.filter(kind => kind !== 'hero' || !R.heroAt || R.heroAt.includes(i));
+  // a hero stop and a shrine only stay in the regions picked for this journey
+  const kinds = reg.stops.filter(kind => (kind !== 'hero' || !R.heroAt || R.heroAt.includes(i)) && (kind !== 'god' || (R.shrines && R.shrines[i])));
   kinds.forEach((kind, n) => {
     const stop = { kind, x: (n + 1) * gap, done: false, passed: false };
     if (kind === 'battle' || kind === 'elite' || kind === 'boss') stop.enemies = enemyGroup(reg, i, kind);
     else if (kind === 'hero') {
       stop.hero = pickHero(reg.id);
       if (stop.hero) R.met.push(stop.hero); else stop.kind = 'well';
-    } else if (kind === 'god') stop.gods = shuffle(CHARS.filter(c => isGod(c.id)).map(c => c.id)).slice(0, 3);
+    } else if (kind === 'god') stop.god = R.shrines[i];
     else if (kind === 'shop') {
       const relics = shuffle(WORLD.items.filter(it => it.kind === 'relic' && !R.relics.includes(it.id))).slice(0, 2);
       stop.stock = shuffle(WORLD.items.filter(it => it.kind === 'use')).slice(0, 4).concat(relics).map(it => ({ id: it.id, sold: false }));
@@ -251,14 +254,14 @@ function renderTravel() {
     else if (stop.kind === 'darts') { body = objEl('puscice', stop.done ? 1 : 0); cap = stop.done ? '' : 'Konice'; }
     else if (stop.kind === 'well') { body = objEl('vodnjak', stop.done ? 1 : 0); cap = 'Vodnjak'; }
     else if (stop.kind === 'shop') { body = objEl('krosnjar', 0, 'mirror npc'); cap = 'Krošnjar'; }
-    else if (stop.kind === 'god') { body = objEl('svetisce', 0, 'npc'); cap = 'Svetišče'; }
+    else if (stop.kind === 'god') { body = objEl('svetisce-' + stop.god, 0, 'npc'); cap = [godSign(stop.god, 'mini'), 'Svetišče']; }
     else if (stop.kind === 'hero') { if (stop.done) return; body = h('div', { class: 'mirror' }, spriteEl(stop.hero, ROSTER[stop.hero].c)); cap = ROSTER[stop.hero].name; }
     const el = h('div', { class: 'tv-obj' }, cap ? h('span', { class: 'cap' }, cap) : null, body);
     T.layer.append(el); T.objs.push({ x: stop.x, el });
   });
   const sign = h('div', { class: 'tv-obj' }, R.ri < WORLD.regions.length - 1 ? h('span', { class: 'cap' }, WORLD.regions[R.ri + 1].name) : null, objEl('kazipot'));
   if (R.ri < WORLD.regions.length - 1) { T.layer.append(sign); T.objs.push({ x: R.endX, el: sign }); }
-  HEROES.forEach((hr, k) => { const st = S.heroes[k]; T.party.append(spriteEl(hr.id, hr.c, st.down ? 'down' : '')); });
+  HEROES.forEach((hr, k) => { const st = S.heroes[k]; T.party.append(spriteEl(hr.id, hr.c, st.down ? 'down' : st.pts > 0 ? 'glow' : '')); });
 
   SCR.append(h('div', { class: 'travelwrap' },
     h('div', { class: 'bhead' },
@@ -339,25 +342,23 @@ function promptFor(stop) {
   if (stop.kind === 'trap') return { text: 'S pobočja se usuje plaz kamenja!', actions: [{ label: 'Brani se z besedami', primary: true, fn: () => go('trap', { id: 'plaz', stop }) }, ...skip] };
   const train = trainAction(() => go('travel'));
   if (stop.kind === 'well') {
-    const hurt = S.heroes.some(st => st.down || st.hp < st.maxHp), fallen = S.heroes.some(st => st.down);
-    return { text: fallen ? 'Vodnjak s hladno, čisto vodo. Tu se junaki pozdravijo in kdor je obležal, spet vstane.' : hurt ? 'Vodnjak s hladno, čisto vodo. Tu se junaki pozdravijo.' : 'Vodnjak s hladno, čisto vodo. Nihče ni ranjen, a požirek ne škodi.',
+    // the well heals the living; it does not raise the fallen any more
+    const hurt = S.heroes.some(st => !st.down && st.hp < st.maxHp), fallen = S.heroes.filter(st => st.down).length;
+    const lie = fallen ? ` Kdor je obležal, ga voda ne obudi.` : '';
+    return { text: (hurt ? 'Vodnjak s hladno, čisto vodo. Tu se junaki pozdravijo.' : 'Vodnjak s hladno, čisto vodo. Nihče ni ranjen, a požirek ne škodi.') + lie,
       actions: [{ label: 'Pij iz vodnjaka', primary: true, fn: () => {
-        let got = 0; const up = [];
-        S.heroes.forEach((st, k) => { if (st.down) { st.down = false; st.hp = 0; up.push(HEROES[k].name); } got += st.maxHp - st.hp; st.hp = st.maxHp; });
+        let got = 0;
+        S.heroes.forEach(st => { if (st.down) return; got += st.maxHp - st.hp; st.hp = st.maxHp; });
         stop.done = stop.passed = true; sfx('heal');
         const t2 = trainAction(() => go('travel'));
-        R.prompt = { text: got ? `Voda zaceli rane: +${got} zdravja.` + (up.length ? ` Spet na nogah: ${up.join(', ')}.` : '') : 'Voda je dobra. Naprej!',
+        R.prompt = { text: got ? `Voda zaceli rane: +${got} zdravja.` : 'Voda je dobra. Naprej!',
           actions: [{ label: 'Naprej ▶', primary: true, fn: () => { R.prompt = null; R.walking = true; renderTravelPanel(); } }, ...(t2 ? [t2] : [])], keep: true };
         go('travel');
       } }, { label: 'Pojdi mimo', fn: () => pass() }, ...(train ? [train] : [])] };
   }
   if (stop.kind === 'shop') return { text: 'Krošnjar iz Ribnice razgrne robo: napoji, strupi in nekaj redkih predmetov.', actions: [{ label: 'Poglej robo', primary: true, fn: () => openShop(stop) }, { label: 'Pojdi mimo', fn: () => pass() }, ...(train ? [train] : [])] };
   if (stop.kind === 'hero') return { text: `${ROSTER[stop.hero].name} stoji ob poti.`, actions: [{ label: 'Pozdravi', primary: true, fn: () => meetHero(stop, [stop.hero]) }, { label: 'Pojdi mimo', fn: () => pass() }] };
-  if (stop.kind === 'god') {
-    if (R.blessing) return { text: `Staro svetišče. Blagoslov ${godGen(R.blessing.god)} še traja; drugega ne dobiš.`, actions: [{ label: 'Naprej ▶', primary: true, fn: () => pass(true) }, ...(train ? [train] : [])] };
-    return { text: 'Staro svetišče. Trije bogovi so ujeti v urok. Pomoli se k enemu: tri bitke ti posoja svojo moč, potem pa ga urok obrne proti tebi. Če ga premagaš, je urok strt.',
-      actions: [{ label: 'Stopi k svetišču', primary: true, fn: () => visitShrine(stop) }, { label: 'Pojdi mimo', fn: () => pass() }, ...(train ? [train] : [])] };
-  }
+  if (stop.kind === 'god') return shrinePrompt(stop, pass, train);
   return { text: '…', actions: [{ label: 'Naprej', primary: true, fn: () => pass() }] };
 }
 // one entry point for keys, buttons and tests: 'go' = walk / confirm, 'alt' = the second choice, 'skip' = test mode
@@ -394,56 +395,6 @@ function meetHero(stop, ids) {
         : HEROES.map((x, k) => ({ label: `${S.heroes[k].down ? 'Zapusti' : 'Namesto'}: ${x.name}${S.heroes[k].down ? ' (obležal)' : ''}`, fn: join(k) }));
       return acts.concat([{ label: 'Pojdi naprej brez novega junaka', fn: leave }]); } });
 }
-// ------------------------------------------------------------ the shrine: pray to a god, then face them
-// Three gods are caught in a curse. Pray to one: for the next three battles the god strikes beside you
-// (an opening blow and a little more power in every word). After the third battle the curse turns the
-// god against you: beat the cursed god and the curse breaks; the god is unlocked for later journeys.
-// A god beaten in an earlier journey can also simply join the party (only one god travels at a time).
-const BLESS_BATTLES = 3, BLESS_ATK = 1.15;
-// the gods in the cases these lines need (Mokoš is a goddess)
-const GOD_CASE = { perun: ['Perunu', 'Peruna'], svarog: ['Svarogu', 'Svaroga'], veles: ['Velesu', 'Velesa'], dazbog: ['Dažbogu', 'Dažboga'], stribog: ['Stribogu', 'Striboga'], mokos: ['Mokoši', 'Mokoš', 'Mokoši'] };
-const godF = id => id === 'mokos';
-const godTo = id => (godF(id) ? 'k boginji ' : 'k bogu ') + GOD_CASE[id][0];             // pomoli se k bogu Perunu
-const godAcc = id => (godF(id) ? 'boginjo ' : 'boga ') + GOD_CASE[id][1];               // urok obrne boga Peruna
-const godGen = id => (godF(id) ? 'boginje ' : 'boga ') + (GOD_CASE[id][2] || GOD_CASE[id][1]);   // blagoslov boga Peruna
-function visitShrine(stop) {
-  const R = S.run, back = () => go('travel');
-  go('hero', { kind: 'shrine', ids: stop.gods, sel: 0,
-    info: A => { const id = A.ids[A.sel], nm = ROSTER[id].name;
-      const f = godF(id);
-      return `Če se pomoliš ${godTo(id)}, ti tri bitke posoja svojo moč: udari na začetku vsake bitke in tvoje besede so močnejše. Po tretji bitki ${f ? 'jo' : 'ga'} urok obrne proti tebi. Premagaj ${f ? 'jo' : 'ga'} in na naslednjih poteh lahko gre s teboj.` +
-        (UNLOCKED.has(id) ? (partyGod() < 0 ? ` ${nm} te pozna: lahko gre s teboj že zdaj.` : ` S teboj že hodi ${HEROES[partyGod()].name}, drugi bog ne more.`) : ''); },
-    actions: A => { const id = A.ids[A.sel], nm = ROSTER[id].name;
-      const acts = [{ label: `Pomoli se ${godTo(id)}`, primary: true, fn: () => {
-        R.blessing = { god: id, left: BLESS_BATTLES }; stop.done = stop.passed = true; sfx('heal');
-        R.prompt = { text: `${nm} te blagoslovi: tri bitke se bori s teboj. Potem pride po svoje.`, actions: [{ label: 'Naprej ▶', primary: true, fn: () => { R.prompt = null; R.walking = true; renderTravelPanel(); } }], keep: true };
-        back(); } }];
-      if (UNLOCKED.has(id) && partyGod() < 0) acts.push({ label: HEROES.length < 4 ? `${nm} gre s teboj` : `${nm} gre s teboj (namesto ${HEROES[HEROES.length - 1].name})`, fn: () => {
-        joinHero(id, HEROES.length < 4 ? null : HEROES.length - 1); stop.done = stop.passed = true; R.prompt = null; sfx('win', { vol: .6 }); back(); } });
-      return acts.concat([{ label: 'Pojdi naprej', fn: () => { stop.passed = true; R.prompt = null; back(); } }]); } });
-}
-// the cursed god as an enemy: the god's own sprite, tinted, with their first and last skill as attacks
-const CURSED_TINT = 'grayscale(.6) sepia(.6) hue-rotate(215deg) saturate(2.4) brightness(.7) contrast(1.2)';
-function godFoe(id) {
-  const key = 'zaklet-' + id, ch = CHARS.find(c => c.id === id), ri = S.run ? S.run.ri : 3, f = id === 'mokos';
-  ENEMIES[key] = { name: (f ? 'Zakleta ' : 'Zakleti ') + ch.name, f, art: id, tint: CURSED_TINT, hp: 90 + 12 * ri, atk: 6 + Math.round(ri / 2), speed: 11, calmStep: 0.25, size: 72,
-    xp: 80 + 10 * ri, boss: true, pattern: ['attack', 'attack', 'heavy'], moves: { attack: ch.moves[0], heavy: ch.moves[2] } };
-  return key;
-}
-function startTrial() {
-  const R = S.run, reg = WORLD.regions[R.ri], id = R.blessing.god, key = godFoe(id);
-  go('battle', { id: reg.id, bg: reg.bg, title: 'Preizkušnja', sub: `Šef · ${ENEMIES[key].name}`, trial: id,
-    battle: { enemies: [key], scale: null, finishers: shuffle(Object.keys(FINISHER_FX)).slice(0, 2), meterStart: 0.3, tips: [] } });
-}
-// in a blessed battle the god opens with their second skill on every enemy
-function blessingStrike() {
-  const R = S.run; if (!R || !R.blessing || !B || B.node.trial) return;
-  const id = R.blessing.god, ch = CHARS.find(c => c.id === id), d = 6 + 2 * R.ri;
-  spawnCard(leadEl(), { tier: 2, c: ch.c, name: ch.name, move: `${ch.moves[1]} (blagoslov)`, value: `−${d} vsakemu`, art: id });
-  log(`${ch.name} udari z vami: −${d} vsakemu sovražniku.`); sfx('hit2');
-  B.enemies.filter(e => e.hp > 0).forEach(e => damageEnemy(e, d));
-}
-
 function openShop(stop) {
   const R = S.run; if (S.bagEl) return;
   const close = () => { ov.remove(); S.bagEl = null; S.overlayKey = null; stop.passed = true; stop.done = true; R.prompt = null; go('travel'); };
@@ -479,7 +430,7 @@ function renderEnding() {
       h('div', {}, 'Zlatniki'), h('div', {}, R.gold), h('div', {}, 'Predmeti'), h('div', {}, R.relics.length ? R.relics.map(id => ITEMS[id].name).join(', ') : '—')),
     h('p', { class: 'thanks' }, 'Hvala, ker si prehodil pot do konca.'),
     inspiredLine(),
-    h('div', { class: 'row', style: { 'justify-content': 'flex-start' } }, h('button', { class: 'btn primary', onclick: () => { resetRun(); go('title'); } }, 'Nova pot ', h('kbd', {}, 'Enter')))));
+    h('div', { class: 'row', style: { 'justify-content': 'flex-start' } }, h('button', { class: 'btn primary', onclick: leaveEnding }, 'Nova pot ', h('kbd', {}, 'Enter')))));
   sfx('win');
 }
 
@@ -487,8 +438,8 @@ function renderEnding() {
 function renderGalleryExtras(wrap) {
   const fig = (id, cap, frame) => h('figure', {}, objEl(id, frame), cap);
   wrap.append(h('h2', {}, 'Na poti'),
-    h('p', { class: 'lead' }, 'Postaje ob poti imajo svoje sličice: skrinja (zaprta in odprta), vodnjak, plaz kamenja, svetišče, krošnjar in kažipot do naslednje pokrajine.'),
-    h('div', { class: 'gobjs' }, fig('skrinja', 'skrinja'), fig('skrinja', 'odprta skrinja', 1), fig('vodnjak', 'vodnjak'), fig('plaz', 'plaz kamenja'), fig('puscice', 'konice'), fig('svetisce', 'svetišče'), fig('krosnjar', 'krošnjar'), fig('kazipot', 'kažipot')),
+    h('p', { class: 'lead' }, 'Postaje ob poti imajo svoje sličice: skrinja (zaprta in odprta), vodnjak, plaz kamenja, konice, svetišča (vsak bog ima svoje, z njegovim znamenjem), krošnjar in kažipot do naslednje pokrajine.'),
+    h('div', { class: 'gobjs' }, fig('skrinja', 'skrinja'), fig('skrinja', 'odprta skrinja', 1), fig('vodnjak', 'vodnjak'), fig('plaz', 'plaz kamenja'), fig('puscice', 'konice'), ...GODS.map(g => fig('svetisce-' + g, `svetišče: ${GOD[g].sign}`)), fig('krosnjar', 'krošnjar'), fig('kazipot', 'kažipot')),
     h('h2', {}, 'Predmeti'),
     h('p', { class: 'lead' }, 'Predmeti delujejo ves čas, napoji in strupi se porabijo. Dobiš jih v skrinjah, pri krošnjarju in od šefov.'),
     h('div', { class: 'itemlist gitems' }, WORLD.items.map(it => h('div', { class: 'itemrow' }, itemIcon(it.id),

@@ -46,8 +46,10 @@ window.zgBack = () => {
     if (S.screen === 'pick') { go('newrun'); return 'ok'; }                  // the hero choice is a step of Nova pot
     if (S.screen === 'gallery') { go('heroes'); return 'ok'; }
     if (S.screen === 'hero' && S.heroArg && S.heroArg.kind === 'codex') { S.heroArg.next(); return 'ok'; }
-    if (S.screen === 'result' || S.screen === 'hero') return 'ok';   // these move on with their own button
-    if (S.screen === 'ending') resetRun();
+    if (S.screen === 'result' || S.screen === 'hero' || S.screen === 'godcome') return 'ok';   // these move on with their own button
+    if (S.screen === 'shrine') { shrineKey(new KeyboardEvent('keydown', { key: 'Escape' })); return 'ok'; }
+    if (S.screen === 'godword') { S.godArg.next(); return 'ok'; }
+    if (S.screen === 'ending') { leaveEnding(); return 'ok'; }
     go('title');
     return 'ok';
   } catch (err) { console.error(err); return 'ok'; }

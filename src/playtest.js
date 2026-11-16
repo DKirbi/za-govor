@@ -171,7 +171,7 @@ const TUT = {
     steps: [
       S.mobile ? ['Vleci s prstom po sosednjih črkah, tudi poševno.'] : ['Tipkaj besedo; pot po sosednjih črkah se poišče sama. Lahko tudi vlečeš z miško.'],
       S.mobile ? [`Spusti prst in beseda se pošlje. Imeti mora vsaj ${MINW()} črke; daljša udari močneje. Pri tapkanju še enkrat tapni zadnjo črko.`] : [K('Enter'), ` pošlje besedo. Imeti mora vsaj ${MINW()} črke; daljša udari močneje.`],
-      ['Barvne črke pripadajo junakom: ko jih uporabiš, napade junak te barve.'],
+      ['Barvne črke pripadajo junakom: ko jih uporabiš, napade junak te barve. Več črk iste barve sproži močnejšo veščino.'],
       S.mobile ? ['Vsaka črka polni zagovor. Ko je poln, gumb Izreci zagovor odpre križanko za mogočen udarec.'] : ['Vsaka črka polni zagovor. Ko je poln, ', K('presledek'), ' odpre križanko za mogočen udarec.']] }),
   finisher: () => tutCross('finisher'), lock: () => tutCross('lock'), ambush: () => tutCross('ambush'),
   chest: () => ({ title: 'Zaklenjena skrinja', lead: 'Iz premešanih črk sestavi skrito besedo. Namig pove, kaj iščeš.', fig: figChest(),
