@@ -484,6 +484,7 @@ function renderDarts() {
       h('div', { class: 'dartcols' }, E.cols.map((col, c) => h('div', { class: 'dartcol' + (c === n && !E.done ? ' next' : c > n ? ' later' : '') },
         col.map((ch, r) => h('div', { class: 'tile' + (E.sel[c] === r ? ' sel' : ''), onclick: () => dartsPick(c, r) }, ch))))),
       E.msg ? h('p', { class: 'fb ' + E.msgKind }, E.msg) : null,
+      E.done && E.word2 && (E.isNew || meaningOf(E.word2)) ? h('div', { class: 'newwords' }, meaningChip(E.word2, 'puscice')) : null,
       E.done ? h('div', {}, h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')))
       : h('div', { class: 'row', style: { 'justify-content': 'flex-start', 'flex-wrap': 'wrap' } },
         h('button', { class: 'btn small', onclick: () => { E.sel.pop(); renderDarts(); } }, '⌫ Briši'),
@@ -558,6 +559,7 @@ function dartsSubmit() {
   const E = S.ev; if (E.done) return;
   const w = dartsGuess(), n = E.cols.length; if (w.length < MINW()) return;
   if (!WORDS.has(w)) { noteRejected(w, 'puscice'); return dartsEnd(0, `»${UP(w)}« ni beseda: vseh ${n} konic se sproži v družino (prava je bila ${UP(E.word)}).` + rejectHint().replace(' v premoru', ' na začetnem zaslonu'), 'err'); }
+  E.word2 = w; E.isNew = noteFound(w, 'puscice');
   if (w.length === n) return dartsEnd(n, `${UP(w)}! Beseda zapre vse reže, le ena konica te oplazi.`, 'ok');
   dartsEnd(w.length, `${UP(w)} zapre ${w.length} od ${n} rež; ${n - w.length} ${n - w.length === 1 ? 'konica zadene' : n - w.length === 2 ? 'konici zadeneta' : n - w.length < 5 ? 'konice zadenejo' : 'konic zadene'} družino.`, 'warn');
 }

@@ -915,7 +915,7 @@ body.mobile .bhead .meta, body.mobile .chip, body.mobile .partyhp { font-size: 1
 body.mobile .muted { color: #b3ad9f; }
 @media (prefers-contrast: more) { :root { --dim: #cfc9bb; --faint: #a9a498; --line: #5a6074; } }
 
-/* ---------- Credits: the Words for Evil line on the ending (Navdih and Zasluge are on O igri) ---------- */
+/* ---------- Credits: the maker line on the ending (Avtor, Navdih and Zasluge are on O igri) ---------- */
 .inspired { margin: 8px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--dim); }
 .inspired i { color: var(--ink); font-style: italic; }
 .linkbtn { background: none; border: 0; padding: 2px 0; margin-left: 2px; font: inherit; color: var(--gold); text-decoration: underline;
@@ -1255,6 +1255,42 @@ body.mobile .muted { font-size: max(13px, 1em); }
 .tut-fig .cwgrid { margin-bottom: 4px; }
 .tut-fig .cell.cur { transform: none; }
 
+/* ============================================================ O igri and Kako igrati (round 3) */
+.about .author { font-size: 17px; }
+.credits-more { margin-top: 6px; border: 1px solid var(--line); border-radius: var(--radius); padding: 0 14px; background: var(--panel); }
+.credits-more > summary { cursor: pointer; padding: 12px 0; font-weight: 700; color: var(--dim); list-style: none; min-height: 44px; display: flex; align-items: center; gap: 6px; }
+.credits-more > summary::-webkit-details-marker { display: none; }
+.credits-more > summary::after { content: '▸'; margin-left: auto; transition: transform .15s; }
+.credits-more[open] > summary::after { transform: rotate(90deg); }
+.credits-more .copy { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--line); color: var(--gold); font-weight: 800; }
+.ctl-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 8px; }
+.ctl-tab { min-height: 40px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--dim); font-weight: 700; cursor: pointer; }
+.ctl-tab.on { border-color: var(--gold); color: var(--ink); background: color-mix(in srgb, var(--gold) 16%, var(--panel)); }
+.ctl-tab small { font-weight: 500; color: var(--faint); }
+.ctl-note { margin: 0 0 10px; }
+.ctl-chip { display: inline-block; padding: 2px 10px; border-radius: 999px; font-weight: 700; font-size: .92em; white-space: nowrap;
+  border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--line)); background: color-mix(in srgb, var(--gold) 10%, var(--panel)); color: var(--ink); }
+.words-ok p { margin: 6px 0; }
+
+/* ============================================================ words sent to the developer: chips, Kaj pomeni? */
+.report .rejlist { margin: 10px 0; }
+.report .rl-h { font-weight: 800; margin-bottom: 6px; } .report .rl-h small { font-weight: 500; color: var(--dim); }
+.report .rl-empty { margin: 0; }
+.report .prop.on { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 22%, var(--panel)); color: var(--ink); }
+.report .rp-send { margin-top: 12px; }
+.newwords { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; }
+.newwords .nw-h { font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); width: 100%; }
+.newwords .nw-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.mchip { display: inline-flex; align-items: center; gap: 2px; min-height: 36px; padding: 4px 12px; border-radius: 999px; font-size: 14px;
+  border: 1px solid var(--line); background: var(--panel2); color: var(--ink); }
+.mchip b { letter-spacing: .04em; }
+.mchip.ask { cursor: pointer; border-color: color-mix(in srgb, #8fb3ff 55%, var(--line)); }
+.mchip.ask .q { color: #b9cff7; font-size: 12.5px; margin-left: 4px; }
+.mchip.asked { color: var(--dim); }
+.mchip.has { border-radius: 10px; }
+body.mobile .mchip { min-height: 40px; }
+body.mobile .report .rp-send .btn, body.mobile .report .rp-close { min-height: 44px; }
+
 /* ---------- Title scene: "Za govor!" over a dusk landscape (src/title.js, art from tools/art_title.py) ----------
    Sizes are in art pixels times --s, the whole-number scale; animations move one art pixel per step. */
 .sr-only { position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
@@ -1515,6 +1551,11 @@ body.mobile .title-stage + .mainmenu { margin-top: -40px; }
       "theme": ["grad", "zmaj", "stolp", "zid", "ogenj", "krilo", "luskina", "pepel", "hrib", "mesto"]
     }
   }
+}
+</script>
+<script id="meaningsdata" type="application/json">{
+  "note": "Meanings shown in the game next to a word, one short line in Slovene, keyed by the word or its base form. Written fresh (not copied from dictionaries) and reviewed before they go in. Players ask for meanings with Kaj pomeni? (reports of kind pomen in the word form). Empty until the first are written.",
+  "words": {}
 }
 </script>
 <script>
@@ -2400,7 +2441,7 @@ const NODES = [
         m: 'Vleci s prstom čez sosednje črke in spusti: beseda se pošlje sama. Če črke pritiskaš eno za drugo, pritisni Pošlji ob besedi.' },
       { until: 3, text: 'Barvne črke sprožijo junake: ena črka junakove barve sproži prvo veščino, dve drugo, tri tretjo. Daljša beseda pomeni večji množitelj.' },
       { until: 5, text: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Klikni sovražnika ali uporabi ←/→ za izbiro cilja.',
-        m: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Tapni sovražnika, da ga izbereš za cilj.' },
+        m: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Za cilj izbereš sovražnika s pritiskom nanj.' },
       { until: 99, text: 'Poskusi različne oblike: »volk«, »volka« in »volkom« so vse veljavne, a ponovitve iste besede so šibkejše.' } ] } },
   { id: 'skrinja', type: 'chest', title: 'Skrinja', sub: 'Dogodek na čas',
     teach: 'Iz premešanih črk sestavi skrito besedo, preden se ključavnica zatakne.' },
@@ -2408,7 +2449,7 @@ const NODES = [
     teach: 'Zagovor (križanka kot zaključni udarec), uspavani junaki, ponovljene besede krepijo Volkodlaka.',
     battle: { enemies: ['mora', 'volkodlak'], finishers: ['kres', 'mokos'], meterStart: 0.65, tips: [
       { until: 3, text: 'Zagovor je skoraj poln. Ko je poln, pritisni presledek in reši križanko za mogočen udarec.',
-        m: 'Zagovor je skoraj poln. Ko je poln, tapni »Izreci zagovor« in reši križanko za mogočen udarec.' },
+        m: 'Zagovor je skoraj poln. Ko je poln, pritisni »Izreci zagovor« in reši križanko za mogočen udarec.' },
       { until: 6, text: 'Mora uspava junake: njihove črke posivijo. Mokošina druga ali tretja veščina (dve ali tri zelene črke v besedi) jih zbudi.' },
       { until: 99, text: 'Volkodlak se krepi ob ponovljenih besedah — tudi »volk« in »volka« štejeta kot ista beseda.' } ] } },
   { id: 'plaz', type: 'trap', title: 'Plaz kamenja', sub: 'Dogodek na čas',
@@ -2582,7 +2623,7 @@ const xpNeed = () => 100 * S.level;
 const letterEq = (tile, typed) => tile === typed;
 
 // Version of this build, filled in by build.py from package.json and git (see CHANGELOG.md).
-const BUILD = {"version": "0.9.0", "stage": "zaprta alfa", "commit": ""};
+const BUILD = {"version": "0.10.0", "stage": "zaprta alfa", "commit": ""};
 const app = $('#app');
 let SCR = null;   // current screen container
 // There is no top bar: pages under the menu have a sticky way back, timed puzzles a Premor button in their header,
@@ -2750,7 +2791,7 @@ function renderGallery() {
         h('button', { class: 'btn small', onclick: () => go('hero', { kind: 'meet', ids: [ch.id], crumb: 'Nazaj v galerijo', next: () => go('gallery') }) }, 'Prizor: srečanje'),
         null),
       h('p', {}, ch.note), frames(ch.id, false),
-      h('div', { class: 'gboards' }, [1, 2, 3].map(t => board(ch.id, t, `${t === 1 ? '1 črka' : t + ' črke'} · ${ch.moves[t - 1]}`)))));
+      h('div', { class: 'gboards' }, [1, 2, 3].map(t => board(ch.id, t, `${['', '1 črka', '2 črki', '3 črke'][t]} · ${ch.moves[t - 1]}`)))));
   });
   wrap.append(h('h2', {}, 'Sovražniki'));
   FOE_CHARS.forEach(ch => {
@@ -3362,6 +3403,7 @@ function submitWord(how = 'key') {
 
 function resolveWord(w, path) {
   sfx('ok');
+  if (noteFound(w, 'mreza')) (B.found || (B.found = [])).push(w);   // a word new to this player, with no meaning yet
   if (B.hint && (B.hint.w === w || (LEMMA.get(B.hint.w) || B.hint.w) === (LEMMA.get(w) || w))) B.hint = null;   // the hinted word is played
   const lem = LEMMA.get(w) || w;
   const uses = B.lemmaUses.get(lem) || 0;
@@ -4012,7 +4054,7 @@ function cwPaint() {
   C.banner.append(h('b', {}, curE.geslo ? '★ Geslo' : `${curE.num} ${curE.dir === 'A' ? 'vodoravno' : 'navpično'}`), ` ${curE.clue}` + (LV().showLen ? ` (${curE.answer.length})` : ''));
   if (C.reveals > 0 && !C.solved.has(C.cur.e)) C.banner.append(h('button', { class: 'kbbtn revbtn', title: 'Razkrij eno črko te besede (beseda nato udari s pol moči)',
     ...keepCwFocus, onclick: e => { e.preventDefault(); cwReveal(); } }, `Razkrij črko · ${C.reveals}`));
-  if (!C.focused && !S.mobile) C.banner.append(h('button', { class: 'kbbtn', onclick: e => { e.preventDefault(); focusCwInput(); } }, S.mobile ? 'Tapni za tipkovnico' : 'Klikni za tipkanje'));
+  if (!C.focused && !S.mobile) C.banner.append(h('button', { class: 'kbbtn', onclick: e => { e.preventDefault(); focusCwInput(); } }, S.mobile ? 'Pritisni za tipkovnico' : 'Klikni za tipkanje'));
 }
 function cwSelect(k) { B.cw.cur = { e: k, p: 0 }; cwPaint(); }
 // Tip: reveal one letter of the current entry (a few per crossword, depending on the level).
@@ -4237,6 +4279,7 @@ function showResult(win) {
     h('div', { class: 'muted' }, win ? (C ? `${GOD[C.god].name} je ${GOD[C.god].f ? 'premagana' : 'premagan'}.` : R ? (hurt || down ? 'Sovražniki so premagani. Rane ostanejo: junaki se pozdravijo pri vodnjaku.' : 'Sovražniki so premagani.') : 'Sovražniki so premagani.') : lost),
     left.length ? h('p', { class: 'note' }, leftLine(left)) : null,
     saved ? h('p', { class: 'savednote', role: 'status' }, h('b', {}, 'Shranjeno.'), ' Pot lahko zdaj zapustiš in jo pozneje nadaljuješ od tod.') : null,
+    win && B.found ? newWordsRow(B.found, 'mreza') : null,
     h('div', { class: 'stats' },
       h('div', {}, 'Izrečene besede'), h('div', {}, st.words),
       h('div', {}, 'Najdaljša beseda'), h('div', {}, st.longest ? UP(st.longest) : '—'),
@@ -4377,6 +4420,7 @@ function renderChest() {
           h('button', { class: 'btn primary send' + (guess.length >= MINW() ? ' ready' : ''), disabled: guess.length < MINW(), onclick: chestSubmit }, 'Pošlji', S.mobile ? null : [' ', h('kbd', {}, 'Enter')]))),
       h('div', { class: 'letters' }, E.letters.map((l, i) => h('div', { class: 'tile' + (l.used ? ' used' : ''), onclick: () => chestPick(i) }, l.ch))),
       E.msg ? h('p', { class: 'fb ' + E.msgKind }, E.msg) : null,
+      E.done && E.word && (E.isNew || meaningOf(E.word)) ? h('div', { class: 'newwords' }, meaningChip(E.word, 'skrinja')) : null,
       E.loot ? h('p', { class: 'lootline' }, itemIcon(E.loot.id), h('b', {}, E.loot.name), ' — ', E.loot.text) : null,
       E.done ? h('div', {}, h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')))
       : h('div', { class: 'row', style: { 'justify-content': 'flex-start', 'flex-wrap': 'wrap' } },
@@ -4411,6 +4455,7 @@ function chestSubmit() {
   const guess = E.sel.map(i => E.letters[i].ch).join('');
   if (guess.length < MINW()) { E.msg = `Beseda mora imeti vsaj ${MINW()} črke.`; E.msgKind = 'warn'; renderChest(); return; }
   const total = E.item.w.length;
+  if (WORDS.has(guess) || guess === E.item.w) { E.word = guess; E.isNew = noteFound(guess, 'skrinja'); }
   if (guess === E.item.w || (guess.length === total && WORDS.has(guess))) {
     E.done = true; E.win = true; S.meterBonus = 0.5;   // chests pay gold and items; experience comes from enemies only
     const loot = S.run ? randomItem() : null, gold = S.run ? gainGold(15 + rnd(11)) : 0;
@@ -4499,7 +4544,7 @@ function trapSubmit() {
   const hit = open.filter(r => w.includes(r.ch)), miss = open.filter(r => !w.includes(r.ch));
   hit.forEach(r => { r.state = 'broken'; if (r.el) r.el.classList.add('broken'); });
   miss.forEach(r => { r.state = 'hit'; if (r.el) r.el.classList.add('hit'); });
-  E.broken += hit.length; E.word = w;
+  E.broken += hit.length; E.word = w; E.isNew = noteFound(w, 'plaz');
   // partial damage for the rocks the word did not name
   const d = miss.length * TRAP_GRAZE; if (d) { S.partyHp = Math.max(1, S.partyHp - d); E.dmg += d; E.hits += miss.length; }
   E.gold = S.run && hit.length ? gainGold(TRAP_GOLD * hit.length) : 0;
@@ -4543,6 +4588,7 @@ function trapShowEnd() {
   if (UI.trapInput) UI.trapInput.blur();
   if (UI.trapKb) { UI.trapKb.remove(); UI.trapKb = null; }
   UI.trapEnd.append(h('p', {}, `Razbite skale: ${E.broken}/${E.rocks.length} · prejeta škoda: ${E.dmg}.` + (E.gold ? ` +${E.gold} zlatnikov.` : '') + (E.dmg ? ' Rane ostanejo do naslednjega vodnjaka.' : '')),
+    E.word && (E.isNew || meaningOf(E.word)) ? h('div', { class: 'newwords' }, meaningChip(E.word, 'plaz')) : null,
     h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')));
 }
 function trapKey(e) {
@@ -5047,6 +5093,7 @@ function renderDarts() {
       h('div', { class: 'dartcols' }, E.cols.map((col, c) => h('div', { class: 'dartcol' + (c === n && !E.done ? ' next' : c > n ? ' later' : '') },
         col.map((ch, r) => h('div', { class: 'tile' + (E.sel[c] === r ? ' sel' : ''), onclick: () => dartsPick(c, r) }, ch))))),
       E.msg ? h('p', { class: 'fb ' + E.msgKind }, E.msg) : null,
+      E.done && E.word2 && (E.isNew || meaningOf(E.word2)) ? h('div', { class: 'newwords' }, meaningChip(E.word2, 'puscice')) : null,
       E.done ? h('div', {}, h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')))
       : h('div', { class: 'row', style: { 'justify-content': 'flex-start', 'flex-wrap': 'wrap' } },
         h('button', { class: 'btn small', onclick: () => { E.sel.pop(); renderDarts(); } }, '⌫ Briši'),
@@ -5121,6 +5168,7 @@ function dartsSubmit() {
   const E = S.ev; if (E.done) return;
   const w = dartsGuess(), n = E.cols.length; if (w.length < MINW()) return;
   if (!WORDS.has(w)) { noteRejected(w, 'puscice'); return dartsEnd(0, `»${UP(w)}« ni beseda: vseh ${n} konic se sproži v družino (prava je bila ${UP(E.word)}).` + rejectHint().replace(' v premoru', ' na začetnem zaslonu'), 'err'); }
+  E.word2 = w; E.isNew = noteFound(w, 'puscice');
   if (w.length === n) return dartsEnd(n, `${UP(w)}! Beseda zapre vse reže, le ena konica te oplazi.`, 'ok');
   dartsEnd(w.length, `${UP(w)} zapre ${w.length} od ${n} rež; ${n - w.length} ${n - w.length === 1 ? 'konica zadene' : n - w.length === 2 ? 'konici zadeneta' : n - w.length < 5 ? 'konice zadenejo' : 'konic zadene'} družino.`, 'warn');
 }
@@ -5293,7 +5341,7 @@ function tutCross(kind) {
     steps: [
       S.mobile ? ['Rumeno polje kaže opis označene besede. Odgovor vpiši s tipkovnico pod križanko.'] : ['Rumeno polje kaže opis označene besede. Vpiši odgovor.'],
       ['Prava beseda pozeleni in takoj sproži napad. Črne črke pomenijo, da beseda še ni prava.'],
-      S.mobile ? ['Tipka Naprej skoči na naslednjo besedo; izbereš jo lahko tudi s tapom v mreži.' + (LV().reveals ? ' Gumb »Razkrij črko« pokaže eno črko.' : '')]
+      S.mobile ? ['Tipka Naprej skoči na naslednjo besedo; izbereš jo lahko tudi s pritiskom na mrežo.' + (LV().reveals ? ' Gumb »Razkrij črko« pokaže eno črko.' : '')]
         : [K('Tab'), ' skoči na naslednjo besedo', ...(LV().reveals ? [', ', K('?'), ' razkrije eno črko (število je omejeno).'] : ['.'])],
       geslo ? ['Zlat stolpec skriva geslo. Če ga uganeš, je križanka rešena takoj.'] : null] };
 }
@@ -5311,13 +5359,13 @@ const TUT = {
   chest: () => ({ title: 'Zaklenjena skrinja', lead: 'Iz premešanih črk sestavi skrito besedo. Namig pove, kaj iščeš.', fig: figChest(),
     time: `Rdeča črta je čas${evSecs('timeMax')}. Ko poteče, skrinja ostane zaklenjena.`,
     steps: [
-      S.mobile ? ['Tapkaj črke v pravem vrstnem redu.'] : ['Tipkaj črke ali klikaj nanje.'],
+      S.mobile ? ['Pritiskaj črke v pravem vrstnem redu. Če se zmotiš, besedo počisti z ✕.'] : ['Tipkaj črke ali klikaj nanje. Če se zmotiš, besedo počisti z ✕ ali tipko Del.'],
       S.mobile ? ['Pritisni Pošlji. Prva prava beseda zaključi dogodek.'] : [K('Enter'), ' odda besedo. Prva prava beseda zaključi dogodek.'],
       ['Beseda iz vseh črk odpre skrinjo in prinese celo nagrado. Krajša prava beseda prinese le del.']] }),
   darts: () => ({ title: 'Past s konicami', lead: 'Zid z režami. Iz vsake reže vzemi eno črko, od leve proti desni.', fig: figDarts(),
     time: `Rdeča črta je čas${evSecs('timeMax')}. Ko poteče, se vse konice sprožijo nate.`,
     steps: [
-      S.mobile ? ['Tapni eno črko v prvi reži, nato v drugi in tako naprej.'] : ['Tipkaj črke ali klikaj nanje: najprej prva reža, nato druga in tako naprej.'],
+      S.mobile ? ['Pritisni eno črko v prvi reži, nato v drugi in tako naprej.'] : ['Tipkaj črke ali klikaj nanje: najprej prva reža, nato druga in tako naprej.'],
       ['Besedo lahko pošlješ, še preden prideš do zadnje reže. Vsaka črka prave besede zapre eno režo.'],
       ['Konice iz odprtih rež zadenejo junake. Beseda iz vseh rež jih ustavi skoraj vse, ena te le oplazi; beseda, ki ne obstaja, ne zapre nobene.']] }),
   trap: () => ({ title: 'Plaz kamenja', lead: 'S pobočja padajo skale. Vsaka nosi črko in ena sama beseda jih lahko razbije.', fig: figTrap(),
@@ -5487,25 +5535,27 @@ window.zgBack = () => {
     return 'ok';
   } catch (err) { console.error(err); return 'ok'; }
 };
-
-// ============================================================ credits ("Zasluge")
-// Za govor! is inspired by Words for Evil (Chromosphere Games, 2014). The game says so on the
-// O igri page (Navdih, then Zasluge with every source the prototype uses) and on the ending
-// after the dragon, whose line links to O igri.
-const WFE = { title: 'Words for Evil', by: 'Chromosphere Games', person: 'Dylan Loney', year: 2014,
-  url: 'https://store.steampowered.com/app/335790/Words_for_Evil/' };
+// ============================================================ credits ("O igri": Avtor, Navdih, Zasluge)
+// The game names its maker and why it was made, and says it grew out of playing word games with a role-playing
+// game in mind. It names no other game, on any platform, so no store or platform review can stumble on it
+// (zagovor-store-release.md, 16 Nov 2026); the README, which ships with the PC versions, keeps the full credit
+// to the game that inspired it. Zasluge list every source, folded behind ©.
+const AUTHOR = { studio: 'Oygn Productions', name: 'Davor Kirbiš' };
 const extLink = (href, text) => h('a', { href, target: '_blank', rel: 'noopener noreferrer' }, text, h('span', { 'aria-hidden': 'true' }, ' ↗'));
+const madeBy = () => ['Igro je razvil ', h('b', {}, AUTHOR.studio), ` (${AUTHOR.name}).`];
 // one line, used on the ending
-const inspiredLine = () => h('p', { class: 'inspired' },
-  h('i', {}, 'Za govor!'), ' je nastal po navdihu igre ', h('i', {}, WFE.title), ` (${WFE.by}, ${WFE.year}). `,
-  h('button', { class: 'linkbtn', onclick: () => go('about', 'navdih') }, 'Zasluge'));
+const inspiredLine = () => h('p', { class: 'inspired' }, ...madeBy(), ' ',
+  h('button', { class: 'linkbtn', onclick: () => go('about', 'avtor') }, 'O igri in zasluge'));
 
-// O igri → Navdih
+// O igri → Avtor: who made it, and why
+const creditAuthor = () => [
+  h('p', { class: 'author' }, ...madeBy()),
+  h('p', {}, 'Videoigre in pripovedovanje zgodb so moja neizmerna strast, ', h('i', {}, 'Za govor!'), ' pa je moj veliki projekt iz srca.'),
+  h('p', {}, h('i', {}, 'Za govor!'), ' sem želel ustvariti za promocijo našega prelepega slovenskega jezika in naše zelo zanimive folklore, saj nas to dela Slovence.')];
+// O igri → Navdih: no other game is named
 const creditInspiration = () => [
-  h('p', {}, h('i', {}, 'Za govor!'), ' je nastal po navdihu igre ', h('b', {}, h('i', {}, WFE.title)),
-    `, ki jo je leta ${WFE.year} izdal studio ${WFE.by} (${WFE.person}). Od nje izhaja zamisel o igri vlog, v kateri se junaki bojujejo z besedami iz mreže črk, barva črk pa določa, kateri junak napade.`),
-  h('p', {}, h('i', {}, 'Za govor!'), ' je samostojna igra z lastnimi junaki, slikami, ugankami in besedili v slovenščini. Z avtorji igre ', h('i', {}, WFE.title), ' ni uradno povezana.'),
-  h('p', {}, extLink(WFE.url, `${WFE.title} na Steamu`))];
+  h('p', {}, h('i', {}, 'Za govor!'), ' je nastal ob igranju različnih besednih iger in ob misli, kako bi se besedne uganke povezale z igro vlog: da prava beseda postane junaški napad.'),
+  h('p', {}, 'Igra je samostojno delo z lastno kodo, podobo, junaki in zgodbo ter iz drugih iger ne prevzema ničesar razen ljubezni do sestavljanja besed.')];
 // O igri → Zasluge: every source, one sub-section each
 function creditSources() {
   const sec = (title, ...kids) => h('section', { class: 'credit-sec' }, h('h3', {}, title), ...kids);
@@ -5527,25 +5577,38 @@ function creditSources() {
       h('p', {}, 'Zvočni učinki so sintetizirani z ZzFX (Frank Force, licenca MIT). Pikselne slike in ljudske poslikave so prototipne in narejene posebej za to igro.'),
       h('p', {}, 'Aplikacija za Android uporablja Capacitor (licenca MIT).'))];
 }
+// the sources take a lot of room: one line with © opens them
+const creditSourcesFolded = () => h('details', { class: 'credits-more' },
+  h('summary', {}, h('span', { class: 'copy', 'aria-hidden': 'true' }, '©'), ' Viri, licence in programska oprema'),
+  ...creditSources());
 
-// ============================================================ report a missing word ("Prijavi besedo")
-// Every word the game turns down is remembered on this device (the last 40). From the pause
-// screen or the start screen the player taps one to report it, or types a word, with an
-// optional note. Reports go to a Google Form whose answers land in a spreadsheet (and an
-// e-mail per answer); until they are sent they wait in a queue on the device.
+// ============================================================ words sent to the developer ("Pošlji besede")
+// Two kinds of report go to one Google Form, one row per word, and nothing typed by hand:
+//   manjka — a word the game turned down that the player thinks is real (the last 40 rejections are remembered)
+//   pomen  — a word the player found for the first time that the game has no meaning for yet ("Kaj pomeni?")
+// The player picks words from chips and sends them. The form's four fields are reused, so the form itself
+// does not change: Beseda = the word, Kje = where it was played and the region (never shown in the game),
+// Opomba = the kind (manjka / pomen), Podatki = level, pace, device and version. Nothing personal is sent.
+// Until a report leaves the device it waits in a queue (offline, or no form set up).
+// Meanings the developer has written ship with the game in data/meanings.json (filled in by hand over time).
 
 // Filled in from the form's pre-filled link: .../forms/d/e/<id>/viewform?entry.<n>=...
 // The four fields are Beseda, Kje, Opomba, Podatki. With no id, reports only queue.
 const REPORT_FORM = { id: '1FAIpQLSdQMdF0tOxiSydO23w7HKLdaIzFxF_8vTGCxRxQzTFnNlSK4Q',
   entry: { word: '999563651', where: '450611827', note: '1964532332', meta: '777699005' } };
 
-const RJ_KEY = 'zg-rejected', RP_KEY = 'zg-reports', RJ_MAX = 40, SESSION = Date.now();
+const RJ_KEY = 'zg-rejected', RP_KEY = 'zg-reports', FD_KEY = 'zg-found', SN_KEY = 'zg-seen', RJ_MAX = 40, FD_MAX = 40, SN_MAX = 4000, SESSION = Date.now();
 const loadList = k => { try { const v = JSON.parse(localStorage.getItem(k) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } };
 const saveList = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* no storage: the lists live for this visit only */ } };
 const REJECTED = loadList(RJ_KEY);   // [{ w, where, n, t, s }] newest first; s = session
-const REPORTS = loadList(RP_KEY);    // [{ w, where, note, t, sent }]
+const REPORTS = loadList(RP_KEY).map(r => ({ kind: 'manjka', ...r }));   // [{ w, where, region, kind, t, sent }]
+const FOUND = loadList(FD_KEY);      // [{ w, where, region, t }] words found for the first time with no meaning yet, newest first
+const SEEN = new Set(loadList(SN_KEY));   // base forms of every word this player has played
 const cleanWord = s => [...String(s || '').trim()].map(normLetter).filter(Boolean).join('');
 const WHERE = { mreza: 'mreža črk', skrinja: 'skrinja', plaz: 'plaz kamenja', puscice: 'konice', vpisana: 'vpisana' };
+const MEANINGS = (() => { try { return JSON.parse($('#meaningsdata').textContent).words || {}; } catch (e) { return {}; } })();
+const meaningOf = w => MEANINGS[w] || MEANINGS[LEMMA.get(w) || ''] || null;
+const hereRegion = () => S.run ? WORLD.regions[S.run.ri].id : '';
 
 // called wherever the game says a word is not in its dictionary
 function noteRejected(raw, where) {
@@ -5561,35 +5624,53 @@ let rejectHinted = false;
 function rejectHint() {
   if (rejectHinted) return '';
   rejectHinted = true;
-  return ' Je to prava beseda? Prijavi jo v premoru.';
+  return ' Je to prava beseda? Pošlji jo v premoru.';
 }
 
-const isReported = w => REPORTS.some(r => r.w === w);
+// Called for every word a player plays. Returns true when the word is new to this player and the game has
+// no meaning for it: then it can be asked about (Kaj pomeni?). Words are counted by their base form.
+function noteFound(raw, where) {
+  const w = cleanWord(raw); if (!WORDS.has(w)) return false;
+  const lem = LEMMA.get(w) || w;
+  if (SEEN.has(lem)) return false;
+  SEEN.add(lem); saveList(SN_KEY, [...SEEN].slice(-SN_MAX));
+  if (meaningOf(w) || isAsked(w)) return false;
+  FOUND.unshift({ w, where, region: hereRegion(), t: Date.now() }); FOUND.length = Math.min(FOUND.length, FD_MAX);
+  saveList(FD_KEY, FOUND);
+  return true;
+}
+
+const isReported = w => REPORTS.some(r => r.w === w && r.kind === 'manjka');
+const isAsked = w => REPORTS.some(r => r.kind === 'pomen' && (r.w === w || (LEMMA.get(r.w) || r.w) === (LEMMA.get(w) || w)));
 const unsentCount = () => REPORTS.filter(r => !r.sent).length;
-function reportWord(raw, where, note = '') {
+// kind 'manjka': a word the game does not know; kind 'pomen': a known word whose meaning is asked for
+function reportWord(raw, where, kind = 'manjka', region = hereRegion()) {
   const w = cleanWord(raw);
-  if (w.length < 2 || w.length > 20) return { ok: false, msg: 'Vpiši eno besedo iz slovenskih črk.' };
-  if (WORDS.has(w)) return { ok: false, known: true, w, msg: `${UP(w)} je že v slovarju igre. Hvala vseeno!` };
-  note = String(note || '').trim().slice(0, 200);
-  let r = REPORTS.find(x => x.w === w);
-  if (r) { if (note && note !== r.note) { r.note = note; r.sent = false; } }
-  else REPORTS.push(r = { w, where, note, t: Date.now(), sent: false });
+  if (w.length < 2 || w.length > 20) return { ok: false, msg: 'To ni beseda iz slovenskih črk.' };
+  if (kind === 'manjka' && WORDS.has(w)) return { ok: false, known: true, w, msg: `${UP(w)} je že v slovarju igre. Hvala vseeno!` };
+  if (kind === 'pomen' && !WORDS.has(w)) return { ok: false, w, msg: `${UP(w)} ni v slovarju igre.` };
+  if (kind === 'pomen' ? isAsked(w) : isReported(w)) return { ok: true, w, again: true };
+  REPORTS.push({ w, where, region, kind, t: Date.now(), sent: false });
+  if (kind === 'pomen') { const i = FOUND.findIndex(f => f.w === w); if (i >= 0) { FOUND.splice(i, 1); saveList(FD_KEY, FOUND); } }
   saveList(RP_KEY, REPORTS);
   return { ok: true, w };
 }
 function reportMeta(r) {
   const rej = REJECTED.find(x => x.w === r.w);
   return [LV().name, S.mode === 'real' ? 'realni čas' : 'mirni način', window.Capacitor ? 'Android' : S.mobile ? 'telefon' : 'namizje',
-    rej ? `zavrnjena ${rej.n}×` : 'vpisana', 'v' + BUILD.version + (BUILD.commit ? '+' + BUILD.commit : '')].join(' · ');
+    r.kind === 'manjka' ? (rej ? `zavrnjena ${rej.n}×` : 'zavrnjena') : 'nova beseda', 'v' + BUILD.version + (BUILD.commit ? '+' + BUILD.commit : '')].join(' · ');
 }
+const reportWhere = r => [WHERE[r.where] || r.where || '', r.region ? (WORLD.regions.find(x => x.id === r.region) || {}).name || r.region : ''].filter(Boolean).join(' · ');
 // Google Forms takes a plain form POST. no-cors gives no answer to read, so "sent" means the request
-// left the device; a network or policy failure keeps the report queued for the next try.
+// left the device; a network or policy failure keeps the report queued for the next try. (A page that
+// may not reach other sites, such as a sandboxed preview, keeps everything queued; the Android app and
+// a page opened from its own file or site send.)
 async function postReport(r) {
   if (!REPORT_FORM.id || !REPORT_FORM.entry.word) return false;
   const E = REPORT_FORM.entry, body = new URLSearchParams();
   body.set('entry.' + E.word, r.w);
-  if (E.where) body.set('entry.' + E.where, WHERE[r.where] || r.where || '');
-  if (E.note) body.set('entry.' + E.note, r.note || '');
+  if (E.where) body.set('entry.' + E.where, reportWhere(r));
+  if (E.note) body.set('entry.' + E.note, r.kind || 'manjka');
   if (E.meta) body.set('entry.' + E.meta, reportMeta(r));
   try { await fetch(`https://docs.google.com/forms/d/e/${REPORT_FORM.id}/formResponse`, { method: 'POST', mode: 'no-cors', body }); return true; }
   catch (e) { return false; }
@@ -5608,59 +5689,87 @@ function flushReports() {
 // reports left over from an earlier visit (offline, or sent before the form existed) go out on load
 setTimeout(() => { if (REPORT_FORM.id && unsentCount()) flushReports(); }, 3000);
 
-// The panel, used in the pause screen and in its own window on the start screen.
+// ------------------------------------------------------------ Kaj pomeni?
+// A chip for a word just found: its meaning when the game has one, otherwise "Kaj pomeni?", which asks
+// the developer in one tap (and is never offered again for that word on this device).
+function meaningChip(w, where) {
+  const m = meaningOf(w);
+  if (m) return h('span', { class: 'mchip has', title: m }, h('b', {}, UP(w)), ' — ', m);
+  if (isAsked(w)) return h('span', { class: 'mchip asked', title: 'Vprašano: pomen dodamo v eni od naslednjih posodobitev' }, h('b', {}, UP(w)), ' ✓');
+  const b = h('button', { class: 'mchip ask', title: `Kaj pomeni ${UP(w)}? Pošlji besedo razvijalcu.`, 'aria-label': `Kaj pomeni ${UP(w)}?`,
+    onclick: e => { e.stopPropagation(); const res = reportWord(w, where, 'pomen'); if (!res.ok) return;
+      sfx('ok', { vol: .5 }); b.replaceWith(meaningChip(w, where)); flushReports();
+      toast('Hvala! Pomen dodamo v eni od naslednjih posodobitev.'); } },
+    h('b', {}, UP(w)), h('span', { class: 'q' }, ' Kaj pomeni?'));
+  return b;
+}
+// the words of a battle that are new and have no meaning yet, as chips (on the result screen)
+function newWordsRow(words, where) {
+  const list = [...new Set(words)].slice(0, 6);
+  if (!list.length) return null;
+  return h('div', { class: 'newwords' }, h('div', { class: 'nw-h' }, 'Nove besede'), h('div', { class: 'nw-chips' }, list.map(w => meaningChip(w, where))));
+}
+
+// ------------------------------------------------------------ the panel: pick words from chips and send them
+// Used in the pause window and in its own window on O igri. Rejected words (manjka) and new words (pomen)
+// are chips; a tap picks or drops a word, Pošlji izbrane sends them all.
 function reportPanel(close, closeLabel) {
   const wrap = h('div', { class: 'report' });
-  let msg = '', kind = 'ok', word, note;
+  const pick = new Map();   // word → 'manjka' | 'pomen'
+  let msg = '', kind = 'ok';
   const say = (text, k = 'ok') => { msg = text; kind = k; paint(); };
-  const send = (raw, where) => {
-    const res = reportWord(raw, where, note ? note.value : '');
-    if (!res.ok) return say(res.msg, res.known ? 'ok' : 'warn');
+  const send = () => {
+    if (!pick.size) return say('Najprej izberi besede.', 'warn');
+    const done = [];
+    for (const [w, k] of pick) {
+      const src = k === 'manjka' ? REJECTED.find(r => r.w === w) : FOUND.find(f => f.w === w);
+      const res = reportWord(w, src ? src.where : 'vpisana', k, src && src.region != null ? src.region : hereRegion());
+      if (res.ok) done.push(w);
+    }
+    pick.clear();
+    if (!done.length) return say('Ni česa poslati.', 'warn');
     sfx('ok', { vol: .6 });
-    word.value = ''; note.value = '';   // the next report starts empty, with no leftover note
-    say(`Hvala! ${UP(res.w)} je prijavljena.`);
+    const names = done.map(UP).join(', ');
+    say(`Hvala! ${names} ${done.length === 1 ? 'je prijavljena' : done.length === 2 ? 'sta prijavljeni' : 'so prijavljene'}.`);
     flushReports().then(() => {
-      const r = REPORTS.find(x => x.w === res.w);
-      if (r && r.sent) say(`Hvala! ${UP(res.w)} je poslana v pregled.`);
-      else if (REPORT_FORM.id) say(`${UP(res.w)} je shranjena v tej napravi in bo poslana, ko bo povezava.`, 'warn');
-      else say(`${UP(res.w)} je shranjena v tej napravi. Pošiljanje še ni nastavljeno, zato seznam lahko kopiraš.`, 'warn');
+      const left = done.filter(w => { const r = REPORTS.find(x => x.w === w); return r && !r.sent; });
+      if (!left.length) say(`Hvala! ${names} ${done.length === 1 ? 'je poslana' : done.length === 2 ? 'sta poslani' : 'so poslane'} v pregled.`);
+      else if (REPORT_FORM.id) say('Besede so shranjene v tej napravi in bodo poslane, ko bo povezava.', 'warn');
+      else say('Besede so shranjene v tej napravi. Pošiljanje še ni nastavljeno, zato seznam lahko kopiraš.', 'warn');
     });
   };
-  const keys = e => {
-    if (e.key === 'Enter') { e.preventDefault(); send(word.value, 'vpisana'); }
-    else if (e.key === 'Escape' && !G.paused) { e.preventDefault(); close(); }
+  const chip = (w, k, extra) => {
+    const on = pick.get(w) === k;
+    return h('button', { class: 'prop' + (on ? ' on' : ''), 'aria-pressed': on ? 'true' : 'false', title: on ? `Ne pošlji besede ${UP(w)}` : `Izberi besedo ${UP(w)}`,
+      onclick: () => { if (on) pick.delete(w); else pick.set(w, k); paint(); } }, on ? '✓ ' : '', UP(w), extra || null);
   };
   const paint = () => {
-    const keepWord = word ? word.value : '', keepNote = note ? note.value : '';
     wrap.innerHTML = '';
-    const recent = REJECTED.filter(r => !WORDS.has(r.w)).slice(0, 20), unsent = REPORTS.filter(r => !r.sent);
-    const list = REPORTS.map(r => [r.w, WHERE[r.where] || r.where, r.note].filter(Boolean).join('\t')).join('\n');
+    const rejected = REJECTED.filter(r => !WORDS.has(r.w) && !isReported(r.w)).slice(0, 20);
+    const found = FOUND.filter(f => !isAsked(f.w) && !meaningOf(f.w)).slice(0, 20);
+    const unsent = REPORTS.filter(r => !r.sent);
+    const list = REPORTS.map(r => [r.w, r.kind, reportWhere(r)].filter(Boolean).join('\t')).join('\n');
     wrap.append(...[   // DOM append would print empty slots as "null"
-      h('h2', {}, 'Prijavi manjkajočo besedo'),
-      h('p', { class: 'muted' }, 'Je igra zavrnila pravo slovensko besedo? Prijavi jo, pregledali jo bomo in dodali v slovar.'),
-      recent.length ? h('div', { class: 'rejlist' },
-        h('div', { class: 'rl-h' }, 'Nedavno zavrnjene besede'),
-        h('div', { class: 'rjchips' }, recent.map(r => isReported(r.w)
-          ? h('span', { class: 'prop done', title: 'Že prijavljena' }, UP(r.w), ' ✓')
-          : h('button', { class: 'prop', title: `Prijavi besedo ${UP(r.w)}`, 'aria-label': `Prijavi besedo ${UP(r.w)}`, onclick: () => send(r.w, r.where) },
-              UP(r.w), r.n > 1 ? h('small', {}, ` ${r.n}×`) : null, r.s === SESSION ? null : h('small', { class: 'old' }, ' prej'), ' +'))),
-        h('div', { class: 'rl-tip muted' }, 'Tapni besedo, da jo prijaviš. Opombo lahko vpišeš spodaj, preden tapneš.'))
-      : h('p', { class: 'muted' }, 'Zavrnjenih besed še ni. Besedo lahko vpišeš tudi sam.'),
-      h('div', { class: 'reportrow' },
-        word = h('input', { type: 'text', class: 'rp-word', placeholder: 'beseda', autocomplete: 'off', autocapitalize: 'none', autocorrect: 'off', spellcheck: 'false',
-          enterkeyhint: 'send', 'aria-label': 'Beseda za prijavo', onkeydown: keys }),
-        note = h('input', { type: 'text', class: 'rp-note', placeholder: 'opomba (neobvezno)', autocomplete: 'off', maxlength: 200,
-          enterkeyhint: 'send', 'aria-label': 'Opomba k prijavi', onkeydown: keys }),
-        h('button', { class: 'btn primary', onclick: () => send(word.value, 'vpisana') }, 'Prijavi')),
+      h('h2', {}, 'Pošlji besede'),
+      h('p', { class: 'muted' }, 'Izberi besede in jih pošlji. Manjkajoče besede preverimo in dodamo v slovar, novim besedam dopišemo pomen.'),
+      h('div', { class: 'rejlist' },
+        h('div', { class: 'rl-h' }, 'Zavrnjene besede', h('small', {}, ' — so prave, a jih igra ne pozna')),
+        rejected.length ? h('div', { class: 'rjchips' }, rejected.map(r => chip(r.w, 'manjka', r.n > 1 ? h('small', {}, ` ${r.n}×`) : null)))
+          : h('p', { class: 'muted rl-empty' }, 'Zavrnjenih besed še ni.')),
+      h('div', { class: 'rejlist' },
+        h('div', { class: 'rl-h' }, 'Nove besede', h('small', {}, ' — kaj pomenijo?')),
+        found.length ? h('div', { class: 'rjchips' }, found.map(f => chip(f.w, 'pomen')))
+          : h('p', { class: 'muted rl-empty' }, 'Ko najdeš besedo prvič, se pokaže tukaj.')),
+      h('div', { class: 'row rp-send', style: { 'justify-content': 'flex-start' } },
+        h('button', { class: 'btn primary', disabled: !pick.size, onclick: send }, `Pošlji izbrane${pick.size ? ` (${pick.size})` : ''}`)),
       msg ? h('p', { class: 'fb ' + kind, role: 'status' }, msg) : null,
-      REPORTS.length ? h('p', { class: 'muted rp-count' }, `Prijavljenih besed: ${REPORTS.length}` + (unsent.length ? `, od tega še neposlanih ${unsent.length}` : '') + '.',
+      REPORTS.length ? h('p', { class: 'muted rp-count' }, `Poslanih besed: ${REPORTS.length}` + (unsent.length ? `, od tega še neposlanih ${unsent.length}` : '') + '.',
         unsent.length && !REPORT_FORM.id ? h('button', { class: 'btn small', onclick: e => {
           const b = e.currentTarget;
           try { navigator.clipboard.writeText(list).then(() => { b.textContent = 'Kopirano ✓'; }, () => { b.textContent = 'Kopiranje ni uspelo'; }); } catch (err) { b.textContent = 'Kopiranje ni uspelo'; }
         } }, 'Kopiraj seznam') : null) : null,
       h('div', { class: 'row', style: { 'justify-content': 'flex-start' } },
-        h('button', { class: 'btn', onclick: close }, closeLabel, G.paused ? null : h('kbd', {}, 'Esc')))].filter(Boolean));
-    word.value = keepWord; note.value = keepNote;
+        h('button', { class: 'btn rp-close', onclick: close }, closeLabel, G.paused ? null : h('kbd', {}, 'Esc')))].filter(Boolean));
   };
   paint();
   return wrap;
@@ -5675,7 +5784,7 @@ function openReportInPause() {
     dlg.classList.remove('reportdlg'); dlg.replaceChildren(...menu);
     const b = dlg.querySelector('.rp-open'); if (b) { b.replaceWith(reportButton()); dlg.querySelector('.rp-open').focus(); }
   }, 'Nazaj na premor'));
-  const first = dlg.querySelector('.rejlist .prop, .rp-word'); if (first) first.focus({ preventScroll: true });
+  const first = dlg.querySelector('.rejlist .prop, .rp-close'); if (first) first.focus({ preventScroll: true });
 }
 // on O igri: the same panel in its own window; closing it refreshes the count on the button
 function openReportWindow() {
@@ -5683,17 +5792,17 @@ function openReportWindow() {
   const close = () => {
     ov.remove(); S.bagEl = null; S.overlayKey = null;
     const b = SCR && SCR.querySelector('.rp-open');
-    if (b) { const nb = reportButton(openReportWindow, 'Prijavi manjkajočo besedo'); b.replaceWith(nb); nb.focus({ preventScroll: true }); }
+    if (b) { const nb = reportButton(openReportWindow, 'Pošlji besede'); b.replaceWith(nb); nb.focus({ preventScroll: true }); }
   };
-  const ov = h('div', { class: 'overlay', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Prijavi manjkajočo besedo' },
+  const ov = h('div', { class: 'overlay', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Pošlji besede' },
     h('div', { class: 'dialog reportdlg' }, reportPanel(close, 'Zapri')));
   document.body.append(ov); S.bagEl = ov;
   S.overlayKey = e => { if (e.key === 'Escape') { e.preventDefault(); close(); } };
-  const first = ov.querySelector('.rejlist .prop, .rp-word'); if (first) first.focus({ preventScroll: true });
+  const first = ov.querySelector('.rejlist .prop, .rp-close'); if (first) first.focus({ preventScroll: true });
 }
-// the button that opens the panel, with the number of rejected words not reported yet
-function reportButton(onclick = openReportInPause, label = 'Prijavi besedo') {
-  const n = REJECTED.filter(r => !WORDS.has(r.w) && !isReported(r.w)).length;
+// the button that opens the panel, with the number of words waiting to be picked
+function reportButton(onclick = openReportInPause, label = 'Pošlji besede') {
+  const n = REJECTED.filter(r => !WORDS.has(r.w) && !isReported(r.w)).length + FOUND.filter(f => !isAsked(f.w) && !meaningOf(f.w)).length;
   return h('button', { class: 'btn rp-open', onclick }, label, n ? h('span', { class: 'pill' }, n) : null);
 }
 
@@ -5851,18 +5960,38 @@ const CONTROLS_DESK = [
   ['Skrinja, konice in plaz', [[['a–ž'], 'tipkaj črke ali klikaj nanje'], [['Enter'], 'pošlji besedo'], [['Backspace', 'Del'], 'briši črko · počisti besedo']]],
 ];
 const CONTROLS_PHONE = [
-  ['Povsod', [['Premor', 'gumb zgoraj ustavi čas in zakrije uganko; igra se ustavi tudi, ko jo zapustiš'], ['Nazaj', 'tipka nazaj na Androidu ustavi uganko, zapre okno ali te vrne v meni']]],
-  ['Na poti', [['Tap', 'na gumb pod sliko: hodi naprej ali izberi, kaj narediš na postaji'], ['Torba', 'napoji, strupi in predmeti']]],
-  ['Mreža črk', [['Vleci', 'po sosednjih črkah, tudi poševno, in spusti: beseda se pošlje sama'], ['Tapkaj', 'črko za črko; zadnjo tapni še enkrat'],
-    ['Predlog', 'tap na predlog ga pošlje'], ['Gumbi', 'Zagovor, Namig, Premešaj in Torba so pod mrežo']]],
-  ['Križanka in plaz', [['Tipkovnica', 'slovenska tipkovnica v igri, s Č, Š in Ž'], ['Naprej', 'skoči na naslednjo besedo; izbereš jo lahko tudi s tapom v mreži'], ['Razkrij črko', 'pokaže eno črko']]],
-  ['Skrinja in konice', [['Tapkaj', 'črke v pravem vrstnem redu'], ['Pošlji', 'odda besedo; prva prava beseda šteje']]],
+  ['Povsod', [['Premor', 'gumb zgoraj ustavi čas in zakrije uganko; igra se ustavi tudi, ko jo zapustiš'], ['Izhod', 'na poti in v premoru: pove, kje je igra nazadnje shranila pot'], ['Nazaj', 'tipka nazaj na Androidu ustavi uganko, zapre okno ali te vrne v meni']]],
+  ['Na poti', [['Gumbi', 'pod sliko: hodi naprej ali izberi, kaj narediš na postaji'], ['Torba', 'napoji, strupi in predmeti']]],
+  ['Mreža črk', [['Vleci', 'po sosednjih črkah, tudi poševno, in spusti: beseda se pošlje sama'], ['Pritiskaj', 'črko za črko, nato Pošlji ob besedi ali še enkrat zadnjo črko'],
+    ['Predlog', 'pritisk na predlog ga pošlje'], ['Gumbi', 'Zagovor, Namig, Premešaj in Torba so pod mrežo']]],
+  ['Križanka in plaz', [['Tipkovnica', 'slovenska tipkovnica v igri, s Č, Š in Ž'], ['Naprej', 'skoči na naslednjo besedo; izbereš jo lahko tudi s pritiskom na mrežo'], ['Razkrij črko', 'pokaže eno črko (ne na stopnji Knjižni molj)']]],
+  ['Skrinja in konice', [['Pritiskaj', 'črke v pravem vrstnem redu'], ['✕ in Pošlji', 'ob besedi: počisti jo ali jo oddaj']]],
 ];
-function controlsEl() {
-  const keys = ks => Array.isArray(ks) ? ks.map((k, i) => [i ? ' ' : null, h('kbd', {}, k)]) : h('b', {}, ks);
-  return h('div', { class: 'ctl-groups' }, (S.mobile ? CONTROLS_PHONE : CONTROLS_DESK).map(([title, rows]) =>
+// what each kind of device is, and why a bigger screen is nicer
+const PLATFORMS = [
+  { id: 'telefon', name: 'Telefon', note: 'Vse gre s prstom. Na manjšem zaslonu je vse bolj stisnjeno.' },
+  { id: 'tablica', name: 'Tablica', note: 'Enako kot na telefonu, a z več prostora: večja mreža črk in križanke, manj pomikanja.' },
+  { id: 'racunalnik', name: 'Računalnik', note: 'Tipkovnica in miška: besede tipkaš, križanke izpolnjuješ kot na papirju. Igra je tu najudobnejša.' }];
+const devicePlatform = () => S.mobile ? (Math.min(screen.width, screen.height) >= 600 ? 'tablica' : 'telefon') : 'racunalnik';
+function controlsEl(platform = S.ctlPlatform || devicePlatform()) {
+  // keys of a keyboard are keycaps; the names of touch gestures and buttons are chips
+  const keys = ks => Array.isArray(ks) ? ks.map((k, i) => [i ? ' ' : null, h('kbd', {}, k)]) : h('span', { class: 'ctl-chip' }, ks);
+  return h('div', { class: 'ctl-groups' }, (platform === 'racunalnik' ? CONTROLS_DESK : CONTROLS_PHONE).map(([title, rows]) =>
     h('section', { class: 'ctl-group' }, h('h3', {}, title),
       h('dl', { class: 'ctl' }, rows.map(([k, text]) => [h('dt', {}, keys(k)), h('dd', {}, text)])))));
+}
+// Upravljanje: the controls of this device first; the other devices are one tap away
+function controlsSection() {
+  const cur = S.ctlPlatform || devicePlatform(), P = PLATFORMS.find(p => p.id === cur);
+  const sec = h('section', { class: 'ctl-sec' },
+    h('h2', {}, 'Upravljanje'),
+    h('div', { class: 'ctl-tabs', role: 'group', 'aria-label': 'Naprava' }, PLATFORMS.map(p =>
+      h('button', { class: 'ctl-tab' + (p.id === cur ? ' on' : ''), 'aria-pressed': p.id === cur ? 'true' : 'false',
+        onclick: () => { S.ctlPlatform = p.id; sfx('sel', { vol: .5 }); sec.replaceWith(controlsSection()); } },
+        p.name, p.id === devicePlatform() ? h('small', {}, ' · ta naprava') : null))),
+    h('p', { class: 'muted ctl-note' }, P.note, cur !== 'racunalnik' ? ' Igra je najudobnejša na tablici ali računalniku.' : ''),
+    controlsEl(cur));
+  return sec;
 }
 // the puzzle explanations of the game (src/playtest.js), with timing told for both paces
 function howtoSlides() {
@@ -5926,9 +6055,11 @@ function renderHowto() {
     crumb(),
     pageH1('Kako igrati'),
     h('p', { class: 'lead' }, 'Na poti te čakajo bitke in dogodki. V vsakem rešiš besedno uganko: prava beseda je napad, daljša udari močneje. Barvne črke povedo, kateri junak napade; več črk iste barve sproži močnejšo veščino.'),
-    h('section', {},
-      h('h2', {}, 'Upravljanje', h('span', { class: 'tag' }, S.mobile ? 'telefon' : 'tipkovnica in miška')),
-      controlsEl()),
+    h('section', { class: 'words-ok' },
+      h('h2', {}, 'Katere besede veljajo'),
+      h('p', {}, 'Veljajo slovenske besede v vseh oblikah: samostalniki, glagoli, pridevniki, prislovi in druge (', h('i', {}, 'volk, volka, volkom, tečem, lep, hitro'), '). Na vseh stopnjah velja beseda s tremi črkami ali več.'),
+      h('p', { class: 'muted' }, 'Lastna imena oseb in krajev (', h('i', {}, 'Eva, Ptuj'), ') ne veljajo, prav tako ne kratice. Je igra zavrnila pravo besedo? Pošlji nam jo v premoru ali na strani O igri.')),
+    controlsSection(),
     h('section', {},
       h('h2', {}, 'Uganke'),
       h('p', { class: 'muted sec-lead' }, 'Ko uganko srečaš prvič, se razlaga pokaže tudi v igri, in čas medtem stoji. V premoru je vedno na voljo.'),
@@ -5946,11 +6077,12 @@ function renderAbout(at) {
     h('p', {}, 'Pot vodi po Sloveniji, od Ptuja do Ljubljanskega gradu, kjer čaka zmaj. Začneš z enim junakom. Na poti srečaš sovražnike, skrinje, plazove, vodnjake, krošnjarje, svetišča bogov in nove junake; v družini so največ štirje, bog le eden. Zdravje se po bitki ne vrne samo: junaki se pozdravijo pri vodnjaku. Zlatnike zapraviš pri krošnjarju za napoje, strupe in predmete.'),
     h('p', { class: 'muted' }, STAGE === 'zaprta alfa' ? 'Igra je v zaprti alfi: igrajo jo povabljeni preizkuševalci. Še nastaja in se po vsakem preizkusu spremeni.' : 'Igra še nastaja in se po vsakem preizkusu spremeni.'),
     versionLine('about-version'),
+    sec('avtor', 'Avtor', creditAuthor()),
     sec('navdih', 'Navdih', creditInspiration()),
-    sec('besede', 'Manjkajoča beseda',
-      h('p', {}, 'Je igra zavrnila pravo slovensko besedo? Sporoči nam jo, da jo dodamo.'),
-      reportButton(openReportWindow, 'Prijavi manjkajočo besedo')),
-    sec('zasluge', 'Zasluge', creditSources())));
+    sec('besede', 'Besede',
+      h('p', {}, 'Je igra zavrnila pravo slovensko besedo? Bi rad vedel, kaj pomeni beseda, ki si jo našel? Izberi jo in nam jo pošlji.'),
+      reportButton(openReportWindow, 'Pošlji besede')),
+    sec('zasluge', 'Zasluge', creditSourcesFolded())));
   focusPage();
   if (at) { const t = $('#o-' + at); if (t) requestAnimationFrame(() => t.scrollIntoView({ block: 'start' })); }
 }
@@ -6315,7 +6447,7 @@ function godSpecial(e) {
   else if (id === 'mokos') { d = hurtEach(L.map(() => e.atk * 0.8), e); const g = Math.min(e.maxHp - e.hp, d); e.hp += g; if (g) floatOn(e.el, `+${g}`, 'heal'); extra = `vzame si življenje: +${g}`; }
   else if (id === 'dazbog') { d = hurtEach(L.map(() => e.atk * 0.75), e); e.atk += 1; extra = 'sonce se dviga: vsak udarec je močnejši'; }
   else if (id === 'stribog') { d = hurtEach(L.map(() => e.atk * 0.75), e); if (!B.cw) { B.grid.forEach((t, i) => { if (!isLocked(t)) B.grid[i] = newTile(); }); ensureSolvable(); clearWord(); renderPuzzle(); } extra = 'vihar premeša mrežo'; }
-  else if (id === 'veles') { d = hurtEach(L.map(() => e.atk * 0.6), e); const n = lockTiles(4).length; extra = `korenine prerastejo ${n} črke`; }
+  else if (id === 'veles') { d = hurtEach(L.map(() => e.atk * 0.6), e); const n = lockTiles(4).length; extra = `korenine prerastejo ${n} ${n === 1 ? 'črko' : n === 2 ? 'črki' : n <= 4 ? 'črke' : 'črk'}`; }
   spawnCard(e.el, { tier: 3, foe: true, name: e.name, move: mv, value: d ? `−${d}` : 'ščit ujame', extra });
   log(`${e.name}: ${mv}! (−${d}) — ${extra}.`);
 }
@@ -6622,7 +6754,7 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.diff = d; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.diff = d; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 
 </script>

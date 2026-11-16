@@ -161,7 +161,7 @@ function tutCross(kind) {
     steps: [
       S.mobile ? ['Rumeno polje kaže opis označene besede. Odgovor vpiši s tipkovnico pod križanko.'] : ['Rumeno polje kaže opis označene besede. Vpiši odgovor.'],
       ['Prava beseda pozeleni in takoj sproži napad. Črne črke pomenijo, da beseda še ni prava.'],
-      S.mobile ? ['Tipka Naprej skoči na naslednjo besedo; izbereš jo lahko tudi s tapom v mreži.' + (LV().reveals ? ' Gumb »Razkrij črko« pokaže eno črko.' : '')]
+      S.mobile ? ['Tipka Naprej skoči na naslednjo besedo; izbereš jo lahko tudi s pritiskom na mrežo.' + (LV().reveals ? ' Gumb »Razkrij črko« pokaže eno črko.' : '')]
         : [K('Tab'), ' skoči na naslednjo besedo', ...(LV().reveals ? [', ', K('?'), ' razkrije eno črko (število je omejeno).'] : ['.'])],
       geslo ? ['Zlat stolpec skriva geslo. Če ga uganeš, je križanka rešena takoj.'] : null] };
 }
@@ -179,13 +179,13 @@ const TUT = {
   chest: () => ({ title: 'Zaklenjena skrinja', lead: 'Iz premešanih črk sestavi skrito besedo. Namig pove, kaj iščeš.', fig: figChest(),
     time: `Rdeča črta je čas${evSecs('timeMax')}. Ko poteče, skrinja ostane zaklenjena.`,
     steps: [
-      S.mobile ? ['Tapkaj črke v pravem vrstnem redu.'] : ['Tipkaj črke ali klikaj nanje.'],
+      S.mobile ? ['Pritiskaj črke v pravem vrstnem redu. Če se zmotiš, besedo počisti z ✕.'] : ['Tipkaj črke ali klikaj nanje. Če se zmotiš, besedo počisti z ✕ ali tipko Del.'],
       S.mobile ? ['Pritisni Pošlji. Prva prava beseda zaključi dogodek.'] : [K('Enter'), ' odda besedo. Prva prava beseda zaključi dogodek.'],
       ['Beseda iz vseh črk odpre skrinjo in prinese celo nagrado. Krajša prava beseda prinese le del.']] }),
   darts: () => ({ title: 'Past s konicami', lead: 'Zid z režami. Iz vsake reže vzemi eno črko, od leve proti desni.', fig: figDarts(),
     time: `Rdeča črta je čas${evSecs('timeMax')}. Ko poteče, se vse konice sprožijo nate.`,
     steps: [
-      S.mobile ? ['Tapni eno črko v prvi reži, nato v drugi in tako naprej.'] : ['Tipkaj črke ali klikaj nanje: najprej prva reža, nato druga in tako naprej.'],
+      S.mobile ? ['Pritisni eno črko v prvi reži, nato v drugi in tako naprej.'] : ['Tipkaj črke ali klikaj nanje: najprej prva reža, nato druga in tako naprej.'],
       ['Besedo lahko pošlješ, še preden prideš do zadnje reže. Vsaka črka prave besede zapre eno režo.'],
       ['Konice iz odprtih rež zadenejo junake. Beseda iz vseh rež jih ustavi skoraj vse, ena te le oplazi; beseda, ki ne obstaja, ne zapre nobene.']] }),
   trap: () => ({ title: 'Plaz kamenja', lead: 'S pobočja padajo skale. Vsaka nosi črko in ena sama beseda jih lahko razbije.', fig: figTrap(),

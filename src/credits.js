@@ -1,22 +1,24 @@
-
-// ============================================================ credits ("Zasluge")
-// Za govor! is inspired by Words for Evil (Chromosphere Games, 2014). The game says so on the
-// O igri page (Navdih, then Zasluge with every source the prototype uses) and on the ending
-// after the dragon, whose line links to O igri.
-const WFE = { title: 'Words for Evil', by: 'Chromosphere Games', person: 'Dylan Loney', year: 2014,
-  url: 'https://store.steampowered.com/app/335790/Words_for_Evil/' };
+// ============================================================ credits ("O igri": Avtor, Navdih, Zasluge)
+// The game names its maker and why it was made, and says it grew out of playing word games with a role-playing
+// game in mind. It names no other game, on any platform, so no store or platform review can stumble on it
+// (zagovor-store-release.md, 16 Nov 2026); the README, which ships with the PC versions, keeps the full credit
+// to the game that inspired it. Zasluge list every source, folded behind ©.
+const AUTHOR = { studio: 'Oygn Productions', name: 'Davor Kirbiš' };
 const extLink = (href, text) => h('a', { href, target: '_blank', rel: 'noopener noreferrer' }, text, h('span', { 'aria-hidden': 'true' }, ' ↗'));
+const madeBy = () => ['Igro je razvil ', h('b', {}, AUTHOR.studio), ` (${AUTHOR.name}).`];
 // one line, used on the ending
-const inspiredLine = () => h('p', { class: 'inspired' },
-  h('i', {}, 'Za govor!'), ' je nastal po navdihu igre ', h('i', {}, WFE.title), ` (${WFE.by}, ${WFE.year}). `,
-  h('button', { class: 'linkbtn', onclick: () => go('about', 'navdih') }, 'Zasluge'));
+const inspiredLine = () => h('p', { class: 'inspired' }, ...madeBy(), ' ',
+  h('button', { class: 'linkbtn', onclick: () => go('about', 'avtor') }, 'O igri in zasluge'));
 
-// O igri → Navdih
+// O igri → Avtor: who made it, and why
+const creditAuthor = () => [
+  h('p', { class: 'author' }, ...madeBy()),
+  h('p', {}, 'Videoigre in pripovedovanje zgodb so moja neizmerna strast, ', h('i', {}, 'Za govor!'), ' pa je moj veliki projekt iz srca.'),
+  h('p', {}, h('i', {}, 'Za govor!'), ' sem želel ustvariti za promocijo našega prelepega slovenskega jezika in naše zelo zanimive folklore, saj nas to dela Slovence.')];
+// O igri → Navdih: no other game is named
 const creditInspiration = () => [
-  h('p', {}, h('i', {}, 'Za govor!'), ' je nastal po navdihu igre ', h('b', {}, h('i', {}, WFE.title)),
-    `, ki jo je leta ${WFE.year} izdal studio ${WFE.by} (${WFE.person}). Od nje izhaja zamisel o igri vlog, v kateri se junaki bojujejo z besedami iz mreže črk, barva črk pa določa, kateri junak napade.`),
-  h('p', {}, h('i', {}, 'Za govor!'), ' je samostojna igra z lastnimi junaki, slikami, ugankami in besedili v slovenščini. Z avtorji igre ', h('i', {}, WFE.title), ' ni uradno povezana.'),
-  h('p', {}, extLink(WFE.url, `${WFE.title} na Steamu`))];
+  h('p', {}, h('i', {}, 'Za govor!'), ' je nastal ob igranju različnih besednih iger in ob misli, kako bi se besedne uganke povezale z igro vlog: da prava beseda postane junaški napad.'),
+  h('p', {}, 'Igra je samostojno delo z lastno kodo, podobo, junaki in zgodbo ter iz drugih iger ne prevzema ničesar razen ljubezni do sestavljanja besed.')];
 // O igri → Zasluge: every source, one sub-section each
 function creditSources() {
   const sec = (title, ...kids) => h('section', { class: 'credit-sec' }, h('h3', {}, title), ...kids);
@@ -38,3 +40,7 @@ function creditSources() {
       h('p', {}, 'Zvočni učinki so sintetizirani z ZzFX (Frank Force, licenca MIT). Pikselne slike in ljudske poslikave so prototipne in narejene posebej za to igro.'),
       h('p', {}, 'Aplikacija za Android uporablja Capacitor (licenca MIT).'))];
 }
+// the sources take a lot of room: one line with © opens them
+const creditSourcesFolded = () => h('details', { class: 'credits-more' },
+  h('summary', {}, h('span', { class: 'copy', 'aria-hidden': 'true' }, '©'), ' Viri, licence in programska oprema'),
+  ...creditSources());

@@ -36,6 +36,42 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
+## 0.10.0 — 16 Nov 2026 · zaprta alfa · alpha fixes (playtest round 3)
+Branch `0.9.0-alpha-fixes`, stacked on 0.9.0 (#12). From the third playtest (two testers on phones)
+and the decisions of 16 Nov.
+- **The journey is saved at checkpoints**, by *Znanje*: Malček every quarter of the road (Peca,
+  Trnovski gozd, Predjamski grad), Učenjak every third (Triglav, Piranske soline), Knjižni molj
+  once, at the half (Trnovski gozd). The result of a checkpoint battle says *Shranjeno*; after
+  closing the page, *Nadaljuj pot* continues from there. A new, finished or lost journey removes
+  the save; a save from an older build is dropped with a message. **This resets nothing saved
+  before: there were no saves.**
+- **Izhod** replaces *Meni* on the road and is in the pause window of journey battles. It asks
+  first and says where the game last saved (*Napredek je shranjen po zadnji zmagi – Peca.*);
+  leaving mid-battle starts that battle again.
+- **Words:** *Pošlji* sits next to the word on phones too (for tapped letters); a dragged word
+  still sends itself. A non-word flashes red and clears. Proposals stand still while dragging
+  and show only the shortest version of a word (DELA, not DELATI or DELALA). *Namig* lasts until
+  its word is played.
+- **Three-letter words count on every level.** **Knjižni molj has no hints at all**: no
+  *Namig*, no *Razkrij črko*, no chest clue (the buttons are gone).
+- **Chests** take the words of their region (`data/words.json`, a first list to review) and never
+  repeat a word on one journey; the clue shows on Malček, on some chests on Učenjak, never on
+  Knjižni molj; ✕ and *Pošlji* sit next to the word. **Rock slides** take their region's words,
+  fall slower (22 s) and say the letters may stand anywhere.
+- **Kaj pomeni?** A word found for the first time with no meaning yet can be asked about in one
+  tap (battle result, chest, rock slide, spikes). **Pošlji besede** (pause, *O igri*) is chips
+  only: missing words and new words, picked and sent together. Both go to the same Google Form
+  (the *Opomba* field carries the kind, *Kje* the region). `data/meanings.json` holds the
+  meanings written so far (none yet).
+- **Flow:** hero screens keep the way on in view (a full-width footer, sticky on phones); every
+  stop names its puzzle; after a signpost the party walks on by itself; an ambush says
+  *Zaseda!* before its crossword; *Kako igrati* ends with a button back to the menu.
+- **O igri:** *Avtor* (developed by Oygn Productions, Davor Kirbiš, a passion project made to
+  promote the Slovene language and folklore), a *Navdih* that names no other game, the sources
+  folded behind ©. The README keeps the full credit to Words for Evil.
+- **Copy:** no more "tap" (*pritisni*, *pritiskaj*), the dual on hero boards (*2 črki*), which
+  words count (no names), *Upravljanje* for phone, tablet and computer.
+
 ## 0.9.0 — 16 Nov 2026 · zaprta alfa · skill expansion and fixes
 - **Skills and stopnje.** Experience comes only from beaten enemies. Levels go to 9; every
   level brings a skill point. Each hero has three skills (one, two or three of their letters

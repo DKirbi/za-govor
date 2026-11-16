@@ -153,18 +153,38 @@ const CONTROLS_DESK = [
   ['Skrinja, konice in plaz', [[['a–ž'], 'tipkaj črke ali klikaj nanje'], [['Enter'], 'pošlji besedo'], [['Backspace', 'Del'], 'briši črko · počisti besedo']]],
 ];
 const CONTROLS_PHONE = [
-  ['Povsod', [['Premor', 'gumb zgoraj ustavi čas in zakrije uganko; igra se ustavi tudi, ko jo zapustiš'], ['Nazaj', 'tipka nazaj na Androidu ustavi uganko, zapre okno ali te vrne v meni']]],
-  ['Na poti', [['Tap', 'na gumb pod sliko: hodi naprej ali izberi, kaj narediš na postaji'], ['Torba', 'napoji, strupi in predmeti']]],
-  ['Mreža črk', [['Vleci', 'po sosednjih črkah, tudi poševno, in spusti: beseda se pošlje sama'], ['Tapkaj', 'črko za črko; zadnjo tapni še enkrat'],
-    ['Predlog', 'tap na predlog ga pošlje'], ['Gumbi', 'Zagovor, Namig, Premešaj in Torba so pod mrežo']]],
-  ['Križanka in plaz', [['Tipkovnica', 'slovenska tipkovnica v igri, s Č, Š in Ž'], ['Naprej', 'skoči na naslednjo besedo; izbereš jo lahko tudi s tapom v mreži'], ['Razkrij črko', 'pokaže eno črko']]],
-  ['Skrinja in konice', [['Tapkaj', 'črke v pravem vrstnem redu'], ['Pošlji', 'odda besedo; prva prava beseda šteje']]],
+  ['Povsod', [['Premor', 'gumb zgoraj ustavi čas in zakrije uganko; igra se ustavi tudi, ko jo zapustiš'], ['Izhod', 'na poti in v premoru: pove, kje je igra nazadnje shranila pot'], ['Nazaj', 'tipka nazaj na Androidu ustavi uganko, zapre okno ali te vrne v meni']]],
+  ['Na poti', [['Gumbi', 'pod sliko: hodi naprej ali izberi, kaj narediš na postaji'], ['Torba', 'napoji, strupi in predmeti']]],
+  ['Mreža črk', [['Vleci', 'po sosednjih črkah, tudi poševno, in spusti: beseda se pošlje sama'], ['Pritiskaj', 'črko za črko, nato Pošlji ob besedi ali še enkrat zadnjo črko'],
+    ['Predlog', 'pritisk na predlog ga pošlje'], ['Gumbi', 'Zagovor, Namig, Premešaj in Torba so pod mrežo']]],
+  ['Križanka in plaz', [['Tipkovnica', 'slovenska tipkovnica v igri, s Č, Š in Ž'], ['Naprej', 'skoči na naslednjo besedo; izbereš jo lahko tudi s pritiskom na mrežo'], ['Razkrij črko', 'pokaže eno črko (ne na stopnji Knjižni molj)']]],
+  ['Skrinja in konice', [['Pritiskaj', 'črke v pravem vrstnem redu'], ['✕ in Pošlji', 'ob besedi: počisti jo ali jo oddaj']]],
 ];
-function controlsEl() {
-  const keys = ks => Array.isArray(ks) ? ks.map((k, i) => [i ? ' ' : null, h('kbd', {}, k)]) : h('b', {}, ks);
-  return h('div', { class: 'ctl-groups' }, (S.mobile ? CONTROLS_PHONE : CONTROLS_DESK).map(([title, rows]) =>
+// what each kind of device is, and why a bigger screen is nicer
+const PLATFORMS = [
+  { id: 'telefon', name: 'Telefon', note: 'Vse gre s prstom. Na manjšem zaslonu je vse bolj stisnjeno.' },
+  { id: 'tablica', name: 'Tablica', note: 'Enako kot na telefonu, a z več prostora: večja mreža črk in križanke, manj pomikanja.' },
+  { id: 'racunalnik', name: 'Računalnik', note: 'Tipkovnica in miška: besede tipkaš, križanke izpolnjuješ kot na papirju. Igra je tu najudobnejša.' }];
+const devicePlatform = () => S.mobile ? (Math.min(screen.width, screen.height) >= 600 ? 'tablica' : 'telefon') : 'racunalnik';
+function controlsEl(platform = S.ctlPlatform || devicePlatform()) {
+  // keys of a keyboard are keycaps; the names of touch gestures and buttons are chips
+  const keys = ks => Array.isArray(ks) ? ks.map((k, i) => [i ? ' ' : null, h('kbd', {}, k)]) : h('span', { class: 'ctl-chip' }, ks);
+  return h('div', { class: 'ctl-groups' }, (platform === 'racunalnik' ? CONTROLS_DESK : CONTROLS_PHONE).map(([title, rows]) =>
     h('section', { class: 'ctl-group' }, h('h3', {}, title),
       h('dl', { class: 'ctl' }, rows.map(([k, text]) => [h('dt', {}, keys(k)), h('dd', {}, text)])))));
+}
+// Upravljanje: the controls of this device first; the other devices are one tap away
+function controlsSection() {
+  const cur = S.ctlPlatform || devicePlatform(), P = PLATFORMS.find(p => p.id === cur);
+  const sec = h('section', { class: 'ctl-sec' },
+    h('h2', {}, 'Upravljanje'),
+    h('div', { class: 'ctl-tabs', role: 'group', 'aria-label': 'Naprava' }, PLATFORMS.map(p =>
+      h('button', { class: 'ctl-tab' + (p.id === cur ? ' on' : ''), 'aria-pressed': p.id === cur ? 'true' : 'false',
+        onclick: () => { S.ctlPlatform = p.id; sfx('sel', { vol: .5 }); sec.replaceWith(controlsSection()); } },
+        p.name, p.id === devicePlatform() ? h('small', {}, ' · ta naprava') : null))),
+    h('p', { class: 'muted ctl-note' }, P.note, cur !== 'racunalnik' ? ' Igra je najudobnejša na tablici ali računalniku.' : ''),
+    controlsEl(cur));
+  return sec;
 }
 // the puzzle explanations of the game (src/playtest.js), with timing told for both paces
 function howtoSlides() {
@@ -228,9 +248,11 @@ function renderHowto() {
     crumb(),
     pageH1('Kako igrati'),
     h('p', { class: 'lead' }, 'Na poti te čakajo bitke in dogodki. V vsakem rešiš besedno uganko: prava beseda je napad, daljša udari močneje. Barvne črke povedo, kateri junak napade; več črk iste barve sproži močnejšo veščino.'),
-    h('section', {},
-      h('h2', {}, 'Upravljanje', h('span', { class: 'tag' }, S.mobile ? 'telefon' : 'tipkovnica in miška')),
-      controlsEl()),
+    h('section', { class: 'words-ok' },
+      h('h2', {}, 'Katere besede veljajo'),
+      h('p', {}, 'Veljajo slovenske besede v vseh oblikah: samostalniki, glagoli, pridevniki, prislovi in druge (', h('i', {}, 'volk, volka, volkom, tečem, lep, hitro'), '). Na vseh stopnjah velja beseda s tremi črkami ali več.'),
+      h('p', { class: 'muted' }, 'Lastna imena oseb in krajev (', h('i', {}, 'Eva, Ptuj'), ') ne veljajo, prav tako ne kratice. Je igra zavrnila pravo besedo? Pošlji nam jo v premoru ali na strani O igri.')),
+    controlsSection(),
     h('section', {},
       h('h2', {}, 'Uganke'),
       h('p', { class: 'muted sec-lead' }, 'Ko uganko srečaš prvič, se razlaga pokaže tudi v igri, in čas medtem stoji. V premoru je vedno na voljo.'),
@@ -248,11 +270,12 @@ function renderAbout(at) {
     h('p', {}, 'Pot vodi po Sloveniji, od Ptuja do Ljubljanskega gradu, kjer čaka zmaj. Začneš z enim junakom. Na poti srečaš sovražnike, skrinje, plazove, vodnjake, krošnjarje, svetišča bogov in nove junake; v družini so največ štirje, bog le eden. Zdravje se po bitki ne vrne samo: junaki se pozdravijo pri vodnjaku. Zlatnike zapraviš pri krošnjarju za napoje, strupe in predmete.'),
     h('p', { class: 'muted' }, STAGE === 'zaprta alfa' ? 'Igra je v zaprti alfi: igrajo jo povabljeni preizkuševalci. Še nastaja in se po vsakem preizkusu spremeni.' : 'Igra še nastaja in se po vsakem preizkusu spremeni.'),
     versionLine('about-version'),
+    sec('avtor', 'Avtor', creditAuthor()),
     sec('navdih', 'Navdih', creditInspiration()),
-    sec('besede', 'Manjkajoča beseda',
-      h('p', {}, 'Je igra zavrnila pravo slovensko besedo? Sporoči nam jo, da jo dodamo.'),
-      reportButton(openReportWindow, 'Prijavi manjkajočo besedo')),
-    sec('zasluge', 'Zasluge', creditSources())));
+    sec('besede', 'Besede',
+      h('p', {}, 'Je igra zavrnila pravo slovensko besedo? Bi rad vedel, kaj pomeni beseda, ki si jo našel? Izberi jo in nam jo pošlji.'),
+      reportButton(openReportWindow, 'Pošlji besede')),
+    sec('zasluge', 'Zasluge', creditSourcesFolded())));
   focusPage();
   if (at) { const t = $('#o-' + at); if (t) requestAnimationFrame(() => t.scrollIntoView({ block: 'start' })); }
 }

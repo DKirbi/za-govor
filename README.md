@@ -5,11 +5,21 @@
 **A Slovene word-puzzle RPG with heroes from Slavic mythology and Slovene folklore.** Walk
 across Slovenia from Ptuj to Ljubljana castle, chain letters into Slovene words to make
 your heroes attack, solve crosswords to speak a *zagovor* (a folk charm), and fight the
-creatures of Slovene folklore on the way to the dragon. The game is
-inspired by [Words for Evil](https://store.steampowered.com/app/335790/Words_for_Evil/)
-(Chromosphere Games / Dylan Loney, 2014) and exists to show how rich and playful the
-Slovene language is. The game says so itself: on its *O igri* page (*Navdih* and *Zasluge*)
-and after the final battle.
+creatures of Slovene folklore on the way to the dragon. It exists to show how rich and
+playful the Slovene language is.
+
+Developed by **Oygn Productions** (Davor Kirbiš). I have an enormous passion for video games
+and storytelling, and *Za govor!* is my big passion project, made to promote our beautiful
+Slovene language and our fascinating folklore, the things that make us Slovene.
+
+*Za govor!* grew out of a love for [Words for Evil](https://store.steampowered.com/app/335790/Words_for_Evil/)
+(Dylan Loney, Chromosphere Games, 2014), a game that turns word puzzles into a heroic
+adventure. I wanted something like it in Slovene, with our own words, places and folk heroes.
+It is an independent game with its own code, art, characters and story, and is not affiliated
+with or endorsed by *Words for Evil* or its creators. Thanks to Dylan Loney for the game that
+inspired this journey. (This README ships with the PC versions. Inside the game, on every
+platform, *O igri* names the maker and says the game grew out of playing word games, without
+naming any other game, so no store or platform review can stumble on it.)
 
 > **Slovensko:** *Za govor!* je besedna igra s prvinami igre vlog v slovenščini. Junaki iz
 > slovanske mitologije se bojujejo z besedami: iz mreže črk sestavljaš besede, rešuješ
@@ -67,7 +77,7 @@ page under it has **← Nazaj na glavni meni** at the top; `Esc` and the Android
 do the same. *Nova pot* is where the difficulty is chosen (see
 [Two difficulty choices](#two-difficulty-choices)), then the first hero. *Kako igrati* lists
 the controls of the current device (keyboard and mouse, or touch) and shows every puzzle in a
-carousel; *O igri* holds the description, the credits and *Prijavi manjkajočo besedo*.
+carousel; *O igri* holds the description, the maker (*Avtor*), *Navdih*, *Pošlji besede* and the sources (*Zasluge*, folded behind ©).
 
 The game is **one side-scrolling journey** through places in Slovenia. You choose one hero
 and walk; the road stops you at enemies, chests, rock slides, wells, pedlars, shrines of
@@ -318,25 +328,34 @@ npm run android:apk     # -> android/app/build/outputs/apk/debug/app-debug.apk
 npm run android:open    # or open the project in Android Studio
 ```
 
-## Missing words
-The word list is still the prototype's (see [Language data and sources](#language-data-and-sources)),
-so players will meet real Slovene words it does not know. The game helps catch them:
+## Missing words and meanings
+Players send two kinds of words to the developer, picked from chips; nothing is typed:
 
-- **Every word it turns down is remembered** on the device (the last 40): in the letter
-  mesh, the chest, the rock slide and spikes. The first rejection of a visit says where to
-  report it.
-- **Prijavi besedo** in the pause window (`Esc` / *Premor*) and **Prijavi manjkajočo
-  besedo** on *O igri* list those words; one tap reports a word, with an optional
-  note (meaning, dialect). A word can also be typed. Words the game already knows are not sent.
-- **Reports go to a Google Form**, whose answers land in a spreadsheet, with an e-mail per
-  answer. They carry only the word, where it was turned down, the note, and the level,
-  pace and device type: no names or e-mail addresses. Until the form is set up, or while
-  offline, reports wait on the device and the list can be copied.
+- **Missing words (*manjka*).** Every word the game turns down is remembered on the device
+  (the last 40): in the letter mesh, the chest, the rock slide and spikes. The first
+  rejection of a visit says where to send it.
+- **Meanings (*pomen*).** A word a player finds for the first time that the game has no
+  meaning for yet is remembered too. The result of a won battle lists such words with
+  **Kaj pomeni?**; one tap asks (the chest, rock slide and spikes do the same next to their
+  word). A word that was asked about is never offered again on that device. Meanings that
+  ship with the game (`data/meanings.json`, written by hand, keyed by the word or its base
+  form) are shown instead of the question.
+- **Pošlji besede** in the pause window (`Esc` / *Premor*) and on *O igri* shows both lists
+  as chips: a tap picks a word, a second tap drops it, *Pošlji izbrane* sends them.
+- **Reports go to a Google Form**, one row per word, whose answers land in a spreadsheet.
+  The four fields are reused, so the form itself did not change: *Beseda* = the word, *Kje* =
+  where it was played and the region (never shown in the game), *Opomba* = the kind (`manjka`
+  or `pomen`), *Podatki* = level, pace, device and version. No names or e-mail addresses.
+  Until the form is set up, or while offline, reports wait on the device and the list can be
+  copied. A page that may not reach other sites (such as a sandboxed preview of the
+  prototype) keeps them queued; the Android app and a page opened from its own file or site
+  send them.
 
 **Connect the form:** create a form with four short-answer questions, *Beseda*, *Kje*,
-*Opomba* and *Podatki* (none required, no sign-in, no e-mail collection), link it to a
-Sheet, then take *⋮ → Get pre-filled link*. Its ID (`/forms/d/e/<ID>/viewform`) and the four
-`entry.<number>` values go into `REPORT_FORM` at the top of `src/report.js`.
+*Opomba* and *Podatki* (none required, no sign-in, no e-mail collection, no "limit to one
+response", which needs sign-in), link it to a Sheet, then take *⋮ → Get pre-filled link*. Its
+ID (`/forms/d/e/<ID>/viewform`) and the four `entry.<number>` values go into `REPORT_FORM` at
+the top of `src/report.js`.
 
 **Process the reports:** download the Sheet as CSV and run
 
@@ -355,8 +374,9 @@ Confirmed words go into `data/allow.json` (lemma → forms); then rebuild the wo
 | --- | --- | --- |
 | Start menu | `↑` `↓` and `Enter`; `Esc` goes back from any page under it | Tap; *← Nazaj na glavni meni* stays at the top of every page |
 | Make a word | Type it; the path is found for you. Č, Š, Ž must be typed as themselves (a Slovene keyboard layout), c/s/z never stand in for them | Drag across tiles, or tap them one by one |
-| Send the word | `Enter` | Lift the finger after a drag, or tap the last letter again (*Pošlji* on desktop, and in chest, rock slide and spikes) |
-| Clear the word | `Delete` | *Počisti* |
+| Send the word | `Enter` | Lift the finger after a drag; for tapped letters *Pošlji* next to the word or the last letter again (a non-word flashes red and clears) |
+| Clear the word | `Delete` | ✕ next to the word |
+| Leave for the menu | — | *Izhod* in the road's header and in the pause window; it says where the game last saved |
 | Pause (battle, crosswords, chest, rock slide, spikes) | `Esc` | *Premor* at the right of the puzzle's header |
 | Sound, volume, fullscreen | — | *Nastavitve* in the main menu (sound and volume also in the pause window) |
 | Remove the last letter | `Backspace` | *Briši* |
@@ -410,7 +430,7 @@ The tests open the built page in headless Chrome and play it through a test hook
 ```sh
 npm install
 python3 build.py
-npm test                                  # all ten test files
+npm test                                  # all test files
 CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 ```
 
@@ -421,8 +441,12 @@ CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 | `tests/keyword.test.js` | Guessing the keyword early ends the crossword and fires the zagovor; in Povodni mož's whirlpool *urska* with a plain s stays black and *urška* breaks it |
 | `tests/phone.test.js` | On a 390×844 touch screen: the mesh sends without *Pošlji* (second tap, lifted drag, non-words clear), the in-game keyboard types crosswords and the rock slide with the system keyboard closed, wrong entries stay black and correct ones fire, chest partial rewards, darts fit 360 px, *Premor*, and the Android back button |
 | `tests/menu.test.js` | The start menu: items with and without a journey, no top bar, the version at the bottom, `↑` `↓` `Enter` `Esc`, *← Nazaj na glavni meni* on every page and sticky while *O igri* scrolls, one way back on a hero card; *Nastavitve* (sound off is remembered and greys out the volume, fullscreen only on a computer); *Nova pot* copy (*Težavnost*, *Tempo*, *Znanje*), figures, *Predlogi besed* under Malček only, explanations on by default, test mode as a developer option, choices that only count once the journey starts; *Kako igrati* controls per device and the puzzle carousel (buttons, keys, tabs, swipe); heroes and their cards; no *Nadaljuj pot* after the ending; phone fit and the Android back button |
-| `tests/credits.test.js` | Words for Evil is credited on *O igri* (*Navdih*, then *Zasluge* with every source and a Steam link) and on the ending, whose link opens *O igri* at *Navdih*; the line fits a 360 px phone; Esc and the Android back button leave the credits |
-| `tests/report.test.js` | *Prijavi besedo*: rejected words are remembered (mesh, chest), the pause screen and *O igri* list them, one tap posts word, place, note and level to the Google Form (intercepted), typing works while paused, known words are not sent, the queue waits without a form and goes out once there is one, lists survive a reload, the panel fits a 360 px phone; *jasa* and base forms are accepted |
+| `tests/credits.test.js` | *O igri* names the maker (Oygn Productions, Davor Kirbiš), why the game was made, a *Navdih* that names no other game, every source folded behind ©; the ending names the maker and links to *O igri*; no other game is named anywhere in the game; phone fit; Esc and the Android back button |
+| `tests/report.test.js` | *Pošlji besede*: rejected and newly found words are remembered, chips only (no text fields), pick and drop, one row per word with its kind (`manjka` / `pomen`), *Kaj pomeni?* on a battle result in one tap and never again, meanings for every form of a word, the queue without a form, lists survive a reload, the panel fits a 360 px phone; *jasa* and base forms are accepted |
+| `tests/save.test.js` | Checkpoints by *Znanje* (Malček every quarter, Učenjak every third, Knjižni molj once at Trnovski gozd), *Shranjeno* on the checkpoint result, *Nadaljuj pot* after closing the page, *Izhod* on the road and in the pause (asks first, says where it saved, resets a battle left midway), a lost journey removes its save, an old save is dropped with a message |
+| `tests/input.test.js` | Word input: proposals stand still during a drag, only the shortest version of a word is proposed, *Namig* lasts until its word is played or the mesh is shuffled |
+| `tests/words.test.js` | `data/words.json`: every word is in the word list, chests take the region's words without repeats, the chest clue by *Znanje*, ✕ and *Pošlji* next to the chest's word, rock slides from the region's words and slower, no hints at all on Knjižni molj, 3-letter words on every level |
+| `tests/flow.test.js` | Hero screens keep the way on in view (also on a 360×640 phone), stops name their puzzle, the signpost walks on by itself, an ambush is announced, *Kako igrati* ends in the menu |
 | `tests/journey.test.js` | The road: the first hero, three heroes per journey (Ptuj and two random regions, each place favouring its own hero), only a hero who joins is unlocked, XP only from beaten enemies, levels bring skill points, *Veščine* at the well (learn, stopnja 2 and 3, never past 3), a word fires the strongest skill the hero knows, a higher stopnja hits harder, the hero screen's *Veščine* button and the unannounced tap-to-demo, wells that heal but no longer raise the fallen, the chest's gold and item, the pedlar, potions, three shrines per journey each of another god, *Svetišče* with the god's sign (never the god), the prayer's answer and gift, Perun coming for the challenge as the ending is left, his chain of lightning, the god's last word, unlock, raised heroes and next-journey gift, a party god's godly version (not struck by the party god, a point and XP when beaten), heroes with points glowing on the road, the three difficulties (enemy health, withdrawing on Lahka, the end on Srednja, the fallen leaving on Težka), a full party swap, spikes that only hurt (spread over the heroes, never fatal), every hero's three skills at stopnja 3, and the dragon |
 | `tests/lexicon.test.js` | The word list in the browser: over a million forms accepted and a common part suggested, the 217-word coverage set accepted and its non-words (Croatian, English, made up) refused, the reported words (*jasa*, *loj*, *runa*, *seks*) and *ritem*/*ritual*/*riti*, vulgar words accepted but never suggested, mythology names, *deny.json*, non-standard forms, base forms (*ljudje* → *človek*), headwords Sloleks lacks (*zborišča*, *sedemkotnik*), and at 4× slower CPU a mesh walk under 50 ms and a lookup under 20 µs |
 | `tests/title.test.js` | The title scene: the *Za govor!* heading and tab title, whole-number scaling (3× at 1280 px, 4× at 1920, 2× on a phone), square wordmark pixels, full width with no sideways scrolling (also at an odd width), starting at the top of the page (below a phone's status bar), room left for the menu, the wordmark standing still, sparks rising in whole art pixels and not restarting when the start screen is rebuilt, a still picture with reduced motion |
@@ -442,8 +466,9 @@ za-govor/
 │   ├── journey.js            # the road: regions, stops, party, items, pedlar, bag, spikes
 │   ├── playtest.js           # pause, puzzle intros, fullscreen, fit to screen
 │   ├── mobile.js             # phone specifics: in-game keyboard, haptics, Android back button
-│   ├── credits.js            # Navdih and Zasluge: the Words for Evil credit and every source
-│   ├── report.js             # Prijavi besedo: rejected words, reports to a Google Form
+│   ├── credits.js            # O igri: Avtor (Oygn Productions), Navdih, Zasluge (every source)
+│   ├── report.js             # Pošlji besede: missing words and Kaj pomeni?, reports to a Google Form
+│   ├── save.js               # the journey saved at checkpoints by Znanje, Izhod
 │   ├── menu.js               # the start menu and its pages: Nova pot, Dosežki in junaki, Kako igrati, O igri
 │   ├── art-extra.js          # generated pixel art (tools/art_extra.py)
 │   ├── art-title.js          # generated title art: scene layers, wordmark, ribbon (tools/art_title.py)
@@ -460,7 +485,9 @@ za-govor/
 │   ├── never-suggest.json    # vulgar words and slurs: accepted, never offered
 │   ├── myth.json             # mythology and enemy names with their forms, always suggested
 │   ├── clues.json            # crossword clue banks per knowledge level, mythology keywords
-│   └── world.json            # the journey: regions, stops, enemy pools, items
+│   ├── words.json            # words of each region: chests (with clues), rock slides, themes (a first list to review)
+│   ├── meanings.json         # meanings shown next to words (filled in by hand from Kaj pomeni? reports)
+│   └── world.json            # the journey: regions, stops, enemy pools, items, save checkpoints
 ├── tools/
 │   ├── build_lexicon.py      # builds data/lexicon.bin from Sloleks, Franček and the thesaurus
 │   ├── sloleks_extract.py    # every form from the Sloleks XML (reads the zip directly)
@@ -596,9 +623,10 @@ in [docs/progression-design.md](docs/progression-design.md) and
 - [Playtest notes](docs/playtest-notes.md) — what each test round found and what changed
 
 ## Licence
-Za govor is an original game inspired by Words for Evil; it reuses none of its code, art,
-text or sound and is not officially connected to its authors. The in-game *Zasluge* screen
-credits the inspiration and every third-party source.
+Za govor is an original game by Oygn Productions (Davor Kirbiš), inspired by Words for Evil;
+it reuses none of its code, art, text or sound and is not officially connected to its
+authors. This README credits the inspiration; the in-game *Zasluge* credit every third-party
+source.
 
 No licence has been chosen yet, so all rights are reserved by the author. Third-party
 data and code keep their own licences (see [Language data and sources](#language-data-and-sources)).

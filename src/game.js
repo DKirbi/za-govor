@@ -790,7 +790,7 @@ const NODES = [
         m: 'Vleci s prstom čez sosednje črke in spusti: beseda se pošlje sama. Če črke pritiskaš eno za drugo, pritisni Pošlji ob besedi.' },
       { until: 3, text: 'Barvne črke sprožijo junake: ena črka junakove barve sproži prvo veščino, dve drugo, tri tretjo. Daljša beseda pomeni večji množitelj.' },
       { until: 5, text: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Klikni sovražnika ali uporabi ←/→ za izbiro cilja.',
-        m: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Tapni sovražnika, da ga izbereš za cilj.' },
+        m: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Za cilj izbereš sovražnika s pritiskom nanj.' },
       { until: 99, text: 'Poskusi različne oblike: »volk«, »volka« in »volkom« so vse veljavne, a ponovitve iste besede so šibkejše.' } ] } },
   { id: 'skrinja', type: 'chest', title: 'Skrinja', sub: 'Dogodek na čas',
     teach: 'Iz premešanih črk sestavi skrito besedo, preden se ključavnica zatakne.' },
@@ -798,7 +798,7 @@ const NODES = [
     teach: 'Zagovor (križanka kot zaključni udarec), uspavani junaki, ponovljene besede krepijo Volkodlaka.',
     battle: { enemies: ['mora', 'volkodlak'], finishers: ['kres', 'mokos'], meterStart: 0.65, tips: [
       { until: 3, text: 'Zagovor je skoraj poln. Ko je poln, pritisni presledek in reši križanko za mogočen udarec.',
-        m: 'Zagovor je skoraj poln. Ko je poln, tapni »Izreci zagovor« in reši križanko za mogočen udarec.' },
+        m: 'Zagovor je skoraj poln. Ko je poln, pritisni »Izreci zagovor« in reši križanko za mogočen udarec.' },
       { until: 6, text: 'Mora uspava junake: njihove črke posivijo. Mokošina druga ali tretja veščina (dve ali tri zelene črke v besedi) jih zbudi.' },
       { until: 99, text: 'Volkodlak se krepi ob ponovljenih besedah — tudi »volk« in »volka« štejeta kot ista beseda.' } ] } },
   { id: 'plaz', type: 'trap', title: 'Plaz kamenja', sub: 'Dogodek na čas',
@@ -1140,7 +1140,7 @@ function renderGallery() {
         h('button', { class: 'btn small', onclick: () => go('hero', { kind: 'meet', ids: [ch.id], crumb: 'Nazaj v galerijo', next: () => go('gallery') }) }, 'Prizor: srečanje'),
         null),
       h('p', {}, ch.note), frames(ch.id, false),
-      h('div', { class: 'gboards' }, [1, 2, 3].map(t => board(ch.id, t, `${t === 1 ? '1 črka' : t + ' črke'} · ${ch.moves[t - 1]}`)))));
+      h('div', { class: 'gboards' }, [1, 2, 3].map(t => board(ch.id, t, `${['', '1 črka', '2 črki', '3 črke'][t]} · ${ch.moves[t - 1]}`)))));
   });
   wrap.append(h('h2', {}, 'Sovražniki'));
   FOE_CHARS.forEach(ch => {
@@ -1752,6 +1752,7 @@ function submitWord(how = 'key') {
 
 function resolveWord(w, path) {
   sfx('ok');
+  if (noteFound(w, 'mreza')) (B.found || (B.found = [])).push(w);   // a word new to this player, with no meaning yet
   if (B.hint && (B.hint.w === w || (LEMMA.get(B.hint.w) || B.hint.w) === (LEMMA.get(w) || w))) B.hint = null;   // the hinted word is played
   const lem = LEMMA.get(w) || w;
   const uses = B.lemmaUses.get(lem) || 0;
@@ -2402,7 +2403,7 @@ function cwPaint() {
   C.banner.append(h('b', {}, curE.geslo ? '★ Geslo' : `${curE.num} ${curE.dir === 'A' ? 'vodoravno' : 'navpično'}`), ` ${curE.clue}` + (LV().showLen ? ` (${curE.answer.length})` : ''));
   if (C.reveals > 0 && !C.solved.has(C.cur.e)) C.banner.append(h('button', { class: 'kbbtn revbtn', title: 'Razkrij eno črko te besede (beseda nato udari s pol moči)',
     ...keepCwFocus, onclick: e => { e.preventDefault(); cwReveal(); } }, `Razkrij črko · ${C.reveals}`));
-  if (!C.focused && !S.mobile) C.banner.append(h('button', { class: 'kbbtn', onclick: e => { e.preventDefault(); focusCwInput(); } }, S.mobile ? 'Tapni za tipkovnico' : 'Klikni za tipkanje'));
+  if (!C.focused && !S.mobile) C.banner.append(h('button', { class: 'kbbtn', onclick: e => { e.preventDefault(); focusCwInput(); } }, S.mobile ? 'Pritisni za tipkovnico' : 'Klikni za tipkanje'));
 }
 function cwSelect(k) { B.cw.cur = { e: k, p: 0 }; cwPaint(); }
 // Tip: reveal one letter of the current entry (a few per crossword, depending on the level).
@@ -2627,6 +2628,7 @@ function showResult(win) {
     h('div', { class: 'muted' }, win ? (C ? `${GOD[C.god].name} je ${GOD[C.god].f ? 'premagana' : 'premagan'}.` : R ? (hurt || down ? 'Sovražniki so premagani. Rane ostanejo: junaki se pozdravijo pri vodnjaku.' : 'Sovražniki so premagani.') : 'Sovražniki so premagani.') : lost),
     left.length ? h('p', { class: 'note' }, leftLine(left)) : null,
     saved ? h('p', { class: 'savednote', role: 'status' }, h('b', {}, 'Shranjeno.'), ' Pot lahko zdaj zapustiš in jo pozneje nadaljuješ od tod.') : null,
+    win && B.found ? newWordsRow(B.found, 'mreza') : null,
     h('div', { class: 'stats' },
       h('div', {}, 'Izrečene besede'), h('div', {}, st.words),
       h('div', {}, 'Najdaljša beseda'), h('div', {}, st.longest ? UP(st.longest) : '—'),
@@ -2767,6 +2769,7 @@ function renderChest() {
           h('button', { class: 'btn primary send' + (guess.length >= MINW() ? ' ready' : ''), disabled: guess.length < MINW(), onclick: chestSubmit }, 'Pošlji', S.mobile ? null : [' ', h('kbd', {}, 'Enter')]))),
       h('div', { class: 'letters' }, E.letters.map((l, i) => h('div', { class: 'tile' + (l.used ? ' used' : ''), onclick: () => chestPick(i) }, l.ch))),
       E.msg ? h('p', { class: 'fb ' + E.msgKind }, E.msg) : null,
+      E.done && E.word && (E.isNew || meaningOf(E.word)) ? h('div', { class: 'newwords' }, meaningChip(E.word, 'skrinja')) : null,
       E.loot ? h('p', { class: 'lootline' }, itemIcon(E.loot.id), h('b', {}, E.loot.name), ' — ', E.loot.text) : null,
       E.done ? h('div', {}, h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')))
       : h('div', { class: 'row', style: { 'justify-content': 'flex-start', 'flex-wrap': 'wrap' } },
@@ -2801,6 +2804,7 @@ function chestSubmit() {
   const guess = E.sel.map(i => E.letters[i].ch).join('');
   if (guess.length < MINW()) { E.msg = `Beseda mora imeti vsaj ${MINW()} črke.`; E.msgKind = 'warn'; renderChest(); return; }
   const total = E.item.w.length;
+  if (WORDS.has(guess) || guess === E.item.w) { E.word = guess; E.isNew = noteFound(guess, 'skrinja'); }
   if (guess === E.item.w || (guess.length === total && WORDS.has(guess))) {
     E.done = true; E.win = true; S.meterBonus = 0.5;   // chests pay gold and items; experience comes from enemies only
     const loot = S.run ? randomItem() : null, gold = S.run ? gainGold(15 + rnd(11)) : 0;
@@ -2889,7 +2893,7 @@ function trapSubmit() {
   const hit = open.filter(r => w.includes(r.ch)), miss = open.filter(r => !w.includes(r.ch));
   hit.forEach(r => { r.state = 'broken'; if (r.el) r.el.classList.add('broken'); });
   miss.forEach(r => { r.state = 'hit'; if (r.el) r.el.classList.add('hit'); });
-  E.broken += hit.length; E.word = w;
+  E.broken += hit.length; E.word = w; E.isNew = noteFound(w, 'plaz');
   // partial damage for the rocks the word did not name
   const d = miss.length * TRAP_GRAZE; if (d) { S.partyHp = Math.max(1, S.partyHp - d); E.dmg += d; E.hits += miss.length; }
   E.gold = S.run && hit.length ? gainGold(TRAP_GOLD * hit.length) : 0;
@@ -2933,6 +2937,7 @@ function trapShowEnd() {
   if (UI.trapInput) UI.trapInput.blur();
   if (UI.trapKb) { UI.trapKb.remove(); UI.trapKb = null; }
   UI.trapEnd.append(h('p', {}, `Razbite skale: ${E.broken}/${E.rocks.length} · prejeta škoda: ${E.dmg}.` + (E.gold ? ` +${E.gold} zlatnikov.` : '') + (E.dmg ? ' Rane ostanejo do naslednjega vodnjaka.' : '')),
+    E.word && (E.isNew || meaningOf(E.word)) ? h('div', { class: 'newwords' }, meaningChip(E.word, 'plaz')) : null,
     h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')));
 }
 function trapKey(e) {
@@ -2999,6 +3004,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.diff = d; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.diff = d; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 

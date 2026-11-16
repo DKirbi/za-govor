@@ -178,7 +178,7 @@ function godSpecial(e) {
   else if (id === 'mokos') { d = hurtEach(L.map(() => e.atk * 0.8), e); const g = Math.min(e.maxHp - e.hp, d); e.hp += g; if (g) floatOn(e.el, `+${g}`, 'heal'); extra = `vzame si življenje: +${g}`; }
   else if (id === 'dazbog') { d = hurtEach(L.map(() => e.atk * 0.75), e); e.atk += 1; extra = 'sonce se dviga: vsak udarec je močnejši'; }
   else if (id === 'stribog') { d = hurtEach(L.map(() => e.atk * 0.75), e); if (!B.cw) { B.grid.forEach((t, i) => { if (!isLocked(t)) B.grid[i] = newTile(); }); ensureSolvable(); clearWord(); renderPuzzle(); } extra = 'vihar premeša mrežo'; }
-  else if (id === 'veles') { d = hurtEach(L.map(() => e.atk * 0.6), e); const n = lockTiles(4).length; extra = `korenine prerastejo ${n} črke`; }
+  else if (id === 'veles') { d = hurtEach(L.map(() => e.atk * 0.6), e); const n = lockTiles(4).length; extra = `korenine prerastejo ${n} ${n === 1 ? 'črko' : n === 2 ? 'črki' : n <= 4 ? 'črke' : 'črk'}`; }
   spawnCard(e.el, { tier: 3, foe: true, name: e.name, move: mv, value: d ? `−${d}` : 'ščit ujame', extra });
   log(`${e.name}: ${mv}! (−${d}) — ${extra}.`);
 }

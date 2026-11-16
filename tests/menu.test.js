@@ -114,11 +114,11 @@ run(async () => {
 
   // 6. Kako igrati: keyboard controls on the desktop, the puzzles in a carousel
   await page.evaluate(() => window.__ZG.go('howto')); await sleep(300);
-  const ht = await page.evaluate(() => ({ tag: document.querySelector('.howto h2 .tag').textContent, kbd: document.querySelectorAll('.ctl kbd').length,
+  const ht = await page.evaluate(() => ({ tag: document.querySelector('.howto .ctl-tab.on').textContent, kbd: document.querySelectorAll('.ctl kbd').length,
     groups: [...document.querySelectorAll('.ctl-group h3')].map(x => x.textContent), slides: document.querySelectorAll('.car-slide').length,
     tabs: [...document.querySelectorAll('.car-tab')].map(t => t.textContent), count: document.querySelector('.car-count').textContent,
     hidden: [...document.querySelectorAll('.car-slide')].map(s => s.getAttribute('aria-hidden') === 'true') }));
-  check(/tipkovnica/.test(ht.tag) && ht.kbd > 15 && ht.groups.includes('Mreža črk') && ht.groups.includes('Križanka'), 'the desktop gets keyboard and mouse controls, grouped by puzzle', JSON.stringify(ht.groups));
+  check(/Računalnik/.test(ht.tag) && /ta naprava/.test(ht.tag) && ht.kbd > 15 && ht.groups.includes('Mreža črk') && ht.groups.includes('Križanka'), 'the desktop gets keyboard and mouse controls, grouped by puzzle', JSON.stringify(ht.groups));
   check(ht.slides === 5 && ht.tabs.join() === 'Mreža,Križanka,Skrinja,Konice,Plaz' && ht.count === '1 / 5' && ht.hidden.join() === 'false,true,true,true,true', 'the five puzzles are a carousel with one slide in view', JSON.stringify(ht));
   await shot('menu-04-howto');
   await page.click('.car-nav .car-btn:last-child'); await sleep(700);
@@ -153,6 +153,7 @@ run(async () => {
 
   // 7b. the way back stays at the top while a long page scrolls, above the content
   await page.evaluate(() => window.__ZG.go('about')); await sleep(200);
+  await page.evaluate(() => { document.querySelector('.credits-more').open = true; }); await sleep(100);   // the sources, folded behind ©, make the page long
   await page.evaluate(() => scrollTo(0, 900)); await sleep(150);
   const stick = await page.evaluate(() => { const c = document.querySelector('#screen .crumb'), r = c.getBoundingClientRect(), e = document.elementFromPoint(r.left + 20, r.top + r.height / 2);
     return { scrolled: Math.round(scrollY), top: Math.round(r.top), onTop: !!e && c.contains(e) }; });
@@ -200,8 +201,8 @@ run(async () => {
   check(cta.bottom <= cta.vh && cta.h >= 48, 'Izberi junaka stays in reach at the bottom of the phone screen', JSON.stringify(cta));
   await shot('menu-07-phone-newrun');
   await page.evaluate(() => window.__ZG.go('howto')); await sleep(300);
-  const hp = await page.evaluate(() => ({ tag: document.querySelector('.howto h2 .tag').textContent, kbd: [...document.querySelectorAll('.ctl kbd')].length, text: document.querySelector('.ctl-groups').textContent }));
-  check(/telefon/.test(hp.tag) && hp.kbd === 0 && /Vleci/.test(hp.text) && /slovenska tipkovnica/.test(hp.text), 'the phone gets touch controls instead of keys', JSON.stringify({ tag: hp.tag, kbd: hp.kbd }));
+  const hp = await page.evaluate(() => ({ tag: document.querySelector('.howto .ctl-tab.on').textContent, kbd: [...document.querySelectorAll('.ctl kbd')].length, text: document.querySelector('.ctl-groups').textContent }));
+  check(/Telefon/.test(hp.tag) && hp.kbd === 0 && /Vleci/.test(hp.text) && /slovenska tipkovnica/.test(hp.text), 'the phone gets touch controls instead of keys', JSON.stringify({ tag: hp.tag, kbd: hp.kbd }));
   // a swipe is a scroll of the track; the carousel follows it
   await page.evaluate(() => { const t = document.querySelector('.car-track'); t.scrollTo({ left: document.querySelectorAll('.car-slide')[1].offsetLeft }); }); await sleep(500);
   check(await page.evaluate(() => window.__ZG.car.idx === 1 && document.querySelector('.car-count').textContent === '2 / 5'), 'swiping the carousel moves to the next puzzle');
