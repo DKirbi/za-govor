@@ -92,14 +92,9 @@ The final image should evoke the recognisable public celebration while remaining
 - Keep the existing starter availability unless a later Game Director decision changes it.
 - His control-oriented kit is intended to remain useful in later regions and against bosses, not only early encounters.
 
-## 7. Shared combat principles established during character review
+## 7. Shared combat rules
 
-These are system-wide design rules, not Kurent-exclusive mechanics. They should eventually be consolidated in the central combat-system documentation.
-
-- **Actions and statuses are distinct concepts.** Actions are things visibly performed on screen; statuses describe conditions/effects applied to a combatant. An action or status may be instantaneous or last for a duration.
-- **Timed attacks can clash.** Enemies and heroes have timed attacks. If their attacks resolve against one another at the same time, they can interrupt each other's attacks.
-- **Interruption does not cancel an attack.** The interrupted attack still goes through, but deals reduced damage. The exact normal-unit and boss/mini-boss multipliers require confirmation (see Open decisions).
-- **Damage-over-time effects are unaffected by interruption.** Existing poison and burn effects continue unchanged.
+The system-wide action, status and interruption rules are documented separately in [Combat System Rules](../../combat-system.md). These rules apply to Kurent and the wider roster.
 
 ## 8. Open decisions
 
@@ -110,8 +105,6 @@ These are system-wide design rules, not Kurent-exclusive mechanics. They should 
 - Final enemy affinity tags for wind, cold and ghost; Mora is a confirmed example of the intended ghost category.
 - Whether the spirit visual differs by affinity or uses one shared indicator.
 - Exact base HP and final level-scaling formula, while preserving at least +1 HP per level.
-- Exact interruption damage multipliers for normal combatants and bosses/mini-bosses (the stated `0.75%` value needs clarification: does this mean 75% damage / a `0.75×` multiplier?).
-- Whether the interruption rules have any exceptions beyond damage-over-time effects.
 - Folklore-source review for the devil figure in the final Kurentovanje card.
 
 ## 9. Implementation notes
