@@ -12,6 +12,14 @@ This replaces the earlier "three starters and cursed-god bosses" proposal. Every
 - **Parked:** cursed gods as bosses (section 7 of the old design). Gods are simply powerful companions now.
 - **Not balance-tested:** the journey runs end to end in automated tests, but nobody has played it through for difficulty.
 
+## Character and combat design references
+
+This document records the journey, progression and prototype roster overview. For reviewed character-specific decisions, use [the character documentation index](characters/README.md) and the linked specifications there. The current detailed reviews cover Ajdovska deklica, Erazem Predjamski, Kralj Matjaž, Kresnik and Kurent. Lepa Vida and Peter Klepec remain prototype-level entries pending their individual reviews.
+
+**Source-of-truth rule:** Detailed character specifications contain the latest reviewed skill behaviour, rank values, recruitment constraints, folklore context and open questions. Older summaries in this progression document may describe earlier prototype behaviour; if they conflict with a reviewed specification, flag the discrepancy rather than silently treating the older summary as current.
+
+Shared action/status and interruption rules are maintained separately in [Combat System Rules](combat-system.md). Apply those rules across heroes and enemies unless a character or enemy specification explicitly documents an approved exception.
+
 ## 1. The journey
 One road, walked left to right. The party stands still and the world scrolls past; the background pans slowly across the landmark of the region. Walking stops at every stop and a prompt offers what can be done there. A signpost at the end of each region leads to the next.
 

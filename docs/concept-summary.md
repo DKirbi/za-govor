@@ -3,6 +3,21 @@
 Full concept doc: https://claude.ai/artifact/SNNktnteBoppi5M4PMkzFF
 Playable UX prototype (browser; all party heroes and enemies have sprites, cards and sound): https://claude.ai/artifact/NTdMnud7X8Um2p38G1fVnb
 
+## Character specifications and shared combat rules (16 Nov 2026)
+
+The roster summary below is the high-level direction; it is not a substitute for the detailed character specifications. Use [the character documentation index](characters/README.md) as the entry point for reviewed character designs. Character-specific specifications record folklore research, confirmed gameplay decisions, open questions and art briefs. Where a detailed specification conflicts with an older prototype summary or values in this document, do not silently resolve the conflict: flag it for the Game Director.
+
+**Reviewed character specifications currently available:**
+- Ajdovska deklica — defensive support / crowd control.
+- Erazem Predjamski — sword fighter / evasive counterattacker.
+- Kralj Matjaž — leader / party-support defender.
+- Kresnik — fire mage / monster-slayer.
+- Kurent — crowd-control / disruption specialist.
+
+**Review pending:** Lepa Vida and Peter Klepec have prototype roster entries and visuals, but do not yet have completed reviewed character specifications. The remaining heroes and gods also retain their existing prototype/design documentation until reviewed.
+
+**Shared combat foundation:** [Combat System Rules](combat-system.md) defines the distinction between actions and statuses, timed attack clashes, interruption damage multipliers, and screen communication for enemy effects. Character specifications should reference these shared rules and document their exceptions rather than redefining them.
+
 ## The journey (11 Nov 2026, afternoon — details in the progression design doc)
 - **The game is one 2D side-scrolling journey through Slovenia**, with no level list: Ptuj → Peca → Triglav → Bled → Trnovski gozd → Piranske soline → Predjamski grad → Ljubljansko barje → Ljubljanica → Ljubljanski grad. **Lintvern, the dragon at Ljubljana castle, is the final battle.**
 - **Start with one hero.** The hero choice (after *Nova pot*) shows all fifteen characters; on a fresh game only Martin Krpan, Zeleni Jurij and Kurent are known, the rest are silhouettes until met on the road (meeting unlocks them for later journeys). At most four in the party, only one god per journey; gods are stronger.
