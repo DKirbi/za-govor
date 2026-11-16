@@ -596,7 +596,7 @@ const CHARS = [
     note: 'Gole roke, usnjen predpasnik s sončnim znakom, brada kot žerjavica. Na največji karti na nakovalu kuje kar sonce.' },
   { id: 'mokos', name: 'Mokoš', c: 'var(--mokos)', sub: 'mati zemlja · zdravi', moves: ['Kapljica', 'Vir', 'Materina roka'], words: ['VODA', 'ZEMLJA', 'VRETENO'], vals: ['+6 zdravja', '+14 zdravja', '+30 zdravja'], extra: 'očisti črke in zbudi junake',
     note: 'Bela peča z žitnim vencem, vezena bluza in predpasnik, preslica z volno. Ko zdravi, pošlje vodo; na največji karti stoji pod mavrico med žitom, kravo in čebelnjakom.' },
-  { id: 'kresnik', name: 'Kresnik', c: 'var(--kresnik)', sub: 'sončni junak · ogenj', moves: ['Ognjeni meč', 'Kresna strela', 'Kresna moč'], words: ['KRES', 'ISKRA', 'POLETJE'], vals: ['−8 · gori', '−12 · gori', 'povrne četrtino rane'], extra: 'zlatniki iz povrnjene moči',
+  { id: 'kresnik', name: 'Kresnik', c: 'var(--kresnik)', sub: 'sončni junak · ogenj', moves: ['Ognjeni meč', 'Kresna strela', 'Kresna moč'], words: ['KRES', 'ISKRA', 'POLETJE'], vals: ['−5 · gori', '−10 · gori', '−5 vsem · povrne četrtino rane'], extra: 'zlatniki iz povrnjene moči',
     note: 'Zlati lasje kot plamen, rdeč telovnik, bakla. Največja karta je kresna noč: kres, goreče kolo, ki se vali po hribu, in praprotni cvet.' },
   { id: 'veles', name: 'Veles', c: 'var(--veles)', sub: 'gospodar živine in spodnjega sveta', moves: ['Kačji pik', 'Medvedja šapa', 'Korenine sveta'], words: ['ROG', 'MEDVED', 'KORENINE'], vals: ['−10 · strup', '−24', '−50'], extra: 'kača ovije vse sovražnike',
     note: 'Rogovi, medvedji kožuh, palica s kačo in zelene oči. Perunov večni nasprotnik, zato je zemeljski in temen, kjer je Perun nebesen in svetel. Najmočnejši med vsemi: večja postava, najtrši udarci. Zaigraš ga lahko šele po koncu zgodbe.' },
@@ -606,7 +606,7 @@ CHARS.push(
     note: 'Širok klobuk, brki, telovnik, na hrbtu vreča soli, v roki lipov kij. Na srednji karti dvigne kobilico s ceste, na največji premaga Brdavsa.' },
   { id: 'jurij', name: 'Zeleni Jurij', c: '#4fae5a', sub: 'znanilec pomladi · zdravi malo in pogosto', moves: ['Popek', 'Brstenje', 'Jurjevo'], words: ['LIST', 'BREZA', 'POMLAD'], vals: ['+4 zdravja', '+10 zdravja', '+22 zdravja'], extra: 'odklene vse črke',
     note: 'Od glave do kolen oblečen v brezovo zelenje s cvetjem, v roki brezova veja. Na največji karti prijezdi na belem konju.' },
-  { id: 'kurent', name: 'Kurent', c: '#d9cfae', sub: 'preganjalec zime · zamik in hrup', moves: ['Ježevka', 'Zvonci', 'Pregon zime'], words: ['ZVON', 'MASKA', 'PUST'], vals: ['−4 · zamik 1,5 s', 'napad −3', 'vsi zamudijo 3 s'], extra: 'vsi sovražniki zamudijo napad',
+  { id: 'kurent', name: 'Kurent', c: '#d9cfae', sub: 'preganjalec zime · zamik in hrup', moves: ['Ježevka', 'Zvonci', 'Pregon zime'], words: ['ZVON', 'MASKA', 'PUST'], vals: ['−4 · zamik 2 s', '−3 · udarec −3', '−4 vsem · zamik 3 s'], extra: 'vsi sovražniki zamudijo napad',
     note: 'Ovčji kožuh, usnjena maska z dolgim rdečim jezikom, rogovi s trakovi, zvonci za pasom in ježevka. Na največji karti kurenti preženejo zimo.' },
   { id: 'matjaz', name: 'Kralj Matjaž', c: '#d84a5a', sub: 'speči kralj · ščit in vojska', moves: ['Meč', 'Kraljeva vojska', 'Prebujenje'], words: ['MEČ', 'KRONA', 'KRALJ'], vals: ['−6', 'naslednji napad +3', '+3 zdravja · ščit 3'], extra: 'padli vstanejo',
     note: 'Krona, dolga siva brada, rdeč plašč s hermelinom, meč. Na največji karti se prebudi pod Peco: brada je ovita okrog mize, krokarji letijo, lipa ozeleni.' },
@@ -2079,6 +2079,7 @@ function gainXp(n, k, each, noStat) {   // k = hero index; without it the XP is 
 function enemyAct(e) {
   if (B.over || e.hp <= 0) return;
   // Okamnitev (src/progression.js): turned to stone, the enemy lets this attack pass; burns and poison go on
+  e.dlAmt = 0;   // Kurent's delays (src/progression.js) count again from here
   if (e.stone > 0) { e.stone--; floatOn(e.el, 'okamnel', 'info'); log(`${e.name} je okamnel${e.f ? 'a' : ''} — napad izostane.`); renderEnemies(); return; }
   let act = e.pattern[e.step % e.pattern.length]; e.step++;
   if (act === 'cwlock' && B.cw && B.cw.kind !== 'finisher') act = 'attack';
