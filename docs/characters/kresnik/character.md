@@ -79,7 +79,7 @@ Some scholars have compared Kresnik with Perun or with a wider Indo-European thu
 ### Skill 3 — Restorative skill
 
 - Trigger: an enemy damages Kresnik.
-- Healing: restore up to 50% of the damage received, rounded up to the next whole health point.
+- Healing: rank 1 restores 25%, rank 2 restores 50%, and rank 3 restores 70% of the damage received. Round the resulting health restoration up to the next whole health point.
 - Gold: grant the player 50% of the health actually restored, rounded up to the next whole gold.
 - **OPEN:** whether it triggers after every damage instance or once per enemy action; whether damage-over-time counts; whether healing is capped by missing health; and how the effect scales by rank.
 - Do not interpret the gold as being deducted from an enemy or as a party-wide heal unless explicitly approved.
@@ -121,6 +121,7 @@ Keep Kresnik distinct from the god Perun in visual identity. A subtle relationsh
 - Burn duration by rank, stacking/refresh rules, and tick timing.
 - Restorative skill trigger frequency, DoT interaction, overheal handling, rank scaling and fractional-gold rounding.
 - Exact vulnerability modifiers against water-associated beings.
+- **Future roster marker:** If Perun or another hero is later designed with fire-based powers, revisit Kresnik's kit for possible shared effects, synergies, or powers. This is a future design hook, not a confirmed shared mechanic.
 - Recruitment placement: Bled-only, guaranteed at Bled, or general hero-stop pool.
 - Verify fern-flower and burning-wheel motifs before using them as Kresnik-specific folklore.
 - Final story-card subjects.
