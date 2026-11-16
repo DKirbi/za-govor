@@ -787,7 +787,7 @@ const NODES = [
     teach: 'Mreža črk, barve junakov, moč napada, izbira cilja.',
     battle: { enemies: ['skrat', 'skrat'], finishers: ['perun'], meterStart: 0, tips: [
       { until: 1, text: 'Vpiši besedo na tipkovnici ali vleci z miško čez sosednje črke, nato pritisni Pošlji ali Enter.',
-        m: 'Vleci s prstom čez sosednje črke in spusti: beseda se pošlje sama. Če črke tapkaš, na koncu še enkrat tapni zadnjo.' },
+        m: 'Vleci s prstom čez sosednje črke in spusti: beseda se pošlje sama. Če črke pritiskaš eno za drugo, pritisni Pošlji ob besedi.' },
       { until: 3, text: 'Barvne črke sprožijo junake: ena črka junakove barve sproži prvo veščino, dve drugo, tri tretjo. Daljša beseda pomeni večji množitelj.' },
       { until: 5, text: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Klikni sovražnika ali uporabi ←/→ za izbiro cilja.',
         m: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Tapni sovražnika, da ga izbereš za cilj.' },
@@ -1216,9 +1216,11 @@ function buildBattleDom() {
       h('div', { class: 'floats', ref: el => UI.floats = el })),
     h('div', { class: 'wordbar' },
       h('div', { class: 'word', ref: el => UI.word = el }),
-      // Phones have no Pošlji in the mesh: lifting the finger sends the word (or a second tap on its last letter).
-      S.mobile ? h('button', { class: 'btn clr', ref: el => UI.clr = el, onclick: () => clearWord(), 'aria-label': 'Počisti besedo', title: 'Počisti besedo' }, '✕')
-        : h('button', { class: 'btn send', ref: el => UI.send = el, onclick: () => submitWord(), title: 'Pošlji izbrano besedo' }, 'Pošlji ', h('kbd', {}, 'Enter')),
+      // A dragged word sends itself when the finger lifts. A tapped word is sent with a second tap on its
+      // last letter or with Pošlji, which sits right next to the word (on a phone with ✕ to clear it).
+      h('div', { class: 'wbtns' },
+        S.mobile ? h('button', { class: 'btn clr', ref: el => UI.clr = el, onclick: () => clearWord(), 'aria-label': 'Počisti besedo', title: 'Počisti besedo' }, '✕') : null,
+        h('button', { class: 'btn send', ref: el => UI.send = el, onclick: () => submitWord('button'), title: 'Pošlji izbrano besedo' }, 'Pošlji', S.mobile ? null : [' ', h('kbd', {}, 'Enter')])),
       h('div', { class: 'chips', ref: el => UI.chips = el }),
       h('div', { class: 'props', ref: el => UI.props = el }),
       h('div', { class: 'fb', ref: el => UI.fb = el }),
@@ -1517,6 +1519,7 @@ function renderPuzzle() {
     t.pop = false;
     mesh.append(el); return el;
   });
+  if (hintAlive()) B.hint.p.slice(0, 2).forEach(i => UI.tiles[i].classList.add('hinted'));
   wrap.append(mesh, svgEl('svg', { class: 'pathsvg', ref: el => UI.pathsvg = el }));
   UI.puzzle.append(wrap);
   bindMeshPointer(wrap);
@@ -1603,21 +1606,47 @@ function gridWordCount() {
 function proposalScore(w, p) {
   return p.reduce((s, i) => s + tileScore(i), 0) + w.length * 4 - (B.lemmaUses.get(LEMMA.get(w) || w) || 0) * 25;
 }
+// Only the shortest version of a word is proposed, to keep the row short on a phone: DELA, not DELATI or
+// DELALA (a longer word that starts with a shorter proposal waits until the shorter one is chosen), and one
+// form per base form (VODA, not also VODE). `entries` are [word, …] pairs.
+function shortestForms(entries) {
+  const kept = [], lemmas = new Set();
+  for (const e of entries.slice().sort((a, b) => a[0].length - b[0].length)) {
+    const w = e[0], lem = LEMMA.get(w) || w;
+    if (lemmas.has(lem) || kept.some(k => w.startsWith(k[0]))) continue;
+    kept.push(e); lemmas.add(lem);
+  }
+  return kept;
+}
+// The hint (Namig) stays until its word is played, its letters change or the mesh is shuffled.
+function hintAlive() {
+  const H = B && B.hint; if (!H) return false;
+  if (H.p.some((i, k) => !B.grid[i] || B.grid[i].ch !== H.w[k])) { B.hint = null; return false; }
+  return true;
+}
+function hintChip() {
+  if (!hintAlive()) return null;
+  const H = B.hint;
+  return h('span', { class: 'hintchip', title: 'Namig ostane, dokler besede ne odigraš' }, 'Namig: ', h('b', {}, UP(H.w.slice(0, 2)) + '…'), ` ${H.w.length} črk${H.w.length === 2 ? 'i' : H.w.length < 5 ? 'e' : ''}`);
+}
 function renderProposals() {
   if (!UI.props) return;
+  if (B.dragging && UI.props.childNodes.length) return;   // nothing jumps under the finger: the row waits for the release
   UI.props.innerHTML = '';
-  const L = LV(), props = S.suggest && L.proposals;
-  if (B.cw || (!props && !L.meshCount)) { UI.props.style.display = 'none'; return; }
+  const L = LV(), props = S.suggest && L.proposals, hint = B.cw ? null : hintChip();
+  if (B.cw || (!props && !L.meshCount && !hint)) { UI.props.style.display = 'none'; return; }
   UI.props.style.display = '';
+  if (hint) UI.props.append(hint);
   if (!B.path.length || !props) {
+    if (!L.meshCount) return;
     const n = gridWordCount();
     const cnt = n >= 600 ? 'več kot 600' : n;
-    UI.props.append(h('span', { class: 'muted' }, S.mobile || !props ? `${cnt} besed v mreži` : `V mreži je ${cnt} besed. Začni besedo in tu se pokažejo predlogi.`));
+    UI.props.append(h('span', { class: 'muted' }, S.mobile || !props || hint ? `${cnt} besed v mreži` : `V mreži je ${cnt} besed. Začni besedo in tu se pokažejo predlogi.`));
     return;
   }
   const best = new Map();
   for (const [w, p] of extensions(B.path)) { const sc = proposalScore(w, p); if (!best.has(w) || best.get(w).sc < sc) best.set(w, { p, sc }); }
-  const list = [...best.entries()].sort((a, b) => b[1].sc - a[1].sc).slice(0, S.mobile ? 6 : 8);
+  const list = shortestForms([...best.entries()]).sort((a, b) => b[1].sc - a[1].sc).slice(0, S.mobile ? 6 : 8);
   if (!list.length) {
     UI.props.append(h('span', { class: 'muted' }, WORDS.has(pathWord(B.path)) ? 'Ni daljših besed s tem začetkom.' : 'Ni besed s tem začetkom — poskusi drugo pot.'));
     return;
@@ -1670,7 +1699,7 @@ function bindMeshPointer(wrap) {
     const i = tileAt(e.clientX, e.clientY); if (i < 0) return;
     if (isLocked(B.grid[i])) { fb('Črka je zaklenjena.', 'warn'); return; }
     e.preventDefault(); wrap.setPointerCapture(e.pointerId);
-    down = true; moved = false; submitOnUp = false;
+    down = true; moved = false; submitOnUp = false; B.dragging = true;   // proposals and the hint stay as they are while dragging
     const last = B.path[B.path.length - 1];
     if (B.path.length && i === last) submitOnUp = true;
     else if (B.path.length && adjacent(last, i) && !B.path.includes(i)) B.path.push(i);
@@ -1687,24 +1716,28 @@ function bindMeshPointer(wrap) {
     if (!B.path.includes(i) && adjacent(last, i) && !isLocked(B.grid[i])) { B.path.push(i); moved = true; syncTyped(); }
   });
   const up = () => {
-    if (!down) return; down = false;
-    if ((moved && B.path.length >= MINW()) || submitOnUp) submitWord();
+    if (!down) return; down = false; B.dragging = false;
+    if ((moved && B.path.length >= MINW()) || submitOnUp) submitWord('pointer');
+    else renderProposals();   // proposals stood still during the drag; now they follow the word
   };
   wrap.addEventListener('pointerup', up);
-  wrap.addEventListener('pointercancel', () => { down = false; });
+  wrap.addEventListener('pointercancel', () => { down = false; B.dragging = false; renderProposals(); });
   wrap.addEventListener('contextmenu', e => { e.preventDefault(); clearWord(); });
 }
 
 // ------------------------------------------------------------ resolving a word
-function submitWord() {
+// `how`: 'key' (Enter), 'button' (Pošlji), 'pointer' (released drag or a second tap on the last letter)
+function submitWord(how = 'key') {
   if (!B || B.over || B.cw || B.paused) return;
   if (!B.path.length) { if (B.typed) fb(`Za »${UP(B.typed)}« ni poti v mreži.`, 'err'); return; }
   const w = pathWord(B.path);
   if (w.length < MINW()) { fb(`Beseda mora imeti vsaj ${MINW()} črke.`, 'warn'); return; }
   if (!WORDS.has(w)) {
     noteRejected(w, 'mreza');
-    fb(`»${UP(w)}« ni v slovarju.` + rejectHint(), 'err'); shakeEl(UI.word);
-    if (S.mobile) { const b = B, p = B.path.join(); setTimeout(() => { if (B === b && !B.over && B.path.join() === p) clearWord(); }, 650); }
+    fb(`»${UP(w)}« ni v slovarju.` + rejectHint(), 'err');
+    // nothing happens, but the word flashes red and clears; a word typed on a keyboard stays to be corrected
+    if (UI.word) replay(UI.word, 'bad'); shakeEl(UI.word);
+    if (how !== 'key' || S.mobile) { const b = B, p = B.path.join(); setTimeout(() => { if (B === b && !B.over && B.path.join() === p) clearWord(); }, 650); }
     return;
   }
   resolveWord(w, B.path.slice());
@@ -1712,6 +1745,7 @@ function submitWord() {
 
 function resolveWord(w, path) {
   sfx('ok');
+  if (B.hint && (B.hint.w === w || (LEMMA.get(B.hint.w) || B.hint.w) === (LEMMA.get(w) || w))) B.hint = null;   // the hinted word is played
   const lem = LEMMA.get(w) || w;
   const uses = B.lemmaUses.get(lem) || 0;
   B.lemmaUses.set(lem, uses + 1);
@@ -2094,16 +2128,17 @@ function battleTick(dt) {
 function useHint() {
   if (B.cw) return;
   if (B.hints <= 0) { fb(LV().hints ? 'Namigov je zmanjkalo.' : 'Knjižni molj igra brez namigov.', 'warn'); return; }
-  const words = [...allWords(400).entries()].filter(([w]) => w.length >= 4 && w.length <= 7);
+  const words = shortestForms([...allWords(400).entries()].filter(([w]) => w.length >= 4 && w.length <= 7));
   if (!words.length) { fb('Ni dobrih besed — premešaj mrežo.', 'warn'); return; }
   words.sort((a, b) => b[1].reduce((s, i) => s + tileScore(i), 0) - a[1].reduce((s, i) => s + tileScore(i), 0));
   const [w, p] = words[rnd(Math.min(5, words.length))];
-  B.hints--; renderSide();
+  B.hints--; B.hint = { w, p: p.slice() }; renderSide();
   p.slice(0, 2).forEach(i => { const el = UI.tiles[i]; el.classList.remove('hint'); void el.offsetWidth; el.classList.add('hint'); });
-  fb(`Namig: beseda s ${w.length} črkami se začne z »${UP(w.slice(0, 2))}…«`, 'warn');
+  renderProposals();
 }
 function shuffleGrid(byPlayer) {
   if (B.cw) return;
+  B.hint = null;
   B.grid.forEach((t, i) => { if (!isLocked(t)) B.grid[i] = newTile(); });
   ensureSolvable(); clearWord();
   fb('Mreža premešana.' + (S.mode === 'calm' && byPlayer ? ' Sovražniki so izkoristili trenutek.' : ''), 'warn');
@@ -2942,6 +2977,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.diff = d; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.diff = d; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 

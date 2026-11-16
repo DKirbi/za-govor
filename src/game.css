@@ -1207,3 +1207,18 @@ body.mobile .bhead .exitbtn.small { min-height: 40px; padding: 8px 14px; font-si
 .savednote { margin: 8px 0; padding: 8px 10px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--good) 45%, var(--line));
   background: color-mix(in srgb, var(--good) 12%, var(--panel)); font-size: 14px; }
 .savednote b { color: var(--good); }
+
+/* ============================================================ word bar: send next to the word, red flash, lasting hint */
+.wbtns { display: flex; gap: 8px; align-items: center; }
+body.mobile .wbtns .btn.send { padding: 10px 14px; font-size: 15px; min-height: 44px; }
+body.mobile .wbtns .btn.send:disabled { opacity: .35; }
+.word.bad .lt { background: color-mix(in srgb, var(--danger) 55%, var(--panel2)); color: #fff; transition: background .1s; }
+.word.bad { animation: shake .3s ease-in-out 1; }
+.tile.hinted { box-shadow: inset 0 0 0 2px var(--gold); }
+.hintchip { display: inline-flex; gap: 4px; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 12.5px;
+  border: 1px solid color-mix(in srgb, var(--gold) 60%, var(--line)); background: color-mix(in srgb, var(--gold) 14%, var(--panel)); color: var(--text); }
+.hintchip b { color: var(--gold); letter-spacing: .04em; }
+/* a coloured letter beside the intro step that explains the colours */
+.tut-steps .tile.mini { --tile-size: 26px; display: inline-grid; place-items: center; width: 26px; height: 26px; font-size: 14px;
+  vertical-align: -6px; margin-right: 4px; position: relative; border-radius: 5px; }
+.tut-steps .tile.mini .ini { position: absolute; top: 0; left: 2px; font-size: 7px; }

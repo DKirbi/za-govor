@@ -170,9 +170,9 @@ const TUT = {
   mesh: () => ({ title: 'Mreža črk', lead: 'Iz sosednjih črk sestavi slovensko besedo. Vsaka beseda je napad na sovražnika.', fig: figMesh(), calm: S.mode !== 'real',
     time: S.mode === 'real' ? 'Sovražniki napadajo sproti. Ko sovražnik zažari, sledi udarec, zato so hitre besede vredne več kot popolne.' : 'V mirnem načinu sovražniki počakajo na tvojo besedo.',
     steps: [
-      S.mobile ? ['Vleci s prstom po sosednjih črkah, tudi poševno.'] : ['Tipkaj besedo; pot po sosednjih črkah se poišče sama. Lahko tudi vlečeš z miško.'],
-      S.mobile ? [`Spusti prst in beseda se pošlje. Imeti mora vsaj ${MINW()} črke; daljša udari močneje. Pri tapkanju še enkrat tapni zadnjo črko.`] : [K('Enter'), ` pošlje besedo. Imeti mora vsaj ${MINW()} črke; daljša udari močneje.`],
-      ['Barvne črke pripadajo junakom: ko jih uporabiš, napade junak te barve. Več črk iste barve sproži močnejšo veščino.'],
+      S.mobile ? ['Vleci s prstom po sosednjih črkah, tudi poševno, ali pa jih pritiskaj eno za drugo.'] : ['Tipkaj besedo; pot po sosednjih črkah se poišče sama. Lahko tudi vlečeš z miško ali klikaš črke eno za drugo.'],
+      S.mobile ? [`Ko spustiš prst, se beseda pošlje sama. Če črke pritiskaš, pritisni Pošlji ob besedi ali še enkrat zadnjo črko. Beseda ima vsaj ${MINW()} črke; daljša udari močneje.`] : [K('Enter'), ` ali Pošlji odda besedo. Imeti mora vsaj ${MINW()} črke; daljša udari močneje.`],
+      [h('span', { class: 'tile own mini', style: { '--c': ROSTER.krpan.c } }, h('span', { class: 'ini' }, ROSTER.krpan.ini), 'd'), ' Barvne črke pripadajo junakom: ko jih uporabiš, napade junak te barve. Več črk iste barve sproži močnejšo veščino.'],
       S.mobile ? ['Vsaka črka polni zagovor. Ko je poln, gumb Izreci zagovor odpre križanko za mogočen udarec.'] : ['Vsaka črka polni zagovor. Ko je poln, ', K('presledek'), ' odpre križanko za mogočen udarec.']] }),
   finisher: () => tutCross('finisher'), lock: () => tutCross('lock'), ambush: () => tutCross('ambush'),
   chest: () => ({ title: 'Zaklenjena skrinja', lead: 'Iz premešanih črk sestavi skrito besedo. Namig pove, kaj iščeš.', fig: figChest(),
