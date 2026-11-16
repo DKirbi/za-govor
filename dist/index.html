@@ -1230,6 +1230,31 @@ body.mobile .wbtns .btn.send:disabled { opacity: .35; }
   vertical-align: -6px; margin-right: 4px; position: relative; border-radius: 5px; }
 .tut-steps .tile.mini .ini { position: absolute; top: 0; left: 2px; font-size: 7px; }
 
+/* ============================================================ playtest round 3: layout and flow */
+/* hero screens: the way on is a full-width footer right under the content, on a phone always on screen */
+.hm-foot { display: flex; flex-wrap: wrap; gap: 8px; }
+.hm-foot .btn { flex: 1 1 220px; min-height: 46px; justify-content: center; }
+.hm-foot .btn.primary { flex-basis: 100%; }
+body.mobile .hm-foot { position: sticky; bottom: 0; z-index: 25; margin: 0 -10px; padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
+  background: linear-gradient(to bottom, transparent, var(--bg) 14px); }
+body.mobile .hm-foot .btn { flex-basis: 100%; min-height: 48px; font-size: 16px; }
+/* a little less height for the pictures on a phone, so more of the screen is the hero and the way on */
+body.mobile .spirit { height: 170px; } body.mobile .flip { height: 220px; }
+/* the puzzle that waits at a stop */
+.tv-prompt .ptag { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; font-size: 12.5px; font-weight: 700; white-space: nowrap;
+  color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 50%, var(--line)); background: color-mix(in srgb, var(--gold) 10%, var(--panel)); }
+body.mobile .tv-prompt .ptag { display: table; margin: 6px 0 0; }
+/* the back link: the arrow sits on the middle of the text */
+.crumb .arr { display: inline-flex; align-items: center; height: 1em; margin-top: -2px; }
+/* phones: small labels a little larger (playtest: tiring on the eyes) */
+body.mobile .bhead .meta { font-size: 12.5px; }
+body.mobile .chip { font-size: 12.5px; }
+body.mobile .tv-hero .hpnum, body.mobile .partyhp { font-size: 12px; }
+body.mobile .muted { font-size: max(13px, 1em); }
+/* Križanka intro: the marked cell never covers the clue under the grid */
+.tut-fig .cwgrid { margin-bottom: 4px; }
+.tut-fig .cell.cur { transform: none; }
+
 /* ---------- Title scene: "Za govor!" over a dusk landscape (src/title.js, art from tools/art_title.py) ----------
    Sizes are in art pixels times --s, the whole-number scale; animations move one art pixel per step. */
 .sr-only { position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
@@ -2686,9 +2711,10 @@ function renderHeroMoment(arg) {
       h('div', { style: { display: 'grid', gap: '10px' } }, spirit, h('div', { class: 'say' }, h('b', {}, ch.name), '»' + line + '«')),
       h('div', { class: 'hm-card' }, flip, h('div', { class: 'hm-actions' }, flipBtn))),
     // a page reached from a menu (arg.crumb) has one way back, the sticky link at the top; no second button at the bottom
-    arg.actions ? h('div', { class: 'row', style: { 'flex-wrap': 'wrap' } }, arg.actions(arg).map(a => h('button', { class: 'btn' + (a.primary ? ' primary' : ''), onclick: a.fn }, a.label, a.primary ? h('kbd', { style: { 'margin-left': '6px' } }, 'Enter') : null)))
+    // the way on is a full-width footer right under the content; on a phone it stays on screen (never below the fold)
+    arg.actions ? h('div', { class: 'hm-foot' }, arg.actions(arg).map(a => h('button', { class: 'btn' + (a.primary ? ' primary' : ''), onclick: a.fn }, a.label, a.primary ? h('kbd', { style: { 'margin-left': '6px' } }, 'Enter') : null)))
       : arg.crumb ? null
-      : h('div', { class: 'row', style: { 'flex-wrap': 'wrap' } }, h('button', { class: 'btn primary', onclick: () => arg.next() }, arg.nextLabel || 'Naprej ', h('kbd', {}, 'Enter'))));
+      : h('div', { class: 'hm-foot' }, h('button', { class: 'btn primary', onclick: () => arg.next() }, arg.nextLabel || 'Naprej ', h('kbd', {}, 'Enter'))));
   SCR.append(wrap);
   if (!arg.played) { arg.played = true; setTimeout(() => sfx(kind === 'freed' ? 'win' : 'heal', { vol: .8 }), 200); }
 }
@@ -2779,7 +2805,11 @@ function startBattle(node) {
   buildBattleDom();
   log(`${node.title}: ${B.enemies.map(e => e.name).join(', ')}.`);
   { const b = B; later(() => { if (B === b && !B.over) autoItems('start'); }, 700); }
-  if (def.ambush) later(() => { if (S.battle === B) openCrossword('ambush', def.ambush); }, 400);
+  if (def.ambush) {
+    // the ambush is announced first, so the crossword does not come out of nowhere
+    fb('Zaseda! Udariš prvi: reši križanko, preden te opazijo.', 'warn'); log('Zaseda! Udariš prvi.');
+    later(() => { if (S.battle === B) openCrossword('ambush', def.ambush); }, 1600);
+  }
   else showTut('mesh');
 }
 
@@ -4814,7 +4844,7 @@ function renderTravelPanel() {
   const R = S.run, T = UI.tv; if (!R || !T || !T.prompt) return;
   T.prompt.innerHTML = ''; T.status.innerHTML = '';
   const P = R.prompt;
-  if (P) T.prompt.append(h('div', { class: 'ptext' }, P.icon || null, h('span', {}, P.text)),
+  if (P) T.prompt.append(h('div', { class: 'ptext' }, P.icon || null, h('span', {}, P.text), P.tag ? h('span', { class: 'ptag', title: 'Uganka, ki te čaka' }, 'Uganka: ', P.tag) : null),
     h('div', { class: 'pbtns' }, P.actions.map(a => h('button', { class: 'btn' + (a.primary ? ' primary' : ''), onclick: a.fn }, a.label, a.primary ? h('kbd', { style: { 'margin-left': '6px' } }, 'Enter') : null))));
   else T.prompt.append(h('div', { class: 'ptext' }, h('span', {}, R.walking ? 'Družina hodi …' : 'Pot je prosta.')),
     h('div', { class: 'pbtns' },
@@ -4863,16 +4893,18 @@ function promptFor(stop) {
   const skip = S.testMode && stop ? [{ label: 'Preskoči', fn: () => pass(false) }] : [];
   if (!stop) {
     const next = WORLD.regions[R.ri + 1];
-    return { text: `Kažipot kaže naprej: ${next.name}.`, actions: [{ label: `Naprej: ${next.name}`, primary: true, fn: () => { enterRegion(R.ri + 1); sfx('ok'); go('travel'); } }] };
+    return { text: `Kažipot kaže naprej: ${next.name}.`, actions: [{ label: `Naprej: ${next.name}`, primary: true, fn: () => { enterRegion(R.ri + 1); S.run.walking = true; sfx('ok'); go('travel'); } }] };
   }
   if (stop.enemies) {
     const names = stop.enemies.map(k => ENEMIES[k].name).join(' in ');
     const lead = stop.kind === 'boss' ? 'Tu ni poti mimo' : stop.kind === 'elite' ? 'Zaseda! Na poti stojita' : 'Pot zapira';
-    return { text: `${lead}: ${names}.`, actions: [{ label: 'V boj', primary: true, fn: () => stopBattle(stop) }, ...skip] };
+    const boss = stop.enemies.some(k => ENEMIES[k].cwlock);
+    return { text: `${lead}: ${names}.`, tag: stop.kind === 'elite' ? 'križanka, nato mreža črk' : boss ? 'mreža črk in križanka' : 'mreža črk',
+      actions: [{ label: 'V boj', primary: true, fn: () => stopBattle(stop) }, ...skip] };
   }
-  if (stop.kind === 'chest') return { text: 'Ob poti leži zaklenjena skrinja. Odpre jo prava beseda.', actions: [{ label: 'Odpri skrinjo', primary: true, fn: () => go('chest', { id: 'skrinja', stop }) }, { label: 'Pusti jo', fn: () => pass() }] };
-  if (stop.kind === 'darts') return { text: 'Iz starega zidu molijo konice. Mimo ne gre brez prask, a prava beseda zapre večino rež.', actions: [{ label: 'Stopi pred zid', primary: true, fn: () => go('darts', { id: 'puscice', stop }) }, ...skip] };
-  if (stop.kind === 'trap') return { text: 'S pobočja se usuje plaz kamenja!', actions: [{ label: 'Brani se z besedami', primary: true, fn: () => go('trap', { id: 'plaz', stop }) }, ...skip] };
+  if (stop.kind === 'chest') return { text: 'Ob poti leži zaklenjena skrinja. Odpre jo prava beseda.', tag: 'skrinja: beseda iz premešanih črk', actions: [{ label: 'Odpri skrinjo', primary: true, fn: () => go('chest', { id: 'skrinja', stop }) }, { label: 'Pusti jo', fn: () => pass() }] };
+  if (stop.kind === 'darts') return { text: 'Iz starega zidu molijo konice. Mimo ne gre brez prask, a prava beseda zapre večino rež.', tag: 'konice: črka iz vsake reže', actions: [{ label: 'Stopi pred zid', primary: true, fn: () => go('darts', { id: 'puscice', stop }) }, ...skip] };
+  if (stop.kind === 'trap') return { text: 'S pobočja se usuje plaz kamenja!', tag: 'plaz: ena beseda za vse skale', actions: [{ label: 'Brani se z besedami', primary: true, fn: () => go('trap', { id: 'plaz', stop }) }, ...skip] };
   const train = trainAction(() => go('travel'));
   if (stop.kind === 'well') {
     // the well heals the living; it does not raise the fallen any more
@@ -5855,7 +5887,10 @@ function carousel(slides, label) {
     idx = clamp(i, 0, n - 1); S.howtoSlide = idx;
     tabs.forEach((t, k) => t.setAttribute('aria-current', k === idx ? 'true' : 'false'));
     els.forEach((s, k) => { if (k === idx) s.removeAttribute('aria-hidden'); else s.setAttribute('aria-hidden', 'true'); });
-    count.textContent = `${idx + 1} / ${n}`; prevB.disabled = idx === 0; nextB.disabled = idx === n - 1;
+    count.textContent = `${idx + 1} / ${n}`; prevB.disabled = idx === 0;
+    // the last slide: the button on the right takes you back to the menu instead of going dark
+    const end = idx === n - 1; nextB.classList.toggle('primary', end); nextB.disabled = false;
+    nextB.firstChild.textContent = end ? 'Na glavni meni' : 'Naslednja'; nextB.lastChild.textContent = end ? ' ↩' : ' →';
     fit();
     if (scroll) track.scrollTo({ left: els[idx].offsetLeft, behavior: scroll === 'jump' || reduce ? 'auto' : 'smooth' });
     const tab = tabs[idx]; if (tab && tab.parentNode.scrollWidth > tab.parentNode.clientWidth) tab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
@@ -5880,7 +5915,7 @@ function carousel(slides, label) {
     h('div', { class: 'car-nav' },
       h('button', { class: 'btn car-btn', ref: el => prevB = el, onclick: () => go2(idx - 1) }, h('span', { 'aria-hidden': 'true' }, '← '), 'Prejšnja'),
       h('span', { class: 'car-count', ref: el => count = el, 'aria-hidden': 'true' }),
-      h('button', { class: 'btn car-btn', ref: el => nextB = el, onclick: () => go2(idx + 1) }, 'Naslednja', h('span', { 'aria-hidden': 'true' }, ' →'))),
+      h('button', { class: 'btn car-btn', ref: el => nextB = el, onclick: () => idx === n - 1 ? (sfx('sel'), go('title')) : go2(idx + 1) }, h('span', {}, 'Naslednja'), h('span', { 'aria-hidden': 'true' }, ' →'))),
     h('div', { class: 'sr-only', 'aria-live': 'polite', ref: el => live = el }));
   UI.car = { step: d => go2(idx + d), get idx() { return idx; }, fit };
   requestAnimationFrame(() => set(idx, 'jump'));

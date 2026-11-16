@@ -281,7 +281,7 @@ function renderTravelPanel() {
   const R = S.run, T = UI.tv; if (!R || !T || !T.prompt) return;
   T.prompt.innerHTML = ''; T.status.innerHTML = '';
   const P = R.prompt;
-  if (P) T.prompt.append(h('div', { class: 'ptext' }, P.icon || null, h('span', {}, P.text)),
+  if (P) T.prompt.append(h('div', { class: 'ptext' }, P.icon || null, h('span', {}, P.text), P.tag ? h('span', { class: 'ptag', title: 'Uganka, ki te čaka' }, 'Uganka: ', P.tag) : null),
     h('div', { class: 'pbtns' }, P.actions.map(a => h('button', { class: 'btn' + (a.primary ? ' primary' : ''), onclick: a.fn }, a.label, a.primary ? h('kbd', { style: { 'margin-left': '6px' } }, 'Enter') : null))));
   else T.prompt.append(h('div', { class: 'ptext' }, h('span', {}, R.walking ? 'Družina hodi …' : 'Pot je prosta.')),
     h('div', { class: 'pbtns' },
@@ -330,16 +330,18 @@ function promptFor(stop) {
   const skip = S.testMode && stop ? [{ label: 'Preskoči', fn: () => pass(false) }] : [];
   if (!stop) {
     const next = WORLD.regions[R.ri + 1];
-    return { text: `Kažipot kaže naprej: ${next.name}.`, actions: [{ label: `Naprej: ${next.name}`, primary: true, fn: () => { enterRegion(R.ri + 1); sfx('ok'); go('travel'); } }] };
+    return { text: `Kažipot kaže naprej: ${next.name}.`, actions: [{ label: `Naprej: ${next.name}`, primary: true, fn: () => { enterRegion(R.ri + 1); S.run.walking = true; sfx('ok'); go('travel'); } }] };
   }
   if (stop.enemies) {
     const names = stop.enemies.map(k => ENEMIES[k].name).join(' in ');
     const lead = stop.kind === 'boss' ? 'Tu ni poti mimo' : stop.kind === 'elite' ? 'Zaseda! Na poti stojita' : 'Pot zapira';
-    return { text: `${lead}: ${names}.`, actions: [{ label: 'V boj', primary: true, fn: () => stopBattle(stop) }, ...skip] };
+    const boss = stop.enemies.some(k => ENEMIES[k].cwlock);
+    return { text: `${lead}: ${names}.`, tag: stop.kind === 'elite' ? 'križanka, nato mreža črk' : boss ? 'mreža črk in križanka' : 'mreža črk',
+      actions: [{ label: 'V boj', primary: true, fn: () => stopBattle(stop) }, ...skip] };
   }
-  if (stop.kind === 'chest') return { text: 'Ob poti leži zaklenjena skrinja. Odpre jo prava beseda.', actions: [{ label: 'Odpri skrinjo', primary: true, fn: () => go('chest', { id: 'skrinja', stop }) }, { label: 'Pusti jo', fn: () => pass() }] };
-  if (stop.kind === 'darts') return { text: 'Iz starega zidu molijo konice. Mimo ne gre brez prask, a prava beseda zapre večino rež.', actions: [{ label: 'Stopi pred zid', primary: true, fn: () => go('darts', { id: 'puscice', stop }) }, ...skip] };
-  if (stop.kind === 'trap') return { text: 'S pobočja se usuje plaz kamenja!', actions: [{ label: 'Brani se z besedami', primary: true, fn: () => go('trap', { id: 'plaz', stop }) }, ...skip] };
+  if (stop.kind === 'chest') return { text: 'Ob poti leži zaklenjena skrinja. Odpre jo prava beseda.', tag: 'skrinja: beseda iz premešanih črk', actions: [{ label: 'Odpri skrinjo', primary: true, fn: () => go('chest', { id: 'skrinja', stop }) }, { label: 'Pusti jo', fn: () => pass() }] };
+  if (stop.kind === 'darts') return { text: 'Iz starega zidu molijo konice. Mimo ne gre brez prask, a prava beseda zapre večino rež.', tag: 'konice: črka iz vsake reže', actions: [{ label: 'Stopi pred zid', primary: true, fn: () => go('darts', { id: 'puscice', stop }) }, ...skip] };
+  if (stop.kind === 'trap') return { text: 'S pobočja se usuje plaz kamenja!', tag: 'plaz: ena beseda za vse skale', actions: [{ label: 'Brani se z besedami', primary: true, fn: () => go('trap', { id: 'plaz', stop }) }, ...skip] };
   const train = trainAction(() => go('travel'));
   if (stop.kind === 'well') {
     // the well heals the living; it does not raise the fallen any more

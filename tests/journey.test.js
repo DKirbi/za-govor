@@ -127,7 +127,7 @@ run(async () => {
   const passBy = await page.evaluate(async () => { const Z = window.__ZG, R = Z.S.run, id = Z.CHARS.find(c => !Z.UNLOCKED.has(c.id) && !Z.ROSTER[c.id].god && !Z.HEROES.some(h => h.id === c.id)).id;
     const stop = { kind: 'hero', hero: id, x: R.x, done: false, passed: false }; R.stops.unshift(stop); R.prompt = null;
     Z.go('travel'); Z.travelAct('go'); await new Promise(r => setTimeout(r, 300));
-    [...document.querySelectorAll('.hm .row .btn')].find(b => /brez novega/.test(b.textContent)).click(); await new Promise(r => setTimeout(r, 200));
+    [...document.querySelectorAll('.hm .hm-foot .btn')].find(b => /brez novega/.test(b.textContent)).click(); await new Promise(r => setTimeout(r, 200));
     return { id, unlocked: Z.UNLOCKED.has(id), screen: Z.S.screen }; });
   check(!passBy.unlocked && passBy.screen === 'travel', 'a hero you leave behind stays locked', JSON.stringify(passBy));
 
@@ -352,9 +352,9 @@ run(async () => {
     Z.setParty(['erazem', 'kurent', 'stribog', 'krpan']); Z.S.heroes[1].down = true; Z.S.heroes[1].hp = 0; R.stops.push({ kind: 'hero', hero: 'vida', x: R.x + 300, done: false, passed: false }); R.stops.sort((p, q) => p.x - q.x); Z.go('travel'); });
   await page.evaluate(() => { const R = window.__ZG.S.run; R.stops.forEach(x => { if (x.kind !== 'hero' || x.hero !== 'vida') x.passed = true; }); });
   await walk(page); await page.keyboard.press('Enter'); await sleep(400);
-  const swap = await page.evaluate(() => [...document.querySelectorAll('.hm .row .btn')].map(b => b.textContent));
+  const swap = await page.evaluate(() => [...document.querySelectorAll('.hm .hm-foot .btn')].map(b => b.textContent));
   check(swap.length === 5 && swap.filter(t => /^(Namesto|Zapusti)/.test(t)).length === 4 && swap.some(t => /^Zapusti: Kurent/.test(t)), 'with four heroes a new one can only take somebody\'s place; a fallen hero can be left behind', swap.join(' | '));
-  await page.evaluate(() => [...document.querySelectorAll('.hm .row .btn')].find(b => /Kurent/.test(b.textContent)).click()); await sleep(300);
+  await page.evaluate(() => [...document.querySelectorAll('.hm .hm-foot .btn')].find(b => /Kurent/.test(b.textContent)).click()); await sleep(300);
   s = await state(page);
   check(s.party.join() === 'erazem,vida,stribog,krpan', 'Lepa Vida takes the fallen Kurent\'s place', s.party.join());
   await page.evaluate(() => { const Z = window.__ZG; Z.S.testMode = false; Z.S.pickIds = null; Z.go('title'); Z.go('newrun'); }); await page.keyboard.press('Enter'); await sleep(200);

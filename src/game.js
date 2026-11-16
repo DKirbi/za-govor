@@ -1101,9 +1101,10 @@ function renderHeroMoment(arg) {
       h('div', { style: { display: 'grid', gap: '10px' } }, spirit, h('div', { class: 'say' }, h('b', {}, ch.name), '»' + line + '«')),
       h('div', { class: 'hm-card' }, flip, h('div', { class: 'hm-actions' }, flipBtn))),
     // a page reached from a menu (arg.crumb) has one way back, the sticky link at the top; no second button at the bottom
-    arg.actions ? h('div', { class: 'row', style: { 'flex-wrap': 'wrap' } }, arg.actions(arg).map(a => h('button', { class: 'btn' + (a.primary ? ' primary' : ''), onclick: a.fn }, a.label, a.primary ? h('kbd', { style: { 'margin-left': '6px' } }, 'Enter') : null)))
+    // the way on is a full-width footer right under the content; on a phone it stays on screen (never below the fold)
+    arg.actions ? h('div', { class: 'hm-foot' }, arg.actions(arg).map(a => h('button', { class: 'btn' + (a.primary ? ' primary' : ''), onclick: a.fn }, a.label, a.primary ? h('kbd', { style: { 'margin-left': '6px' } }, 'Enter') : null)))
       : arg.crumb ? null
-      : h('div', { class: 'row', style: { 'flex-wrap': 'wrap' } }, h('button', { class: 'btn primary', onclick: () => arg.next() }, arg.nextLabel || 'Naprej ', h('kbd', {}, 'Enter'))));
+      : h('div', { class: 'hm-foot' }, h('button', { class: 'btn primary', onclick: () => arg.next() }, arg.nextLabel || 'Naprej ', h('kbd', {}, 'Enter'))));
   SCR.append(wrap);
   if (!arg.played) { arg.played = true; setTimeout(() => sfx(kind === 'freed' ? 'win' : 'heal', { vol: .8 }), 200); }
 }
@@ -1194,7 +1195,11 @@ function startBattle(node) {
   buildBattleDom();
   log(`${node.title}: ${B.enemies.map(e => e.name).join(', ')}.`);
   { const b = B; later(() => { if (B === b && !B.over) autoItems('start'); }, 700); }
-  if (def.ambush) later(() => { if (S.battle === B) openCrossword('ambush', def.ambush); }, 400);
+  if (def.ambush) {
+    // the ambush is announced first, so the crossword does not come out of nowhere
+    fb('Zaseda! Udariš prvi: reši križanko, preden te opazijo.', 'warn'); log('Zaseda! Udariš prvi.');
+    later(() => { if (S.battle === B) openCrossword('ambush', def.ambush); }, 1600);
+  }
   else showTut('mesh');
 }
 

@@ -1222,3 +1222,28 @@ body.mobile .wbtns .btn.send:disabled { opacity: .35; }
 .tut-steps .tile.mini { --tile-size: 26px; display: inline-grid; place-items: center; width: 26px; height: 26px; font-size: 14px;
   vertical-align: -6px; margin-right: 4px; position: relative; border-radius: 5px; }
 .tut-steps .tile.mini .ini { position: absolute; top: 0; left: 2px; font-size: 7px; }
+
+/* ============================================================ playtest round 3: layout and flow */
+/* hero screens: the way on is a full-width footer right under the content, on a phone always on screen */
+.hm-foot { display: flex; flex-wrap: wrap; gap: 8px; }
+.hm-foot .btn { flex: 1 1 220px; min-height: 46px; justify-content: center; }
+.hm-foot .btn.primary { flex-basis: 100%; }
+body.mobile .hm-foot { position: sticky; bottom: 0; z-index: 25; margin: 0 -10px; padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
+  background: linear-gradient(to bottom, transparent, var(--bg) 14px); }
+body.mobile .hm-foot .btn { flex-basis: 100%; min-height: 48px; font-size: 16px; }
+/* a little less height for the pictures on a phone, so more of the screen is the hero and the way on */
+body.mobile .spirit { height: 170px; } body.mobile .flip { height: 220px; }
+/* the puzzle that waits at a stop */
+.tv-prompt .ptag { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; font-size: 12.5px; font-weight: 700; white-space: nowrap;
+  color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 50%, var(--line)); background: color-mix(in srgb, var(--gold) 10%, var(--panel)); }
+body.mobile .tv-prompt .ptag { display: table; margin: 6px 0 0; }
+/* the back link: the arrow sits on the middle of the text */
+.crumb .arr { display: inline-flex; align-items: center; height: 1em; margin-top: -2px; }
+/* phones: small labels a little larger (playtest: tiring on the eyes) */
+body.mobile .bhead .meta { font-size: 12.5px; }
+body.mobile .chip { font-size: 12.5px; }
+body.mobile .tv-hero .hpnum, body.mobile .partyhp { font-size: 12px; }
+body.mobile .muted { font-size: max(13px, 1em); }
+/* Križanka intro: the marked cell never covers the clue under the grid */
+.tut-fig .cwgrid { margin-bottom: 4px; }
+.tut-fig .cell.cur { transform: none; }

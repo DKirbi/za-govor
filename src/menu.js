@@ -189,7 +189,10 @@ function carousel(slides, label) {
     idx = clamp(i, 0, n - 1); S.howtoSlide = idx;
     tabs.forEach((t, k) => t.setAttribute('aria-current', k === idx ? 'true' : 'false'));
     els.forEach((s, k) => { if (k === idx) s.removeAttribute('aria-hidden'); else s.setAttribute('aria-hidden', 'true'); });
-    count.textContent = `${idx + 1} / ${n}`; prevB.disabled = idx === 0; nextB.disabled = idx === n - 1;
+    count.textContent = `${idx + 1} / ${n}`; prevB.disabled = idx === 0;
+    // the last slide: the button on the right takes you back to the menu instead of going dark
+    const end = idx === n - 1; nextB.classList.toggle('primary', end); nextB.disabled = false;
+    nextB.firstChild.textContent = end ? 'Na glavni meni' : 'Naslednja'; nextB.lastChild.textContent = end ? ' ↩' : ' →';
     fit();
     if (scroll) track.scrollTo({ left: els[idx].offsetLeft, behavior: scroll === 'jump' || reduce ? 'auto' : 'smooth' });
     const tab = tabs[idx]; if (tab && tab.parentNode.scrollWidth > tab.parentNode.clientWidth) tab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
@@ -214,7 +217,7 @@ function carousel(slides, label) {
     h('div', { class: 'car-nav' },
       h('button', { class: 'btn car-btn', ref: el => prevB = el, onclick: () => go2(idx - 1) }, h('span', { 'aria-hidden': 'true' }, '← '), 'Prejšnja'),
       h('span', { class: 'car-count', ref: el => count = el, 'aria-hidden': 'true' }),
-      h('button', { class: 'btn car-btn', ref: el => nextB = el, onclick: () => go2(idx + 1) }, 'Naslednja', h('span', { 'aria-hidden': 'true' }, ' →'))),
+      h('button', { class: 'btn car-btn', ref: el => nextB = el, onclick: () => idx === n - 1 ? (sfx('sel'), go('title')) : go2(idx + 1) }, h('span', {}, 'Naslednja'), h('span', { 'aria-hidden': 'true' }, ' →'))),
     h('div', { class: 'sr-only', 'aria-live': 'polite', ref: el => live = el }));
   UI.car = { step: d => go2(idx + d), get idx() { return idx; }, fit };
   requestAnimationFrame(() => set(idx, 'jump'));

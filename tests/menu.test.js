@@ -128,7 +128,7 @@ run(async () => {
       inView: Math.abs(cur.offsetLeft - t.scrollLeft) < 2, h: Math.abs(t.offsetHeight - cur.offsetHeight) <= 1 }; });
   check(car.idx === 2 && car.count === '3 / 5' && car.tab === 'Skrinja' && car.inView && car.h, 'Naslednja and → move one slide; the track fits the slide in view', JSON.stringify(car));
   await page.evaluate(() => [...document.querySelectorAll('.car-tab')].find(t => t.textContent === 'Plaz').click()); await sleep(700);
-  check(await page.evaluate(() => document.querySelector('.car-nav .car-btn:last-child').disabled && document.querySelector('.car-count').textContent === '5 / 5'), 'a tab jumps straight to its puzzle; Naslednja stops at the last');
+  check(await page.evaluate(() => /Na glavni meni/.test(document.querySelector('.car-nav .car-btn:last-child').textContent) && document.querySelector('.car-count').textContent === '5 / 5'), 'a tab jumps straight to its puzzle; on the last one the button on the right leads to the menu');
   await shot('menu-05-howto-carousel');
 
   // 7. Dosežki in junaki: met heroes open their card, the others are silhouettes; the dev gallery is one step deeper
