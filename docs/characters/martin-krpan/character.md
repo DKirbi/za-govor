@@ -1,15 +1,15 @@
 # Martin Krpan
 
-> **Status:** Core role, three-skill kit, rank values and final story-card subject CONFIRMED. Artwork production deferred until the full roster review is complete.
+> **Status:** Character identity, role, three-skill structure and final story-card subject CONFIRMED. Skill 1 rank values and Mesarica rank values CONFIRMED. Kmečka moč rank values and some targeting details OPEN. Artwork production can proceed from the visual direction below.
 > **Character type:** Slovenian literary hero / literary-folklore figure
-> **Current role:** Starting hero; heavy single-target attacker
+> **Current role:** Starting hero; heavy physical attacker
 > **Current prototype reference:** `src/game.js`, `docs/progression-design.md`
 
 ## 1. Character identity
 
 Martin Krpan is the protagonist of Fran Levstik's *Martin Krpan z Vrha*, first published in 1858. He is a central figure in Slovenian literary and cultural memory, but should not be presented as a documented historical person or as a supernatural mythological being.
 
-**CONFIRMED gameplay role:** Heavy single-target attacker. Preserve his identity as a physically powerful, practical and resourceful fighter. His strength is paired with ingenuity, especially in the story of his duel with Brdavs.
+**CONFIRMED gameplay role:** Heavy physical attacker. Preserve his identity as a physically powerful, practical and resourceful fighter. His strength is paired with ingenuity, especially in the story of his duel with Brdavs.
 
 The Slovene language and cultural identity are important to the literary work. Krpan should not become a generic fantasy barbarian.
 
@@ -29,7 +29,7 @@ These are literary source details, not verified biography. Scholarship discusses
 
 ## 3. Skills and combat mechanics
 
-### Skill 1 — Kmečka moč
+### Skill 1 — Lipov kij
 
 Krpan attacks one enemy with his limewood cudgel (*lipov kij*).
 
@@ -41,19 +41,34 @@ Krpan attacks one enemy with his limewood cudgel (*lipov kij*).
 
 Single-target physical damage.
 
-### Skill 2 — Krpanova Kobila
+### Skill 2 — Kmečka moč
 
-A sequence of two attacks against one enemy.
+Kmečka moč represents Krpan's exceptional physical strength. Its three ranks use increasingly spectacular displays of strength. The mare is part of the rank 2 visual presentation, not a projectile or an attacker.
 
-| Rank | First hit | Second hit | Total damage | Additional effect |
-|---|---:|---:|---:|---|
-| 1 | 8 | 6 | 14 | — |
-| 2 | 10 | 8 | 18 | — |
-| 3 | 10 | 10 | 20 | 3-second stun |
+#### Rank 1 — Dvojni udarec
 
-**CONFIRMED:** This is a two-hit combo. The skill name evokes Krpan's mare, but the approved mechanic is two consecutive attacks. Do not add a mare appearing or attacking in the animation unless the Game Director requests it.
+Krpan delivers two consecutive punches.
 
-The rank 3 stun is a temporary combat effect. Apply the shared action/status and timed-attack rules.
+- Each punch is a separate hit and resolves separately.
+- Exact damage per hit and total damage are **OPEN**.
+- Exact target handling is **OPEN**.
+
+#### Rank 2 — Vreči soli
+
+Krpan's mare appears beside him carrying two enormous sacks of salt. Krpan takes the sacks and hurls them at his opponents.
+
+- The two sacks are the visual focus of the attack.
+- Exact damage, target count and whether the sacks resolve as separate hits or one combined attack are **OPEN**.
+- The mare helps present the attack but does not kick, charge or attack enemies.
+
+#### Rank 3 — Ogromna skala
+
+Krpan lifts and hurls an enormous boulder.
+
+- The boulder can damage up to two enemies.
+- Damage is high, immediate, flat direct damage.
+- This is **not** damage over time and does not apply bleed or another lingering damage status.
+- Exact damage and how damage is distributed between the two targets are **OPEN**.
 
 ### Skill 3 — Mesarica
 
@@ -71,13 +86,31 @@ Single-target only. Bleed is a separate damage-over-time status, not part of the
 
 - **CONFIRMED / IMPLEMENTED in current progression design:** Martin Krpan is one of the three known starting heroes and can be selected at the beginning of a new journey.
 - Preserve his current starter status unless the Game Director explicitly changes it.
-- Apply the shared hero level and skill-point rules. The character-specific rank values above are authoritative for his skills.
+- Apply the shared hero level and skill-point rules. Use the character-specific rank values above where confirmed; do not invent values for the open Kmečka moč ranks.
 
 ## 5. Visual and narrative direction
 
-Artwork production is deferred until the full roster has been reviewed.
+### Gameplay sprites and skill animations
 
-Existing prototype cues include a wide hat, moustache, vest, and a sack of salt carried on his back. The limewood cudgel and Mesarica are defining objects. Keep his silhouette grounded in the literary character rather than generic fantasy equipment.
+- Keep Krpan's silhouette grounded in the literary character rather than generic fantasy equipment.
+- Existing prototype cues include a wide hat, moustache, vest and a sack of salt carried on his back.
+- The limewood cudgel and Mesarica are defining objects.
+- **Lipov kij:** a readable, weighty cudgel swing.
+- **Kmečka moč R1:** two clear consecutive fist strikes.
+- **Kmečka moč R2:** the mare briefly appears beside Krpan with two oversized sacks of salt; Krpan throws the sacks. The mare is a supporting visual element, not an attacker.
+- **Kmečka moč R3:** Krpan throws one enormous boulder. Make the possible two-target impact legible without obscuring the combat UI.
+- **Mesarica:** a strong, precise sword slash with a clear bleed-status cue.
+
+Keep animations economical and readable at the existing gameplay sprite scale. Prefer a few strong key poses and clear impact frames over complex multi-part animation.
+
+### Folk-art illustration — Krpan lifts his mare
+
+Create a separate traditional folk-art illustration showing Krpan lifting his mare above his head. This is a visual representation of his extraordinary strength and a literary episode from Levstik's tale.
+
+- The mare-lifting scene belongs in folk-art / narrative artwork, not in the Kmečka moč combat animation.
+- Do not depict Krpan throwing the mare at an enemy.
+- Keep this separate from the already confirmed final story-card subject below.
+- The exact placement of this illustration in the game's collection or narrative presentation is **OPEN**.
 
 ### Final story card — Krpan defeats Brdavs
 
@@ -89,7 +122,11 @@ The exact composition and execution will be developed during the full roster art
 
 ## 6. Open decisions
 
-No core skill names, rank values or role decisions are currently open. Animation timing and implementation details should follow the shared combat rules and be tested without changing the approved two-hit combo or bleed values.
+- Kmečka moč R1: damage per punch, total damage and target handling.
+- Kmečka moč R2: damage, target count and whether the two sacks resolve as separate hits or one combined attack.
+- Kmečka moč R3: exact flat damage and damage distribution when two enemies are hit.
+- Exact placement of the separate folk-art illustration of Krpan lifting his mare.
+- Animation timing and implementation details should follow the shared combat rules and be tested without changing the confirmed skill structure.
 
 ## 7. Sources and interpretation notes
 
@@ -97,4 +134,4 @@ No core skill names, rank values or role decisions are currently open. Animation
 - [Slovenska biografija — Fran Levstik](https://www.slovenska-biografija.si/oseba/sbi322455/), biographical context for the author.
 - Scholarship on the possible historical and folkloric inspirations for the tale should be treated as interpretation and context, not proof that Martin Krpan was a historical person.
 
-**Interpretation boundary:** The cudgel, Mesarica, mare, salt trade and Brdavs duel belong to Levstik's literary tale. The numerical skill effects, combat status effects and final-card unlock are game mechanics.
+**Interpretation boundary:** The cudgel, Mesarica, mare, salt trade, boulder-throwing gameplay skill and Brdavs duel belong to different layers: the cudgel, sword, mare, salt trade and duel are in Levstik's literary tale; the specific skill ranks, combat targets and numerical effects are game design. The Kmečka moč skill's boulder throw and the use of the mare to present the sacks are game interpretations, not claims about additional episodes in the literary source.
