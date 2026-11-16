@@ -548,14 +548,17 @@ body.mobile .gbg { grid-template-columns: 1fr; }
   font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
 .say b { display: block; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; font-family: system-ui, sans-serif; margin-bottom: 2px; }
 .hm-card { display: grid; gap: 10px; }
-.flip { perspective: 1100px; width: 100%; max-width: 400px; height: 262px; justify-self: center; }
-.flip-in { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .6s cubic-bezier(.3, 1.3, .5, 1); }
+/* The card is as tall as its picture plus the name plate (the front face sits in the flow and sets the height;
+   the story on the back covers the same box and scrolls). A fixed height let the plate overflow on narrow
+   phones, and its centred content rode up over the picture. */
+.flip { perspective: 1100px; width: 100%; max-width: 400px; justify-self: center; }
+.flip-in { position: relative; width: 100%; transform-style: preserve-3d; transition: transform .6s cubic-bezier(.3, 1.3, .5, 1); }
 .flip.back .flip-in { transform: rotateY(180deg); }
 .face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 8px; overflow: hidden; border: 2px solid #2a1a12;
   box-shadow: 0 2px 0 #1c110b, 0 12px 26px rgba(0,0,0,.5); font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
-.face.front { background: var(--paper); color: var(--paper-ink); display: grid; grid-template-rows: auto 1fr; }
+.face.front { position: relative; inset: auto; background: var(--paper); color: var(--paper-ink); display: grid; grid-template-rows: auto auto; }
 .face.front svg { display: block; width: 100%; height: auto; }
-.face.front .plate { padding: 8px 12px; display: grid; gap: 4px; align-content: center; }
+.face.front .plate { padding: 8px 12px 10px; display: grid; gap: 4px; align-content: start; }
 .face.front .plate b { font-size: 20px; } .face.front .plate span { font-size: 12.5px; }
 .face.front .mv { display: flex; gap: 6px; flex-wrap: wrap; font-family: system-ui, sans-serif; font-size: 11px; }
 .face.front .mv { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -570,9 +573,9 @@ body.mobile .gbg { grid-template-columns: 1fr; }
 .face.rear h4 small { font-size: 11px; font-weight: 500; font-family: system-ui, sans-serif; }
 .face.rear p { margin: 0 0 6px; font-size: 13.5px; line-height: 1.45; }
 .hm-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-@media (max-width: 760px) { .hm-body { grid-template-columns: 1fr; } .spirit { height: 210px; } .spirit .hero.spr { --px: 3px; } .spirit::before { width: 150px; height: 150px; margin-left: -75px; } .flip { height: 250px; } }
+@media (max-width: 760px) { .hm-body { grid-template-columns: 1fr; } .spirit { height: 210px; } .spirit .hero.spr { --px: 3px; } .spirit::before { width: 150px; height: 150px; margin-left: -75px; } }
 body.mobile .hm-body { grid-template-columns: 1fr; padding: 12px; } body.mobile .spirit { height: 200px; } body.mobile .spirit .hero.spr { --px: 3px; }
-body.mobile .spirit::before { width: 150px; height: 150px; margin-left: -75px; } body.mobile .flip { height: 250px; } body.mobile .hm h2 { font-size: 22px; }
+body.mobile .spirit::before { width: 150px; height: 150px; margin-left: -75px; } body.mobile .hm h2 { font-size: 22px; }
 @media (prefers-reduced-motion: reduce) { .spirit .sp, .spirit::before, .spirit .mote, .spirit.cursed .hero.spr { animation: none !important; } .spirit.cursed .hero.spr { filter: none; } .flip-in { transition: none; } }
 
 /* ---------- Per-hero health, levels, fallen heroes ---------- */
@@ -900,6 +903,9 @@ body.mobile .chestbox { gap: 10px; align-items: flex-start; font-size: 13.5px; l
   --sal: var(--safe-area-inset-left, env(safe-area-inset-left, 0px)); --sar: var(--safe-area-inset-right, env(safe-area-inset-right, 0px)); }
 body.mobile #app { padding-left: max(10px, var(--sal)); padding-right: max(10px, var(--sar)); padding-bottom: max(18px, var(--sab)); }
 body.mobile #app { padding-top: max(10px, var(--sat)); }
+/* the status bar is transparent (edge to edge): a strip of the page colour behind it, so text scrolled up
+   (a hero screen, a long page) goes under it instead of showing through the clock and icons */
+body.mobile::before { content: ''; position: fixed; top: 0; left: 0; right: 0; height: var(--sat); background: var(--bg); z-index: 45; pointer-events: none; }   /* under dialogs (50+), which dim it too */
 body.mobile .side, body.mobile .event > .vkbd { padding-bottom: max(6px, var(--sab)); }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body.mobile { overscroll-behavior-y: contain; -webkit-tap-highlight-color: transparent; }
@@ -1066,7 +1072,10 @@ body.mobile .lv-grid > .choice { grid-template-columns: 64px 1fr; justify-items:
 body.mobile .lv-grid > .choice h3 { margin: 0; align-self: end; }
 body.mobile .lv-grid > .choice p { margin: 2px 0 0; align-self: start; }
 body.mobile .lv-art { grid-row: span 2; width: 64px; height: 64px; --px: 1px; }
+/* what losing means: a full-width line under the figure and the name, not squeezed into the figure's column */
+body.mobile .setup .lv-grid > .choice p.lv-stakes { grid-column: 1 / -1; justify-self: stretch; margin: 10px -34px 0 0; padding-top: 8px; }   /* -34px: into the room kept for the tick, so it ends 12px from the edge like it starts */
 body.mobile .tick { top: 50%; margin-top: -10px; }
+body.mobile .lv-grid > .choice .tick { top: 42px; }   /* level with the figure and the name, not the middle of a taller card */
 body.mobile .cta-row { margin: 16px -10px 0; padding: 20px 10px calc(12px + env(safe-area-inset-bottom)); }
 body.mobile .btn.cta { flex: 1; min-height: 52px; font-size: 17px; }
 
@@ -1240,7 +1249,7 @@ body.mobile .hm-foot { position: sticky; bottom: 0; z-index: 25; margin: 0 -10px
   background: linear-gradient(to bottom, transparent, var(--bg) 14px); }
 body.mobile .hm-foot .btn { flex-basis: 100%; min-height: 48px; font-size: 16px; }
 /* a little less height for the pictures on a phone, so more of the screen is the hero and the way on */
-body.mobile .spirit { height: 170px; } body.mobile .flip { height: 220px; }
+body.mobile .spirit { height: 170px; }
 /* the puzzle that waits at a stop */
 .tv-prompt .ptag { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; font-size: 12.5px; font-weight: 700; white-space: nowrap;
   color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 50%, var(--line)); background: color-mix(in srgb, var(--gold) 10%, var(--panel)); }
