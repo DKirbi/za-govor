@@ -94,6 +94,8 @@ run(async () => {
   await page.evaluate(() => window.__ZG.go('newrun')); await sleep(150);
   check(await page.evaluate(() => document.querySelector('.choice.on[data-group="mode"]').dataset.id === 'real' && document.querySelector('.choice.on[data-group="know"]').dataset.id === 'malcek'), 'Nova pot opens with the current choices again');
   await page.click('.choice[data-id="calm"]'); await page.click('.choice[data-id="molj"]');
+  // the setup page is taller than the window since Težavnost came in: bring the toggle into view first
+  await page.$eval('.setup .toggle:not(.subopt .toggle) input', el => el.scrollIntoView({ block: 'center' }));
   await page.click('.setup .toggle:not(.subopt .toggle) input'); await sleep(100);   // Pokaži razlage ugank off
   await page.keyboard.press('Enter'); await sleep(200);
   check(await S(page) === 'pick' && await page.evaluate(() => window.__ZG.S.mode) === 'real', 'Enter goes on to the hero; nothing is applied yet');
@@ -105,6 +107,7 @@ run(async () => {
   // explanations on again: every puzzle type is explained afresh on the new journey
   await page.evaluate(() => { const Z = window.__ZG; Z.TUT_SEEN.add('mesh'); Z.TUT_SEEN.add('chest'); Z.go('title'); Z.go('newrun'); }); await sleep(150);
   check(await page.evaluate(() => !document.querySelector('.setup .toggle:not(.subopt .toggle) input').checked), 'Nova pot remembers that explanations were switched off');
+  await page.$eval('.setup .toggle:not(.subopt .toggle) input', el => el.scrollIntoView({ block: 'center' }));
   await page.click('.setup .toggle:not(.subopt .toggle) input'); await page.click('.cta-row .cta'); await sleep(150); await page.keyboard.press('Enter'); await sleep(300);
   check(await page.evaluate(() => window.__ZG.S.tutOn && window.__ZG.TUT_SEEN.size === 0), 'with Pokaži razlage ugank on, a new journey explains every puzzle type again');
 

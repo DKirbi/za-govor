@@ -1,6 +1,7 @@
 // The journey: one hero sets out, walks from stop to stop, fights, meets heroes (only a hero who joins
 // is unlocked), opens a chest, drinks at a well, buys from the pedlar, uses an item in battle, levels up
-// and spends skill points, prays at the shrine and faces the god's trial, and walks past the dart wall.
+// and spends skill points (glowing while they wait), prays at a shrine and faces the god when the journey
+// ends, meets a party god's godly version, loses under each difficulty, and walks past the wall of spikes.
 const { openGame, runner, sleep } = require('./harness');
 const { check, run } = runner('Journey (side-scrolling road, party, items, skills, shrine)');
 
@@ -58,6 +59,9 @@ run(async () => {
   await page.keyboard.press('Enter'); await sleep(300);
   let s = await state(page);
   check(s.screen === 'travel' && s.party.join() === 'krpan' && s.ri === 0, 'the journey starts at Ptuj with one hero', JSON.stringify(s.party));
+  const shrinePlan = await page.evaluate(() => { const R = window.__ZG.S.run, g = Object.values(R.shrines); return { n: g.length, distinct: new Set(g).size, gifts: R.gifts.length }; });
+  check(shrinePlan.n === 3 && shrinePlan.distinct === 3 && shrinePlan.gifts === 0, 'a journey passes three shrines, each of a different god; no gift yet', JSON.stringify(shrinePlan));
+  await page.evaluate(() => { window.__ZG.S.run.shrines = { 3: 'perun' }; });   // the test meets Perun's shrine at Bled
   check(await page.evaluate(() => document.querySelectorAll('.tv-hero.empty').length) === 3, 'three places in the party are free');
   const start = await page.evaluate(() => { const st = window.__ZG.S.heroes[0]; return { lvl: st.lvl, pts: st.pts, sk: st.sk.join() }; });
   check(start.lvl === 1 && start.pts === 0 && start.sk === '1,0,0', 'a hero starts at level 1 knowing only the first skill', JSON.stringify(start));
@@ -146,8 +150,8 @@ run(async () => {
   check(wellActs.some(l => /^Veščine · 2 točki/.test(l)), 'with points to spend the well offers Veščine', wellActs.join(' | '));
   await page.evaluate(() => window.__ZG.S.run.prompt.actions.find(a => /^Veščine/.test(a.label)).fn()); await sleep(300);
   const train = await page.evaluate(() => ({ screen: window.__ZG.S.screen, btns: [...document.querySelectorAll('.train .sk-act .btn')].map(b => b.textContent), states: [...document.querySelectorAll('.train .sk')].map(e => e.className) }));
-  check(train.screen === 'train' && train.btns.length === 2 && train.btns[0].startsWith('Izboljšaj') && train.btns[1].startsWith('Nauči se') && /off/.test(train.states[2]),
-    'Veščine: skill 1 can be upgraded, skill 2 learned, skill 3 waits for skill 2', JSON.stringify(train));
+  check(train.screen === 'train' && train.btns.length === 2 && train.btns[0].startsWith('Na stopnjo 2') && train.btns[1].startsWith('Nauči se') && /off/.test(train.states[2]),
+    'Veščine: skill 1 can go to stopnja 2, skill 2 can be learned, skill 3 waits for skill 2', JSON.stringify(train));
   await shot('journey-03-skills');
   await page.evaluate(() => [...document.querySelectorAll('.train .sk-act .btn')][1].click()); await sleep(150);
   await page.evaluate(() => [...document.querySelectorAll('.train .sk-act .btn')][2].click()); await sleep(150);
@@ -159,8 +163,10 @@ run(async () => {
   await shot('journey-04-well');
   await page.keyboard.press('Enter'); await sleep(300);
   s = await state(page);
-  check(s.hp.every((h, i) => h === s.maxHp[i]), 'drinking at the well heals every hero', JSON.stringify(s.hp));
-  check(await page.evaluate(() => window.__ZG.S.heroes.every(h => !h.down)), 'the well also raises a hero who had fallen');
+  const well = await page.evaluate(() => window.__ZG.S.heroes.map(h => ({ hp: h.hp, max: h.maxHp, down: h.down })));
+  check(well.every(h => h.down || h.hp === h.max), 'drinking at the well heals every hero still standing', JSON.stringify(well));
+  check(well[1].down && well[1].hp === 0, 'the well does not raise a hero who has fallen any more', JSON.stringify(well[1]));
+  await page.evaluate(() => { const st = window.__ZG.S.heroes[1]; st.down = false; st.hp = st.maxHp; });   // raised by other means for the rest of the walk
   await page.keyboard.press('Enter'); await sleep(200);
 
   // Triglav: the pedlar
@@ -192,23 +198,23 @@ run(async () => {
   await page.evaluate(() => { const st = window.__ZG.S.heroes[1]; st.sk = [1, 1, 1]; });
   p = await playTiles(page, 1, 3);
   check(p.chip.endsWith(k2[2]), 'once learned, three letters fire skill 3', JSON.stringify(p));
-  const upg = await page.evaluate(async () => { const Z = window.__ZG, k = 0, id = Z.HEROES[0].id; const st = Z.S.heroes[0]; st.sk = [1, 1, 1];
-    const i = Z.SKILL_UPS[id][0].split(' ').indexOf('moc'); return { id, i, tags: Z.SKILL_UPS[id][0] }; });
-  if (upg.i >= 0) {
-    // the same word twice (the grid is put back), first without upgrades, then with them up to "Moč"; crits held off
-    const cmp = await page.evaluate(async i => {
-      const Z = window.__ZG, B = Z.B, st = Z.S.heroes[0], rnd = Math.random, wait = ms => new Promise(r => setTimeout(r, ms));
-      const all = [...Z.allWords().keys()], w = all.find(x => x.length >= 4 && !/[čšž]/.test(x) && !Z.HEROES.some(h => h.domain.includes(x))), path = Z.findPath(w);
-      path.forEach((t, j) => { B.grid[t].owner = j < 1 ? 0 : -1; B.grid[t].lockUntil = 0; B.grid[t].lockWords = 0; });
-      const saved = B.grid.map(t => ({ ...t })), play = async () => { B.grid = saved.map(t => ({ ...t })); B.enemies.forEach(e => { e.hp = e.maxHp = 999; }); B.target = 0; B.boost = 0; B.lemmaUses = new Map();   // no repeat penalty
-        B.path = path.slice(); B.typed = w; document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await wait(450); return 999 - B.enemies[0].hp; };
-      Math.random = () => 0.99;
-      st.sk[0] = 1; const base = await play();
-      st.sk[0] = 1 + i + 1; const more = await play();
-      Math.random = rnd; return { w, base, more, tags: Z.upTags(0, 1) };
-    }, upg.i);
-    check(cmp.tags.includes('moc') && cmp.more > cmp.base, 'an upgraded skill hits harder (Moč), same word', JSON.stringify(cmp));
-  }
+  // the same word twice (the grid is put back), first at stopnja 1, then at stopnja 2; crits held off
+  const cmp = await page.evaluate(async () => {
+    const Z = window.__ZG, B = Z.B, st = Z.S.heroes[0], rnd = Math.random, wait = ms => new Promise(r => setTimeout(r, ms));
+    const all = [...Z.allWords().keys()], w = all.find(x => x.length >= 4 && !/[čšž]/.test(x) && !Z.HEROES.some(h => h.domain.includes(x))), path = Z.findPath(w);
+    path.forEach((t, j) => { B.grid[t].owner = j < 1 ? 0 : -1; B.grid[t].lockUntil = 0; B.grid[t].lockWords = 0; });
+    const saved = B.grid.map(t => ({ ...t })), play = async () => { B.grid = saved.map(t => ({ ...t })); B.enemies.forEach(e => { e.hp = e.maxHp = 999; }); B.target = 0; B.boost = 0; B.lemmaUses = new Map();   // no repeat penalty
+      B.path = path.slice(); B.typed = w; document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await wait(450); return 999 - B.enemies[0].hp; };
+    Math.random = () => 0.99;
+    st.sk = [1, 1, 1]; const base = await play();
+    st.sk[0] = 2; const more = await play();
+    Math.random = rnd; return { w, base, more, tags: Z.upTags(0, 1) };
+  });
+  check(cmp.more > cmp.base && cmp.tags.length === 1, 'a skill at stopnja 2 hits harder with the same word and gains its first extra effect', JSON.stringify(cmp));
+  // stopnje: a point raises a known skill up to stopnja 3 and no further
+  const ranks = await page.evaluate(() => { const Z = window.__ZG, st = Z.S.heroes[0]; st.sk = [1, 0, 0]; st.pts = 5;
+    const r = [Z.spendPoint(0, 1), Z.spendPoint(0, 1), Z.spendPoint(0, 1), Z.spendPoint(0, 3), Z.spendPoint(0, 2)]; const out = { r, sk: st.sk.join(), pts: st.pts }; st.sk = [1, 1, 1]; st.pts = 0; return out; });
+  check(ranks.r.join() === 'true,true,false,false,true' && ranks.sk === '3,1,0' && ranks.pts === 2, 'points raise skill 1 to stopnja 3 (no further); skill 3 waits for skill 2', JSON.stringify(ranks));
   const pre = await state(page), foeXp = await page.evaluate(() => { const B = window.__ZG.B; B.enemies.forEach(e => { e.maxHp = 40; }); return B.enemies.map(e => e.xp); });
   await winBattle(page);
   s = await state(page);
@@ -217,44 +223,129 @@ run(async () => {
   for (let i = 0; i < 3 && (await state(page)).screen !== 'hero'; i++) { await page.keyboard.press('Enter'); await sleep(450); }
   const after = await page.evaluate(() => ({ btn: !!document.querySelector('.hm .skillbtn'), pills: [...document.querySelectorAll('.hm .face.front .mv em')].map(e => e.className) }));
   check(after.btn && after.pills.length === 3, 'after a battle the hero has a Veščine button and the card lists the three skills', JSON.stringify(after));
+  check(await page.evaluate(() => !document.querySelector('.spirit-tip') && !/tapni junaka|klikni junaka/.test(document.body.textContent)), 'the hero screen does not tell the player to tap the hero');
   await page.click('.hm .spirit-hit'); await sleep(300);
   check(await page.evaluate(() => document.querySelectorAll('.hm .spirit .cards .card').length) === 1, 'tapping the hero plays a skill card');
   await page.click('.hm .skillbtn'); await sleep(250);
   const info = await page.evaluate(() => ({ rows: document.querySelectorAll('.skilldlg .sk').length, ups: document.querySelectorAll('.skilldlg .sk-ups li').length, xp: (document.querySelector('.skilldlg .sk-sum') || {}).textContent || '' }));
-  check(info.rows === 3 && info.ups === 9 && /do naslednje še \d+ XP/.test(info.xp), 'Veščine lists three skills with three upgrades each and the XP to the next level', JSON.stringify(info));
+  check(info.rows === 3 && info.ups === 6 && /do naslednje še \d+ XP/.test(info.xp), 'Veščine lists three skills, each with stopnja 2 and 3, and the XP to the next level', JSON.stringify(info));
   await page.keyboard.press('Escape'); await sleep(150);
   for (let i = 0; i < 4 && (await state(page)).screen !== 'travel'; i++) { await page.keyboard.press('Enter'); await sleep(450); }
 
-  // Bled: pray at the shrine; the god helps for three battles, then has to be beaten
+  // Bled: Perun's shrine (pinned above). Svetišče shows the god's sign, not the god; praying lends his gift
   await skipTo(page, 'god'); await walk(page);
   s = await state(page);
-  check(s.next === 'god' && /svetišče/i.test(s.prompt || ''), 'a shrine stands at Bled', s.prompt);
+  check(s.next === 'god' && /^Svetišče, posvečeno bogu Perunu\./.test(s.prompt || ''), 'a shrine of Perun stands at Bled', s.prompt);
+  check(await page.evaluate(() => !!document.querySelector('.tv-obj .cap .godsign')), 'on the road the shrine carries the god\'s sign');
   await page.keyboard.press('Enter'); await sleep(500);
-  const shrine = await page.evaluate(() => ({ tabs: document.querySelectorAll('.hm-tabs .btn').length, btns: [...document.querySelectorAll('.hm .row .btn')].map(b => b.textContent) }));
-  check(shrine.tabs === 3 && /^Pomoli se k (bogu|boginji) /.test(shrine.btns[0]), 'three gods wait at the shrine; you can pray to one', JSON.stringify(shrine));
+  const shrine = await page.evaluate(() => ({ screen: window.__ZG.S.screen, h2: document.querySelector('.shrine h2').firstChild.textContent, sign: !!document.querySelector('.shrine .godsign.big'),
+    gods: document.querySelectorAll('.shrine .hero.spr').length, btns: [...document.querySelectorAll('.shrine .row .btn')].map(b => b.textContent) }));
+  check(shrine.screen === 'shrine' && shrine.h2 === 'Svetišče' && shrine.sign && shrine.gods === 0 && /^Pomoli se/.test(shrine.btns[0]), 'the page is titled Svetišče and shows the god\'s sign, never the god', JSON.stringify(shrine));
   await shot('journey-07-shrine');
-  const godsBefore = await page.evaluate(() => [...window.__ZG.UNLOCKED].filter(id => window.__ZG.ROSTER[id].god).length);
   await page.keyboard.press('Enter'); await sleep(400);
-  const bl = await page.evaluate(() => ({ b: window.__ZG.S.run.blessing, party: window.__ZG.HEROES.map(h => h.id), gods: [...window.__ZG.UNLOCKED].filter(id => window.__ZG.ROSTER[id].god).length }));
-  check(bl.b && bl.b.left === 3 && !bl.party.some(id => ['perun', 'svarog', 'mokos', 'veles', 'dazbog', 'stribog'].includes(id)) && bl.gods === godsBefore, 'praying gives a blessing for three battles; the god does not join and is not unlocked yet', JSON.stringify(bl));
-  // a blessed battle opens with the god's blow and shows the blessing
-  await skipTo(page, 'battle'); await walk(page); await page.keyboard.press('Enter'); await sleep(1300);
-  const blessed = await page.evaluate(() => ({ meta: document.querySelector('.bhead .meta').textContent, hurt: window.__ZG.B.enemies.every(e => e.hp < e.maxHp) }));
-  check(/blagoslov: .+ \(3\)/.test(blessed.meta) && blessed.hurt, 'a blessed battle opens with the god\'s blow on every enemy', JSON.stringify(blessed));
-  await page.evaluate(() => { window.__ZG.S.run.blessing.left = 1; });
+  const prayed = await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run; return { prayer: R.prayer, gifts: R.gifts.slice(), say: (document.querySelector('.shrine .say.god') || {}).textContent || '',
+    party: Z.HEROES.map(h => h.id), unlocked: Z.UNLOCKED.has('perun') }; });
+  check(prayed.prayer === 'perun' && prayed.gifts.includes('perun') && /Tvoja molitev je uslišana/.test(prayed.say) && !prayed.party.includes('perun') && !prayed.unlocked,
+    'Perun answers the prayer and lends his gift; he neither joins nor is unlocked yet', JSON.stringify(prayed));
+  await shot('journey-07b-prayer');
+  await page.keyboard.press('Enter'); await sleep(300);
+  // the gift: a word that fires a third skill (three letters of one colour) also sends Perun's lightning to every enemy
+  await skipTo(page, 'battle'); await walk(page); await page.keyboard.press('Enter'); await sleep(1500);
+  const gift = await page.evaluate(async () => {
+    const Z = window.__ZG, B = Z.B, wait = ms => new Promise(r => setTimeout(r, ms));
+    const meta = document.querySelector('.bhead .meta').textContent;
+    const all = [...Z.allWords().keys()], w = all.find(x => x.length === 4) || all.find(x => x.length >= 4), path = Z.findPath(w);
+    path.forEach((i, j) => { B.grid[i].owner = j < 3 ? 0 : -1; B.grid[i].lockUntil = 0; B.grid[i].lockWords = 0; });
+    B.enemies.forEach(e => { e.hp = e.maxHp = 999; }); B.target = 0; B.path = path; B.typed = w;
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await wait(1100);
+    return { meta, hurt: B.enemies.map(e => 999 - e.hp), card: [...document.querySelectorAll('.cards .card')].some(c => /dar: Perun/.test(c.textContent)) };
+  });
+  check(/dar: Perun/.test(gift.meta) && gift.card && gift.hurt.every(d => d > 0), 'with the gift, a third skill also chains Perun\'s lightning to every enemy', JSON.stringify(gift));
   await winBattle(page);
-  for (let i = 0; i < 2 && (await state(page)).screen !== 'hero'; i++) { await page.keyboard.press('Enter'); await sleep(450); }
-  const toTrial = await page.evaluate(() => ({ btn: [...document.querySelectorAll('.hm .row .btn')].map(b => b.textContent).join(), note: (document.querySelector('.hm .note') || {}).textContent }));
-  check(/^Preizkušnja: /.test(toTrial.btn) && /Blagoslov je minil/.test(toTrial.note || ''), 'after the third blessed battle the trial is next', JSON.stringify(toTrial));
+  for (let i = 0; i < 4 && (await state(page)).screen !== 'travel'; i++) { await page.keyboard.press('Enter'); await sleep(450); }
+  // the journey ends; leaving the ending brings Perun for the challenge
+  await page.evaluate(() => { const Z = window.__ZG; Z.S.run.ri = Z.WORLD.regions.length - 1; Z.go('ending'); }); await sleep(300);
+  await page.keyboard.press('Enter'); await sleep(400);
+  const come = await page.evaluate(() => ({ screen: window.__ZG.S.screen, god: !!document.querySelector('.godcome .hero.spr'), lead: (document.querySelector('.godcome .lead') || {}).textContent }));
+  check(come.screen === 'godcome' && come.god && /Perun je prišel po svoje/.test(come.lead || ''), 'leaving the ending, Perun comes for the challenge', JSON.stringify(come));
+  await shot('journey-08-godcome');
   await page.keyboard.press('Enter'); await sleep(900);
-  const trial = await page.evaluate(() => ({ screen: window.__ZG.S.screen, foes: window.__ZG.B.enemies.map(e => e.name), god: window.__ZG.B.node.trial }));
-  check(trial.screen === 'battle' && trial.foes.length === 1 && /^Zaklet[ai] /.test(trial.foes[0]), 'the cursed god fights the party', JSON.stringify(trial));
-  await shot('journey-08-trial');
+  const fight = await page.evaluate(() => { const Z = window.__ZG, B = Z.B; return { screen: Z.S.screen, foes: B.enemies.map(e => e.name), hp: B.enemies[0].maxHp, pattern: B.enemies[0].pattern.join(), boss: Math.max(...['lintvern'].map(k => Z.ENEMIES[k].hp)) }; });
+  check(fight.screen === 'battle' && fight.foes.join() === 'Gromovnik Perun' && fight.pattern === 'special' && fight.hp > fight.boss, 'Perun fights alone, far tougher than the dragon, with only his special', JSON.stringify(fight));
+  // his special is a chain: every hero is hit, the first hardest
+  const chain = await page.evaluate(() => { const Z = window.__ZG, B = Z.B; Z.S.heroes.forEach(h => { h.down = false; h.hp = h.maxHp = 200; }); B.shield = 0; B.evade = 0;
+    enemyAct(B.enemies[0]); return Z.S.heroes.map(h => 200 - h.hp); });
+  check(chain.length >= 2 && chain.every(d => d > 0) && chain[0] > chain[chain.length - 1], 'Nevihta hits every hero, the first hardest and the last least', JSON.stringify(chain));
+  await shot('journey-08b-challenge');
+  await page.evaluate(() => { const st = window.__ZG.S.heroes[1]; st.hp = 0; st.down = true; });
   await winBattle(page);
-  for (let i = 0; i < 3 && !(await page.evaluate(() => window.__ZG.S.screen === 'hero' && window.__ZG.S.heroArg.kind === 'freed')); i++) { await page.keyboard.press('Enter'); await sleep(450); }
-  const freed = await page.evaluate(g => ({ kind: window.__ZG.S.heroArg && window.__ZG.S.heroArg.kind, unlocked: window.__ZG.UNLOCKED.has(g), blessing: window.__ZG.S.run.blessing }), trial.god);
-  check(freed.kind === 'freed' && freed.unlocked && !freed.blessing, 'beating the cursed god breaks the curse and unlocks the god for later journeys', JSON.stringify(freed));
+  await page.keyboard.press('Enter'); await sleep(500);
+  const word = await page.evaluate(() => ({ screen: window.__ZG.S.screen, say: (document.querySelector('.godword .say') || {}).textContent || '', notes: [...document.querySelectorAll('.godword .note')].map(n => n.textContent).join(' | '),
+    unlocked: window.__ZG.UNLOCKED.has('perun'), next: localStorage.getItem('zg-gift'), raised: window.__ZG.S.heroes.every(h => !h.down) }));
+  check(word.screen === 'godword' && /zapomnil/.test(word.say) && word.unlocked && word.next === 'perun' && word.raised && /\+250 XP/.test(word.notes),
+    'beaten, Perun speaks, raises the fallen, gives XP, is unlocked, and his gift waits for the next journey', JSON.stringify(word));
+  await shot('journey-09-godword');
+  await page.keyboard.press('Enter'); await sleep(300);
+  const next = await page.evaluate(() => { const Z = window.__ZG; const t = Z.S.screen; Z.S.testMode = true; Z.newRun('krpan'); Z.go('travel'); return { t, gifts: Z.S.run.gifts.slice(), left: localStorage.getItem('zg-gift') }; });
+  check(next.t === 'title' && next.gifts.join() === 'perun' && next.left === null, 'the next journey carries Perun\'s gift from start to end', JSON.stringify(next));
+  check(await page.evaluate(() => /dar: Perun/.test((() => { const Z = window.__ZG; return Z.S.run.gifts.map(g => 'dar: ' + Z.GOD[g].name).join(); })())), 'the gift is named after the god');
+
+  // a party god at their own shrine meets their godly version at once; the party god does not strike it
+  await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run; Z.setParty(['perun', 'krpan']); R.stops = [{ kind: 'god', god: 'perun', x: R.x + 300, done: false, passed: false }]; R.endX = R.x + 900; R.prompt = null; Z.go('travel'); });
+  await walk(page);
+  s = await state(page);
+  check(/božanska podoba/.test(s.prompt || '') && await page.evaluate(() => window.__ZG.S.run.prompt.actions[0].label) === 'Sprejmi izziv', 'with Perun in the party, his shrine holds his godly version: no prayer, a challenge', s.prompt);
+  await page.keyboard.press('Enter'); await sleep(900);
+  const own = await page.evaluate(async () => {
+    const Z = window.__ZG, B = Z.B, wait = ms => new Promise(r => setTimeout(r, ms));
+    const all = [...Z.allWords().keys()], w = all.find(x => x.length >= 4), path = Z.findPath(w);
+    path.forEach(i => { B.grid[i].owner = 0; B.grid[i].lockUntil = 0; B.grid[i].lockWords = 0; });   // only Perun's letters
+    B.enemies[0].hp = B.enemies[0].maxHp = 999; B.enemies[0].charge = -5; B.path = path; B.typed = w; Z.renderWordForTest();
+    const chip = (document.querySelector('.wordbar .chips .chip') || {}).textContent || '';
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await wait(700);
+    const cards = [...document.querySelectorAll('.cards .card')].map(c => c.textContent).join(' | ');
+    return { title: B.node.title, foe: B.enemies[0].name, chip, common: /Skupni udarec/.test(cards) };
+  });
+  check(own.title === 'Izziv' && own.foe === 'Gromovnik Perun' && /ne udari/.test(own.chip) && own.common, 'Perun in the party does not strike his godly version (a word of his letters is only the party\'s common blow)', JSON.stringify(own));
+  const pts = await page.evaluate(() => window.__ZG.S.heroes[0].pts);
+  await winBattle(page);
+  await page.keyboard.press('Enter'); await sleep(500);
+  const ownWon = await page.evaluate(() => ({ screen: window.__ZG.S.screen, pts: window.__ZG.S.heroes[0].pts, xp: window.__ZG.S.heroes.map(h => h.xp), notes: [...document.querySelectorAll('.godword .note')].map(n => n.textContent).join(' | ') }));
+  check(ownWon.screen === 'godword' && ownWon.pts > pts && /točko veščine/.test(ownWon.notes) && ownWon.xp.every(x => x >= 250), 'beating the godly version gives the party god a skill point at once and everyone a chunk of XP', JSON.stringify({ ...ownWon, before: pts }));
+  // a hero with a point to spend glows: in the party on the road and on the hero screens
   await page.keyboard.press('Enter'); await sleep(400);
+  check(await page.evaluate(() => window.__ZG.S.screen === 'hero' && !!document.querySelector('.hm .spirit .hero.spr.glow')), 'after the battle the hero with points glows');
+  for (let i = 0; i < 3 && (await state(page)).screen !== 'travel'; i++) { await page.keyboard.press('Enter'); await sleep(450); }
+  check(await page.evaluate(() => { const Z = window.__ZG, sp = [...document.querySelectorAll('.travel .party .hero.spr')]; return sp.length === Z.HEROES.length && sp.every((el, k) => el.classList.contains('glow') === (Z.S.heroes[k].pts > 0)); }),
+    'on the road exactly the heroes with points to spend glow');
+  await shot('journey-09b-glow');
+  // another god's shrine stays closed to a party that travels with a god
+  check(await page.evaluate(() => /ne dovoli/.test(shrinePrompt({ kind: 'god', god: 'veles' }, () => {}, null).text)), 'another god\'s shrine stays closed while a god travels with you');
+
+  // difficulty: enemies' health, and what a lost battle and a fallen hero mean
+  const diff = await page.evaluate(() => { const Z = window.__ZG, hp = d => { Z.setDiff(d); return makeEnemy('skrat', 0, null).maxHp; }; const r = { lahka: hp('lahka'), srednja: hp('srednja'), tezka: hp('tezka') }; Z.setDiff('srednja'); return r; });
+  check(diff.lahka < diff.srednja && diff.srednja < diff.tezka, 'enemies have less health on Lahka and more on Težka', JSON.stringify(diff));
+  const lose = async d => {
+    await page.evaluate(d => { const Z = window.__ZG; Z.setDiff(d); Z.S.testMode = false; Z.newRun('krpan'); Z.joinHero('kurent'); const R = Z.S.run, stop = R.stops.find(x => x.enemies); R.x = stop.x; R.prompt = null; R.stops.forEach(x => { if (x !== stop && x.x < stop.x) x.passed = true; }); Z.go('travel'); }, d);
+    await walk(page); await page.keyboard.press('Enter'); await sleep(900);
+    await page.evaluate(() => { const Z = window.__ZG; Z.S.heroes.forEach((h, k) => woundHero(k, 9999)); checkEnd(); }); await sleep(1600);
+    const r = await page.evaluate(() => ({ btns: [...document.querySelectorAll('.overlay .btn')].map(b => b.textContent.trim()) }));
+    await page.keyboard.press('Enter'); await sleep(500);
+    return { ...r, ...(await page.evaluate(() => { const Z = window.__ZG; return { screen: Z.S.screen, run: !!Z.S.run, prompt: Z.S.run && Z.S.run.prompt && Z.S.run.prompt.text, hp: Z.S.heroes.map(h => [h.hp, h.maxHp, h.down]) }; })) };
+  };
+  const easy = await lose('lahka');
+  check(easy.btns.join() === 'Umakni se Enter' && easy.screen === 'travel' && easy.run && /umakne/.test(easy.prompt) && easy.hp.every(([hp, max, down]) => !down && hp >= Math.round(max / 3)),
+    'Lahka: a lost battle is not the end — the party withdraws, gets up with a third of its health and the enemies still block the road', JSON.stringify(easy));
+  const hard = await lose('srednja');
+  check(hard.btns.join() === 'Konec poti Enter' && hard.screen === 'title' && !hard.run, 'Srednja: a lost battle ends the journey (no retrying outside the test mode)', JSON.stringify(hard));
+  // Težka: a hero still down when the battle is won leaves the party
+  await page.evaluate(() => { const Z = window.__ZG; Z.setDiff('tezka'); Z.newRun('krpan'); Z.joinHero('kurent'); Z.joinHero('jurij'); const R = Z.S.run, stop = R.stops.find(x => x.enemies); R.x = stop.x; R.prompt = null; R.stops.forEach(x => { if (x !== stop && x.x < stop.x) x.passed = true; }); Z.go('travel'); });
+  await walk(page); await page.keyboard.press('Enter'); await sleep(900);
+  await page.evaluate(() => { woundHero(1, 9999); });
+  await winBattle(page);
+  const left = await page.evaluate(() => ({ party: window.__ZG.HEROES.map(h => h.id), note: (document.querySelector('.overlay .note') || {}).textContent }));
+  check(left.party.join() === 'krpan,jurij' && /Kurent je padel in zapustil družino/.test(left.note || ''), 'Težka: a hero still down when the battle is won leaves the party', JSON.stringify(left));
+  await page.evaluate(() => { const Z = window.__ZG; Z.setDiff('srednja'); Z.S.testMode = true; Z.newRun('krpan'); Z.go('travel'); }); await sleep(200);
 
   // a full party: the fifth hero can only replace someone
   await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run; R.prompt = null;
@@ -325,12 +416,12 @@ run(async () => {
     return hp0 - Z.B.enemies[0].hp; });
   check(healer > 0, 'Zeleni Jurij alone can hurt an enemy', `−${healer}`);
 
-  // every hero's three skills, fully upgraded, run without errors (15 heroes × 3 skills)
+  // every hero's three skills at stopnja 3 run without errors (15 heroes × 3 skills)
   const kits = await page.evaluate(async () => {
     const Z = window.__ZG, ids = Z.CHARS.map(c => c.id), out = [];
     Z.resetRun(); Z.S.mode = 'calm'; Z.newRun('krpan'); Z.S.tutOn = false;
     for (let g = 0; g < ids.length; g += 4) {
-      const party = ids.slice(g, g + 4); Z.setParty(party); Z.S.heroes.forEach(st => { st.sk = [4, 4, 4]; }); Z.go('battle', Z.NODES[2]);
+      const party = ids.slice(g, g + 4); Z.setParty(party); Z.S.heroes.forEach(st => { st.sk = [3, 3, 3]; }); Z.go('battle', Z.NODES[2]);
       for (let k = 0; k < party.length; k++) for (let tier = 1; tier <= 3; tier++) {
         const B = Z.B; if (!B || B.over) { Z.go('battle', Z.NODES[2]); }
         const w = [...Z.allWords().keys()].find(x => x.length >= 4); const path = Z.findPath(w);
@@ -344,7 +435,7 @@ run(async () => {
     }
     Z.resetRun(); Z.go('title'); return out.length;
   });
-  check(kits === 45, 'all 45 skills (15 heroes × 3), fully upgraded, were played', String(kits));
+  check(kits === 45, 'all 45 skills (15 heroes × 3), at stopnja 3, were played', String(kits));
 
   // the dragon at the castle ends the journey
   await page.evaluate(() => { const Z = window.__ZG; Z.S.testMode = true; Z.S.mode = 'real'; Z.newRun('krpan'); Z.go('travel'); for (let i = 0; i < 80 && Z.S.run.ri < Z.WORLD.regions.length - 1; i++) Z.travelAct('skip'); Z.travelAct('skip'); Z.travelAct('skip'); Z.travelAct('skip'); });
