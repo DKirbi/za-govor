@@ -82,9 +82,10 @@ run(async () => {
 
   // 5. the choices are a draft: leaving Nova pot keeps the journey under way as it was
   await page.evaluate(() => { const Z = window.__ZG; Z.go('title'); Z.newRun('krpan'); Z.go('travel'); }); await sleep(150);
-  await page.evaluate(() => [...document.querySelectorAll('.travelwrap .bhead .btn')].find(b => b.textContent === 'Meni').click()); await sleep(150);
+  await page.click('.travelwrap .bhead .exitbtn'); await sleep(150);
+  await page.click('.exitdlg .btn.primary'); await sleep(150);
   const withRun = await items(page);
-  check(withRun[0].startsWith('Nadaljuj pot') && /\(.+\)/.test(withRun[0]) && await focused(page) === 'continue', 'Meni on the road leads to the menu with Nadaljuj pot (and the region) first and focused', withRun[0]);
+  check(withRun[0].startsWith('Nadaljuj pot') && /\(.+\)/.test(withRun[0]) && await focused(page) === 'continue', 'Izhod on the road leads to the menu with Nadaljuj pot (and the region) first and focused', withRun[0]);
   await shot('menu-03-continue');
   await page.evaluate(() => window.__ZG.go('newrun')); await sleep(150);
   check(await page.evaluate(() => /se konča/.test(document.querySelector('.setup .note').textContent)), 'Nova pot warns that the journey under way will end');
@@ -94,6 +95,8 @@ run(async () => {
   await page.evaluate(() => window.__ZG.go('newrun')); await sleep(150);
   check(await page.evaluate(() => document.querySelector('.choice.on[data-group="mode"]').dataset.id === 'real' && document.querySelector('.choice.on[data-group="know"]').dataset.id === 'malcek'), 'Nova pot opens with the current choices again');
   await page.click('.choice[data-id="calm"]'); await page.click('.choice[data-id="molj"]');
+  // the setup page is taller than the window since Težavnost came in: bring the toggle into view first
+  await page.$eval('.setup .toggle:not(.subopt .toggle) input', el => el.scrollIntoView({ block: 'center' }));
   await page.click('.setup .toggle:not(.subopt .toggle) input'); await sleep(100);   // Pokaži razlage ugank off
   await page.keyboard.press('Enter'); await sleep(200);
   check(await S(page) === 'pick' && await page.evaluate(() => window.__ZG.S.mode) === 'real', 'Enter goes on to the hero; nothing is applied yet');
@@ -105,17 +108,18 @@ run(async () => {
   // explanations on again: every puzzle type is explained afresh on the new journey
   await page.evaluate(() => { const Z = window.__ZG; Z.TUT_SEEN.add('mesh'); Z.TUT_SEEN.add('chest'); Z.go('title'); Z.go('newrun'); }); await sleep(150);
   check(await page.evaluate(() => !document.querySelector('.setup .toggle:not(.subopt .toggle) input').checked), 'Nova pot remembers that explanations were switched off');
+  await page.$eval('.setup .toggle:not(.subopt .toggle) input', el => el.scrollIntoView({ block: 'center' }));
   await page.click('.setup .toggle:not(.subopt .toggle) input'); await page.click('.cta-row .cta'); await sleep(150); await page.keyboard.press('Enter'); await sleep(300);
   check(await page.evaluate(() => window.__ZG.S.tutOn && window.__ZG.TUT_SEEN.size === 0), 'with Pokaži razlage ugank on, a new journey explains every puzzle type again');
 
   // 6. Kako igrati: keyboard controls on the desktop, the puzzles in a carousel
   await page.evaluate(() => window.__ZG.go('howto')); await sleep(300);
-  const ht = await page.evaluate(() => ({ tag: document.querySelector('.howto h2 .tag').textContent, kbd: document.querySelectorAll('.ctl kbd').length,
+  const ht = await page.evaluate(() => ({ tag: document.querySelector('.howto .ctl-tab.on').textContent, kbd: document.querySelectorAll('.ctl kbd').length,
     groups: [...document.querySelectorAll('.ctl-group h3')].map(x => x.textContent), slides: document.querySelectorAll('.car-slide').length,
     tabs: [...document.querySelectorAll('.car-tab')].map(t => t.textContent), count: document.querySelector('.car-count').textContent,
     hidden: [...document.querySelectorAll('.car-slide')].map(s => s.getAttribute('aria-hidden') === 'true') }));
-  check(/tipkovnica/.test(ht.tag) && ht.kbd > 15 && ht.groups.includes('Mreža črk') && ht.groups.includes('Križanka'), 'the desktop gets keyboard and mouse controls, grouped by puzzle', JSON.stringify(ht.groups));
-  check(ht.slides === 5 && ht.tabs.join() === 'Mreža,Križanka,Skrinja,Puščice,Plaz' && ht.count === '1 / 5' && ht.hidden.join() === 'false,true,true,true,true', 'the five puzzles are a carousel with one slide in view', JSON.stringify(ht));
+  check(/Računalnik/.test(ht.tag) && /ta naprava/.test(ht.tag) && ht.kbd > 15 && ht.groups.includes('Mreža črk') && ht.groups.includes('Križanka'), 'the desktop gets keyboard and mouse controls, grouped by puzzle', JSON.stringify(ht.groups));
+  check(ht.slides === 5 && ht.tabs.join() === 'Mreža,Križanka,Skrinja,Konice,Plaz' && ht.count === '1 / 5' && ht.hidden.join() === 'false,true,true,true,true', 'the five puzzles are a carousel with one slide in view', JSON.stringify(ht));
   await shot('menu-04-howto');
   await page.click('.car-nav .car-btn:last-child'); await sleep(700);
   await page.keyboard.press('ArrowRight'); await sleep(700);
@@ -124,7 +128,7 @@ run(async () => {
       inView: Math.abs(cur.offsetLeft - t.scrollLeft) < 2, h: Math.abs(t.offsetHeight - cur.offsetHeight) <= 1 }; });
   check(car.idx === 2 && car.count === '3 / 5' && car.tab === 'Skrinja' && car.inView && car.h, 'Naslednja and → move one slide; the track fits the slide in view', JSON.stringify(car));
   await page.evaluate(() => [...document.querySelectorAll('.car-tab')].find(t => t.textContent === 'Plaz').click()); await sleep(700);
-  check(await page.evaluate(() => document.querySelector('.car-nav .car-btn:last-child').disabled && document.querySelector('.car-count').textContent === '5 / 5'), 'a tab jumps straight to its puzzle; Naslednja stops at the last');
+  check(await page.evaluate(() => /Na glavni meni/.test(document.querySelector('.car-nav .car-btn:last-child').textContent) && document.querySelector('.car-count').textContent === '5 / 5'), 'a tab jumps straight to its puzzle; on the last one the button on the right leads to the menu');
   await shot('menu-05-howto-carousel');
 
   // 7. Dosežki in junaki: met heroes open their card, the others are silhouettes; the dev gallery is one step deeper
@@ -149,6 +153,7 @@ run(async () => {
 
   // 7b. the way back stays at the top while a long page scrolls, above the content
   await page.evaluate(() => window.__ZG.go('about')); await sleep(200);
+  await page.evaluate(() => { document.querySelector('.credits-more').open = true; }); await sleep(100);   // the sources, folded behind ©, make the page long
   await page.evaluate(() => scrollTo(0, 900)); await sleep(150);
   const stick = await page.evaluate(() => { const c = document.querySelector('#screen .crumb'), r = c.getBoundingClientRect(), e = document.elementFromPoint(r.left + 20, r.top + r.height / 2);
     return { scrolled: Math.round(scrollY), top: Math.round(r.top), onTop: !!e && c.contains(e) }; });
@@ -196,8 +201,8 @@ run(async () => {
   check(cta.bottom <= cta.vh && cta.h >= 48, 'Izberi junaka stays in reach at the bottom of the phone screen', JSON.stringify(cta));
   await shot('menu-07-phone-newrun');
   await page.evaluate(() => window.__ZG.go('howto')); await sleep(300);
-  const hp = await page.evaluate(() => ({ tag: document.querySelector('.howto h2 .tag').textContent, kbd: [...document.querySelectorAll('.ctl kbd')].length, text: document.querySelector('.ctl-groups').textContent }));
-  check(/telefon/.test(hp.tag) && hp.kbd === 0 && /Vleci/.test(hp.text) && /slovenska tipkovnica/.test(hp.text), 'the phone gets touch controls instead of keys', JSON.stringify({ tag: hp.tag, kbd: hp.kbd }));
+  const hp = await page.evaluate(() => ({ tag: document.querySelector('.howto .ctl-tab.on').textContent, kbd: [...document.querySelectorAll('.ctl kbd')].length, text: document.querySelector('.ctl-groups').textContent }));
+  check(/Telefon/.test(hp.tag) && hp.kbd === 0 && /Vleci/.test(hp.text) && /slovenska tipkovnica/.test(hp.text), 'the phone gets touch controls instead of keys', JSON.stringify({ tag: hp.tag, kbd: hp.kbd }));
   // a swipe is a scroll of the track; the carousel follows it
   await page.evaluate(() => { const t = document.querySelector('.car-track'); t.scrollTo({ left: document.querySelectorAll('.car-slide')[1].offsetLeft }); }); await sleep(500);
   check(await page.evaluate(() => window.__ZG.car.idx === 1 && document.querySelector('.car-count').textContent === '2 / 5'), 'swiping the carousel moves to the next puzzle');

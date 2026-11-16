@@ -385,7 +385,133 @@ def svetisce(f):
     return c.outline()
 
 
+# ------------------------------------------------------------------ shrines: one for each god, each with its own look
+# Svetišča izziva. Every shrine belongs to one god; the god is never drawn, only their sign.
+def _base(c, st='#9aa3ad', hi='#c5ccd4', dk='#6f7985'):
+    c.r(6, 39, 41, 45, st); c.r(6, 39, 41, 40, hi); c.l([(6, 43), (41, 43)], dk)
+
+
+def svetisce_perun(f):
+    # an old oak with a carved post; the thunder mark (a six-petal rosette) glows on the post
+    c = Cv(48)
+    c.e(2, 2, 30, 24, '#3f6f3a'); c.e(6, 4, 26, 18, '#4f8a44'); c.e(12, 0, 34, 16, '#3f6f3a'); c.dots([(9, 8), (15, 5), (22, 9), (27, 6), (12, 14)], '#6fae5a')
+    c.r(13, 16, 18, 40, '#6b4426'); c.r(13, 16, 14, 40, '#4a3220'); c.l([(18, 22), (24, 18)], '#6b4426', 2)
+    c.r(28, 14, 35, 40, '#8a5a34'); c.r(28, 14, 29, 40, '#5a3a22'); c.p([(27, 14), (31, 9), (36, 14)], '#5a3a22')
+    glow = '#fff3b0' if f else '#e9b93f'
+    cx, cy = 32, 22
+    for a in range(6):
+        ang = a * math.pi / 3
+        c.px(cx + round(2 * math.cos(ang)), cy + round(2 * math.sin(ang)), glow)
+    c.px(cx, cy, glow); c.r(29, 29, 34, 29, '#5a3a22'); c.r(29, 33, 34, 33, '#5a3a22')
+    if f: c.l([(40, 2), (37, 8), (41, 8), (38, 15)], '#fff3b0', 1)
+    _base(c)
+    return c.outline()
+
+
+def svetisce_svarog(f):
+    # a stone forge altar: an anvil on a block, the heavenly fire behind it
+    c = Cv(48)
+    c.r(9, 18, 38, 39, '#7d786c'); c.r(9, 18, 38, 19, '#a8a395'); c.r(13, 22, 34, 34, '#2a2226')
+    fl = [(16, 34), (19, 25 + f), (22, 30), (24, 22 - f), (27, 30), (30, 25 + f), (32, 34)]
+    c.p(fl, '#e2572a'); c.p([(19, 34), (22, 29), (24, 26), (26, 29), (29, 34)], '#f2b632'); c.px(24, 30, '#fff3b0')
+    c.r(12, 12, 36, 14, '#5d6270'); c.p([(12, 12), (6, 10), (12, 14)], '#5d6270'); c.r(19, 14, 29, 17, '#5d6270'); c.r(12, 12, 36, 12, '#9aa3ad')
+    c.r(32, 4, 34, 11, '#7a4d2a'); c.r(29, 2, 37, 5, '#8492a6')
+    if f: c.dots([(10, 6), (40, 9), (16, 4), (38, 3)], '#f2b632')
+    _base(c, '#8f8a7c', '#bdb9ac', '#6a665c')
+    return c.outline()
+
+
+def svetisce_mokos(f):
+    # a spring in a ring of stones with a spindle standing over it; ferns around
+    c = Cv(48)
+    c.r(22, 6, 25, 30, '#a8824a'); c.r(22, 6, 22, 30, '#6b4426')
+    c.e(17, 13, 30, 22, '#d9cf9f'); c.l([(18, 15), (29, 15)], '#b8a878'); c.l([(18, 18), (29, 18)], '#b8a878'); c.l([(19, 20), (28, 20)], '#b8a878')
+    c.p([(22, 4), (23, 1), (25, 4)], '#6b4426'); c.l([(23, 22), (23, 30)], '#e9e2c8')
+    c.e(7, 30, 40, 42, '#7d8a8f'); c.e(10, 32, 37, 40, '#3a6f96'); c.dots([(15, 35), (24, 34), (31, 36)], '#bfe3f2')
+    c.px(23, 31 + f, '#bfe3f2')
+    for x in (4, 39):
+        c.l([(x, 42), (x + 2, 30)], '#4f8a3a'); c.dots([(x + 3, 33), (x - 1, 35), (x + 3, 37), (x, 31)], '#6fae5a')
+    _base(c, '#7d8a8f', '#a7b3b8', '#5d6a70')
+    return c.outline()
+
+
+def svetisce_dazbog(f):
+    # a sun disk on a tall pole above a flat sun stone; the rays turn
+    c = Cv(48)
+    c.r(23, 16, 25, 38, '#8a5a34'); c.r(23, 16, 23, 38, '#5a3a22')
+    for a in range(12):
+        ang = a * math.pi / 6 + (math.pi / 12 if f else 0)
+        x1, y1 = 24 + 13 * math.cos(ang), 12 + 11 * math.sin(ang)
+        c.l([(24, 12), (round(x1), round(y1))], '#f2b632')
+    c.e(16, 5, 32, 19, '#e9b93f'); c.e(18, 7, 30, 17, '#f6d36b'); c.dots([(21, 10), (26, 10)], '#8a5a34'); c.l([(21, 14), (26, 14)], '#8a5a34')
+    c.r(12, 34, 36, 39, '#bdb08a'); c.r(12, 34, 36, 35, '#e2d8b4')
+    _base(c, '#a89f86', '#d0c7ab', '#7e7662')
+    return c.outline()
+
+
+def svetisce_stribog(f):
+    # a windswept cairn with a pole of ribbons that the wind keeps pulling
+    c = Cv(48)
+    for (x0, y0, x1, y1) in ((10, 30, 38, 40), (14, 22, 34, 32), (18, 15, 30, 24)):
+        c.e(x0, y0, x1, y1, '#8a8f9c'); c.e(x0 + 2, y0 + 3, x1, y1, '#6b707e'); c.px(x0 + 4, y0 + 2, '#b9bdc8')
+    c.r(23, 0, 24, 17, '#7a4d2a')
+    # three streamers of different lengths, each pulled its own way by the wind
+    for i, (y, ln, col) in enumerate(((1, 15, '#8fb3d6'), (6, 10, '#dbe7f3'), (11, 13, '#6f97bf'))):
+        for x in range(25, 25 + ln):
+            yy = y + (1 if ((x // 3) + i + f) % 2 else 0)
+            c.r(x, yy, x, yy + 1, col)
+    for x, y in ((6, 8), (40, 20), (4, 24)):
+        c.l([(x + (2 if f else 0), y), (x + 5 + (2 if f else 0), y)], '#dbe7f3')
+    _base(c, '#8a8f9c', '#b9bdc8', '#5d6270')
+    return c.outline()
+
+
+def svetisce_veles(f):
+    # a dark stone among roots, crowned with ox horns; a snake guards it
+    c = Cv(48)
+    c.p([(13, 39), (15, 18), (24, 12), (33, 18), (35, 39)], '#3a3440'); c.p([(15, 39), (17, 20), (24, 15), (24, 39)], '#4a4252')
+    c.l([(17, 14), (11, 10), (9, 4)], '#e2d8b4', 2); c.l([(31, 14), (37, 10), (39, 4)], '#e2d8b4', 2); c.r(18, 13, 30, 15, '#6b4426')
+    eye = '#9fd25a' if f else '#5f9a3a'
+    c.px(21, 22, eye); c.px(27, 22, eye)
+    for x0, x1 in ((6, 15), (33, 42)):
+        c.l([(x0, 40), ((x0 + x1) // 2, 34), (x1, 38)], '#5a3a22', 2)
+    c.l([(15, 37), (20, 35), (26, 37), (31, 35), (34, 36)], '#4f7a3a', 2); c.px(35, 35, '#4f7a3a')
+    if f: c.px(37, 35, '#c84a3a')
+    _base(c, '#4a4a4a', '#6a6a6a', '#2e2e2e')
+    return c.outline()
+
+
+SHRINES = {'svetisce-perun': svetisce_perun, 'svetisce-svarog': svetisce_svarog, 'svetisce-mokos': svetisce_mokos,
+           'svetisce-dazbog': svetisce_dazbog, 'svetisce-stribog': svetisce_stribog, 'svetisce-veles': svetisce_veles}
+
+
+# the gods' signs (16 x 16): this is how the shrines show them; the gods themselves stay unseen
+def sign_perun():
+    c = Cv(16); c.p([(9, 0), (3, 9), (7, 9), (5, 15), (13, 5), (9, 5), (11, 0)], '#f6d36b'); c.l([(9, 1), (5, 8)], '#fff3b0'); return c.outline()
+def sign_svarog():
+    c = Cv(16); c.r(2, 7, 13, 9, '#9aa3ad'); c.p([(2, 7), (0, 6), (2, 9)], '#9aa3ad'); c.r(5, 9, 10, 12, '#6f7985'); c.r(3, 12, 12, 13, '#6f7985'); c.r(2, 7, 13, 7, '#c5ccd4')
+    c.dots([(7, 3), (10, 2), (4, 4), (12, 4)], '#f2b632'); c.px(8, 5, '#e2572a'); return c.outline()
+def sign_mokos():
+    c = Cv(16); c.r(7, 0, 8, 15, '#a8824a'); c.e(3, 5, 12, 10, '#e9e2c8'); c.l([(4, 7), (11, 7)], '#b8a878'); c.l([(4, 9), (11, 9)], '#b8a878'); c.r(7, 0, 8, 15, '#a8824a'); c.px(7, 15, '#6b4426'); return c.outline()
+def sign_dazbog():
+    c = Cv(16)
+    for a in range(8):
+        ang = a * math.pi / 4; c.l([(8, 8), (round(8 + 7 * math.cos(ang)), round(8 + 7 * math.sin(ang)))], '#f2b632')
+    c.e(4, 4, 12, 12, '#e9b93f'); c.e(5, 5, 11, 11, '#f6d36b'); return c.outline()
+def sign_stribog():
+    c = Cv(16); col, hi = '#8fb3d6', '#dbe7f3'
+    c.l([(1, 4), (10, 4), (12, 2), (10, 1)], col); c.l([(0, 8), (12, 8), (14, 6), (12, 4)], hi); c.l([(2, 12), (9, 12), (11, 14), (9, 15)], col)
+    return c.outline()
+def sign_veles():
+    c = Cv(16); c.l([(5, 9), (2, 6), (1, 1)], '#e2d8b4', 2); c.l([(10, 9), (13, 6), (14, 1)], '#e2d8b4', 2); c.e(4, 8, 11, 15, '#5a3a22'); c.px(6, 11, '#9fd25a'); c.px(9, 11, '#9fd25a')
+    return c.outline()
+
+
+GOD_SIGNS = {'perun': sign_perun, 'svarog': sign_svarog, 'mokos': sign_mokos, 'dazbog': sign_dazbog, 'stribog': sign_stribog, 'veles': sign_veles}
+
+
 def puscice(f):
+    # Past s konicami: a stone wall with three slots; broad iron spikes push out of them and pull back
     c = Cv(48)
     st, st2, hi = '#8f8a7c', '#6a665c', '#bdb9ac'
     c.r(22, 6, 45, 45, st); c.r(22, 6, 45, 7, hi)
@@ -393,10 +519,10 @@ def puscice(f):
         c.l([(22, y), (45, y)], st2)
         for x in range(26 + off, 45, 12): c.l([(x, y - 7), (x, y)], st2)
     for i, y in enumerate((12, 22, 32)):
-        c.r(24, y - 1, 27, y + 2, '#1d1410')                         # the holes the darts fly from
-        x = 6 + (i * 5 + (4 if f else 0)) % 12
-        c.l([(x, y), (x + 13, y)], '#7a4d2a'); c.p([(x - 3, y), (x, y - 2), (x, y + 2)], '#d5dde3')
-        c.p([(x + 13, y), (x + 16, y - 2), (x + 16, y + 2)], '#b8322f')
+        c.r(24, y - 2, 27, y + 2, '#1d1410')                                # the slot the spikes come out of
+        out = 45 if (i + f) % 2 == 0 else 40                                 # frames alternate: out, then pulled back
+        c.p([(27, y - 4), (out, y), (27, y + 4)], '#9aa3ad')                 # iron spike, broad at the base
+        c.l([(28, y - 2), (out - 3, y)], '#e3e8ed')                          # highlight on the metal
     c.dots([(30, 44), (36, 43), (41, 44)], '#4f8a3a')
     return c.outline()
 
@@ -886,7 +1012,7 @@ def road():
 
 
 HEROES = {'erazem': erazem, 'klepec': klepec, 'vida': vida, 'ajda': ajda, 'krosnjar': krosnjar}
-OBJECTS = {'skrinja': skrinja, 'vodnjak': vodnjak, 'plaz': plaz, 'svetisce': svetisce, 'kazipot': kazipot, 'puscice': puscice}
+OBJECTS = {'skrinja': skrinja, 'vodnjak': vodnjak, 'plaz': plaz, 'svetisce': svetisce, 'kazipot': kazipot, 'puscice': puscice, **SHRINES}
 LEVEL_ART = {'lv-malcek': lv_malcek, 'lv-ucenjak': lv_ucenjak, 'lv-molj': lv_molj}
 BGS = {'ptuj': bg_ptuj, 'peca': bg_peca, 'triglav': bg_triglav, 'bled': bg_bled, 'piran': bg_piran, 'predjama': bg_predjama}
 
@@ -898,6 +1024,7 @@ def main():
         fr = [fn(0), fn(1)]; sprites[k] = uri(sheet(fr)); sizes[k] = fr[0].w
     icons = {it['id']: uri(icon(*it['icon']).im) for it in world['items']}
     extra = {'skala': uri(skala(0).im), 'zlatnik': uri(zlatnik(0).im), 'road': uri(road())}
+    extra.update({'znak-' + k: uri(fn().im) for k, fn in GOD_SIGNS.items()})
     bgs = {k: uri(fn(), 40) for k, fn in BGS.items()}
     js = ('// Generated by tools/art_extra.py — do not edit by hand.\n'
           f'Object.assign(SPRITES, {json.dumps(sprites)});\n'

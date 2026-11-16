@@ -5,11 +5,21 @@
 **A Slovene word-puzzle RPG with heroes from Slavic mythology and Slovene folklore.** Walk
 across Slovenia from Ptuj to Ljubljana castle, chain letters into Slovene words to make
 your heroes attack, solve crosswords to speak a *zagovor* (a folk charm), and fight the
-creatures of Slovene folklore on the way to the dragon. The game is
-inspired by [Words for Evil](https://store.steampowered.com/app/335790/Words_for_Evil/)
-(Chromosphere Games / Dylan Loney, 2014) and exists to show how rich and playful the
-Slovene language is. The game says so itself: on its *O igri* page (*Navdih* and *Zasluge*)
-and after the final battle.
+creatures of Slovene folklore on the way to the dragon. It exists to show how rich and
+playful the Slovene language is.
+
+Developed by **Oygn Productions** (Davor Kirbiš). I have an enormous passion for video games
+and storytelling, and *Za govor!* is my big passion project, made to promote our beautiful
+Slovene language and our fascinating folklore, the things that make us Slovene.
+
+*Za govor!* grew out of a love for [Words for Evil](https://store.steampowered.com/app/335790/Words_for_Evil/)
+(Dylan Loney, Chromosphere Games, 2014), a game that turns word puzzles into a heroic
+adventure. I wanted something like it in Slovene, with our own words, places and folk heroes.
+It is an independent game with its own code, art, characters and story, and is not affiliated
+with or endorsed by *Words for Evil* or its creators. Thanks to Dylan Loney for the game that
+inspired this journey. (This README ships with the PC versions. Inside the game, on every
+platform, *O igri* names the maker and says the game grew out of playing word games, without
+naming any other game, so no store or platform review can stumble on it.)
 
 > **Slovensko:** *Za govor!* je besedna igra s prvinami igre vlog v slovenščini. Junaki iz
 > slovanske mitologije se bojujejo z besedami: iz mreže črk sestavljaš besede, rešuješ
@@ -67,35 +77,54 @@ page under it has **← Nazaj na glavni meni** at the top; `Esc` and the Android
 do the same. *Nova pot* is where the difficulty is chosen (see
 [Two difficulty choices](#two-difficulty-choices)), then the first hero. *Kako igrati* lists
 the controls of the current device (keyboard and mouse, or touch) and shows every puzzle in a
-carousel; *O igri* holds the description, the credits and *Prijavi manjkajočo besedo*.
+carousel; *O igri* holds the description, the maker (*Avtor*), *Navdih*, *Pošlji besede* and the sources (*Zasluge*, folded behind ©).
 
 The game is **one side-scrolling journey** through places in Slovenia. You choose one hero
-and walk; the road stops you at enemies, chests, rock slides, wells, pedlars and other
-heroes. There is no level list — the road leads from region to region, and the dragon at
+and walk; the road stops you at enemies, chests, rock slides, wells, pedlars, shrines of
+the old gods and other heroes. There is no level list — the road leads from region to region, and the dragon at
 Ljubljana castle is the last battle.
 
 | # | Region | Legend of the place | On the road |
 | --- | --- | --- | --- |
 | 1 | **Ptuj** | Kurent | two battles, a chest |
-| 2 | **Peca** | Kralj Matjaž | two battles, a rock slide, a well |
-| 3 | **Triglav** | Ajdovska deklica | two battles, a rock slide, a pedlar |
-| 4 | **Bled** | a shrine of the old gods: one god may join | two battles, a chest, a well |
-| 5 | **Trnovski gozd** | Martin Krpan | two battles, a chest |
-| 6 | **Piranske soline** | Lepa Vida | two battles, a pedlar, a well |
-| 7 | **Predjamski grad** | Erazem Predjamski | a battle, a rock slide, a chest, an ambush |
-| 8 | **Ljubljansko barje** | Zeleni Jurij | two battles, a well, a pedlar |
+| 2 | **Peca** | Kralj Matjaž | two battles, a rock slide, a well, a shrine (Svarog or Perun) |
+| 3 | **Triglav** | Ajdovska deklica | two battles, a rock slide, a pedlar, a shrine (Perun or Stribog) |
+| 4 | **Bled** | the old gods (an island shrine of Živa) | two battles, a chest, a well, a shrine (Dažbog or Mokoš) |
+| 5 | **Trnovski gozd** | Martin Krpan | two battles, a chest, spikes, a shrine (Veles or Mokoš) |
+| 6 | **Piranske soline** | Lepa Vida | two battles, a pedlar, a well, a shrine (Stribog or Dažbog) |
+| 7 | **Predjamski grad** | Erazem Predjamski | a battle, spikes, a rock slide, a chest, an ambush |
+| 8 | **Ljubljansko barje** | Zeleni Jurij | two battles, a well, a pedlar, a shrine (Veles or Mokoš) |
 | 9 | **Ljubljanica** | Peter Klepec | a battle, a well, **Povodni mož** (boss) |
-| 10 | **Ljubljanski grad** | — | a pedlar, a well, **Lintvern**, the Ljubljana dragon (final boss) |
+| 10 | **Ljubljanski grad** | — | a pedlar, a rock slide, spikes, a well, **Lintvern**, the Ljubljana dragon (final boss) |
+
+Only **three of the six shrines** stand on any one journey (picked at random, each for a
+different god), and only three heroes wait on the road, so no two journeys are alike.
 
 - **Walking:** press `→` (or *Naprej*) and the party walks to the next stop; a prompt offers
   what can be done there (`Enter` for the main choice, `Esc` to walk past where that is allowed).
 - **The party:** you pick one hero. On a fresh game Martin Krpan, Zeleni Jurij and Kurent
-  are known; everyone else is a silhouette until you meet them on the road, which unlocks
-  them for later journeys. Up to four travel together; a fifth can only take somebody's
-  place. **Only one god** may travel with you — gods hit harder.
-- **Health stays as it is after a battle.** **Wells** heal everyone fully and raise the
-  fallen. Healers (Mokoš, Zeleni Jurij) heal only up to 70 % of health, and they attack as
-  well — weakly at first, stronger with every level.
+  are known; everyone else is a silhouette until they travel with you. Up to four travel
+  together; a fifth can only take somebody's place. **Only one god** may travel with you —
+  gods hit harder.
+- **Heroes on the road:** a journey meets three: one always waits at Ptuj, the other two in
+  regions picked at random. Each place favours its own legend (the table above), so the next
+  journey meets others. **Only a hero who joins is unlocked** for later journeys; greeting
+  one and walking on is not enough, so a full party has to decide whom to leave.
+- **Levels and skills:** experience comes **only from beaten enemies**. Every new level
+  (up to 9) brings health and one **skill point**; a hero with a point to spend **glows** — a
+  ring of light rises from their head, so it shows in the party — and a short heavenly chorus
+  sings when the point arrives. Each hero has three skills: a word with one, two or three of
+  their letters (so a longer word) fires skill 1, 2 or 3, if the hero knows it, and otherwise
+  the strongest one they know below it. **Skill 1 is known from the start.** A point either
+  learns skill 2 (then 3) or raises a known skill to **stopnja 2 and then 3**: +20 % / +40 %
+  power, effects that last 1.5× / 2× as long (stuns, burns, poison, weakening, dodges), and one
+  extra effect at each stopnja (a critical hit, healing, hitting every enemy, a shield, a
+  stun, fire or weakening). Points are spent in ***Veščine*** at a **well, a shrine or a pedlar**.
+- **Health stays as it is after a battle.** **Wells** heal everyone who is standing; they
+  **no longer raise the fallen**. A fallen hero gets up only through a healer's skill (Mokoš,
+  Zeleni Jurij), *Mrtva voda*, a beaten god — or, on *Lahka*, by themselves after a won battle
+  (see *Težavnost* below). Healers heal only up to 70 % of health, and they attack as well —
+  weakly at first, stronger with every level.
 - **Potions and poisons are used automatically:** a badly hurt hero drinks *Živa voda*, a
   fallen one is raised by *Mrtva voda*, battle potions are opened when a fight begins.
 - **Enemies are random:** every battle draws from the enemies of its region, and they grow
@@ -153,9 +182,13 @@ journey).
 | **Stribog** (god) | Hits every enemy | Sapica → Burja → Vihar |
 | **Veles** (god) | Hardest hits, poison | Kačji pik → Medvedja šapa → Korenine sveta |
 
-Each hero has their own health bar and levels up to level 3 (more health, stronger
-attacks, extra power for long words). *Dosežki in junaki* lists every hero: the ones you
-have met open their card and backstory, the others are silhouettes. A developer link there
+Each hero has their own health bar and level (1–9: more health, slightly stronger attacks).
+After a battle, every hero's screen has a ***Veščine*** button with their three skills, what
+stopnja 2 and 3 add and the XP to the next level; the card shows the skills they know filled
+and the others outlined (a star for stopnja 2, two for stopnja 3). Tapping the hero plays the
+skills they know, one after another — a quiet extra that the game does not announce.
+*Dosežki in junaki* lists every hero: the ones you have unlocked open their card and
+backstory, the others are silhouettes. A developer link there
 opens the full gallery with sprites, cards, road objects, all items and the ten backgrounds.
 Achievements have their place on the same page but none exist yet.
 
@@ -202,26 +235,57 @@ everyone).
 
 ### On the road
 - **Chest:** one word from scrambled letters before time runs out (40 s, 80 s in calm
-  mode). The hidden word opens the chest: XP for every hero, gold, one item and a half-full
-  zagovor meter in the next battle. A real word that leaves letters unused ends it with
-  part of the XP and gold.
+  mode). The hidden word opens the chest: gold, one item and a half-full zagovor meter in
+  the next battle. A real word that leaves letters unused ends it with part of the gold.
 - **Rock slide:** every falling rock carries a letter and you have one word. Rocks whose
-  letters are in it break (XP and gold for each); the rest graze the party for half damage.
-- **Darts (*Puščice v zidu*):** six columns of letters; take one from each column, left to
+  letters are in it break (gold for each); the rest graze the party for half damage.
+- **Spikes trap (*Past s konicami*):** six slots of letters; take one from each slot, left to
   right, and send a word. A shorter word may be sent early, and nothing stops you from
-  sending a word that does not exist. Every letter of a real word turns one dart against the
-  enemies of the next battle; the darts left over hit the party.
-- **Well:** every hero is healed and the fallen stand up again.
+  sending a word that does not exist. **The spikes only hurt:** every letter of a real word
+  closes one slot and the other spikes spring at the heroes one by one (each hit shows on its
+  hero); even a word from every slot lets one spike graze. Spikes never knock a hero out.
+- **Well:** every hero still standing is healed; the fallen stay down.
 - **Pedlar:** four potions or poisons and two relics for gold.
-- **Shrine:** three gods offer themselves; one may join.
+- **Shrine of challenge (*Svetišče*):** every shrine belongs to one god and has its own look
+  (Perun's carved post under an oak, Svarog's forge altar, Mokoš's spring with a spindle,
+  Dažbog's sun disk, Stribog's windswept cairn, Veles's horned stone in the roots). The gods
+  are not shown, only their signs: lightning, anvil, spindle, sun, wind, horns. **Pray at one
+  shrine per journey** and the god answers (*»Tvoja molitev je uslišana. Preživi pot do konca
+  in videl bom, ali si vreden te preizkušnje.«*) and lends a **gift for the rest of the
+  journey**: every word that fires a third skill (three letters of one colour) also brings the
+  god's power — Perun's lightning chains to every enemy, Svarog gives a big shield, Mokoš
+  heals, Dažbog doubles the next word, Stribog's wind hits everyone and clears the mesh, Veles
+  poisons every enemy.
+  **When the journey ends**, as you leave the ending screen, **the god comes for the
+  challenge**: a battle against a god far tougher than the dragon who only uses their special
+  (Perun's *Nevihta* is a chain of lightning through the whole party, the first hero hit
+  hardest). Losing is like losing any battle. Win, and the god speaks a cryptic word
+  (*»Hm … tebe si bom zapomnil.«*), raises the fallen, gives every hero 250 XP, is
+  **unlocked** for later journeys (a god never just joins), and the **gift lasts the whole
+  next journey**.
+  **With a god in the party**, that god's own shrine holds their **godly version**: no prayer
+  and no gift, the challenge starts at once and the party god does not strike their other
+  self. Winning gives the party god a skill point at once and every hero 250 XP. Other gods'
+  shrines stay closed to a party that travels with a god.
 - **Bag:** `T` on the road, `3` in a battle. It only shows what you carry; the heroes use it themselves.
 
-### Two difficulty choices
-Both are chosen on *Nova pot*, before the first hero, and hold for the whole journey: the
-choices only count once the journey starts, so looking at *Nova pot* in the middle of a
+### Difficulty, pace and knowledge
+All three are chosen on *Nova pot*, before the first hero, and hold for the whole journey:
+the choices only count once the journey starts, so looking at *Nova pot* in the middle of a
 journey changes nothing. The last choices are remembered for the next journey.
 
-**Pace** (*Težavnost*): **real-time** (recommended) has no countdown — enemies attack at
+**Difficulty** (*Težavnost*) decides what losing means and how tough enemies are:
+
+| | Lahka | Srednja (recommended) | Težka |
+| --- | --- | --- | --- |
+| Enemy health | ×0.85 | ×1 | ×1.25 |
+| A lost battle | The party withdraws: everyone gets up with a third of their health, the enemies still block the road, the journey goes on | The journey ends | The journey ends |
+| A hero who falls | Gets up after a won battle with a quarter of their health | Stays down until a healer, *Mrtva voda* or a beaten god raises them | Leaves the party if still down when the battle ends; only a healer's skill, *Mrtva voda* or a beaten god can save them in time |
+
+Trying a lost battle again from where it started (*Poskusi znova*) is left only for the
+practice battles and the test mode.
+
+**Pace** (*Tempo*): **real-time** (recommended) has no countdown — enemies attack at
 their own pace and wear the party down; **calm mode** (*mirni način*) only lets enemies act
 after you play words (they strike every few moves).
 
@@ -243,7 +307,7 @@ Malček is the game as it was before the levels were added.
 
 - **No Pošlji in the letter mesh.** Lift your finger after a drag, or tap the last letter
   again; a string that is not a word lets go of its letters. A tap on a proposal plays it.
-  The chest, the rock slide and darts keep *Pošlji*, because they take one deliberate word.
+  The chest, the rock slide and spikes keep *Pošlji*, because they take one deliberate word.
 - **In-game Slovene keyboard** for crosswords and the rock slide: the 25 letters in their
   QWERTZ places with Č, Š, Ž as plain keys. The phone's own keyboard stays closed, so the
   screen never jumps, nothing autocorrects, and every phone behaves the same.
@@ -264,25 +328,34 @@ npm run android:apk     # -> android/app/build/outputs/apk/debug/app-debug.apk
 npm run android:open    # or open the project in Android Studio
 ```
 
-## Missing words
-The word list is still the prototype's (see [Language data and sources](#language-data-and-sources)),
-so players will meet real Slovene words it does not know. The game helps catch them:
+## Missing words and meanings
+Players send two kinds of words to the developer, picked from chips; nothing is typed:
 
-- **Every word it turns down is remembered** on the device (the last 40): in the letter
-  mesh, the chest, the rock slide and darts. The first rejection of a visit says where to
-  report it.
-- **Prijavi besedo** in the pause window (`Esc` / *Premor*) and **Prijavi manjkajočo
-  besedo** on *O igri* list those words; one tap reports a word, with an optional
-  note (meaning, dialect). A word can also be typed. Words the game already knows are not sent.
-- **Reports go to a Google Form**, whose answers land in a spreadsheet, with an e-mail per
-  answer. They carry only the word, where it was turned down, the note, and the level,
-  pace and device type: no names or e-mail addresses. Until the form is set up, or while
-  offline, reports wait on the device and the list can be copied.
+- **Missing words (*manjka*).** Every word the game turns down is remembered on the device
+  (the last 40): in the letter mesh, the chest, the rock slide and spikes. The first
+  rejection of a visit says where to send it.
+- **Meanings (*pomen*).** A word a player finds for the first time that the game has no
+  meaning for yet is remembered too. The result of a won battle lists such words with
+  **Kaj pomeni?**; one tap asks (the chest, rock slide and spikes do the same next to their
+  word). A word that was asked about is never offered again on that device. Meanings that
+  ship with the game (`data/meanings.json`, written by hand, keyed by the word or its base
+  form) are shown instead of the question.
+- **Pošlji besede** in the pause window (`Esc` / *Premor*) and on *O igri* shows both lists
+  as chips: a tap picks a word, a second tap drops it, *Pošlji izbrane* sends them.
+- **Reports go to a Google Form**, one row per word, whose answers land in a spreadsheet.
+  The four fields are reused, so the form itself did not change: *Beseda* = the word, *Kje* =
+  where it was played and the region (never shown in the game), *Opomba* = the kind (`manjka`
+  or `pomen`), *Podatki* = level, pace, device and version. No names or e-mail addresses.
+  Until the form is set up, or while offline, reports wait on the device and the list can be
+  copied. A page that may not reach other sites (such as a sandboxed preview of the
+  prototype) keeps them queued; the Android app and a page opened from its own file or site
+  send them.
 
 **Connect the form:** create a form with four short-answer questions, *Beseda*, *Kje*,
-*Opomba* and *Podatki* (none required, no sign-in, no e-mail collection), link it to a
-Sheet, then take *⋮ → Get pre-filled link*. Its ID (`/forms/d/e/<ID>/viewform`) and the four
-`entry.<number>` values go into `REPORT_FORM` at the top of `src/report.js`.
+*Opomba* and *Podatki* (none required, no sign-in, no e-mail collection, no "limit to one
+response", which needs sign-in), link it to a Sheet, then take *⋮ → Get pre-filled link*. Its
+ID (`/forms/d/e/<ID>/viewform`) and the four `entry.<number>` values go into `REPORT_FORM` at
+the top of `src/report.js`.
 
 **Process the reports:** download the Sheet as CSV and run
 
@@ -301,9 +374,10 @@ Confirmed words go into `data/allow.json` (lemma → forms); then rebuild the wo
 | --- | --- | --- |
 | Start menu | `↑` `↓` and `Enter`; `Esc` goes back from any page under it | Tap; *← Nazaj na glavni meni* stays at the top of every page |
 | Make a word | Type it; the path is found for you. Č, Š, Ž must be typed as themselves (a Slovene keyboard layout), c/s/z never stand in for them | Drag across tiles, or tap them one by one |
-| Send the word | `Enter` | Lift the finger after a drag, or tap the last letter again (*Pošlji* on desktop, and in chest, rock slide and darts) |
-| Clear the word | `Delete` | *Počisti* |
-| Pause (battle, crosswords, chest, rock slide, darts) | `Esc` | *Premor* at the right of the puzzle's header |
+| Send the word | `Enter` | Lift the finger after a drag; for tapped letters *Pošlji* next to the word or the last letter again (a non-word flashes red and clears) |
+| Clear the word | `Delete` | ✕ next to the word |
+| Leave for the menu | — | *Izhod* in the road's header and in the pause window; it says where the game last saved |
+| Pause (battle, crosswords, chest, rock slide, spikes) | `Esc` | *Premor* at the right of the puzzle's header |
 | Sound, volume, fullscreen | — | *Nastavitve* in the main menu (sound and volume also in the pause window) |
 | Remove the last letter | `Backspace` | *Briši* |
 | Speak the zagovor (meter full) | `Space` | *Izreci zagovor* |
@@ -356,7 +430,7 @@ The tests open the built page in headless Chrome and play it through a test hook
 ```sh
 npm install
 python3 build.py
-npm test                                  # all ten test files
+npm test                                  # all test files
 CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 ```
 
@@ -366,10 +440,14 @@ CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 | `tests/levels.test.js` | Each knowledge level: chosen on *Nova pot* and saved when the journey starts, hints and proposals, word count and coaching tips, shortest word, crossword bank, letter counts, revealed letters (and half power), mouse clicks reaching the crossword |
 | `tests/keyword.test.js` | Guessing the keyword early ends the crossword and fires the zagovor; in Povodni mož's whirlpool *urska* with a plain s stays black and *urška* breaks it |
 | `tests/phone.test.js` | On a 390×844 touch screen: the mesh sends without *Pošlji* (second tap, lifted drag, non-words clear), the in-game keyboard types crosswords and the rock slide with the system keyboard closed, wrong entries stay black and correct ones fire, chest partial rewards, darts fit 360 px, *Premor*, and the Android back button |
-| `tests/menu.test.js` | The start menu: items with and without a journey, no top bar, the version at the bottom, `↑` `↓` `Enter` `Esc`, *← Nazaj na glavni meni* on every page and sticky while *O igri* scrolls, one way back on a hero card; *Nastavitve* (sound off is remembered and greys out the volume, fullscreen only on a computer); *Nova pot* copy, figures, *Predlogi besed* under Malček only, explanations on by default, test mode as a developer option, choices that only count once the journey starts; *Kako igrati* controls per device and the puzzle carousel (buttons, keys, tabs, swipe); heroes and their cards; no *Nadaljuj pot* after the ending; phone fit and the Android back button |
-| `tests/credits.test.js` | Words for Evil is credited on *O igri* (*Navdih*, then *Zasluge* with every source and a Steam link) and on the ending, whose link opens *O igri* at *Navdih*; the line fits a 360 px phone; Esc and the Android back button leave the credits |
-| `tests/report.test.js` | *Prijavi besedo*: rejected words are remembered (mesh, chest), the pause screen and *O igri* list them, one tap posts word, place, note and level to the Google Form (intercepted), typing works while paused, known words are not sent, the queue waits without a form and goes out once there is one, lists survive a reload, the panel fits a 360 px phone; *jasa* and base forms are accepted |
-| `tests/journey.test.js` | The road: choosing the first hero, walking to a stop, one enemy for one hero, no healing after a battle, a hero joining, the chest's gold and item, the well, the pedlar, using a potion, the bag pausing the battle, the shrine and the one-god rule, swapping with a full party, all 45 hero moves, the dragon and the ending |
+| `tests/menu.test.js` | The start menu: items with and without a journey, no top bar, the version at the bottom, `↑` `↓` `Enter` `Esc`, *← Nazaj na glavni meni* on every page and sticky while *O igri* scrolls, one way back on a hero card; *Nastavitve* (sound off is remembered and greys out the volume, fullscreen only on a computer); *Nova pot* copy (*Težavnost*, *Tempo*, *Znanje*), figures, *Predlogi besed* under Malček only, explanations on by default, test mode as a developer option, choices that only count once the journey starts; *Kako igrati* controls per device and the puzzle carousel (buttons, keys, tabs, swipe); heroes and their cards; no *Nadaljuj pot* after the ending; phone fit and the Android back button |
+| `tests/credits.test.js` | *O igri* names the maker (Oygn Productions, Davor Kirbiš), why the game was made, a *Navdih* that names no other game, every source folded behind ©; the ending names the maker and links to *O igri*; no other game is named anywhere in the game; phone fit; Esc and the Android back button |
+| `tests/report.test.js` | *Pošlji besede*: rejected and newly found words are remembered, chips only (no text fields), pick and drop, one row per word with its kind (`manjka` / `pomen`), *Kaj pomeni?* on a battle result in one tap and never again, meanings for every form of a word, the queue without a form, lists survive a reload, the panel fits a 360 px phone; *jasa* and base forms are accepted |
+| `tests/save.test.js` | Checkpoints by *Znanje* (Malček every quarter, Učenjak every third, Knjižni molj once at Trnovski gozd), *Shranjeno* on the checkpoint result, *Nadaljuj pot* after closing the page, *Izhod* on the road and in the pause (asks first, says where it saved, resets a battle left midway), a lost journey removes its save, an old save is dropped with a message |
+| `tests/input.test.js` | Word input: proposals stand still during a drag, only the shortest version of a word is proposed, *Namig* lasts until its word is played or the mesh is shuffled |
+| `tests/words.test.js` | `data/words.json`: every word is in the word list, chests take the region's words without repeats, the chest clue by *Znanje*, ✕ and *Pošlji* next to the chest's word, rock slides from the region's words and slower, no hints at all on Knjižni molj, 3-letter words on every level |
+| `tests/flow.test.js` | Hero screens keep the way on in view (also on a 360×640 phone), stops name their puzzle, the signpost walks on by itself, an ambush is announced, *Kako igrati* ends in the menu |
+| `tests/journey.test.js` | The road: the first hero, three heroes per journey (Ptuj and two random regions, each place favouring its own hero), only a hero who joins is unlocked, XP only from beaten enemies, levels bring skill points, *Veščine* at the well (learn, stopnja 2 and 3, never past 3), a word fires the strongest skill the hero knows, a higher stopnja hits harder, the hero screen's *Veščine* button and the unannounced tap-to-demo, wells that heal but no longer raise the fallen, the chest's gold and item, the pedlar, potions, three shrines per journey each of another god, *Svetišče* with the god's sign (never the god), the prayer's answer and gift, Perun coming for the challenge as the ending is left, his chain of lightning, the god's last word, unlock, raised heroes and next-journey gift, a party god's godly version (not struck by the party god, a point and XP when beaten), heroes with points glowing on the road, the three difficulties (enemy health, withdrawing on Lahka, the end on Srednja, the fallen leaving on Težka), a full party swap, spikes that only hurt (spread over the heroes, never fatal), every hero's three skills at stopnja 3, and the dragon |
 | `tests/lexicon.test.js` | The word list in the browser: over a million forms accepted and a common part suggested, the 217-word coverage set accepted and its non-words (Croatian, English, made up) refused, the reported words (*jasa*, *loj*, *runa*, *seks*) and *ritem*/*ritual*/*riti*, vulgar words accepted but never suggested, mythology names, *deny.json*, non-standard forms, base forms (*ljudje* → *človek*), headwords Sloleks lacks (*zborišča*, *sedemkotnik*), and at 4× slower CPU a mesh walk under 50 ms and a lookup under 20 µs |
 | `tests/title.test.js` | The title scene: the *Za govor!* heading and tab title, whole-number scaling (3× at 1280 px, 4× at 1920, 2× on a phone), square wordmark pixels, full width with no sideways scrolling (also at an odd width), starting at the top of the page (below a phone's status bar), room left for the menu, the wordmark standing still, sparks rising in whole art pixels and not restarting when the start screen is rebuilt, a still picture with reduced motion |
 | `tests/desktop.test.js` | A keyboard playthrough: c/s/z are not accepted for č/š/ž, first battle, result and hero screens, chest, finisher, Lintvern's letter lock and forced crossword, ambush, rock slide, and no console errors anywhere |
@@ -385,11 +463,12 @@ za-govor/
 ├── src/
 │   ├── index.src.html        # page template with placeholders
 │   ├── game.js               # battles, crosswords, chest, rock slide, heroes (no framework)
-│   ├── journey.js            # the road: regions, stops, party, items, pedlar, bag, darts
+│   ├── journey.js            # the road: regions, stops, party, items, pedlar, bag, spikes
 │   ├── playtest.js           # pause, puzzle intros, fullscreen, fit to screen
 │   ├── mobile.js             # phone specifics: in-game keyboard, haptics, Android back button
-│   ├── credits.js            # Navdih and Zasluge: the Words for Evil credit and every source
-│   ├── report.js             # Prijavi besedo: rejected words, reports to a Google Form
+│   ├── credits.js            # O igri: Avtor (Oygn Productions), Navdih, Zasluge (every source)
+│   ├── report.js             # Pošlji besede: missing words and Kaj pomeni?, reports to a Google Form
+│   ├── save.js               # the journey saved at checkpoints by Znanje, Izhod
 │   ├── menu.js               # the start menu and its pages: Nova pot, Dosežki in junaki, Kako igrati, O igri
 │   ├── art-extra.js          # generated pixel art (tools/art_extra.py)
 │   ├── art-title.js          # generated title art: scene layers, wordmark, ribbon (tools/art_title.py)
@@ -406,7 +485,9 @@ za-govor/
 │   ├── never-suggest.json    # vulgar words and slurs: accepted, never offered
 │   ├── myth.json             # mythology and enemy names with their forms, always suggested
 │   ├── clues.json            # crossword clue banks per knowledge level, mythology keywords
-│   └── world.json            # the journey: regions, stops, enemy pools, items
+│   ├── words.json            # words of each region: chests (with clues), rock slides, themes (a first list to review)
+│   ├── meanings.json         # meanings shown next to words (filled in by hand from Kaj pomeni? reports)
+│   └── world.json            # the journey: regions, stops, enemy pools, items, save checkpoints
 ├── tools/
 │   ├── build_lexicon.py      # builds data/lexicon.bin from Sloleks, Franček and the thesaurus
 │   ├── sloleks_extract.py    # every form from the Sloleks XML (reads the zip directly)
@@ -485,7 +566,7 @@ za-govor/
     (`data/myth.json`) and reviewed reports (`data/allow.json`), minus foreign words
     (`data/deny.json`: Croatian and English text Sloleks picked up from the corpus, and
     English or French citation forms in the dictionaries, such as *house* or *jeep*).
-  - *Suggested* (proposals, hints, word counts, darts and rock-slide words): 186,510 forms
+  - *Suggested* (proposals, hints, word counts, spikes and rock-slide words): 186,510 forms
     of words that are hand-checked in Sloleks or listed in Franček, common in the Gigafida
     2.0 corpus (frequency ≥ 1,000), standard, and not in `data/never-suggest.json` (vulgar
     words and slurs, matched exactly, so *ritem* and *riti* are not caught by *rit*).
@@ -542,9 +623,10 @@ in [docs/progression-design.md](docs/progression-design.md) and
 - [Playtest notes](docs/playtest-notes.md) — what each test round found and what changed
 
 ## Licence
-Za govor is an original game inspired by Words for Evil; it reuses none of its code, art,
-text or sound and is not officially connected to its authors. The in-game *Zasluge* screen
-credits the inspiration and every third-party source.
+Za govor is an original game by Oygn Productions (Davor Kirbiš), inspired by Words for Evil;
+it reuses none of its code, art, text or sound and is not officially connected to its
+authors. This README credits the inspiration; the in-game *Zasluge* credit every third-party
+source.
 
 No licence has been chosen yet, so all rights are reserved by the author. Third-party
 data and code keep their own licences (see [Language data and sources](#language-data-and-sources)).

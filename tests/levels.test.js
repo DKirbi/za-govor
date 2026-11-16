@@ -5,8 +5,8 @@ const { check, run } = runner('Knowledge levels (Malček, Učenjak, Knjižni mol
 
 const EXPECT = {
   malcek:  { hints: 3, namig: true,  proposals: true,  count: true,  coach: true,  minWord: 3, reveals: 5, lengths: true },
-  ucenjak: { hints: 1, namig: true,  proposals: false, count: true,  coach: true,  minWord: 4, reveals: 2, lengths: true },
-  molj:    { hints: 0, namig: false, proposals: false, count: false, coach: false, minWord: 4, reveals: 1, lengths: false },
+  ucenjak: { hints: 1, namig: true,  proposals: false, count: true,  coach: true,  minWord: 3, reveals: 2, lengths: true },
+  molj:    { hints: 0, namig: false, proposals: false, count: false, coach: false, minWord: 3, reveals: 0, lengths: false },   // no hints anywhere (16 Nov)
 };
 
 run(async () => {
@@ -93,10 +93,14 @@ run(async () => {
       await page.evaluate(() => { const C = window.__ZG.B.cw; C.cur = { e: C.D.entries.findIndex(e => !e.geslo), p: 0 }; });
       await page.evaluate(() => document.querySelector('.nativein').focus());
     }
+    if (!ex.reveals) {
+      check(await page.evaluate(() => !document.querySelector('.revbtn') && window.__ZG.B.cw.reveals === 0), `${name}: no Razkrij črko at all`);
+    } else {
     await page.click('.revbtn'); await sleep(200);
     const rev = await page.evaluate(() => ({ left: window.__ZG.B.cw.reveals, cells: document.querySelectorAll('.cell.rev').length, btn: !!document.querySelector('.revbtn') }));
     check(rev.left === ex.reveals - 1 && rev.cells === 1, `${name}: Razkrij črko fills one letter of the current entry`);
     check(rev.btn === (ex.reveals > 1), `${name}: the reveal button ${ex.reveals > 1 ? 'stays' : 'disappears'} after one use`);
+    }
     if (level === 'ucenjak') await shot('levels-crossword-reveal');
 
     if (level === 'malcek') {

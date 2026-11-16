@@ -118,7 +118,7 @@ run(async () => {
   check(await solveCrossword(page), 'forced crossword can be solved');
 
   // Battle 3 (Ljubljanica) starts with an ambush crossword
-  await page.evaluate(() => window.__ZG.go('battle', window.__ZG.NODES[4])); await sleep(800);
+  await page.evaluate(() => window.__ZG.go('battle', window.__ZG.NODES[4])); await sleep(2100);   // Zaseda! is said first, then the crossword opens
   check((await state(page)).cw === 'ambush', 'Ljubljanica starts with an ambush crossword');
   check(await solveCrossword(page), 'ambush crossword can be solved');
 

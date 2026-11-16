@@ -1,8 +1,9 @@
 // ============================================================ journey: one walk across Slovenia
 // The game is a single side-scrolling road: region after region (data/world.json), each with
 // stops — battles with random enemies, chests, rock slides, wells, pedlars, heroes to meet and
-// one shrine. You start with one hero; up to four travel together and only one of them may be
-// a god. Health does not come back after a battle: it is restored at wells.
+// shrines of challenge (src/shrines.js). You start with one hero; up to four travel together and only
+// one of them may be a god. Health does not come back after a battle: it is restored at wells, which
+// no longer raise the fallen (that takes a healer, Mrtva voda or a beaten god; see DIFFS in src/game.js).
 const WORLD = JSON.parse($('#worlddata').textContent);
 const ITEMS = Object.fromEntries(WORLD.items.map(it => [it.id, it]));
 const TV_SPEED = 240;                      // walking speed, world pixels per second
@@ -10,8 +11,9 @@ function has(id) { return !!(S.run && S.run.relics.includes(id)); }
 
 // ------------------------------------------------------------ who can start a journey
 // Martin Krpan, Zeleni Jurij and Kurent can start the first journey. Everyone else is unknown
-// (a silhouette on the start screen) until met on the road; a met character is unlocked for
-// later journeys, remembered in this browser. That includes a god met at the shrine.
+// (a silhouette on the start screen) until they travel with you: a hero is unlocked for later
+// journeys when they join the party (greeting them is not enough), a god when you beat them in
+// the challenge after praying at their shrine. Remembered in this browser.
 const STARTERS = ['krpan', 'jurij', 'kurent'];
 const UNLOCKED = new Set(STARTERS);
 try { JSON.parse(localStorage.getItem('zg-unlocked') || '[]').forEach(id => { if (ROSTER[id]) UNLOCKED.add(id); }); } catch (e) { /* no storage */ }
@@ -20,6 +22,8 @@ function unlock(id) {
   UNLOCKED.add(id); try { localStorage.setItem('zg-unlocked', JSON.stringify([...UNLOCKED])); } catch (e) { /* no storage */ }
   return true;
 }
+// heroines and the goddess: the lines about them need feminine forms
+const FEMALE = new Set(['vida', 'ajda', 'mokos']), heroF = id => FEMALE.has(id);
 const canStart = id => setupVal('testMode') || UNLOCKED.has(id);   // the test mode chosen on Nova pot counts already
 const starterChoices = () => CHARS.filter(c => canStart(c.id)).map(c => c.id);
 
@@ -170,12 +174,31 @@ function pickKey(e) {
   else if (e.key === 'Enter') { e.preventDefault(); startJourney(); }
   else if (e.key === 'Escape') go('newrun');
 }
-function startJourney() { const ids = starterChoices(), id = ids[clamp(S.pickSel, 0, ids.length - 1)]; applySetup(); newRun(id); S.pickSel = 0; go('travel'); }
+function startJourney() { const ids = starterChoices(), id = ids[clamp(S.pickSel, 0, ids.length - 1)]; applySetup(); clearSave(); newRun(id); S.pickSel = 0; go('travel'); }
 
 // ------------------------------------------------------------ a run and its regions
+// Heroes on the road: one waits at Ptuj, and two more in other regions picked at random, so a journey
+// never meets everyone and the next one meets others. Each place favours its own hero (HERO_HOME).
+const HERO_MEETS = 3;
+const HERO_HOME = { ptuj: 'kurent', peca: 'matjaz', triglav: 'ajda', gozd: 'krpan', piran: 'vida', predjama: 'erazem', barje: 'jurij', reka: 'klepec' };   // the legends of the places (README)
+function planHeroes() {
+  const slots = WORLD.regions.map((r, i) => r.stops.includes('hero') ? i : -1).filter(i => i > 0);
+  return [0, ...shuffle(slots).slice(0, HERO_MEETS - 1)].sort((a, b) => a - b);
+}
+function pickHero(regionId) {
+  const R = S.run, free = CHARS.filter(c => !isGod(c.id) && !R.met.includes(c.id) && !HEROES.some(x => x.id === c.id)).map(c => c.id);
+  if (!free.length) return null;
+  const w = free.map(id => (HERO_HOME[regionId] === id ? 6 : 1) * (UNLOCKED.has(id) ? 1 : 2));   // at home: 6×; not yet unlocked: 2×
+  let r = Math.random() * w.reduce((a, x) => a + x, 0);
+  for (let i = 0; i < free.length; i++) { r -= w[i]; if (r <= 0) return free[i]; }
+  return free[free.length - 1];
+}
 function newRun(starterId) {
   S.run = { ri: 0, x: 0, endX: 0, stops: [], gold: S.testMode ? 200 : 20, relics: [], bag: {}, rozaUsed: false, jurijUsed: false,
-    battles: 0, words: 0, firstBattle: true, met: [starterId], walking: false, prompt: null, starter: starterId };
+    battles: 0, words: 0, firstBattle: true, met: [starterId], walking: false, prompt: null, starter: starterId, heroAt: null,
+    shrines: null, prayer: null, challenged: false, gifts: [] };
+  S.run.heroAt = planHeroes(); S.run.shrines = planShrines(starterId);
+  const g = takeNextGift(); if (g) S.run.gifts.push(g);   // the gift of a god beaten at the end of the last journey
   setParty([starterId]); S.meterBonus = 0;
   enterRegion(0);
 }
@@ -189,23 +212,22 @@ function enemyGroup(reg, ri, kind) {
 function enterRegion(i) {
   const R = S.run, reg = WORLD.regions[i], gap = WORLD.stopGap;
   R.ri = i; R.x = 0; R.stops = []; R.prompt = null; R.walking = false;
-  reg.stops.forEach((kind, n) => {
+  // a hero stop and a shrine only stay in the regions picked for this journey
+  const kinds = reg.stops.filter(kind => (kind !== 'hero' || !R.heroAt || R.heroAt.includes(i)) && (kind !== 'god' || (R.shrines && R.shrines[i])));
+  kinds.forEach((kind, n) => {
     const stop = { kind, x: (n + 1) * gap, done: false, passed: false };
     if (kind === 'battle' || kind === 'elite' || kind === 'boss') stop.enemies = enemyGroup(reg, i, kind);
     else if (kind === 'hero') {
-      // a random folk hero you have not met on this journey; heroes you never unlocked come first
-      const free = id => !R.met.includes(id) && !HEROES.some(x => x.id === id);
-      const others = CHARS.filter(c => !isGod(c.id) && free(c.id)).map(c => c.id), fresh = others.filter(id => !UNLOCKED.has(id));
-      stop.hero = fresh.length ? pick(fresh) : others.length ? pick(others) : null;
+      stop.hero = pickHero(reg.id);
       if (stop.hero) R.met.push(stop.hero); else stop.kind = 'well';
-    } else if (kind === 'god') stop.gods = shuffle(CHARS.filter(c => isGod(c.id)).map(c => c.id)).slice(0, 3);
+    } else if (kind === 'god') stop.god = R.shrines[i];
     else if (kind === 'shop') {
       const relics = shuffle(WORLD.items.filter(it => it.kind === 'relic' && !R.relics.includes(it.id))).slice(0, 2);
       stop.stock = shuffle(WORLD.items.filter(it => it.kind === 'use')).slice(0, 4).concat(relics).map(it => ({ id: it.id, sold: false }));
     }
     R.stops.push(stop);
   });
-  R.endX = (reg.stops.length + 1) * gap;
+  R.endX = (kinds.length + 1) * gap;
 }
 const nextStop = () => S.run.stops.find(s => !s.passed);
 
@@ -229,23 +251,23 @@ function renderTravel() {
       cap = stop.kind === 'boss' ? 'Šef' : stop.kind === 'elite' ? 'Zaseda' : 'Sovražniki';
     } else if (stop.kind === 'chest') { body = objEl('skrinja', stop.done ? 1 : 0); cap = stop.done ? '' : 'Skrinja'; }
     else if (stop.kind === 'trap') { if (stop.done) return; body = objEl('plaz'); cap = 'Plaz'; }
-    else if (stop.kind === 'darts') { body = objEl('puscice', stop.done ? 1 : 0); cap = stop.done ? '' : 'Puščice'; }
+    else if (stop.kind === 'darts') { body = objEl('puscice', stop.done ? 1 : 0); cap = stop.done ? '' : 'Konice'; }
     else if (stop.kind === 'well') { body = objEl('vodnjak', stop.done ? 1 : 0); cap = 'Vodnjak'; }
     else if (stop.kind === 'shop') { body = objEl('krosnjar', 0, 'mirror npc'); cap = 'Krošnjar'; }
-    else if (stop.kind === 'god') { body = objEl('svetisce', 0, 'npc'); cap = 'Svetišče'; }
+    else if (stop.kind === 'god') { body = objEl('svetisce-' + stop.god, 0, 'npc'); cap = [godSign(stop.god, 'mini'), 'Svetišče']; }
     else if (stop.kind === 'hero') { if (stop.done) return; body = h('div', { class: 'mirror' }, spriteEl(stop.hero, ROSTER[stop.hero].c)); cap = ROSTER[stop.hero].name; }
     const el = h('div', { class: 'tv-obj' }, cap ? h('span', { class: 'cap' }, cap) : null, body);
     T.layer.append(el); T.objs.push({ x: stop.x, el });
   });
   const sign = h('div', { class: 'tv-obj' }, R.ri < WORLD.regions.length - 1 ? h('span', { class: 'cap' }, WORLD.regions[R.ri + 1].name) : null, objEl('kazipot'));
   if (R.ri < WORLD.regions.length - 1) { T.layer.append(sign); T.objs.push({ x: R.endX, el: sign }); }
-  HEROES.forEach((hr, k) => { const st = S.heroes[k]; T.party.append(spriteEl(hr.id, hr.c, st.down ? 'down' : '')); });
+  HEROES.forEach((hr, k) => { const st = S.heroes[k]; T.party.append(spriteEl(hr.id, hr.c, st.down ? 'down' : st.pts > 0 ? 'glow' : '')); });
 
   SCR.append(h('div', { class: 'travelwrap' },
     h('div', { class: 'bhead' },
       h('div', { class: 't' }, reg.name, h('small', {}, `pokrajina ${R.ri + 1} od ${WORLD.regions.length}`)),
       h('div', { class: 'regdots', title: 'Pot do Ljubljanskega gradu' }, WORLD.regions.map((r, i) => h('i', { class: i < R.ri ? 'done' : i === R.ri ? 'on' : '', title: r.name }))),
-      h('button', { class: 'btn small', onclick: () => go('title') }, 'Meni')),
+      exitBtn('small')),
     h('p', { class: 'tv-intro' }, reg.intro),
     scene,
     h('div', { class: 'tv-prompt', ref: el => T.prompt = el }),
@@ -259,7 +281,7 @@ function renderTravelPanel() {
   const R = S.run, T = UI.tv; if (!R || !T || !T.prompt) return;
   T.prompt.innerHTML = ''; T.status.innerHTML = '';
   const P = R.prompt;
-  if (P) T.prompt.append(h('div', { class: 'ptext' }, P.icon || null, h('span', {}, P.text)),
+  if (P) T.prompt.append(h('div', { class: 'ptext' }, P.icon || null, h('span', {}, P.text), P.tag ? h('span', { class: 'ptag', title: 'Uganka, ki te čaka' }, 'Uganka: ', P.tag) : null),
     h('div', { class: 'pbtns' }, P.actions.map(a => h('button', { class: 'btn' + (a.primary ? ' primary' : ''), onclick: a.fn }, a.label, a.primary ? h('kbd', { style: { 'margin-left': '6px' } }, 'Enter') : null))));
   else T.prompt.append(h('div', { class: 'ptext' }, h('span', {}, R.walking ? 'Družina hodi …' : 'Pot je prosta.')),
     h('div', { class: 'pbtns' },
@@ -308,34 +330,37 @@ function promptFor(stop) {
   const skip = S.testMode && stop ? [{ label: 'Preskoči', fn: () => pass(false) }] : [];
   if (!stop) {
     const next = WORLD.regions[R.ri + 1];
-    return { text: `Kažipot kaže naprej: ${next.name}.`, actions: [{ label: `Naprej: ${next.name}`, primary: true, fn: () => { enterRegion(R.ri + 1); sfx('ok'); go('travel'); } }] };
+    return { text: `Kažipot kaže naprej: ${next.name}.`, actions: [{ label: `Naprej: ${next.name}`, primary: true, fn: () => { enterRegion(R.ri + 1); S.run.walking = true; sfx('ok'); go('travel'); } }] };
   }
   if (stop.enemies) {
     const names = stop.enemies.map(k => ENEMIES[k].name).join(' in ');
     const lead = stop.kind === 'boss' ? 'Tu ni poti mimo' : stop.kind === 'elite' ? 'Zaseda! Na poti stojita' : 'Pot zapira';
-    return { text: `${lead}: ${names}.`, actions: [{ label: 'V boj', primary: true, fn: () => stopBattle(stop) }, ...skip] };
+    const boss = stop.enemies.some(k => ENEMIES[k].cwlock);
+    return { text: `${lead}: ${names}.`, tag: stop.kind === 'elite' ? 'križanka, nato mreža črk' : boss ? 'mreža črk in križanka' : 'mreža črk',
+      actions: [{ label: 'V boj', primary: true, fn: () => stopBattle(stop) }, ...skip] };
   }
-  if (stop.kind === 'chest') return { text: 'Ob poti leži zaklenjena skrinja. Odpre jo prava beseda.', actions: [{ label: 'Odpri skrinjo', primary: true, fn: () => go('chest', { id: 'skrinja', stop }) }, { label: 'Pusti jo', fn: () => pass() }] };
-  if (stop.kind === 'darts') return { text: 'Iz starega zidu merijo puščice. Kdor jih zagovori s pravo besedo, jih obrne proti sovražniku.', actions: [{ label: 'Stopi pred zid', primary: true, fn: () => go('darts', { id: 'puscice', stop }) }, ...skip] };
-  if (stop.kind === 'trap') return { text: 'S pobočja se usuje plaz kamenja!', actions: [{ label: 'Brani se z besedami', primary: true, fn: () => go('trap', { id: 'plaz', stop }) }, ...skip] };
+  if (stop.kind === 'chest') return { text: 'Ob poti leži zaklenjena skrinja. Odpre jo prava beseda.', tag: 'skrinja: beseda iz premešanih črk', actions: [{ label: 'Odpri skrinjo', primary: true, fn: () => go('chest', { id: 'skrinja', stop }) }, { label: 'Pusti jo', fn: () => pass() }] };
+  if (stop.kind === 'darts') return { text: 'Iz starega zidu molijo konice. Mimo ne gre brez prask, a prava beseda zapre večino rež.', tag: 'konice: črka iz vsake reže', actions: [{ label: 'Stopi pred zid', primary: true, fn: () => go('darts', { id: 'puscice', stop }) }, ...skip] };
+  if (stop.kind === 'trap') return { text: 'S pobočja se usuje plaz kamenja!', tag: 'plaz: ena beseda za vse skale', actions: [{ label: 'Brani se z besedami', primary: true, fn: () => go('trap', { id: 'plaz', stop }) }, ...skip] };
+  const train = trainAction(() => go('travel'));
   if (stop.kind === 'well') {
-    const hurt = S.heroes.some(st => st.down || st.hp < st.maxHp), fallen = S.heroes.some(st => st.down);
-    return { text: fallen ? 'Vodnjak s hladno, čisto vodo. Tu se junaki pozdravijo in kdor je obležal, spet vstane.' : hurt ? 'Vodnjak s hladno, čisto vodo. Tu se junaki pozdravijo.' : 'Vodnjak s hladno, čisto vodo. Nihče ni ranjen, a požirek ne škodi.',
+    // the well heals the living; it does not raise the fallen any more
+    const hurt = S.heroes.some(st => !st.down && st.hp < st.maxHp), fallen = S.heroes.filter(st => st.down).length;
+    const lie = fallen ? ` Kdor je obležal, ga voda ne obudi.` : '';
+    return { text: (hurt ? 'Vodnjak s hladno, čisto vodo. Tu se junaki pozdravijo.' : 'Vodnjak s hladno, čisto vodo. Nihče ni ranjen, a požirek ne škodi.') + lie,
       actions: [{ label: 'Pij iz vodnjaka', primary: true, fn: () => {
-        let got = 0; const up = [];
-        S.heroes.forEach((st, k) => { if (st.down) { st.down = false; st.hp = 0; up.push(HEROES[k].name); } got += st.maxHp - st.hp; st.hp = st.maxHp; });
+        let got = 0;
+        S.heroes.forEach(st => { if (st.down) return; got += st.maxHp - st.hp; st.hp = st.maxHp; });
         stop.done = stop.passed = true; sfx('heal');
-        R.prompt = { text: got ? `Voda zaceli rane: +${got} zdravja.` + (up.length ? ` Spet na nogah: ${up.join(', ')}.` : '') : 'Voda je dobra. Naprej!', actions: [{ label: 'Naprej ▶', primary: true, fn: () => { R.prompt = null; R.walking = true; renderTravelPanel(); } }] };
+        const t2 = trainAction(() => go('travel'));
+        R.prompt = { text: got ? `Voda zaceli rane: +${got} zdravja.` : 'Voda je dobra. Naprej!',
+          actions: [{ label: 'Naprej ▶', primary: true, fn: () => { R.prompt = null; R.walking = true; renderTravelPanel(); } }, ...(t2 ? [t2] : [])], keep: true };
         go('travel');
-      } }, { label: 'Pojdi mimo', fn: () => pass() }] };
+      } }, { label: 'Pojdi mimo', fn: () => pass() }, ...(train ? [train] : [])] };
   }
-  if (stop.kind === 'shop') return { text: 'Krošnjar iz Ribnice razgrne robo: napoji, strupi in nekaj redkih predmetov.', actions: [{ label: 'Poglej robo', primary: true, fn: () => openShop(stop) }, { label: 'Pojdi mimo', fn: () => pass() }] };
+  if (stop.kind === 'shop') return { text: 'Krošnjar iz Ribnice razgrne robo: napoji, strupi in nekaj redkih predmetov.', actions: [{ label: 'Poglej robo', primary: true, fn: () => openShop(stop) }, { label: 'Pojdi mimo', fn: () => pass() }, ...(train ? [train] : [])] };
   if (stop.kind === 'hero') return { text: `${ROSTER[stop.hero].name} stoji ob poti.`, actions: [{ label: 'Pozdravi', primary: true, fn: () => meetHero(stop, [stop.hero]) }, { label: 'Pojdi mimo', fn: () => pass() }] };
-  if (stop.kind === 'god') {
-    if (partyGod() >= 0) return { text: `Staro svetišče. ${HEROES[partyGod()].name} že hodi s teboj, zato se ti ne pridruži noben drug bog — svetišče pa te blagoslovi.`,
-      actions: [{ label: 'Sprejmi blagoslov', primary: true, fn: () => { gainXp(40); S.meterBonus = 0.5; sfx('heal'); stop.done = true; R.prompt = { text: 'Blagoslov: +40 izkušenj, zagovor v naslednji bitki začne napolnjen do polovice.', actions: [{ label: 'Naprej ▶', primary: true, fn: () => pass(true) }] }; renderTravelPanel(); } }] };
-    return { text: 'Staro svetišče. Trije bogovi poslušajo; eden od njih lahko gre s teboj.', actions: [{ label: 'Stopi k svetišču', primary: true, fn: () => meetHero(stop, stop.gods) }, { label: 'Pojdi mimo', fn: () => pass() }] };
-  }
+  if (stop.kind === 'god') return shrinePrompt(stop, pass, train);
   return { text: '…', actions: [{ label: 'Naprej', primary: true, fn: () => pass() }] };
 }
 // one entry point for keys, buttons and tests: 'go' = walk / confirm, 'alt' = the second choice, 'skip' = test mode
@@ -362,11 +387,12 @@ function stopBattle(stop) {
 function meetHero(stop, ids) {
   const R = S.run, back = () => go('travel');
   const leave = () => { stop.passed = true; R.prompt = null; back(); };
-  const fresh = ids.filter(id => unlock(id));          // whoever you meet is known from now on and can start a later journey
+  // only a hero who joins is unlocked for later journeys; one you leave behind stays unknown
   go('hero', { kind: 'meet', ids, sel: 0,
-    info: A => { const id = A.ids[A.sel], full = HEROES.length >= 4;
-      return (fresh.includes(id) ? `${ROSTER[id].name} je odklenjen: odslej lahko pot začneš tudi z njim. ` : '') + (isGod(id) ? 'Bog je močnejši od ljudskih junakov, a s teboj gre le eden. ' : '') + (full ? 'Družina je polna (štirje). Če ga vzameš s seboj, se mora eden od tvojih posloviti.' : `V družini je še prostor (${HEROES.length} od 4).`); },
-    actions: A => { const id = A.ids[A.sel], hr = ROSTER[id], join = at => () => { joinHero(id, at); stop.done = stop.passed = true; R.prompt = null; sfx('win', { vol: .6 }); back(); };
+    info: A => { const id = A.ids[A.sel], full = HEROES.length >= 4, nm = ROSTER[id].name, f = heroF(id);
+      return (UNLOCKED.has(id) ? '' : `Če ${nm} gre s teboj, ${f ? 'jo' : 'ga'} odkleneš: na naslednji poti lahko začneš tudi z ${f ? 'njo' : 'njim'}. `) + (isGod(id) ? 'Bog je močnejši od ljudskih junakov, a s teboj gre le eden. ' : '') +
+        (full ? `Družina je polna (štirje). Če ${f ? 'jo' : 'ga'} vzameš s seboj, se mora eden od tvojih posloviti.` : `V družini je še prostor (${HEROES.length} od 4).`); },
+    actions: A => { const id = A.ids[A.sel], hr = ROSTER[id], join = at => () => { joinHero(id, at); const fresh = unlock(id); stop.done = stop.passed = true; R.prompt = null; sfx('win', { vol: .6 }); back(); if (fresh) toast(heroF(id) ? `${hr.name} je odklenjena: na naslednji poti lahko začneš tudi z njo.` : `${hr.name} je odklenjen: na naslednji poti lahko začneš tudi z njim.`); };
       const acts = HEROES.length < 4 ? [{ label: `${hr.name} gre s teboj`, primary: true, fn: join() }]
         : HEROES.map((x, k) => ({ label: `${S.heroes[k].down ? 'Zapusti' : 'Namesto'}: ${x.name}${S.heroes[k].down ? ' (obležal)' : ''}`, fn: join(k) }));
       return acts.concat([{ label: 'Pojdi naprej brez novega junaka', fn: leave }]); } });
@@ -396,6 +422,7 @@ function openShop(stop) {
 function renderEnding() {
   const R = S.run || { battles: 0, words: 0, gold: 0, relics: [] };
   R.over = true;   // a finished journey cannot be continued from the menu
+  clearSave();
   SCR.append(h('div', { class: 'title ending' },
     h('div', { class: 'logo' }, 'Ljubljana je rešena'),
     h('div', { class: 'tagline' }, 'Lintvern je premagan. Z grajskega stolpa se vidi vsa pot, ki si jo prehodil — od Ptuja do sem.'),
@@ -406,7 +433,7 @@ function renderEnding() {
       h('div', {}, 'Zlatniki'), h('div', {}, R.gold), h('div', {}, 'Predmeti'), h('div', {}, R.relics.length ? R.relics.map(id => ITEMS[id].name).join(', ') : '—')),
     h('p', { class: 'thanks' }, 'Hvala, ker si prehodil pot do konca.'),
     inspiredLine(),
-    h('div', { class: 'row', style: { 'justify-content': 'flex-start' } }, h('button', { class: 'btn primary', onclick: () => { resetRun(); go('title'); } }, 'Nova pot ', h('kbd', {}, 'Enter')))));
+    h('div', { class: 'row', style: { 'justify-content': 'flex-start' } }, h('button', { class: 'btn primary', onclick: leaveEnding }, 'Nova pot ', h('kbd', {}, 'Enter')))));
   sfx('win');
 }
 
@@ -414,38 +441,42 @@ function renderEnding() {
 function renderGalleryExtras(wrap) {
   const fig = (id, cap, frame) => h('figure', {}, objEl(id, frame), cap);
   wrap.append(h('h2', {}, 'Na poti'),
-    h('p', { class: 'lead' }, 'Postaje ob poti imajo svoje sličice: skrinja (zaprta in odprta), vodnjak, plaz kamenja, svetišče, krošnjar in kažipot do naslednje pokrajine.'),
-    h('div', { class: 'gobjs' }, fig('skrinja', 'skrinja'), fig('skrinja', 'odprta skrinja', 1), fig('vodnjak', 'vodnjak'), fig('plaz', 'plaz kamenja'), fig('puscice', 'puščice'), fig('svetisce', 'svetišče'), fig('krosnjar', 'krošnjar'), fig('kazipot', 'kažipot')),
+    h('p', { class: 'lead' }, 'Postaje ob poti imajo svoje sličice: skrinja (zaprta in odprta), vodnjak, plaz kamenja, konice, svetišča (vsak bog ima svoje, z njegovim znamenjem), krošnjar in kažipot do naslednje pokrajine.'),
+    h('div', { class: 'gobjs' }, fig('skrinja', 'skrinja'), fig('skrinja', 'odprta skrinja', 1), fig('vodnjak', 'vodnjak'), fig('plaz', 'plaz kamenja'), fig('puscice', 'konice'), ...GODS.map(g => fig('svetisce-' + g, `svetišče: ${GOD[g].sign}`)), fig('krosnjar', 'krošnjar'), fig('kazipot', 'kažipot')),
     h('h2', {}, 'Predmeti'),
     h('p', { class: 'lead' }, 'Predmeti delujejo ves čas, napoji in strupi se porabijo. Dobiš jih v skrinjah, pri krošnjarju in od šefov.'),
     h('div', { class: 'itemlist gitems' }, WORLD.items.map(it => h('div', { class: 'itemrow' }, itemIcon(it.id),
       h('div', {}, h('b', {}, it.name, h('em', {}, it.kind === 'relic' ? 'predmet' : it.poison ? 'strup' : 'napoj')), h('span', {}, it.text)), h('span', { class: 'price' }, h('i', { class: 'coin' }), it.price)))));
 }
 
-// ============================================================ darts: one letter from every column
-// The third timed event. A wall of letters in columns: build a word from left to right by taking
-// one letter from each column. You may send it before the last column — a shorter word turns
-// fewer darts — and nothing stops you from sending a word that does not exist. Darts you turn
-// fly at the enemies of the next battle; the others hit the party.
-const DART_COLS = 6, DART_ROWS = 3, DART_DMG = 3, DART_XP = 7, DART_GOLD = 2, DART_STRIKE = 4;
+// ============================================================ spikes trap (darts): one letter from every slot
+// The third timed event (ids stay `darts` / `puscice`). A wall with slots, each holding letters: build a
+// word from left to right by taking one letter from each slot. The spikes only ever hurt the party: every
+// letter of a real word closes one slot, and the spikes of the open slots spring. Even a word from every
+// slot lets one spike graze, so the wall almost always hurts; a good word only makes it hurt very little.
+// A word that does not exist closes nothing. Spikes never knock a hero out, and every hit lands on a
+// hero you can see.
+const DART_COLS = 6, DART_ROWS = 3;
+const dartDmg = () => 3 + Math.floor((S.run ? S.run.ri : 0) / 2);   // per spike, a little more in later regions
 let DART_WORDS = null;
 function startDarts(node) {
   if (!DART_WORDS) DART_WORDS = LEX.suggestedWords(DART_COLS, DART_COLS).filter(w => LEX.lemma(w) === w);   // base forms only
   const word = pick(DART_WORDS), t = (S.mode === 'real' ? 35 : 70) * (has('pisanica') ? 1.5 : 1);
   const cols = [...word].map(ch => { const col = [ch]; while (col.length < DART_ROWS) { const x = BAG[rnd(BAG.length)]; if (!col.includes(x)) col.push(x); } return shuffle(col); });
-  S.ev = { node, kind: 'darts', word, cols, sel: [], time: t, timeMax: t, done: false, msg: '', msgKind: '' };
+  S.ev = { node, kind: 'darts', word, cols, sel: [], time: t, timeMax: t, done: false, msg: '', msgKind: '', hits: [] };
   renderDarts();
   showTut('darts');
 }
 const dartsGuess = () => S.ev.sel.map((r, c) => S.ev.cols[c][r]).join('');
 function renderDarts() {
   const E = S.ev; SCR.innerHTML = '';
-  const guess = dartsGuess(), n = E.sel.length;
+  const n = E.sel.length;
+  UI.dartHeroes = [];
   SCR.append(h('div', { class: 'event darts' },
-    h('div', { class: 'bhead' }, h('div', { class: 't' }, 'Puščice v zidu', h('small', {}, 'dogodek na čas')), h('div', { class: 'meta' }, `Družina ${S.partyHp}/${S.maxHp}`), pauseBtn()),
+    h('div', { class: 'bhead' }, h('div', { class: 't' }, 'Past s konicami', h('small', {}, 'dogodek na čas')), h('div', { class: 'meta', ref: el => UI.dartMeta = el }, `Družina ${S.partyHp}/${S.maxHp}`), pauseBtn()),
     h('div', { class: 'panel' },
-      h('div', { class: 'chestbox' }, objEl('puscice', E.done ? 1 : 0, 'big'),
-        h('div', {}, 'Iz vsakega stolpca vzemi eno črko, od leve proti desni, in pošlji besedo. Vsaka črka prave besede obrne eno puščico proti sovražnikom naslednje bitke; puščice, ki ostanejo, zadenejo družino. Pošlješ lahko tudi krajšo besedo. Če beseda ne obstaja, poletijo vse nate.')),
+      h('div', { class: 'chestbox' }, h('div', { ref: el => UI.dartWall = el }, objEl('puscice', E.done ? 1 : 0, 'big')),
+        h('div', { class: 'dart-warn' + (E.done ? ' done' : '') }, E.done ? 'Konice so se sprožile.' : 'Konice se sprožijo – pripravi se na umik!')),
       h('div', { class: 'timer', style: { margin: '14px 0 4px' } }, h('i', { ref: el => UI.evTimer = el, style: { width: clamp(100 * E.time / E.timeMax, 0, 100) + '%' } })),
       h('div', { class: 'sendrow' },
         h('div', { class: 'guess' }, E.cols.map((_, c) => h('span', { class: 'lt' }, c < n ? E.cols[c][E.sel[c]] : ''))),
@@ -453,11 +484,20 @@ function renderDarts() {
       h('div', { class: 'dartcols' }, E.cols.map((col, c) => h('div', { class: 'dartcol' + (c === n && !E.done ? ' next' : c > n ? ' later' : '') },
         col.map((ch, r) => h('div', { class: 'tile' + (E.sel[c] === r ? ' sel' : ''), onclick: () => dartsPick(c, r) }, ch))))),
       E.msg ? h('p', { class: 'fb ' + E.msgKind }, E.msg) : null,
+      E.done && E.word2 && (E.isNew || meaningOf(E.word2)) ? h('div', { class: 'newwords' }, meaningChip(E.word2, 'puscice')) : null,
       E.done ? h('div', {}, h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')))
       : h('div', { class: 'row', style: { 'justify-content': 'flex-start', 'flex-wrap': 'wrap' } },
         h('button', { class: 'btn small', onclick: () => { E.sel.pop(); renderDarts(); } }, '⌫ Briši'),
         h('button', { class: 'btn small', onclick: () => { E.sel = []; renderDarts(); } }, 'Počisti ', h('kbd', {}, 'Del')),
-        h('span', { class: 'muted', style: { 'align-self': 'center' } }, `najmanj ${MINW()} črke`)))));
+        h('span', { class: 'muted', style: { 'align-self': 'center' } }, `najmanj ${MINW()} črke`))),
+    // the party stands in front of the wall: every dart that flies hits one of them
+    h('div', { class: 'dartparty' }, HEROES.map((hr, k) => { const st = S.heroes[k], shown = E.shown ? E.shown[k] : st.hp;
+      const ref = { st };
+      const el = h('div', { class: 'dp-hero' + (st.down ? ' isdown' : ''), style: { '--c': hr.c } },
+        h('div', { ref: x => ref.spr = x }, spriteEl(hr.id, hr.c, st.down ? 'down' : '')),
+        h('div', { class: 'hpbar', ref: x => ref.bar = x }, h('i', { style: { width: (st.down ? 0 : 100 * shown / st.maxHp) + '%' } })),
+        h('span', { class: 'hpnum', ref: x => ref.num = x }, st.down ? 'obležal' : `${shown}/${st.maxHp}`));
+      ref.el = el; UI.dartHeroes[k] = ref; return el; }))));
 }
 // a letter can be taken in the next free column, or changed in a column already used (later letters are dropped)
 function dartsPick(c, r) {
@@ -475,35 +515,57 @@ function dartsKey(e) {
   const c = E.sel.length, r = c < E.cols.length ? E.cols[c].indexOf(ch) : -1;
   if (r >= 0) dartsPick(c, r);
 }
-function dartsEnd(turned, text, kind) {
-  const E = S.ev, left = E.cols.length - turned, d = left * DART_DMG;
-  E.done = true; E.turned = turned; E.dmg = 0;
-  if (d) { const before = S.partyHp; S.partyHp = Math.max(1, S.partyHp - d); E.dmg = before - S.partyHp; }
-  E.xp = turned * DART_XP; E.gold = turned && S.run ? gainGold(turned * DART_GOLD) : 0; E.strike = turned * DART_STRIKE;
-  if (E.xp) gainXp(E.xp, null, true);
-  if (turned) S.strike = E.strike;
-  E.msg = text + (turned ? ` Vsak junak +${E.xp} XP` + (E.gold ? `, +${E.gold} zlatnikov` : '') + `; v naslednji bitki puščice zadenejo vsakega sovražnika za ${E.strike}.` : '') + (E.dmg ? ` Družina −${E.dmg}.` : '');
-  E.msgKind = kind; sfx(turned === E.cols.length ? 'win' : turned ? 'ok' : 'bad');
+// `stopped` slots are closed by the word; the other spikes spring, one at a time, each at a hero (in turn, so
+// the damage is spread over the whole party). A word from every slot still lets one spike graze (half damage).
+function dartsEnd(stopped, text, kind) {
+  const E = S.ev, cols = E.cols.length, d = dartDmg();
+  const fly = stopped >= cols ? [Math.ceil(d / 2)] : Array.from({ length: cols - stopped }, () => d);
+  const who = shuffle(living());
+  E.done = true; E.stopped = stopped; E.shown = S.heroes.map(st => st.hp);
+  E.hits = who.length ? fly.map((dm, i) => {
+    const k = who[i % who.length], st = S.heroes[k], got = Math.min(dm, st.hp - 1);   // spikes never knock a hero out
+    st.hp -= got; return { k, d: got };
+  }).filter(x => x.d > 0) : [];
+  E.dmg = E.hits.reduce((a, x) => a + x.d, 0);
+  E.msg = text + (E.dmg ? ` Družina −${E.dmg}.` : ''); E.msgKind = kind;
+  sfx(stopped >= cols ? 'ok' : stopped ? 'hit1' : 'bad', { soft: true });
   renderDarts();
+  dartsVolley();
+}
+// the volley: each dart flies from the wall to its hero, who flinches, loses health and shows the number
+function dartsVolley() {
+  const E = S.ev, ev = E, reduce = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  E.hits.forEach((x, i) => setTimeout(() => {
+    if (S.ev !== ev || S.screen !== 'darts') return;
+    const R = UI.dartHeroes[x.k]; if (!R || !R.el.isConnected) return;
+    if (!reduce && UI.dartWall) {
+      const box = R.el.closest('.event').getBoundingClientRect(), from = UI.dartWall.getBoundingClientRect(), to = R.spr.getBoundingClientRect();
+      const dart = h('i', { class: 'dart-fly' }); R.el.closest('.event').append(dart);
+      const x0 = from.left + from.width / 2 - box.left, y0 = from.top + from.height / 2 - box.top, x1 = to.left + to.width / 2 - box.left, y1 = to.top + to.height * .4 - box.top;
+      const ang = Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI;
+      dart.animate([{ transform: `translate(${x0}px, ${y0}px) rotate(${ang}deg)` }, { transform: `translate(${x1}px, ${y1}px) rotate(${ang}deg)` }], { duration: 260, easing: 'ease-in' }).onfinish = () => dart.remove();
+    }
+    setTimeout(() => {
+      if (S.ev !== ev || !R.el.isConnected) return;
+      E.shown[x.k] = Math.max(1, E.shown[x.k] - x.d);
+      R.bar.firstChild.style.width = (100 * E.shown[x.k] / R.st.maxHp) + '%'; R.num.textContent = `${E.shown[x.k]}/${R.st.maxHp}`;
+      replay(R.el, 'hurt'); sfx('hit1', { soft: true, vol: ATK_VOL, rate: 1.2 });
+      const f = h('span', { class: 'dp-dmg' }, `−${x.d}`); R.el.append(f); setTimeout(() => f.remove(), 1100);
+      if (UI.dartMeta) UI.dartMeta.textContent = `Družina ${E.shown.reduce((a, v, k) => a + (S.heroes[k].down ? 0 : v), 0)}/${S.maxHp}`;
+    }, reduce ? 0 : 250);
+  }, 300 + i * 320));
 }
 function dartsSubmit() {
   const E = S.ev; if (E.done) return;
-  const w = dartsGuess(); if (w.length < MINW()) return;
-  if (!WORDS.has(w)) { noteRejected(w, 'puscice'); return dartsEnd(0, `»${UP(w)}« ni beseda: vse puščice poletijo (prava je bila ${UP(E.word)}).` + rejectHint().replace(' v premoru', ' na začetnem zaslonu'), 'err'); }
-  if (w.length === E.cols.length) return dartsEnd(w.length, `${UP(w)}! Vse puščice se obrnejo.`, 'ok');
-  dartsEnd(w.length, `${UP(w)} obrne ${w.length} od ${E.cols.length} puščic; ostale poletijo nate.`, 'warn');
+  const w = dartsGuess(), n = E.cols.length; if (w.length < MINW()) return;
+  if (!WORDS.has(w)) { noteRejected(w, 'puscice'); return dartsEnd(0, `»${UP(w)}« ni beseda: vseh ${n} konic se sproži v družino (prava je bila ${UP(E.word)}).` + rejectHint().replace(' v premoru', ' na začetnem zaslonu'), 'err'); }
+  E.word2 = w; E.isNew = noteFound(w, 'puscice');
+  if (w.length === n) return dartsEnd(n, `${UP(w)}! Beseda zapre vse reže, le ena konica te oplazi.`, 'ok');
+  dartsEnd(w.length, `${UP(w)} zapre ${w.length} od ${n} rež; ${n - w.length} ${n - w.length === 1 ? 'konica zadene' : n - w.length === 2 ? 'konici zadeneta' : n - w.length < 5 ? 'konice zadenejo' : 'konic zadene'} družino.`, 'warn');
 }
 function dartsTick(dt) {
   const E = S.ev; if (!E || E.done) return;
   E.time -= dt;
   if (UI.evTimer) UI.evTimer.style.width = clamp(100 * E.time / E.timeMax, 0, 100) + '%';
-  if (E.time <= 0) dartsEnd(0, `Prepozno: vse puščice poletijo. Skrita beseda je bila ${UP(E.word)}.`, 'err');
-}
-// the darts turned at the wall open the next battle
-function dartStrike() {
-  if (!S.strike || !B) return;
-  const d = S.strike; S.strike = 0;
-  spawnCard(leadEl(), { tier: 2, c: 'var(--gold)', name: 'Puščice', move: 'Obrnjene puščice', value: `−${d} vsakemu` });
-  log(`Obrnjene puščice zadenejo vsakega sovražnika za ${d}.`); sfx('hit2');
-  B.enemies.filter(e => e.hp > 0).forEach(e => damageEnemy(e, d));
+  if (E.time <= 0) dartsEnd(0, `Prepozno: vseh ${E.cols.length} konic se sproži v družino. Skrita beseda je bila ${UP(E.word)}.`, 'err');
 }

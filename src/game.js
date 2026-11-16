@@ -675,6 +675,35 @@ function sfx(name, o = {}) {
     g.connect(AC.destination); src.start(AC.currentTime + (o.delay || 0));
   } catch (e) { /* sound is optional */ }
 }
+// A short heavenly chorus for a new skill point: "aah" voices (two detuned saws each, through vowel
+// formant filters) enter one after another on a rising major chord, swell, and fade with an echo.
+let CHORUS_T = -9;
+function chorus() {
+  if (!SOUND_ON || !AC || AC.state !== 'running') return;
+  const t0 = AC.currentTime; if (t0 - CHORUS_T < 1.4) return; CHORUS_T = t0;
+  try {
+    const out = AC.createGain(), peak = 0.16 * VOLUME;
+    out.gain.setValueAtTime(0.0001, t0); out.gain.exponentialRampToValueAtTime(peak, t0 + 0.4);
+    out.gain.setValueAtTime(peak, t0 + 1.0); out.gain.exponentialRampToValueAtTime(0.0001, t0 + 2.2);
+    const dl = AC.createDelay(), fbk = AC.createGain(), wet = AC.createGain();
+    dl.delayTime.value = 0.21; fbk.gain.value = 0.35; wet.gain.value = 0.45;
+    out.connect(AC.destination); out.connect(dl); dl.connect(fbk); fbk.connect(dl); dl.connect(wet); wet.connect(AC.destination);
+    const bus = AC.createGain(); bus.gain.value = 1;
+    [[750, 6, 1], [1150, 8, 0.6], [2900, 10, 0.25]].forEach(([f, q, g]) => {        // the vowel "a"
+      const bp = AC.createBiquadFilter(), gg = AC.createGain(); bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = q; gg.gain.value = g;
+      bus.connect(bp); bp.connect(gg); gg.connect(out); });
+    const vib = AC.createOscillator(), vg = AC.createGain(); vib.frequency.value = 5.3; vg.gain.value = 5; vib.connect(vg); vib.start(t0); vib.stop(t0 + 2.4);
+    [523.25, 659.25, 783.99, 1046.5].forEach((hz, i) => [-7, 7].forEach(cents => {
+      const o = AC.createOscillator(), g = AC.createGain(), at = t0 + i * 0.09;
+      o.type = 'sawtooth'; o.frequency.value = hz; o.detune.value = cents; vg.connect(o.detune);
+      g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(0.18, at + 0.25); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 2.3);
+      o.connect(g); g.connect(bus); o.start(at); o.stop(t0 + 2.4);
+    }));
+    const bell = AC.createOscillator(), bg = AC.createGain();                       // a high shimmer on top
+    bell.type = 'sine'; bell.frequency.value = 2093; bg.gain.setValueAtTime(0.0001, t0); bg.gain.exponentialRampToValueAtTime(0.05 * VOLUME, t0 + 0.05); bg.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.2);
+    bell.connect(bg); bg.connect(AC.destination); bell.start(t0); bell.stop(t0 + 1.3);
+  } catch (e) { /* sound is optional */ }
+}
 const HERO_SFX = { erazem: 'clang', klepec: 'clang', vida: 'heal', ajda: 'clang', perun: 'zap', svarog: 'clang', mokos: 'heal', kresnik: 'fire', veles: 'venom', dazbog: 'fire', stribog: 'zap', kurent: 'clang', jurij: 'heal', krpan: 'hit2', matjaz: 'clang' };
 function cardSound(o) {
   const rate = o.tier === 3 ? .78 : o.tier === 2 ? .9 : 1.06;
@@ -758,10 +787,10 @@ const NODES = [
     teach: 'Mreža črk, barve junakov, moč napada, izbira cilja.',
     battle: { enemies: ['skrat', 'skrat'], finishers: ['perun'], meterStart: 0, tips: [
       { until: 1, text: 'Vpiši besedo na tipkovnici ali vleci z miško čez sosednje črke, nato pritisni Pošlji ali Enter.',
-        m: 'Vleci s prstom čez sosednje črke in spusti: beseda se pošlje sama. Če črke tapkaš, na koncu še enkrat tapni zadnjo.' },
-      { until: 3, text: 'Barvne črke sprožijo junake: več črk iste barve pomeni močnejši napad. Daljša beseda pomeni večji množitelj.' },
+        m: 'Vleci s prstom čez sosednje črke in spusti: beseda se pošlje sama. Če črke pritiskaš eno za drugo, pritisni Pošlji ob besedi.' },
+      { until: 3, text: 'Barvne črke sprožijo junake: ena črka junakove barve sproži prvo veščino, dve drugo, tri tretjo. Daljša beseda pomeni večji množitelj.' },
       { until: 5, text: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Klikni sovražnika ali uporabi ←/→ za izbiro cilja.',
-        m: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Tapni sovražnika, da ga izbereš za cilj.' },
+        m: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Za cilj izbereš sovražnika s pritiskom nanj.' },
       { until: 99, text: 'Poskusi različne oblike: »volk«, »volka« in »volkom« so vse veljavne, a ponovitve iste besede so šibkejše.' } ] } },
   { id: 'skrinja', type: 'chest', title: 'Skrinja', sub: 'Dogodek na čas',
     teach: 'Iz premešanih črk sestavi skrito besedo, preden se ključavnica zatakne.' },
@@ -769,8 +798,8 @@ const NODES = [
     teach: 'Zagovor (križanka kot zaključni udarec), uspavani junaki, ponovljene besede krepijo Volkodlaka.',
     battle: { enemies: ['mora', 'volkodlak'], finishers: ['kres', 'mokos'], meterStart: 0.65, tips: [
       { until: 3, text: 'Zagovor je skoraj poln. Ko je poln, pritisni presledek in reši križanko za mogočen udarec.',
-        m: 'Zagovor je skoraj poln. Ko je poln, tapni »Izreci zagovor« in reši križanko za mogočen udarec.' },
-      { until: 6, text: 'Mora uspava junake: njihove črke posivijo. Mokoš na stopnji 2 ali 3 (dve ali tri zelene črke) jih zbudi.' },
+        m: 'Zagovor je skoraj poln. Ko je poln, pritisni »Izreci zagovor« in reši križanko za mogočen udarec.' },
+      { until: 6, text: 'Mora uspava junake: njihove črke posivijo. Mokošina druga ali tretja veščina (dve ali tri zelene črke v besedi) jih zbudi.' },
       { until: 99, text: 'Volkodlak se krepi ob ponovljenih besedah — tudi »volk« in »volka« štejeta kot ista beseda.' } ] } },
   { id: 'plaz', type: 'trap', title: 'Plaz kamenja', sub: 'Dogodek na čas',
     teach: 'Hitre besede z dano črko. Dolga beseda lahko razbije več skal hkrati.' },
@@ -778,7 +807,7 @@ const NODES = [
     teach: 'Zaseda (križanka za uvodni napad), Vrtinec (križanka, ki te zaklene), poplavljene črke.',
     battle: { enemies: ['vila', 'povodni'], finishers: ['perun', 'mokos'], meterStart: 0, ambush: 'zaseda', tips: [
       { until: 4, text: 'Vodna vila poplavlja spodnjo vrsto črk. Povodni mož te lahko potegne v vrtinec — takrat je mreža zaprta.' },
-      { until: 99, text: 'Mokoš na stopnji 2 ali 3 osuši poplavljene črke.' } ] } },
+      { until: 99, text: 'Mokošina druga ali tretja veščina (dve ali tri zelene črke) osuši poplavljene črke.' } ] } },
   { id: 'grad', type: 'battle', title: 'Ljubljanski grad', sub: 'Bitka · Lintvern',
     teach: 'Šefovski boj v dveh fazah: zaklenjene črke, ognjeni dih in zmajeva uganka.',
     battle: { enemies: ['lintvern'], finishers: ['triglav', 'kres'], meterStart: 0.3, tips: [
@@ -796,7 +825,9 @@ const CHESTS = [
 // ============================================================ knowledge levels
 // The second difficulty choice; pace (real-time or calm) is the first.
 // Malček: learning words — the original game. Učenjak: longer, harder words and few tips.
-// Knjižni molj: crosswords in the style of paper crosswords, no tips in the letter mesh.
+// Knjižni molj: crosswords in the style of paper crosswords, and no hints anywhere: no Namig, no letters
+// revealed in crosswords, no clue at chests, and the buttons are not there at all (noHints).
+// Three-letter words count on every level (16 Nov 2026).
 // Crossword settings: fin = finisher crosswords, easy = ambush and forced (enemy) crosswords;
 // banks feed the grid, maxLen caps word length, rowMax / X / size shape the keyword column.
 // tools/cluebank.py mirrors the crossword settings to validate the clue banks.
@@ -804,14 +835,28 @@ const LEVELS = {
   malcek: { name: 'Malček', minWord: 3, hints: 3, proposals: true, meshCount: true, coach: true, reveals: 5, showLen: true,
     fin:  { banks: ['malcek'], maxLen: 7, rowMax: 6, X: 3, size: 9, count: 6 },
     easy: { banks: ['malcek'], maxLen: 5, rowMax: 5, X: 2, size: 7, count: 4, d: 1 } },
-  ucenjak: { name: 'Učenjak', minWord: 4, hints: 1, proposals: false, meshCount: true, coach: true, reveals: 2, showLen: true,
+  ucenjak: { name: 'Učenjak', minWord: 3, hints: 1, proposals: false, meshCount: true, coach: true, reveals: 2, showLen: true,
     fin:  { banks: ['ucenjak'], maxLen: 9, rowMax: 8, X: 4, size: 9, count: 6 },
     easy: { banks: ['malcek'], maxLen: 6, rowMax: 6, X: 2, size: 7, count: 4 } },
-  molj: { name: 'Knjižni molj', minWord: 4, hints: 0, proposals: false, meshCount: false, coach: false, reveals: 1, showLen: false,
+  molj: { name: 'Knjižni molj', minWord: 3, hints: 0, noHints: true, proposals: false, meshCount: false, coach: false, reveals: 0, showLen: false,
     fin:  { banks: ['molj', 'ucenjak'], maxLen: 9, rowMax: 8, X: 4, size: 9, count: 7 },
     easy: { banks: ['molj', 'ucenjak'], maxLen: 6, rowMax: 6, X: 2, size: 7, count: 4 } },
 };
 const LV = () => LEVELS[S.know] || LEVELS.malcek;
+
+// ============================================================ difficulty (Težavnost on Nova pot)
+// Decides what a lost battle means and what happens to a fallen hero, and scales the enemies' health.
+// Wells never raise the fallen: that takes a healer (Mokoš, Zeleni Jurij), Mrtva voda or a beaten god.
+//   lahka:   a lost battle is not the end — the party withdraws, gets up with a third of its health and the
+//            enemies still block the road; after a won battle the fallen get up with a quarter of their health
+//   srednja: a lost battle ends the journey; the fallen stay down until someone raises them
+//   tezka:   a lost battle ends the journey; a hero still down when the battle ends leaves the party; enemies are tougher
+const DIFFS = {
+  lahka: { name: 'Lahka', foeHp: 0.85, withdraw: true, rise: 0.25, leave: false, text: 'Poraz ni konec poti: družina se umakne in poskusi znova. Padli po zmagi vstanejo.' },
+  srednja: { name: 'Srednja', foeHp: 1, withdraw: false, rise: 0, leave: false, text: 'Poraz konča pot. Padli obležijo, dokler jih kdo ne obudi.' },
+  tezka: { name: 'Težka', foeHp: 1.25, withdraw: false, rise: 0, leave: true, text: 'Močnejši sovražniki. Kdor pade in ga do konca bitke nihče ne obudi, zapusti družino.' },
+};
+const DIFF = () => DIFFS[S.diff] || DIFFS.srednja;
 const MINW = () => LV().minWord;
 
 const FINISHER_FX = {
@@ -831,20 +876,42 @@ const leadEl = () => UI.heroEls[living()[0] || 0];
 // ============================================================ hero state (per run)
 // Three levels. Health grows with level; from level 2 on, longer words add extra power.
 const HERO_HP = { krpan: 36, jurij: 26, kurent: 30, matjaz: 34, kresnik: 28, erazem: 34, klepec: 30, vida: 26, ajda: 38, perun: 36, svarog: 42, mokos: 34, dazbog: 36, stribog: 34, veles: 46 };
-const LV_HP = [1, 1.25, 1.6], LV_ATK = [1, 1.15, 1.3], LV_LONG = [0, 0.04, 0.1], LV_XP = [0, 50, 140];
-const heroMaxHp = (id, lvl) => Math.round((HERO_HP[id] || 28) * LV_HP[lvl - 1] * (has('alatir') ? 1.2 : 1));
-const heroState = (id, lvl = 1) => ({ id, hp: heroMaxHp(id, lvl), maxHp: heroMaxHp(id, lvl), lvl, xp: LV_XP[lvl - 1], down: false, leveled: false });
+// ------------------------------------------------------------ levels, skill points and skills
+// A hero gains XP only by beating enemies (every defeated enemy gives its XP to each hero still standing).
+// Each new level adds health and a little attack, and one skill point.
+// Each hero has three skills. A word with one, two or three of the hero's letters (so a longer word) fires
+// skill 1, 2 or 3 if the hero knows it; otherwise the strongest skill they know below it. Skill 1 is known
+// from the start; a skill point learns skill 2 (then 3) or raises a known skill to stopnja 2 and 3:
+// a stronger attack, effects that last longer (×1,5, ×2) and one extra effect each.
+// Points are spent at wells, shrines and pedlars (screen "Veščine", src/skills.js).
+// Outside a journey (practice battles, the gallery) every skill is known at stopnja 1.
+const MAX_LV = 9, LV_XP = [0, 60, 140, 240, 360, 500, 660, 840, 1050];
+const lvHp = lvl => 1 + 0.08 * (lvl - 1), lvAtk = lvl => 1 + 0.04 * (lvl - 1), lvLong = lvl => 0.0125 * (lvl - 1);
+const levelFor = xp => { let l = 1; while (l < MAX_LV && xp >= LV_XP[l]) l++; return l; };
+const heroMaxHp = (id, lvl) => Math.round((HERO_HP[id] || 28) * lvHp(lvl) * (has('alatir') ? 1.2 : 1));
+// sk[t]: 0 = skill t+1 not learned yet, 1–3 = its stopnja (rank)
+const heroState = (id, lvl = 1) => ({ id, hp: heroMaxHp(id, lvl), maxHp: heroMaxHp(id, lvl), lvl, xp: LV_XP[lvl - 1], pts: lvl - 1, sk: [1, 0, 0], down: false, leveled: false });
+const MAX_RANK = 3;
+const RANK_POW = [0, 1, 1.2, 1.4], RANK_DUR = [0, 1, 1.5, 2];   // power and effect length by stopnja
+const skillLv = (st, t) => !S.run ? 1 : (st && st.sk ? st.sk[t - 1] : t === 1 ? 1 : 0);   // practice battles: every skill known
+const knows = (st, t) => skillLv(st, t) > 0;
+const upsOf = (st, t) => Math.max(0, skillLv(st, t) - 1);
+// the skill a word fires for hero k when it uses n of their letters
+const rk3 = st => 1 + (st.lvl - 1) / 4;   // 1 at level 1, 3 at level 9: what used to be levels 1–3
+function firedTier(k, n) { const st = S.heroes[k]; let t = clamp(n, 1, 3); while (t > 1 && !knows(st, t)) t--; return t; }
 function setParty(ids) { HEROES.length = 0; ids.forEach(id => HEROES.push(ROSTER[id])); S.heroes = ids.map(id => heroState(id)); S.lastHero = 0; }
 // a hero joins: in a free place, or instead of the one at index `at`
 function joinHero(id, at) {
-  const st = heroState(id, clamp(S.level, 1, 3));
+  // a newcomer brings half the party's average experience (and the skill points of the levels it gives)
+  const xp = Math.floor(S.heroes.reduce((a, x) => a + x.xp, 0) / Math.max(1, S.heroes.length) / 2);
+  const st = heroState(id, levelFor(xp)); st.xp = xp;
   if (at == null || at < 0) { HEROES.push(ROSTER[id]); S.heroes.push(st); } else { HEROES[at] = ROSTER[id]; S.heroes[at] = st; }
   S.lastHero = 0;
 }
 const partyGod = () => HEROES.findIndex(x => x.god);
 const living = () => S.heroes.map((st, k) => k).filter(k => !S.heroes[k].down);
 // attack multiplier of one hero for a word of this length
-const heroMult = (k, len) => { const st = S.heroes[k], hr = HEROES[k]; return LV_ATK[st.lvl - 1] * (1 + LV_LONG[st.lvl - 1] * Math.max(0, len - 4)) * (hr.god ? GOD_ATK[hr.id] || GOD_ATK_DEFAULT : 1); };
+const heroMult = (k, len) => { const st = S.heroes[k], hr = HEROES[k]; return lvAtk(st.lvl) * (1 + lvLong(st.lvl) * Math.max(0, len - 4)) * (hr.god ? GOD_ATK[hr.id] || GOD_ATK_DEFAULT : 1); };
 // Healing by heroes and charms is partial: it never lifts a hero above HEAL_CAP of their health.
 // Full health comes from wells (and from the potion Živa voda, which a hero drinks when badly hurt).
 const HEAL_CAP = 0.7, POTION_AT = 0.3, POTION_HEAL = 0.6;
@@ -867,7 +934,7 @@ function reviveHero(k) {
   const st = S.heroes[k]; st.down = false; st.hp = Math.max(1, Math.round(st.maxHp * 0.4));
   log(`${HEROES[k].name} spet vstane.`); if (B) { renderParty(); renderPuzzle(); renderSide(); }
 }
-function resetRun() { S.run = null; setParty(CLASSIC); S.meterBonus = 0; S.strike = 0; }
+function resetRun() { S.run = null; setParty(CLASSIC); S.meterBonus = 0; clearSave(); }
 
 // ============================================================ global state
 const S = {
@@ -882,6 +949,7 @@ const S = {
   get level() { const l = living(); return l.length ? Math.round(l.reduce((a, k) => a + this.heroes[k].lvl, 0) / l.length) : 1; },
   screen: 'title',
   know: (() => { try { const v = localStorage.getItem('zg-know'); if (LEVELS[v]) return v; } catch (e) { /* no storage */ } return 'malcek'; })(),
+  diff: (() => { try { const v = localStorage.getItem('zg-diff'); if (v === 'lahka' || v === 'srednja' || v === 'tezka') return v; } catch (e) { /* no storage */ } return 'srednja'; })(),
   xp: 0, meterBonus: 0,
   mode: (() => { try { const v = localStorage.getItem('zg-mode'); if (v === 'real' || v === 'calm') return v; } catch (e) { /* no storage */ } return 'real'; })(),
   battle: null, ev: null, suggest: true, menuSel: null, setup: null,
@@ -920,7 +988,8 @@ function go(screen, arg) {
   if (screen !== 'battle') { S.battle = null; B = null; }
   mountShell();
   ({ title: renderTitle, newrun: renderNewRun, howto: renderHowto, about: renderAbout, heroes: renderHeroes, pick: renderPick, travel: renderTravel, ending: renderEnding,
-    settings: renderSettings, battle: startBattle, chest: startChest, trap: startTrap, darts: startDarts, gallery: renderGallery, hero: renderHeroMoment })[screen](arg);
+    settings: renderSettings, train: renderTrain, battle: startBattle, chest: startChest, trap: startTrap, darts: startDarts, gallery: renderGallery, hero: renderHeroMoment,
+    shrine: renderShrine, godcome: renderGodCome, godword: renderGodWord })[screen](arg);
   window.scrollTo(0, 0);
   fitScreen();
 }
@@ -946,6 +1015,10 @@ function setLayout(mobile) {
   else if (scr === 'about') renderAbout();
   else if (scr === 'heroes') renderHeroes();
   else if (scr === 'settings') renderSettings();
+  else if (scr === 'train') renderTrain();
+  else if (scr === 'shrine') renderShrine();
+  else if (scr === 'godcome') renderGodCome();
+  else if (scr === 'godword') renderGodWord();
   else renderTitle();
   fitScreen();
 }
@@ -985,11 +1058,30 @@ function renderHeroMoment(arg) {
   if (arg.sel == null) arg.sel = 0;
   const id = arg.ids[arg.sel], ch = CHARS.find(c => c.id === id), L = LORE[id], kind = arg.kind;
   const hk = kind === 'after' ? HEROES.findIndex(x => x.id === id) : -1, hs = hk >= 0 ? S.heroes[hk] : null;
-  const spirit = h('div', { class: 'spirit' + (kind === 'freed' ? ' cursed' : '') + (hs && hs.down ? ' down' : '') + (id === 'veles' ? ' grand' : '') }, spriteEl(id, ch.c),
-    [18, 34, 52, 68, 82].map((x, i) => h('span', { class: 'mote', style: { left: x + '%', 'animation-delay': (-i * .8) + 's', 'animation-duration': (3.4 + (i % 3) * .7) + 's' } })));
+  // whose skills to show: the hero's own on this journey, a newcomer's starting ones, or (codex outside a journey) all
+  const pk = HEROES.findIndex(x => x.id === id);
+  const sst = hs || (kind === 'meet' ? heroState(id) : kind === 'codex' && S.run && pk >= 0 ? S.heroes[pk] : null);
+  const knownT = [1, 2, 3].filter(t => !sst || !S.run || knows(sst, t));
+  // tapping the hero plays the skills they know, one after another (as in the gallery); a quiet extra, not announced
+  const ctx = {}; let heroEl;
+  const demo = () => {
+    if (hs && hs.down) return;
+    const t = knownT[(arg.demo = ((arg.demo || 0) % knownT.length)) ]; arg.demo++;
+    attackAnim(heroEl, t, ctx.scene);
+    spawnCard(heroEl, { tier: t, c: ch.c, name: ch.name, move: ch.moves[t - 1], word: ch.words[t - 1], value: ch.vals[t - 1], extra: t === 3 ? ch.extra : null, art: id }, ctx);
+  };
+  const spirit = h('div', { class: 'spirit' + (kind === 'freed' ? ' cursed' : '') + (hs && hs.down ? ' down' : '') + (id === 'veles' ? ' grand' : ''), ref: el => ctx.scene = el },
+    h('button', { class: 'spirit-hit', 'aria-label': `${ch.name}: pokaži veščino`, title: 'Pokaži veščino', onclick: demo }, heroEl = spriteEl(id, ch.c, sst && S.run && sst.pts > 0 && !(hs && hs.down) ? 'glow' : '')),
+    [18, 34, 52, 68, 82].map((x, i) => h('span', { class: 'mote', style: { left: x + '%', 'animation-delay': (-i * .8) + 's', 'animation-duration': (3.4 + (i % 3) * .7) + 's' } })),
+    h('div', { class: 'cards', ref: el => ctx.cards = el }),
+    h('button', { class: 'btn small skillbtn', onclick: () => openSkillInfo(id, sst) },
+      h('span', { class: 'i', 'aria-hidden': 'true' }, 'i'), 'Veščine', sst && S.run && sst.pts ? h('span', { class: 'ptsbadge', title: 'neporabljene točke' }, sst.pts) : null));
   const flip = h('div', { class: 'flip' });
   const front = h('div', { class: 'face front' }); front.innerHTML = CardArt.svg(id, 1);
-  front.append(h('div', { class: 'plate' }, h('b', {}, ch.name), h('span', {}, ch.sub), h('div', { class: 'mv' }, ch.moves.map(m => h('em', {}, m)))));
+  // the skills on the card: filled when known, outlined when not yet; a star for stopnja 2, two for stopnja 3
+  front.append(h('div', { class: 'plate' }, h('b', {}, ch.name), h('span', {}, ch.sub), h('div', { class: 'mv' }, ch.moves.map((m, i) => {
+    const on = !sst || !S.run || knows(sst, i + 1), ups = sst && S.run ? upsOf(sst, i + 1) : 0;
+    return h('em', { class: on ? 'on' : 'off', title: on ? `stopnja ${ups + 1} od ${MAX_RANK}` : 'še ni znana' }, m, ups ? h('i', {}, '★'.repeat(ups)) : null); }))));
   const rear = h('div', { class: 'face rear' }, h('h4', {}, ch.name, h('small', {}, ST_LABEL[CHAR_ST[id]][0].split(' · ')[0])), L.story.map(p => h('p', {}, p)));
   flip.append(h('div', { class: 'flip-in' }, front, rear));
   const flipBtn = h('button', { class: 'btn', 'aria-pressed': 'false', onclick: () => { const b = flip.classList.toggle('back'); flipBtn.setAttribute('aria-pressed', b ? 'true' : 'false'); flipBtn.lastChild.textContent = b ? ' Pokaži sliko' : ' Obrni karto'; sfx('sel', { rate: b ? .8 : 1.2 }); } }, '↻', ' Obrni karto');
@@ -998,19 +1090,21 @@ function renderHeroMoment(arg) {
   const wrap = h('div', { class: 'hm', style: { '--c': ch.c } },
     arg.crumb ? crumb(arg.crumb, () => arg.next()) : null,
     h('div', {}, h('div', { class: 'kind' }, HM_KIND[kind]), h('h2', {}, ch.name, h('small', {}, ch.sub)),
-      hs ? h('div', { class: 'hstat' }, hs.down ? 'Obležal. Zbudi ga vodnjak, junak z zdravilno močjo ali mrtva voda.' : [`Raven ${hs.lvl} od 3 · zdravje ${hs.hp}/${hs.maxHp}`, hs.leveled ? h('b', {}, ' · nova raven!') : null,
-        hs.lvl < 3 ? ` · do naslednje ravni še ${LV_XP[hs.lvl] - hs.xp} XP` : ' · dolge besede zdaj štejejo največ']) : null),
+      hs ? h('div', { class: 'hstat' }, hs.down ? 'Obležal. Obudi ga junak z zdravilno močjo, mrtva voda ali premagan bog; vodnjak ne.' : [`Raven ${hs.lvl} · zdravje ${hs.hp}/${hs.maxHp}`, hs.leveled ? h('b', {}, ' · nova raven, +1 točka veščine!') : null,
+        hs.lvl < MAX_LV ? ` · do naslednje ravni še ${LV_XP[hs.lvl] - hs.xp} XP` : ' · najvišja raven']) : null),
+    // what this moment means (unlocked, room in the party, a freed god) comes first, before the pictures
+    kind === 'freed' ? h('div', { class: 'note' }, CHAR_ST[id] === 'konec' ? `${ch.name} se ti pridruži šele po koncu zgodbe — takrat lahko zaigraš tudi z njim.` : `${ch.name} se ti ne pridruži takoj: svojo moč ti posodi, ko se srečata na naslednji poti.`) : null,
+    arg.info ? h('div', { class: 'note' }, arg.info(arg)) : null,
     arg.ids.length > 1 ? h('div', { class: 'hm-tabs' }, arg.ids.map((hid, k) => { const c2 = CHARS.find(c => c.id === hid);
       return h('button', { class: 'btn small' + (k === arg.sel ? ' on' : ''), style: { '--c': c2.c }, onclick: () => { arg.sel = k; mountShell(); renderHeroMoment(arg); } }, h('i', { style: { 'background-image': `url(${SPRITES[hid]})` } }), c2.name); })) : null,
     h('div', { class: 'hm-body' },
       h('div', { style: { display: 'grid', gap: '10px' } }, spirit, h('div', { class: 'say' }, h('b', {}, ch.name), '»' + line + '«')),
       h('div', { class: 'hm-card' }, flip, h('div', { class: 'hm-actions' }, flipBtn))),
-    kind === 'freed' ? h('div', { class: 'note' }, CHAR_ST[id] === 'konec' ? `${ch.name} se ti pridruži šele po koncu zgodbe — takrat lahko zaigraš tudi z njim.` : `${ch.name} se ti ne pridruži takoj: svojo moč ti posodi, ko se srečata v naslednji igri.`) : null,
-    arg.info ? h('div', { class: 'note' }, arg.info(arg)) : null,
     // a page reached from a menu (arg.crumb) has one way back, the sticky link at the top; no second button at the bottom
-    arg.actions ? h('div', { class: 'row', style: { 'flex-wrap': 'wrap' } }, arg.actions(arg).map(a => h('button', { class: 'btn' + (a.primary ? ' primary' : ''), onclick: a.fn }, a.label, a.primary ? h('kbd', { style: { 'margin-left': '6px' } }, 'Enter') : null)))
+    // the way on is a full-width footer right under the content; on a phone it stays on screen (never below the fold)
+    arg.actions ? h('div', { class: 'hm-foot' }, arg.actions(arg).map(a => h('button', { class: 'btn' + (a.primary ? ' primary' : ''), onclick: a.fn }, a.label, a.primary ? h('kbd', { style: { 'margin-left': '6px' } }, 'Enter') : null)))
       : arg.crumb ? null
-      : h('div', { class: 'row', style: { 'flex-wrap': 'wrap' } }, h('button', { class: 'btn primary', onclick: () => arg.next() }, arg.nextLabel || 'Naprej ', h('kbd', {}, 'Enter'))));
+      : h('div', { class: 'hm-foot' }, h('button', { class: 'btn primary', onclick: () => arg.next() }, arg.nextLabel || 'Naprej ', h('kbd', {}, 'Enter'))));
   SCR.append(wrap);
   if (!arg.played) { arg.played = true; setTimeout(() => sfx(kind === 'freed' ? 'win' : 'heal', { vol: .8 }), 200); }
 }
@@ -1046,7 +1140,7 @@ function renderGallery() {
         h('button', { class: 'btn small', onclick: () => go('hero', { kind: 'meet', ids: [ch.id], crumb: 'Nazaj v galerijo', next: () => go('gallery') }) }, 'Prizor: srečanje'),
         null),
       h('p', {}, ch.note), frames(ch.id, false),
-      h('div', { class: 'gboards' }, [1, 2, 3].map(t => board(ch.id, t, `${t === 1 ? '1 črka' : t + ' črke'} · ${ch.moves[t - 1]}`)))));
+      h('div', { class: 'gboards' }, [1, 2, 3].map(t => board(ch.id, t, `${['', '1 črka', '2 črki', '3 črke'][t]} · ${ch.moves[t - 1]}`)))));
   });
   wrap.append(h('h2', {}, 'Sovražniki'));
   FOE_CHARS.forEach(ch => {
@@ -1075,7 +1169,7 @@ const UI = {};         // DOM refs for the battle screen
 
 const OWN_SHARE = [0, 0.3, 0.46, 0.56, 0.62];   // share of coloured tiles by party size
 function makeEnemy(key, i, sc) {
-  const t = ENEMIES[key], hp = Math.round(t.hp * (sc ? sc.hp : 1));
+  const t = ENEMIES[key], hp = Math.round(t.hp * (sc ? sc.hp : 1) * (S.run ? DIFF().foeHp : 1));
   return { key, i, ...t, atk: Math.round(t.atk * (sc ? sc.atk : 1)), pattern: t.pattern.slice(), maxHp: hp, hp, charge: Math.random() * 0.25, step: 0,
     stunUntil: 0, stunWords: 0, burn: null, burnAcc: 0, burnTurns: 0, burnPer: 0, phase2on: false, el: null };
 }
@@ -1086,7 +1180,7 @@ function startBattle(node) {
   const def = node.battle;
   B = S.battle = {
     node, def, enemies: def.enemies.map((k, i) => makeEnemy(k, i, def.scale)), target: 0, grid: [], path: [], typed: '', nopath: false,
-    lemmaUses: new Map(), meter: Math.round(METER_MAX * Math.max(def.meterStart, S.meterBonus)), hints: LV().hints + (has('praprotno-seme') ? 1 : 0), shield: has('svarogovo-kladivo') ? 8 : 0,
+    lemmaUses: new Map(), meter: Math.round(METER_MAX * Math.max(def.meterStart, S.meterBonus)), hints: LV().noHints ? 0 : LV().hints + (has('praprotno-seme') ? 1 : 0), shield: has('svarogovo-kladivo') ? 8 : 0,
     boost: 0, double: 1, evade: 0, grow: 0, snapBag: S.run ? JSON.stringify(S.run.bag) : null, snapGold: S.run ? S.run.gold : 0,
     get hp() { return S.partyHp; }, set hp(v) { S.partyHp = v; }, snap: JSON.stringify(S.heroes), revived: false, sleep: {}, time: 0, paused: false, over: false, cw: null, words: 0, logLines: [], fbTimer: 0,
     stats: { words: 0, longest: '', best: 0, cw: 0, xp: 0, gold: 0 }, lastFinisher: null,
@@ -1100,8 +1194,12 @@ function startBattle(node) {
   ensureSolvable();
   buildBattleDom();
   log(`${node.title}: ${B.enemies.map(e => e.name).join(', ')}.`);
-  { const b = B; later(() => { if (B === b && !B.over) { autoItems('start'); dartStrike(); } }, 700); }
-  if (def.ambush) later(() => { if (S.battle === B) openCrossword('ambush', def.ambush); }, 400);
+  { const b = B; later(() => { if (B === b && !B.over) autoItems('start'); }, 700); }
+  if (def.ambush) {
+    // the ambush is announced first, so the crossword does not come out of nowhere
+    fb('Zaseda! Udariš prvi: reši križanko, preden te opazijo.', 'warn'); log('Zaseda! Udariš prvi.');
+    later(() => { if (S.battle === B) openCrossword('ambush', def.ambush); }, 1600);
+  }
   else showTut('mesh');
 }
 
@@ -1125,9 +1223,11 @@ function buildBattleDom() {
       h('div', { class: 'floats', ref: el => UI.floats = el })),
     h('div', { class: 'wordbar' },
       h('div', { class: 'word', ref: el => UI.word = el }),
-      // Phones have no Pošlji in the mesh: lifting the finger sends the word (or a second tap on its last letter).
-      S.mobile ? h('button', { class: 'btn clr', ref: el => UI.clr = el, onclick: () => clearWord(), 'aria-label': 'Počisti besedo', title: 'Počisti besedo' }, '✕')
-        : h('button', { class: 'btn send', ref: el => UI.send = el, onclick: () => submitWord(), title: 'Pošlji izbrano besedo' }, 'Pošlji ', h('kbd', {}, 'Enter')),
+      // A dragged word sends itself when the finger lifts. A tapped word is sent with a second tap on its
+      // last letter or with Pošlji, which sits right next to the word (on a phone with ✕ to clear it).
+      h('div', { class: 'wbtns' },
+        S.mobile ? h('button', { class: 'btn clr', ref: el => UI.clr = el, onclick: () => clearWord(), 'aria-label': 'Počisti besedo', title: 'Počisti besedo' }, '✕') : null,
+        h('button', { class: 'btn send', ref: el => UI.send = el, onclick: () => submitWord('button'), title: 'Pošlji izbrano besedo' }, 'Pošlji', S.mobile ? null : [' ', h('kbd', {}, 'Enter')])),
       h('div', { class: 'chips', ref: el => UI.chips = el }),
       h('div', { class: 'props', ref: el => UI.props = el }),
       h('div', { class: 'fb', ref: el => UI.fb = el }),
@@ -1143,14 +1243,16 @@ function buildBattleDom() {
 
 function renderMeta() {
   if (!UI.meta) return;
-  UI.meta.textContent = `Ravni ${S.heroes.map(x => x.down ? '†' : x.lvl).join(' · ')} · ${S.mode === 'real' ? 'Realni čas' : 'Mirni način'} · ${LV().name}`;
+  const gifts = giftsNow(), bl = gifts.length ? ` · dar: ${gifts.map(g => GOD[g].name).join(', ')}` : '';
+  UI.meta.textContent = `Ravni ${S.heroes.map(x => x.down ? '†' : x.lvl).join(' · ')} · ${S.mode === 'real' ? 'Realni čas' : 'Mirni način'} · ${LV().name}${S.run ? ' · ' + DIFF().name : ''}${bl}`;
 }
 const asleep = hIdx => !!B.sleep[hIdx] || S.heroes[hIdx].down;   // a fallen hero's letters go grey too
+const holdsBack = k => !!(B && B.node.challenge && B.node.challenge.own && HEROES[k] && HEROES[k].id === B.node.challenge.god);
 function renderParty() {
   UI.party.innerHTML = ''; UI.heroBars = [];
   UI.heroEls = HEROES.map((hr, i) => {
     const st = S.heroes[i], sleeping = !!B.sleep[i] && !st.down;
-    const el = spriteEl(hr.id, hr.c, st.down ? 'down' : sleeping ? 'asleep' : '');
+    const el = spriteEl(hr.id, hr.c, st.down ? 'down' : sleeping ? 'asleep' : st.pts > 0 && S.run ? 'glow' : '');
     el.title = hr.name; el.append(h('span', { class: 'st' }, st.down ? '' : sleeping ? 'spi' : ''));
     const bar = {};
     UI.party.append(h('div', { class: 'herowrap' + (st.down ? ' isdown' : ''), ref: w => bar.wrap = w }, el,
@@ -1165,7 +1267,7 @@ function renderPartyHp() {
     const st = S.heroes[i], pct = st.down ? 0 : 100 * st.hp / st.maxHp;
     bar.fill.style.width = pct + '%'; bar.bar.className = 'hpbar' + (pct <= 25 ? ' crit' : pct <= 50 ? ' low' : '');
     bar.num.textContent = st.down ? 'padel' : `${st.hp}/${st.maxHp}`;
-    bar.lv.innerHTML = '●'.repeat(st.lvl) + '<u>' + '●'.repeat(3 - st.lvl) + '</u>';
+    bar.lv.textContent = 'R' + st.lvl;
   });
   UI.partyhp.innerHTML = '';
   if (B.shield) UI.partyhp.append(h('span', { class: 'sh' }, `ščit družine ${B.shield}`));
@@ -1220,7 +1322,7 @@ function renderSide() {
         h('button', { class: 'btn zgbtn' + (full ? ' primary' : ''), disabled: !full, onclick: openFinisher },
           full ? null : h('i', { class: 'fill', style: { width: (100 * B.meter / METER_MAX) + '%' } }),
           h('span', {}, full ? 'Izreci zagovor' : `Zagovor ${Math.floor(B.meter)}/${METER_MAX}`)),
-        LV().hints || B.hints > 0 ? h('button', { class: 'btn', disabled: B.hints <= 0, onclick: useHint }, `Namig (${B.hints})`) : null,
+        !LV().noHints && (LV().hints || B.hints > 0) ? h('button', { class: 'btn', disabled: B.hints <= 0, onclick: useHint }, `Namig (${B.hints})`) : null,
         h('button', { class: 'btn', onclick: () => shuffleGrid(true) }, 'Premešaj'),
         bagCount(true) ? h('button', { class: 'btn', onclick: () => openBag() }, `Torba (${bagCount(true)})`) : null));
     return;
@@ -1234,7 +1336,7 @@ function renderSide() {
       h('button', { class: 'btn' + (full ? ' primary' : ''), disabled: !full || !!B.cw, onclick: openFinisher, style: { width: '100%' } },
         'Izreci zagovor ', h('kbd', {}, 'presledek'))),
     h('div', { class: 'box', style: { display: 'flex', gap: '8px' } },
-      LV().hints || B.hints > 0 ? h('button', { class: 'btn small', style: { flex: 1 }, disabled: !!B.cw || B.hints <= 0, onclick: useHint }, `Namig (${B.hints}) `, h('kbd', {}, '1')) : null,
+      !LV().noHints && (LV().hints || B.hints > 0) ? h('button', { class: 'btn small', style: { flex: 1 }, disabled: !!B.cw || B.hints <= 0, onclick: useHint }, `Namig (${B.hints}) `, h('kbd', {}, '1')) : null,
       h('button', { class: 'btn small', style: { flex: 1 }, disabled: !!B.cw, onclick: () => shuffleGrid(true) }, 'Premešaj ', h('kbd', {}, '2')),
       S.run ? h('button', { class: 'btn small', style: { flex: 1 }, disabled: !bagCount(true), onclick: () => openBag() }, `Torba (${bagCount(true)}) `, h('kbd', {}, '3')) : null),
     h('div', { class: 'box' }, h('h4', {}, 'Junaki in barve'),
@@ -1424,6 +1526,7 @@ function renderPuzzle() {
     t.pop = false;
     mesh.append(el); return el;
   });
+  if (hintAlive()) B.hint.p.slice(0, 2).forEach(i => UI.tiles[i].classList.add('hinted'));
   wrap.append(mesh, svgEl('svg', { class: 'pathsvg', ref: el => UI.pathsvg = el }));
   UI.puzzle.append(wrap);
   bindMeshPointer(wrap);
@@ -1468,7 +1571,10 @@ function renderWord() {
   if (B.path.length) {
     const counts = HEROES.map(() => 0);
     B.path.forEach(i => { const t = B.grid[i]; if (ownerActive(t)) counts[t.owner]++; });
-    counts.forEach((n, k) => { if (n) UI.chips.append(h('span', { class: 'chip', style: { '--c': HEROES[k].c } }, `${HEROES[k].name} ${HEROES[k].moves[Math.min(n, 3) - 1]}`)); });
+    // one chip per attacking hero: the initials from the tiles and the skill this word fires
+    counts.forEach((n, k) => { if (n && !asleep(k)) { const t = firedTier(k, n);
+      if (holdsBack(k)) { UI.chips.append(h('span', { class: 'chip', style: { '--c': 'var(--dim)' }, title: `${HEROES[k].name} ne udari svoje božanske podobe` }, h('b', {}, HEROES[k].ini), 'ne udari')); return; }
+      UI.chips.append(h('span', { class: 'chip', style: { '--c': HEROES[k].c }, title: `${HEROES[k].name}: ${HEROES[k].moves[t - 1]}` }, h('b', {}, HEROES[k].ini), HEROES[k].moves[t - 1])); } });
     if (B.path.length >= MINW()) UI.chips.append(h('span', { class: 'chip' }, `dolžina ×${num(LEN_MULT(B.path.length))}`));
     if (valid) {
       const lem = LEMMA.get(pathWord(B.path)), uses = B.lemmaUses.get(lem) || 0;
@@ -1507,21 +1613,47 @@ function gridWordCount() {
 function proposalScore(w, p) {
   return p.reduce((s, i) => s + tileScore(i), 0) + w.length * 4 - (B.lemmaUses.get(LEMMA.get(w) || w) || 0) * 25;
 }
+// Only the shortest version of a word is proposed, to keep the row short on a phone: DELA, not DELATI or
+// DELALA (a longer word that starts with a shorter proposal waits until the shorter one is chosen), and one
+// form per base form (VODA, not also VODE). `entries` are [word, …] pairs.
+function shortestForms(entries) {
+  const kept = [], lemmas = new Set();
+  for (const e of entries.slice().sort((a, b) => a[0].length - b[0].length)) {
+    const w = e[0], lem = LEMMA.get(w) || w;
+    if (lemmas.has(lem) || kept.some(k => w.startsWith(k[0]))) continue;
+    kept.push(e); lemmas.add(lem);
+  }
+  return kept;
+}
+// The hint (Namig) stays until its word is played, its letters change or the mesh is shuffled.
+function hintAlive() {
+  const H = B && B.hint; if (!H) return false;
+  if (H.p.some((i, k) => !B.grid[i] || B.grid[i].ch !== H.w[k])) { B.hint = null; return false; }
+  return true;
+}
+function hintChip() {
+  if (!hintAlive()) return null;
+  const H = B.hint;
+  return h('span', { class: 'hintchip', title: 'Namig ostane, dokler besede ne odigraš' }, 'Namig: ', h('b', {}, UP(H.w.slice(0, 2)) + '…'), ` ${H.w.length} črk${H.w.length === 2 ? 'i' : H.w.length < 5 ? 'e' : ''}`);
+}
 function renderProposals() {
   if (!UI.props) return;
+  if (B.dragging && UI.props.childNodes.length) return;   // nothing jumps under the finger: the row waits for the release
   UI.props.innerHTML = '';
-  const L = LV(), props = S.suggest && L.proposals;
-  if (B.cw || (!props && !L.meshCount)) { UI.props.style.display = 'none'; return; }
+  const L = LV(), props = S.suggest && L.proposals, hint = B.cw ? null : hintChip();
+  if (B.cw || (!props && !L.meshCount && !hint)) { UI.props.style.display = 'none'; return; }
   UI.props.style.display = '';
+  if (hint) UI.props.append(hint);
   if (!B.path.length || !props) {
+    if (!L.meshCount) return;
     const n = gridWordCount();
     const cnt = n >= 600 ? 'več kot 600' : n;
-    UI.props.append(h('span', { class: 'muted' }, S.mobile || !props ? `${cnt} besed v mreži` : `V mreži je ${cnt} besed. Začni besedo in tu se pokažejo predlogi.`));
+    UI.props.append(h('span', { class: 'muted' }, S.mobile || !props || hint ? `${cnt} besed v mreži` : `V mreži je ${cnt} besed. Začni besedo in tu se pokažejo predlogi.`));
     return;
   }
   const best = new Map();
   for (const [w, p] of extensions(B.path)) { const sc = proposalScore(w, p); if (!best.has(w) || best.get(w).sc < sc) best.set(w, { p, sc }); }
-  const list = [...best.entries()].sort((a, b) => b[1].sc - a[1].sc).slice(0, S.mobile ? 6 : 8);
+  const list = shortestForms([...best.entries()]).sort((a, b) => b[1].sc - a[1].sc).slice(0, S.mobile ? 6 : 8);
   if (!list.length) {
     UI.props.append(h('span', { class: 'muted' }, WORDS.has(pathWord(B.path)) ? 'Ni daljših besed s tem začetkom.' : 'Ni besed s tem začetkom — poskusi drugo pot.'));
     return;
@@ -1574,7 +1706,7 @@ function bindMeshPointer(wrap) {
     const i = tileAt(e.clientX, e.clientY); if (i < 0) return;
     if (isLocked(B.grid[i])) { fb('Črka je zaklenjena.', 'warn'); return; }
     e.preventDefault(); wrap.setPointerCapture(e.pointerId);
-    down = true; moved = false; submitOnUp = false;
+    down = true; moved = false; submitOnUp = false; B.dragging = true;   // proposals and the hint stay as they are while dragging
     const last = B.path[B.path.length - 1];
     if (B.path.length && i === last) submitOnUp = true;
     else if (B.path.length && adjacent(last, i) && !B.path.includes(i)) B.path.push(i);
@@ -1591,24 +1723,28 @@ function bindMeshPointer(wrap) {
     if (!B.path.includes(i) && adjacent(last, i) && !isLocked(B.grid[i])) { B.path.push(i); moved = true; syncTyped(); }
   });
   const up = () => {
-    if (!down) return; down = false;
-    if ((moved && B.path.length >= MINW()) || submitOnUp) submitWord();
+    if (!down) return; down = false; B.dragging = false;
+    if ((moved && B.path.length >= MINW()) || submitOnUp) submitWord('pointer');
+    else renderProposals();   // proposals stood still during the drag; now they follow the word
   };
   wrap.addEventListener('pointerup', up);
-  wrap.addEventListener('pointercancel', () => { down = false; });
+  wrap.addEventListener('pointercancel', () => { down = false; B.dragging = false; renderProposals(); });
   wrap.addEventListener('contextmenu', e => { e.preventDefault(); clearWord(); });
 }
 
 // ------------------------------------------------------------ resolving a word
-function submitWord() {
+// `how`: 'key' (Enter), 'button' (Pošlji), 'pointer' (released drag or a second tap on the last letter)
+function submitWord(how = 'key') {
   if (!B || B.over || B.cw || B.paused) return;
   if (!B.path.length) { if (B.typed) fb(`Za »${UP(B.typed)}« ni poti v mreži.`, 'err'); return; }
   const w = pathWord(B.path);
   if (w.length < MINW()) { fb(`Beseda mora imeti vsaj ${MINW()} črke.`, 'warn'); return; }
   if (!WORDS.has(w)) {
     noteRejected(w, 'mreza');
-    fb(`»${UP(w)}« ni v slovarju.` + rejectHint(), 'err'); shakeEl(UI.word);
-    if (S.mobile) { const b = B, p = B.path.join(); setTimeout(() => { if (B === b && !B.over && B.path.join() === p) clearWord(); }, 650); }
+    fb(`»${UP(w)}« ni v slovarju.` + rejectHint(), 'err');
+    // nothing happens, but the word flashes red and clears; a word typed on a keyboard stays to be corrected
+    if (UI.word) replay(UI.word, 'bad'); shakeEl(UI.word);
+    if (how !== 'key' || S.mobile) { const b = B, p = B.path.join(); setTimeout(() => { if (B === b && !B.over && B.path.join() === p) clearWord(); }, 650); }
     return;
   }
   resolveWord(w, B.path.slice());
@@ -1616,6 +1752,8 @@ function submitWord() {
 
 function resolveWord(w, path) {
   sfx('ok');
+  if (noteFound(w, 'mreza')) (B.found || (B.found = [])).push(w);   // a word new to this player, with no meaning yet
+  if (B.hint && (B.hint.w === w || (LEMMA.get(B.hint.w) || B.hint.w) === (LEMMA.get(w) || w))) B.hint = null;   // the hinted word is played
   const lem = LEMMA.get(w) || w;
   const uses = B.lemmaUses.get(lem) || 0;
   B.lemmaUses.set(lem, uses + 1);
@@ -1634,8 +1772,11 @@ function resolveWord(w, path) {
     const dom = hr.domain.includes(lem) || hr.domain.includes(w);
     if (asleep(k)) return;
     if (!counts[k] && !dom) return;
-    const tier = clamp(counts[k], 1, 3);
-    acts.push({ k, tier, dom, crit: crit > 1, power: TIER[tier] * lenM * rep * crit * gear * heroMult(k, w.length) * (dom ? 1.5 : 1) });
+    if (holdsBack(k)) return;   // a party god does not strike their own godly version
+    // the skill fired is the strongest one the hero knows up to the number of their letters; letters beyond it add a little
+    const tier = firedTier(k, counts[k]), rank = skillLv(S.heroes[k], tier), more = Math.max(0, counts[k] - tier), ups = upTags(k, tier);
+    const up = ups.reduce((m, t) => m * (t === 'moc' ? 1.25 : 1), 1), krit = ups.includes('krit') && Math.random() < 0.3;
+    acts.push({ k, tier, rank, dom, ups, krit, crit: crit > 1 || krit, power: TIER[tier] * RANK_POW[rank] * (1 + 0.15 * more) * up * (krit ? 2 : 1) * lenM * rep * crit * gear * heroMult(k, w.length) * (dom ? 1.5 : 1) });
   });
   if (!acts.length) acts.push({ k: -1, tier: 1, power: 0.6 * lenM * rep * crit * gear * lvl });
 
@@ -1656,11 +1797,13 @@ function resolveWord(w, path) {
   });
 
   acts.forEach((a, n) => { a.n = n; later(() => { if (B && S.battle === B && !B.over) heroAct(a, w); }, n * 220); });
+  // the gods' gifts (src/shrines.js) come with every word that fires a third skill
+  const top3 = acts.filter(a => a.tier === 3 && a.k >= 0).reduce((m, a) => Math.max(m, a.power), 0);
+  if (top3) giftsNow().forEach((g, i) => later(() => { if (B && S.battle === B && !B.over) giftStrike(g, top3); }, acts.length * 220 + 160 + i * 240));
 
   // bookkeeping
   B.words++; B.stats.words++;
   if (w.length > B.stats.longest.length) B.stats.longest = w;
-  { const real = acts.filter(a => a.k >= 0); if (real.length) real.forEach(a => gainXp(Math.round(w.length * rep * (1 + a.tier)), a.k)); else gainXp(w.length); }
   B.meter = Math.min(METER_MAX, B.meter + w.length * rep * (has('mokosino-vreteno') ? 1.3 : 1));
   if (S.run) S.run.words++;
   if (B.meter >= METER_MAX) fb('Zagovor je pripravljen — pritisni presledek.', 'ok');
@@ -1687,7 +1830,10 @@ function heroAct(a, w) {
   const others = () => B.enemies.filter(e => e !== target && e.hp > 0), alive = () => B.enemies.filter(e => e.hp > 0);
   const hit = (m, e = target) => damageEnemy(e, m * p, { crit: a.crit });
   const shield = m => { const sh = Math.round(m * p); B.shield = Math.min(30, B.shield + sh); renderPartyHp(); floatOn(UI.party, `ščit +${sh}`, 'info'); return sh; };
-  const stun = (e, sec, words) => { if (S.mode === 'real') e.stunUntil = Math.max(e.stunUntil, B.time + sec); else e.stunWords = Math.max(e.stunWords, words); };
+  // a skill at a higher stopnja lasts longer: stuns, burns, poison, weakening and dodges (×1,5 and ×2)
+  const dur = RANK_DUR[a.rank || 1];
+  const stun = (e, sec, words) => { if (S.mode === 'real') e.stunUntil = Math.max(e.stunUntil, B.time + sec * dur); else e.stunWords = Math.max(e.stunWords, Math.round(words * dur)); };
+  const burn = (e, m, label) => applyBurn(e, m, label, false, dur);
   const cleanse = () => {
     const had = B.grid.some(isLocked) || Object.keys(B.sleep).length;
     B.grid.forEach(t => { t.lockUntil = 0; t.lockWords = 0; t.flood = false; }); B.sleep = {};
@@ -1711,22 +1857,22 @@ function heroAct(a, w) {
     case 'smith': { const d = hit(3); card.value = `−${d} · ščit +${shield(2.5)}`; break; }            // Svarog: hit + shield
     case 'guard': { const d = hit(2.6); card.value = `−${d} · ščit +${shield(3.5)}`; break; }          // Matjaž: smaller hit, bigger shield
     case 'heal': {           // Mokoš: heal, tier 2+ cleanses, tier 3 lifts one fallen hero once per battle
-      const d = hit(1.4 + 0.4 * S.heroes[a.k].lvl); heal(3); card.value = `−${d} · ${card.value}`;
+      const d = hit(1.4 + 0.4 * rk3(S.heroes[a.k])); heal(3); card.value = `−${d} · ${card.value}`;
       if (a.tier === 3 && !B.revived && revive()) B.revived = true;
       if (a.tier >= 2 && cleanse()) card.extra = card.extra || 'očisti črke in zbudi junake';
       break; }
     case 'bloom': {          // Zeleni Jurij: small heals, tier 2+ unlocks letters, tier 3 revives once per journey
-      const d = hit(1.2 + 0.4 * S.heroes[a.k].lvl); heal(2); card.value = `−${d} · ${card.value}`;
+      const d = hit(1.2 + 0.4 * rk3(S.heroes[a.k])); heal(2); card.value = `−${d} · ${card.value}`;
       if (a.tier === 3 && !(S.run || S).jurijUsed && revive()) (S.run || S).jurijUsed = true;
       if (a.tier >= 2 && cleanse()) card.extra = card.extra || 'odklene črke';
       break; }
     case 'fire': {           // Kresnik: hit + burn
       const d = hit(3);
-      (a.tier === 3 ? alive() : [target]).forEach(e => applyBurn(e, p));
+      (a.tier === 3 ? alive() : [target]).forEach(e => burn(e, p));
       card.value = `−${d}`; card.extra = a.tier === 3 ? 'vsi gorijo' : 'cilj gori'; break; }
     case 'venom': {          // Veles: the hardest single hit, poison; tier 3 strikes everyone
-      const d = hit(4.2); applyBurn(target, 1.2 * p, 'zastrupljen');
-      if (a.tier === 3) others().forEach(e => { hit(2.2, e); applyBurn(e, 1.2 * p, 'zastrupljen'); });
+      const d = hit(4.2); burn(target, 1.2 * p, 'zastrupljen');
+      if (a.tier === 3) others().forEach(e => { hit(2.2, e); burn(e, 1.2 * p, 'zastrupljen'); });
       card.value = `−${d} · strup`; if (a.tier === 3) card.extra = 'kača ovije vse sovražnike'; break; }
     case 'light': {          // Dažbog: his light makes the next word stronger
       const d = hit(3); card.value = `−${d}`;
@@ -1748,7 +1894,7 @@ function heroAct(a, w) {
       break; }
     case 'siege': {          // Erazem: the secret tunnel makes the next enemy attack miss
       const d = hit(3.2); card.value = `−${d}`;
-      if (a.tier >= 2) { B.evade++; card.extra = 'naslednji napad zgreši'; }
+      if (a.tier >= 2) { const n = Math.round(dur); B.evade += n; card.extra = n > 1 ? `naslednja ${n} napada zgrešita` : 'naslednji napad zgreši'; }
       if (a.tier === 3) card.value += ` · ščit +${shield(3)}`;
       break; }
     case 'grow': {           // Peter Klepec: every Vilin dar makes him stronger for the rest of the battle
@@ -1757,7 +1903,7 @@ function heroAct(a, w) {
       break; }
     case 'song': {           // Lepa Vida: her song takes the strength out of enemies
       const d = hit(2.4); card.value = `−${d}`;
-      const weaken = (e, n) => { e.atk = Math.max(1, e.atk - n); };
+      const weaken = (e, n) => { e.atk = Math.max(1, e.atk - Math.round(n * dur)); };
       if (a.tier === 2) { weaken(target, 1); card.extra = 'cilj napada šibkeje'; }
       if (a.tier === 3) { alive().forEach(e => weaken(e, 2)); card.extra = 'vsi sovražniki napadajo šibkeje'; }
       break; }
@@ -1768,14 +1914,28 @@ function heroAct(a, w) {
       break; }
     default: card.value = `−${hit(3)}`;
   }
+  // skill upgrades (src/skills.js) on top of what the skill always does; power and crits are already in `p`
+  if (a.ups && a.ups.length) {
+    const said = a.krit ? ['kritično'] : [];
+    a.ups.forEach(t => {
+      if (t === 'vsi') { let d = 0; others().forEach(e => { d = Math.max(d, hit(1.2, e)); }); if (d) said.push(`vsem −${d}`); }
+      else if (t === 'zdravi') { const got = healParty(Math.round(1.5 * p), HEAL_CAP); if (got) { floatOn(UI.party, `+${got}`, 'heal'); said.push(`+${got} zdravja`); } }
+      else if (t === 'scit') said.push(`ščit +${shield(1.5)}`);
+      else if (t === 'omama' && target.hp > 0) { stun(target, 3, 1); said.push('omama'); }
+      else if (t === 'ogenj' && target.hp > 0) { burn(target, 0.6 * p); said.push('gori'); }
+      else if (t === 'slabi' && target.hp > 0) { target.atk = Math.max(1, target.atk - 1); said.push('napad −1'); }
+    });
+    if (said.length) card.value = [card.value, ...said].filter(Boolean).join(' · ');
+    renderPartyHp();
+  }
   spawnCard(el, card);
   renderEnemies();
 }
 
-function applyBurn(e, p, label, long) {     // fire by default; poison is the same damage over time under another name
+function applyBurn(e, p, label, long, dur = 1) {     // fire by default; poison is the same damage over time under another name
   e.dot = label || 'gori';
-  if (S.mode === 'real') { e.burn = { dps: 0.8 * p, until: B.time + (long ? 12 : 5) }; }
-  else { e.burnTurns = long ? 4 : 2; e.burnPer = Math.max(1, Math.round(2 * p)); }
+  if (S.mode === 'real') { e.burn = { dps: 0.8 * p, until: B.time + (long ? 12 : 5) * dur }; }
+  else { e.burnTurns = Math.round((long ? 4 : 2) * dur); e.burnPer = Math.max(1, Math.round(2 * p)); }
 }
 
 function damageEnemy(e, amount, opts = {}) {
@@ -1811,21 +1971,36 @@ function hurtParty(amount, src, all) {
   if (a > 0 && alive.length) {
     const hits = all ? alive.map(k => [k, Math.ceil(a / alive.length)]) : [[pick(alive), a]];
     a = 0;
-    hits.forEach(([k, d]) => {
-      const st = S.heroes[k], real = Math.min(st.hp, d); st.hp -= real; a += real;
-      floatOn(UI.heroEls[k], `−${real}`, 'dmg'); shakeEl(UI.heroEls[k]);
-      if (st.hp <= 0 && has('zlatorogova-roza') && !S.run.rozaUsed) { S.run.rozaUsed = true; st.hp = 1; floatOn(UI.heroEls[k], 'Zlatorogova roža', 'heal'); log(`Zlatorogova roža reši junaka ${HEROES[k].name}.`); }
-      if (st.hp <= 0) heroFalls(k);
-    });
+    hits.forEach(([k, d]) => { a += woundHero(k, d); });
   }
   autoItems('tick');
   renderPartyHp();
   const b = B; if (!living().length) later(() => { if (B === b) checkEnd(); }, 400);
   return a;
 }
+function woundHero(k, d) {
+  const st = S.heroes[k], real = Math.min(st.hp, d); st.hp -= real;
+  floatOn(UI.heroEls[k], `−${real}`, 'dmg'); shakeEl(UI.heroEls[k]);
+  if (st.hp <= 0 && has('zlatorogova-roza') && !S.run.rozaUsed) { S.run.rozaUsed = true; st.hp = 1; floatOn(UI.heroEls[k], 'Zlatorogova roža', 'heal'); log(`Zlatorogova roža reši junaka ${HEROES[k].name}.`); }
+  if (st.hp <= 0) heroFalls(k);
+  return real;
+}
+// amounts[i] for the i-th hero still standing (party order); the shield takes what it can from each hit first
+function hurtEach(amounts, src) {
+  if (B.evade > 0 && src) { B.evade--; floatOn(UI.party, 'zgreši!', 'info'); log(`${src.name} zgreši — skrivni rov.`); return 0; }
+  let total = 0;
+  living().forEach((k, i) => {
+    let d = Math.max(0, Math.round(amounts[i] || 0));
+    if (B.shield > 0 && d) { const sh = Math.min(B.shield, d); B.shield -= sh; d -= sh; if (sh) floatOn(UI.party, `ščit −${sh}`, 'info'); }
+    if (d) total += woundHero(k, d);
+  });
+  autoItems('tick'); renderPartyHp();
+  const b = B; if (!living().length) later(() => { if (B === b) checkEnd(); }, 400);
+  return total;
+}
 function heroFalls(k) {
   const st = S.heroes[k]; st.down = true; st.hp = 0; delete B.sleep[k];
-  log(`${HEROES[k].name} obleži, dokler ga ne obudi vodnjak, junak ali napoj.`); fb(`${HEROES[k].name}: zdravja je zmanjkalo. Te črke so ugasnile.`, 'err');
+  log(DIFF().leave && S.run ? `${HEROES[k].name} obleži. Če ga do konca bitke nihče ne obudi, zapusti družino.` : `${HEROES[k].name} obleži, dokler ga ne obudi junak, mrtva voda ali bog.`); fb(`${HEROES[k].name}: zdravja je zmanjkalo. Te črke so ugasnile.`, 'err');
   later(() => { if (B && S.battle === B) { renderParty(); renderPuzzle(); renderSide(); } }, 350);
 }
 
@@ -1835,12 +2010,12 @@ function gainXp(n, k, each) {           // k = hero index; without it the XP is 
   who.forEach(i => {
     const st = S.heroes[i]; if (st.down) return;
     st.xp += (k != null && k >= 0) || each ? n : Math.ceil(n / who.length);
-    while (st.lvl < 3 && st.xp >= LV_XP[st.lvl]) {
-      st.lvl++; st.leveled = true;
+    while (st.lvl < MAX_LV && st.xp >= LV_XP[st.lvl]) {
+      st.lvl++; st.leveled = true; st.pts = (st.pts || 0) + 1;
       const mh = heroMaxHp(HEROES[i].id, st.lvl); st.hp += mh - st.maxHp; st.maxHp = mh;
-      sfx('heal', { rate: 1.2 });
-      if (B) { log(`${HEROES[i].name}: raven ${st.lvl}! Več zdravja, močnejši napadi` + (st.lvl === 3 ? ', dolge besede štejejo največ.' : '.')); fb(`${HEROES[i].name} doseže raven ${st.lvl}!`, 'ok');
-        if (UI.heroEls && UI.heroEls[i]) floatOn(UI.heroEls[i], `raven ${st.lvl}`, 'heal'); renderPartyHp(); }
+      chorus();
+      if (B) { log(`${HEROES[i].name}: raven ${st.lvl}! Več zdravja in +1 točka veščine (porabiš jo pri vodnjaku, svetišču ali krošnjarju).`); fb(`${HEROES[i].name} doseže raven ${st.lvl}: +1 točka veščine!`, 'ok');
+        if (UI.heroEls && UI.heroEls[i]) { floatOn(UI.heroEls[i], `raven ${st.lvl}`, 'heal'); UI.heroEls[i].classList.add('glow'); } renderPartyHp(); }
     }
   });
   renderMeta();
@@ -1871,14 +2046,12 @@ function enemyAct(e) {
     spawnCard(e.el, { tier: 3, foe: true, name: e.name, move: mv, extra: `${HEROES[k].name} zaspi`, portrait: e.name[0] });
     log(`${e.name} zapoje uspavanko. ${HEROES[k].name} zaspi.`);
     renderParty(); renderPuzzle(); renderSide();
+  } else if (act === 'special') {
+    godSpecial(e);       // a god as the challenger (src/shrines.js)
   } else if (act === 'lock' || act === 'flood') {
-    const free = B.grid.map((t, i) => i).filter(i => !isLocked(B.grid[i]));
-    const targets = act === 'flood' ? free.filter(i => i >= (ROWS - 1) * COLS) : shuffle(free).slice(0, 4);
-    targets.forEach(i => { const t = B.grid[i]; t.lockUntil = B.time + 12; t.lockWords = 3; t.flood = act === 'flood'; });
-    B.path = B.path.filter(i => !targets.includes(i)); B.typed = pathWord(B.path);
+    const targets = lockTiles(act === 'flood' ? 'flood' : 4);
     spawnCard(e.el, { tier: 3, foe: true, name: e.name, move: mv, extra: act === 'flood' ? 'spodnja vrsta je poplavljena' : `${targets.length} črke zasute s pepelom`, portrait: e.name[0] });
     log(act === 'flood' ? `${e.name} poplavi spodnjo vrsto črk.` : `${e.name} zasuje ${targets.length} črke s pepelom.`);
-    if (!B.cw) renderPuzzle();
   } else if (act === 'cwlock') {
     if (B.cw && B.cw.kind === 'finisher') { log(`${e.name} prekine tvoj zagovor!`); closeCrossword(); }
     spawnCard(e.el, { tier: 3, foe: true, name: e.name, move: mv, extra: 'reši križanko, da se rešiš', portrait: e.name[0] });
@@ -1886,6 +2059,15 @@ function enemyAct(e) {
     openCrossword('lock', e.cwlock, { enemy: e });
   }
   renderEnemies();
+}
+// lock n free letters (or flood the bottom row) for a while; returns the locked tiles
+function lockTiles(n) {
+  const free = B.grid.map((t, i) => i).filter(i => !isLocked(B.grid[i]));
+  const targets = n === 'flood' ? free.filter(i => i >= (ROWS - 1) * COLS) : shuffle(free).slice(0, n);
+  targets.forEach(i => { const t = B.grid[i]; t.lockUntil = B.time + 12; t.lockWords = 3; t.flood = n === 'flood'; });
+  B.path = B.path.filter(i => !targets.includes(i)); B.typed = pathWord(B.path);
+  if (!B.cw) renderPuzzle();
+  return targets;
 }
 function enemyActFallback(e) { const d = hurtParty(e.atk, e); spawnCard(e.el, { tier: 1, foe: true, name: e.name, move: e.moves.attack, value: `−${d}` }); }
 
@@ -1953,17 +2135,18 @@ function battleTick(dt) {
 // ------------------------------------------------------------ hint + shuffle
 function useHint() {
   if (B.cw) return;
-  if (B.hints <= 0) { fb(LV().hints ? 'Namigov je zmanjkalo.' : 'Knjižni molj igra brez namigov.', 'warn'); return; }
-  const words = [...allWords(400).entries()].filter(([w]) => w.length >= 4 && w.length <= 7);
+  if (B.hints <= 0) { fb(LV().noHints ? 'Knjižni molj igra brez namigov.' : 'Namigov je zmanjkalo.', 'warn'); return; }
+  const words = shortestForms([...allWords(400).entries()].filter(([w]) => w.length >= 4 && w.length <= 7));
   if (!words.length) { fb('Ni dobrih besed — premešaj mrežo.', 'warn'); return; }
   words.sort((a, b) => b[1].reduce((s, i) => s + tileScore(i), 0) - a[1].reduce((s, i) => s + tileScore(i), 0));
   const [w, p] = words[rnd(Math.min(5, words.length))];
-  B.hints--; renderSide();
+  B.hints--; B.hint = { w, p: p.slice() }; renderSide();
   p.slice(0, 2).forEach(i => { const el = UI.tiles[i]; el.classList.remove('hint'); void el.offsetWidth; el.classList.add('hint'); });
-  fb(`Namig: beseda s ${w.length} črkami se začne z »${UP(w.slice(0, 2))}…«`, 'warn');
+  renderProposals();
 }
 function shuffleGrid(byPlayer) {
   if (B.cw) return;
+  B.hint = null;
   B.grid.forEach((t, i) => { if (!isLocked(t)) B.grid[i] = newTile(); });
   ensureSolvable(); clearWord();
   fb('Mreža premešana.' + (S.mode === 'calm' && byPlayer ? ' Sovražniki so izkoristili trenutek.' : ''), 'warn');
@@ -2220,7 +2403,7 @@ function cwPaint() {
   C.banner.append(h('b', {}, curE.geslo ? '★ Geslo' : `${curE.num} ${curE.dir === 'A' ? 'vodoravno' : 'navpično'}`), ` ${curE.clue}` + (LV().showLen ? ` (${curE.answer.length})` : ''));
   if (C.reveals > 0 && !C.solved.has(C.cur.e)) C.banner.append(h('button', { class: 'kbbtn revbtn', title: 'Razkrij eno črko te besede (beseda nato udari s pol moči)',
     ...keepCwFocus, onclick: e => { e.preventDefault(); cwReveal(); } }, `Razkrij črko · ${C.reveals}`));
-  if (!C.focused && !S.mobile) C.banner.append(h('button', { class: 'kbbtn', onclick: e => { e.preventDefault(); focusCwInput(); } }, S.mobile ? 'Tapni za tipkovnico' : 'Klikni za tipkanje'));
+  if (!C.focused && !S.mobile) C.banner.append(h('button', { class: 'kbbtn', onclick: e => { e.preventDefault(); focusCwInput(); } }, S.mobile ? 'Pritisni za tipkovnico' : 'Klikni za tipkanje'));
 }
 function cwSelect(k) { B.cw.cur = { e: k, p: 0 }; cwPaint(); }
 // Tip: reveal one letter of the current entry (a few per crossword, depending on the level).
@@ -2325,10 +2508,9 @@ function cwEntrySolved(e, hidden = 0, aided = false) {
   if (e.geslo) {
     // the keyword is free once every row is solved; guessing it early multiplies the zagovor
     C.gesloHidden = hidden; C.gesloBonus = 1 + 0.15 * hidden;
-    if (hidden) { gainXp(8 * hidden); fb(`Geslo ${word} uganjeno! Skritih je bilo še ${hidden} ${crk(hidden)} — moč ×${C.gesloBonus.toFixed(2).replace('.', ',')}.`, 'ok'); }
+    if (hidden) { fb(`Geslo ${word} uganjeno! Skritih je bilo še ${hidden} ${crk(hidden)} — moč ×${C.gesloBonus.toFixed(2).replace('.', ',')}.`, 'ok'); }
     return;
   }
-  gainXp(5 + len);
   const t = cwTarget();
   if (C.kind === 'finisher') {
     const fx = FINISHER_FX[C.id], hk = fxHero(fx), hero = HEROES[hk];
@@ -2374,20 +2556,20 @@ function cwComplete() {
       if (t) shown = damageEnemy(t, power * 1.2);
       alive.forEach(e => { if (S.mode === 'real') e.stunUntil = B.time + 6; else e.stunWords = 2; });
     }
-    const xp = 15 * D.entries.length; gainXp(xp);
+    // experience comes only from beaten enemies: a crossword gives none of its own
     const gk = D.entries.find(e => e.geslo);
     spawnCard(UI.heroEls[hk], { tier: 3, c: hero.c, name: 'ZAGOVOR', move: gk ? `${D.title}: ${UP(gk.answer)}` : D.title, value: `−${shown}`, extra: C.gesloHidden ? 'geslo uganjeno prej' : fx.text, portrait: '✶', art: hero.id });
     attackAnim(UI.heroEls[hk], 3, UI.scene);
-    log(`${D.title}: ${fx.text} (+${xp} XP)`);
+    log(`${D.title}: ${fx.text}`);
     fb(`${D.title}! ${fx.text}`, 'ok');
   } else if (C.kind === 'ambush') {
     const d = Math.round(10 * lv);
     B.enemies.filter(e => e.hp > 0).forEach(e => damageEnemy(e, d));
-    B.meter = Math.min(METER_MAX, B.meter + 12); gainXp(20);
+    B.meter = Math.min(METER_MAX, B.meter + 12);
     spawnCard(leadEl(), { tier: 3, c: 'var(--water)', name: 'Družina', move: 'Zaseda uspela', value: `−${d} vsem`, extra: 'zagovor +12', portrait: '!' });
     log('Zaseda uspela: vsi sovražniki prejmejo še en udarec.');
   } else {
-    const e = C.enemy; gainXp(25);
+    const e = C.enemy;
     if (e && e.hp > 0) {
       const d = damageEnemy(e, 15 * lv * (C.gesloBonus || 1));
       if (C.id === 'zmaj') { if (S.mode === 'real') e.stunUntil = B.time + 5; else e.stunWords = 1; }
@@ -2421,19 +2603,32 @@ function checkEnd() {
 }
 function showResult(win) {
   sfx(win ? 'win' : 'lose', { delay: .3 });
-  const node = B.node, st = B.stats, R = S.run; B.won = win;
-  let gold = 0, loot = null;
+  const node = B.node, st = B.stats, R = S.run, D = DIFF(), C = node.challenge; B.won = win;
+  let gold = 0, loot = null, god = null, left = [];
   if (win && R && node.stop) {
     gold = st.gold;
     node.stop.done = node.stop.passed = true; R.battles++; R.firstBattle = false; R.prompt = null;
-    if (node.stop.kind !== 'battle') { loot = randomItem(node.stop.kind === 'boss' ? 'relic' : null); if (loot) giveItem(loot.id); }
+    if (node.stop.kind !== 'battle' && node.stop.kind !== 'god') { loot = randomItem(node.stop.kind === 'boss' ? 'relic' : null); if (loot) giveItem(loot.id); }
   }
-  if (!win) { S.heroes = JSON.parse(B.snap); if (R && B.snapBag) { R.bag = JSON.parse(B.snapBag); R.gold = B.snapGold; } }   // prototype: a lost battle can be tried again from where it started
-  const hurt = S.heroes.some(x => !x.down && x.hp < x.maxHp);
+  if (win && R && C) god = challengeWon(node);   // a beaten god raises the fallen, XP for all, a point, the unlock (src/shrines.js)
+  if (win && R) {
+    // the fallen after a won battle: on Lahka they get up, on Težka whoever is still down leaves the party
+    if (D.rise) S.heroes.forEach(x => { if (x.down) { x.down = false; x.hp = Math.max(1, Math.round(x.maxHp * D.rise)); } });
+    else if (D.leave) left = leaveFallen();
+  }
+  // a checkpoint (src/save.js): the last battle of a checkpoint region for this Znanje
+  const saved = !!(win && R && node.stop && !C && saveAtCheckpoint(node.stop));
+  B.result = { god, left, saved };
+  const hurt = S.heroes.some(x => !x.down && x.hp < x.maxHp), down = S.heroes.some(x => x.down);
+  const lost = !R ? 'Vsi junaki so obležali. Poskusi znova.'
+    : C && C.final ? `Vsi junaki so obležali. ${GOD[C.god].name} je ${GOD[C.god].f ? 'močnejša' : 'močnejši'}.`
+    : D.withdraw ? 'Vsi junaki so obležali. Družina se umakne, si oddahne in poskusi znova.' : 'Vsi junaki so obležali. Pot je končana.';
   const ov = h('div', { class: 'overlay' }, h('div', { class: 'dialog' },
     h('h2', {}, win ? 'Zmaga!' : 'Poraz'),
-    h('div', { class: 'muted' }, win ? (R ? (hurt || S.heroes.some(x => x.down) ? 'Sovražniki so premagani. Rane ostanejo: junaki se pozdravijo pri vodnjaku.' : 'Sovražniki so premagani.') : 'Sovražniki so premagani.')
-      : 'Vsi junaki so obležali. Poskusi znova ali začni novo pot.'),
+    h('div', { class: 'muted' }, win ? (C ? `${GOD[C.god].name} je ${GOD[C.god].f ? 'premagana' : 'premagan'}.` : R ? (hurt || down ? 'Sovražniki so premagani. Rane ostanejo: junaki se pozdravijo pri vodnjaku.' : 'Sovražniki so premagani.') : 'Sovražniki so premagani.') : lost),
+    left.length ? h('p', { class: 'note' }, leftLine(left)) : null,
+    saved ? h('p', { class: 'savednote', role: 'status' }, h('b', {}, 'Shranjeno.'), ' Pot lahko zdaj zapustiš in jo pozneje nadaljuješ od tod.') : null,
+    win && B.found ? newWordsRow(B.found, 'mreza') : null,
     h('div', { class: 'stats' },
       h('div', {}, 'Izrečene besede'), h('div', {}, st.words),
       h('div', {}, 'Najdaljša beseda'), h('div', {}, st.longest ? UP(st.longest) : '—'),
@@ -2444,18 +2639,57 @@ function showResult(win) {
       loot ? h('div', {}, 'Plen') : null, loot ? h('div', {}, itemIcon(loot.id), ' ', loot.name) : null,
       h('div', {}, 'Ravni junakov'), h('div', {}, S.heroes.map(x => x.down ? '†' : x.lvl).join(' · '))),
     h('div', { class: 'row' },
-      win ? null : h('button', { class: 'btn', onclick: () => { ov.remove(); go('battle', node); } }, 'Poskusi znova'),
-      h('button', { class: 'btn primary', onclick: () => { ov.remove(); afterResult(win); } }, win ? 'Naprej ' : 'Konec poti ', h('kbd', {}, 'Enter')))));
+      // trying a lost battle again from where it started is for practice battles and the test mode only
+      !win && (!R || S.testMode) ? h('button', { class: 'btn', onclick: () => {
+        ov.remove(); S.heroes = JSON.parse(B.snap); if (R && B.snapBag) { R.bag = JSON.parse(B.snapBag); R.gold = B.snapGold; } go('battle', node); } }, 'Poskusi znova') : null,
+      h('button', { class: 'btn primary', onclick: () => { ov.remove(); afterResult(win); } },
+        win ? 'Naprej ' : !R ? 'Nazaj ' : C && C.final ? 'Naprej ' : D.withdraw ? 'Umakni se ' : 'Konec poti ', h('kbd', {}, 'Enter')))));
   document.body.append(ov);
   S.screen = 'result'; S.resultEl = ov; S.resultNode = node;
 }
+// Težka: heroes still down when a battle is won leave the party; returns their ids
+function leaveFallen() {
+  const out = [];
+  for (let k = S.heroes.length - 1; k >= 0; k--) if (S.heroes[k].down && S.heroes.length > 1) { out.unshift(HEROES[k].id); HEROES.splice(k, 1); S.heroes.splice(k, 1); }
+  S.lastHero = 0;
+  return out;
+}
+const leftLine = ids => ids.map(id => `${ROSTER[id].name} ${FEMALE.has(id) ? 'je padla in zapustila' : 'je padel in zapustil'} družino.`).join(' ');
 
 function afterResult(win) {
-  if (!win) { resetRun(); return go('title'); }
-  const node = S.resultNode, R = S.run;
+  const node = S.resultNode, R = S.run, D = DIFF(), C = node && node.challenge, res = (B && B.result) || {};
+  if (!win) {
+    if (!R) return go('title');
+    // the god's challenge at the end of the journey: the god leaves, the journey is over either way
+    if (C && C.final) return go('godword', { god: C.god, won: false, final: true, next: () => { resetRun(); go('title'); }, nextLabel: 'Nova pot ' });
+    if (D.withdraw) return withdraw(node);
+    resetRun(); return go('title');
+  }
   const last = R && node && node.stop && node.stop.kind === 'boss' && R.ri === WORLD.regions.length - 1;
-  const next = () => { S.heroes.forEach(x => x.leveled = false); go(last ? 'ending' : R ? 'travel' : 'title'); };
-  go('hero', { kind: 'after', ids: HEROES.map(x => x.id), sel: clamp(S.lastHero || 0, 0, HEROES.length - 1), next, nextLabel: last ? 'Konec poti ' : R ? 'Na pot ' : 'Nazaj ' });
+  const done = () => { S.heroes.forEach(x => x.leveled = false); go(last ? 'ending' : R ? 'travel' : 'title'); };
+  const after = () => go('hero', { kind: 'after', ids: HEROES.map(x => x.id), sel: clamp(S.lastHero || 0, 0, HEROES.length - 1), next: done,
+    nextLabel: last ? 'Konec poti ' : R ? 'Na pot ' : 'Nazaj ', info: res.left && res.left.length ? () => leftLine(res.left) : null });
+  if (R && C) {
+    // the god speaks first; after the final challenge the journey is over
+    const g = res.god || {};
+    return go('godword', { god: C.god, won: true, final: !!C.final, own: !!C.own, raised: g.raised, fresh: g.fresh,
+      next: C.final ? () => { resetRun(); go('title'); } : after, nextLabel: C.final ? 'Nova pot ' : 'Naprej ' });
+  }
+  after();
+}
+// Lahka: a lost battle is not the end. Everyone gets up with a third of their health; the enemies still
+// block the road (a god's godly version goes back into the shrine).
+function withdraw(node) {
+  const R = S.run, stop = node.stop, C = node.challenge;
+  S.heroes.forEach(x => { x.down = false; x.hp = Math.max(1, Math.round(x.maxHp / 3)); x.leveled = false; });
+  const on = { label: 'Naprej ▶', primary: true, fn: () => { R.prompt = null; R.walking = true; renderTravelPanel(); } };
+  if (C || !stop) { if (stop) stop.passed = true; R.prompt = { text: C ? `${GOD[C.god].name} se vrne v svetišče. Družina se umakne in nadaljuje pot.` : 'Družina se umakne.', actions: [on], keep: true }; }
+  else {
+    const names = stop.enemies.map(k => ENEMIES[k].name).join(' in ');
+    R.prompt = { text: `Družina se umakne in si oddahne: junaki vstanejo s tretjino zdravja. Pot še vedno zapira: ${names}.`,
+      actions: [{ label: 'V boj', primary: true, fn: () => stopBattle(stop) }, ...(S.testMode ? [{ label: 'Preskoči', fn: () => { stop.passed = true; R.prompt = null; R.walking = true; go('travel'); } }] : [])], keep: true };
+  }
+  go('travel');
 }
 
 // ------------------------------------------------------------ battle keys
@@ -2495,13 +2729,25 @@ function letterKey(e) {
 // ============================================================ chest event (timed)
 // Any real word built from the letters earns a partial reward (longer word, bigger reward).
 // The hidden word opens the chest and earns the big reward.
-const CHEST_XP_WIN = 50;
+const REGION_WORDS = (() => { try { return JSON.parse($('#wordsdata').textContent).regions || {}; } catch (e) { return {}; } })();
+const ALL_CHESTS = Object.values(REGION_WORDS).flatMap(r => (r.chest || []).map(([w, clue]) => ({ w, clue }))).concat(CHESTS);
+// The chest word comes from the region's list; a word already opened on this journey is not offered again.
+function chestItem() {
+  const R = S.run, reg = R ? WORLD.regions[R.ri] : null, seen = R ? (R.chestSeen || (R.chestSeen = [])) : [];
+  const own = reg && REGION_WORDS[reg.id] ? (REGION_WORDS[reg.id].chest || []).map(([w, clue]) => ({ w, clue })) : [];
+  const fresh = list => list.filter(it => !seen.includes(it.w) && WORDS.has(it.w));
+  const item = pick(fresh(own).length ? fresh(own) : fresh(ALL_CHESTS).length ? fresh(ALL_CHESTS) : ALL_CHESTS);
+  if (R) seen.push(item.w);
+  return item;
+}
+// the clue under the chest: always on Malček, on about every other chest on Učenjak, never on Knjižni molj
+const chestClue = () => S.know === 'malcek' ? true : S.know === 'ucenjak' ? Math.random() < 0.5 : false;
 function startChest(node) {
-  const item = pick(CHESTS);
+  const item = chestItem();
   let letters = shuffle([...item.w]);
   while (letters.join('') === item.w) letters = shuffle(letters);
   const t = (S.mode === 'real' ? 40 : 80) * (has('pisanica') ? 1.5 : 1);
-  S.ev = { node, kind: 'chest', item, letters: letters.map(ch => ({ ch, used: false })), sel: [], time: t, timeMax: t,
+  S.ev = { node, kind: 'chest', item, clue: chestClue(), letters: letters.map(ch => ({ ch, used: false })), sel: [], time: t, timeMax: t,
     done: false, found: [], msg: '', msgKind: '' };
   renderChest();
   showTut('chest');
@@ -2513,19 +2759,21 @@ function renderChest() {
     h('div', { class: 'bhead' }, h('div', { class: 't' }, 'Zaklenjena skrinja', h('small', {}, 'dogodek na čas')), pauseBtn()),
     h('div', { class: 'panel' },
       h('div', { class: 'chestbox' }, objEl('skrinja', E.done && E.win ? 1 : 0, 'big'),
-        h('div', {}, h('div', {}, 'Iz črk sestavi besedo in jo pošlji. Imaš en poskus: beseda iz vseh črk odpre skrinjo, krajša prava beseda jo le priškrne in prinese del nagrade (daljša beseda, večji del).'),
-          h('div', { style: { color: 'var(--gold)', 'margin-top': '6px' } }, 'Namig za skrito besedo: ', E.item.clue))),
+        h('div', {}, h('div', {}, 'Iz črk sestavi besedo in jo pošlji. Imaš en poskus: beseda iz vseh črk odpre skrinjo, krajša prava beseda jo le priškrne in prinese del nagrade (daljša beseda, večji del). Če se zmotiš, besedo počisti in začni znova.'),
+          E.clue ? h('div', { class: 'chestclue', style: { color: 'var(--gold)', 'margin-top': '6px' } }, 'Namig za skrito besedo: ', E.item.clue) : null)),
       h('div', { class: 'timer', style: { margin: '14px 0 4px' } }, h('i', { ref: el => UI.evTimer = el, style: { width: clamp(100 * E.time / E.timeMax, 0, 100) + '%' } })),
       h('div', { class: 'sendrow' },
         h('div', { class: 'guess' }, [...E.item.w].map((_, k) => h('span', { class: 'lt' }, E.sel[k] != null ? E.letters[E.sel[k]].ch : ''))),
-        E.done ? null : h('button', { class: 'btn primary send' + (guess.length >= MINW() ? ' ready' : ''), disabled: guess.length < MINW(), onclick: chestSubmit }, 'Pošlji ', h('kbd', {}, 'Enter'))),
+        E.done ? null : h('div', { class: 'wbtns' },
+          h('button', { class: 'btn clr', onclick: chestClear, disabled: !guess.length, 'aria-label': 'Počisti besedo', title: 'Počisti besedo (Del)' }, '✕'),
+          h('button', { class: 'btn primary send' + (guess.length >= MINW() ? ' ready' : ''), disabled: guess.length < MINW(), onclick: chestSubmit }, 'Pošlji', S.mobile ? null : [' ', h('kbd', {}, 'Enter')]))),
       h('div', { class: 'letters' }, E.letters.map((l, i) => h('div', { class: 'tile' + (l.used ? ' used' : ''), onclick: () => chestPick(i) }, l.ch))),
       E.msg ? h('p', { class: 'fb ' + E.msgKind }, E.msg) : null,
+      E.done && E.word && (E.isNew || meaningOf(E.word)) ? h('div', { class: 'newwords' }, meaningChip(E.word, 'skrinja')) : null,
       E.loot ? h('p', { class: 'lootline' }, itemIcon(E.loot.id), h('b', {}, E.loot.name), ' — ', E.loot.text) : null,
       E.done ? h('div', {}, h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')))
       : h('div', { class: 'row', style: { 'justify-content': 'flex-start', 'flex-wrap': 'wrap' } },
-        h('button', { class: 'btn small', onclick: chestBack }, '⌫ Briši'),
-        h('button', { class: 'btn small', onclick: chestClear }, 'Počisti ', h('kbd', {}, 'Del')),
+        h('button', { class: 'btn small', onclick: chestBack }, '⌫ Zadnja črka'),
         h('button', { class: 'btn small', onclick: () => { E.letters = shuffle(E.letters.map((l, i) => ({ ...l, i }))); chestRemap(); } }, 'Premešaj')),
       null)));
 }
@@ -2556,17 +2804,18 @@ function chestSubmit() {
   const guess = E.sel.map(i => E.letters[i].ch).join('');
   if (guess.length < MINW()) { E.msg = `Beseda mora imeti vsaj ${MINW()} črke.`; E.msgKind = 'warn'; renderChest(); return; }
   const total = E.item.w.length;
+  if (WORDS.has(guess) || guess === E.item.w) { E.word = guess; E.isNew = noteFound(guess, 'skrinja'); }
   if (guess === E.item.w || (guess.length === total && WORDS.has(guess))) {
-    E.done = true; E.win = true; S.meterBonus = 0.5; gainXp(CHEST_XP_WIN, null, true);
+    E.done = true; E.win = true; S.meterBonus = 0.5;   // chests pay gold and items; experience comes from enemies only
     const loot = S.run ? randomItem() : null, gold = S.run ? gainGold(15 + rnd(11)) : 0;
     if (loot) { giveItem(loot.id); E.loot = loot; }
-    E.msg = `Skrinja se odpre: ${UP(guess)}! Vsak junak +${CHEST_XP_WIN} XP` + (gold ? `, +${gold} zlatnikov` : '') + (loot ? `, v njej je ${loot.name}` : '') + '. Zagovor v naslednji bitki začne napolnjen do polovice.';
+    E.msg = `Skrinja se odpre: ${UP(guess)}!` + (gold ? ` +${gold} zlatnikov` : '') + (loot ? (gold ? ',' : '') + ` v njej je ${loot.name}` : '') + '. Zagovor v naslednji bitki začne napolnjen do polovice.';
     E.msgKind = 'ok';
   } else if (WORDS.has(guess)) {
     // a real word that does not use every letter ends the chest with part of the reward
-    const share = guess.length / total, xp = Math.round(CHEST_XP_WIN * share * 0.6), gold = S.run ? gainGold(Math.round(12 * share)) : 0;
-    E.done = true; E.win = false; E.partial = { w: guess, xp, gold }; gainXp(xp, null, true);
-    E.msg = `${UP(guess)} je prava beseda, a ne iz vseh črk (skrita je bila ${UP(E.item.w)}). Skrinja se le priškrne: vsak junak +${xp} XP` + (gold ? `, +${gold} zlatnikov` : '') + '.';
+    const share = guess.length / total, gold = S.run ? gainGold(Math.max(1, Math.round(12 * share))) : 0;
+    E.done = true; E.win = false; E.partial = { w: guess, gold, share };
+    E.msg = `${UP(guess)} je prava beseda, a ne iz vseh črk (skrita je bila ${UP(E.item.w)}). Skrinja se le priškrne` + (gold ? `: +${gold} zlatnikov.` : '.');
     E.msgKind = 'warn';
   } else {
     noteRejected(guess, 'skrinja');
@@ -2589,12 +2838,13 @@ function chestTick(dt) {
 // ============================================================ trap event (timed)
 // One wave of rocks whose letters all come from one real word, so a word that breaks every
 // rock exists. You get one word: the rocks it names break, the others graze the party.
-const TRAP_HIT = 8, TRAP_GRAZE = 4, TRAP_XP = 8, TRAP_GOLD = 3;
+const TRAP_HIT = 8, TRAP_GRAZE = 4, TRAP_GOLD = 3;
 function startTrap(node) {
-  const real = S.mode === 'real';
-  const pool = LEX.suggestedWords(5, 7).filter(w => new Set(w).size >= 4);
+  const real = S.mode === 'real', reg = S.run ? REGION_WORDS[WORLD.regions[S.run.ri].id] : null;
+  const own = reg && reg.rocks ? reg.rocks.filter(w => WORDS.has(w) && new Set(w).size >= 4) : [];
+  const pool = own.length ? own : LEX.suggestedWords(5, 7).filter(w => new Set(w).size >= 4);
   const letters = shuffle([...new Set(pick(pool))]).slice(0, 4);
-  S.ev = { node, kind: 'trap', time: 0, fall: (real ? 16 : 32) * (has('pisanica') ? 1.5 : 1), used: new Set(), broken: 0, hits: 0, dmg: 0, done: false, word: '',
+  S.ev = { node, kind: 'trap', time: 0, fall: (real ? 22 : 40) * (has('pisanica') ? 1.5 : 1), used: new Set(), broken: 0, hits: 0, dmg: 0, done: false, word: '',
     rocks: letters.map((ch, i) => ({ ch, lane: [14, 38, 62, 86][i], spawn: 0.5 + i * 0.3, y: -60, state: 'wait', el: null })) };
   renderTrap();
   showTut('trap');
@@ -2604,7 +2854,7 @@ function renderTrap() {
   SCR.append(h('div', { class: 'event' },
     h('div', { class: 'bhead' }, h('div', { class: 't' }, 'Plaz kamenja', h('small', {}, 'dogodek na čas')),
       h('div', { class: 'meta' }, `Družina ${S.partyHp}/${S.maxHp}`), pauseBtn()),
-    h('div', { class: 'panel' }, 'Vsaka skala nosi črko. Imaš eno besedo: skale, katerih črke so v njej, se razbijejo, druge te oplazijo. Beseda z vsemi črkami razbije ves plaz. Če ne pošlješ nobene, skale padejo s polno močjo.'),
+    h('div', { class: 'panel' }, 'Vsaka skala nosi črko. Imaš eno besedo: skale, katerih črke so v njej, se razbijejo, druge te oplazijo. ', h('b', {}, 'Črke so v besedi lahko kjerkoli in v poljubnem vrstnem redu.'), ' Beseda z vsemi črkami razbije ves plaz. Če ne pošlješ nobene, skale padejo s polno močjo.'),
     h('div', { class: 'lanes', ref: el => UI.lanes = el }, h('div', { class: 'ground' })),
     h('div', { class: 'panel' },
       h('div', { class: 'sendrow' },
@@ -2643,11 +2893,10 @@ function trapSubmit() {
   const hit = open.filter(r => w.includes(r.ch)), miss = open.filter(r => !w.includes(r.ch));
   hit.forEach(r => { r.state = 'broken'; if (r.el) r.el.classList.add('broken'); });
   miss.forEach(r => { r.state = 'hit'; if (r.el) r.el.classList.add('hit'); });
-  E.broken += hit.length; E.word = w;
+  E.broken += hit.length; E.word = w; E.isNew = noteFound(w, 'plaz');
   // partial damage for the rocks the word did not name
   const d = miss.length * TRAP_GRAZE; if (d) { S.partyHp = Math.max(1, S.partyHp - d); E.dmg += d; E.hits += miss.length; }
-  E.xp = TRAP_XP * hit.length; E.gold = S.run && hit.length ? gainGold(TRAP_GOLD * hit.length) : 0;
-  if (E.xp) gainXp(E.xp, null, true);
+  E.gold = S.run && hit.length ? gainGold(TRAP_GOLD * hit.length) : 0;
   trapFb(miss.length ? `${UP(w)} razbije ${hit.length} od ${E.rocks.length} skal; ostale te oplazijo (−${d}).` : `${UP(w)} razbije ves plaz!`, hit.length ? 'ok' : 'err');
   renderTrapStat();
   const m = $('.event .bhead .meta'); if (m) m.textContent = `Družina ${S.partyHp}/${S.maxHp}`;
@@ -2687,7 +2936,8 @@ function trapShowEnd() {
   const E = S.ev; UI.trapEnd.innerHTML = '';
   if (UI.trapInput) UI.trapInput.blur();
   if (UI.trapKb) { UI.trapKb.remove(); UI.trapKb = null; }
-  UI.trapEnd.append(h('p', {}, `Razbite skale: ${E.broken}/${E.rocks.length} · prejeta škoda: ${E.dmg}.` + (E.xp ? ` Vsak junak +${E.xp} XP` + (E.gold ? `, +${E.gold} zlatnikov.` : '.') : '') + (E.dmg ? ' Rane ostanejo do naslednjega vodnjaka.' : '')),
+  UI.trapEnd.append(h('p', {}, `Razbite skale: ${E.broken}/${E.rocks.length} · prejeta škoda: ${E.dmg}.` + (E.gold ? ` +${E.gold} zlatnikov.` : '') + (E.dmg ? ' Rane ostanejo do naslednjega vodnjaka.' : '')),
+    E.word && (E.isNew || meaningOf(E.word)) ? h('div', { class: 'newwords' }, meaningChip(E.word, 'plaz')) : null,
     h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')));
 }
 function trapKey(e) {
@@ -2714,8 +2964,11 @@ document.addEventListener('keydown', e => {
   if (S.screen === 'title') { menuKey(e); return; }
   if (MENU_PAGES[S.screen] || S.screen === 'gallery') { pageKey(e); return; }
   if (S.screen === 'pick') { pickKey(e); return; }
+  if (S.screen === 'train') { if (e.key === 'Escape') { e.preventDefault(); S.trainArg.back(); } return; }
   if (S.screen === 'travel') { travelKey(e); return; }
-  if (S.screen === 'ending') { if (e.key === 'Enter') { e.preventDefault(); resetRun(); go('title'); } return; }
+  if (S.screen === 'ending') { if (e.key === 'Enter') { e.preventDefault(); leaveEnding(); } return; }
+  if (S.screen === 'shrine') { shrineKey(e); return; }
+  if ((S.screen === 'godcome' || S.screen === 'godword') && e.key === 'Enter') { e.preventDefault(); const A = S.godArg; if (A) (A.go || A.next)(); return; }
   if (S.screen === 'result') { if (e.key === 'Enter') { e.preventDefault(); const w = !!(B && B.won); S.resultEl.remove(); afterResult(w); } return; }
   if (S.screen === 'hero') { if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); const A = S.heroArg, acts = A.actions ? A.actions(A) : null; if (!acts) { if (e.key === 'Escape' || !A.crumb) A.next(); } else { const a = e.key === 'Enter' ? acts.find(x => x.primary) : acts[acts.length - 1]; if (a) a.fn(); } } else if (e.key === ' ') { e.preventDefault(); const b = document.querySelector('.hm-actions .btn'); if (b) b.click(); } return; }
   if (S.screen === 'battle') { battleKey(e); return; }
@@ -2751,6 +3004,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { menuItems, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.diff = d; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 

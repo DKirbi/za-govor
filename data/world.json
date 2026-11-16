@@ -1,17 +1,19 @@
 {
   "note": "Journey data shared by the browser prototype and, later, the Godot game: regions in travel order, items, shop sizes. Text is Slovene. Edit by hand, then run tools/art_extra.py (item icons) and build.py. Potions and poisons are used automatically; `when` names the trigger (start of a battle, a hurt hero, a fallen hero, locked letters).",
   "stopGap": 620,
+  "checkpointsNote": "Where the journey is saved, by Znanje: after the last battle of these regions. Malček every quarter of the road, Učenjak every third, Knjižni molj once, at the half (after the shrines at Bled). Counted in battles (19 on the road), rounded to the nearest region end.",
+  "checkpoints": { "malcek": [ "peca", "gozd", "predjama" ], "ucenjak": [ "triglav", "piran" ], "molj": [ "gozd" ] },
   "regions": [
     { "id": "ptuj", "name": "Ptuj", "bg": "ptuj", "intro": "Pustni čas na Ptuju. Kurenti z zvonci preganjajo zimo, a letos se noče umakniti.", "stops": [ "battle", "hero", "chest", "battle" ], "pool": [ "skrat", "vesca" ] },
-    { "id": "peca", "name": "Peca", "bg": "peca", "intro": "Pod goro Peco spi kralj Matjaž s svojo vojsko. Nad votlino krožijo krokarji.", "stops": [ "battle", "trap", "hero", "well", "battle" ], "pool": [ "perkmandeljc", "skrat", "pesjan" ] },
-    { "id": "triglav", "name": "Triglav", "bg": "triglav", "intro": "Kraljestvo Zlatoroga. S Prisanka gleda v dolino okamnela Ajdovska deklica.", "stops": [ "battle", "trap", "hero", "shop", "battle" ], "pool": [ "pesjan", "perkmandeljc", "vesca" ] },
+    { "id": "peca", "name": "Peca", "bg": "peca", "intro": "Pod goro Peco spi kralj Matjaž s svojo vojsko. Nad votlino krožijo krokarji.", "stops": ["battle", "trap", "hero", "well", "god", "battle"], "pool": [ "perkmandeljc", "skrat", "pesjan" ] },
+    { "id": "triglav", "name": "Triglav", "bg": "triglav", "intro": "Kraljestvo Zlatoroga. S Prisanka gleda v dolino okamnela Ajdovska deklica.", "stops": ["battle", "trap", "hero", "shop", "god", "battle"], "pool": [ "pesjan", "perkmandeljc", "vesca" ] },
     { "id": "bled", "name": "Bled", "bg": "bled", "intro": "Otok sredi jezera. Po izročilu je na njem stalo svetišče boginje Žive.", "stops": [ "battle", "chest", "god", "well", "battle" ], "pool": [ "vila", "vesca", "skrat" ] },
-    { "id": "gozd", "name": "Trnovski gozd", "bg": "gozd", "intro": "Temen gozd nad Vipavsko dolino. Po tej poti je Krpan tovoril sol; ponoči tod ne hodi nihče.", "stops": [ "battle", "chest", "darts", "hero", "battle" ], "pool": [ "mora", "volkodlak", "vesca" ] },
-    { "id": "piran", "name": "Piranske soline", "bg": "piran", "intro": "Sol, morje in burja. Na obali Lepa Vida pere in gleda čez morje.", "stops": [ "battle", "shop", "hero", "well", "battle" ], "pool": [ "vila", "pesjan", "mora" ] },
-    { "id": "predjama", "name": "Predjamski grad", "bg": "predjama", "intro": "Grad v skalni steni. Erazem ga je branil leto in dan, hrano pa je dobival po skrivnem rovu.", "stops": [ "battle", "darts", "hero", "chest", "elite" ], "pool": [ "mladic", "perkmandeljc", "volkodlak" ] },
-    { "id": "barje", "name": "Ljubljansko barje", "bg": "barje", "intro": "Megla, kolišča in škrati. Do Ljubljane ni več daleč.", "stops": [ "battle", "well", "hero", "shop", "battle" ], "pool": [ "skrat", "mora", "volkodlak", "vila" ] },
+    { "id": "gozd", "name": "Trnovski gozd", "bg": "gozd", "intro": "Temen gozd nad Vipavsko dolino. Po tej poti je Krpan tovoril sol; ponoči tod ne hodi nihče.", "stops": ["battle", "chest", "darts", "hero", "god", "battle"], "pool": [ "mora", "volkodlak", "vesca" ] },
+    { "id": "piran", "name": "Piranske soline", "bg": "piran", "intro": "Sol, morje in burja. Na obali Lepa Vida pere in gleda čez morje.", "stops": ["battle", "shop", "hero", "well", "god", "battle"], "pool": [ "vila", "pesjan", "mora" ] },
+    { "id": "predjama", "name": "Predjamski grad", "bg": "predjama", "intro": "Grad v skalni steni. Erazem ga je branil leto in dan, hrano pa je dobival po skrivnem rovu.", "stops": ["battle", "darts", "hero", "trap", "chest", "elite"], "pool": [ "mladic", "perkmandeljc", "volkodlak" ] },
+    { "id": "barje", "name": "Ljubljansko barje", "bg": "barje", "intro": "Megla, kolišča in škrati. Do Ljubljane ni več daleč.", "stops": ["battle", "well", "hero", "shop", "god", "battle"], "pool": [ "skrat", "mora", "volkodlak", "vila" ] },
     { "id": "reka", "name": "Ljubljanica", "bg": "ljubljanica", "intro": "Reka sedmih imen. Pod Tromostovjem čaka Povodni mož.", "stops": [ "battle", "hero", "well", "boss" ], "pool": [ "vila", "mora" ], "boss": [ "vila", "povodni" ] },
-    { "id": "grad", "name": "Ljubljanski grad", "bg": "grad", "intro": "Na grajskem griču gnezdi Lintvern, ljubljanski zmaj. Tu se pot konča.", "stops": [ "shop", "darts", "well", "boss" ], "pool": [], "boss": [ "lintvern" ] }
+    { "id": "grad", "name": "Ljubljanski grad", "bg": "grad", "intro": "Na grajskem griču gnezdi Lintvern, ljubljanski zmaj. Tu se pot konča.", "stops": ["shop", "trap", "darts", "well", "boss"], "pool": [], "boss": [ "lintvern" ] }
   ],
   "items": [
     { "id": "perunova-sekira", "name": "Perunova sekira", "kind": "relic", "price": 60, "text": "Vsi udarci junakov +15 %.", "icon": [ "axe", "#c9ced8", "#8492a6" ] },

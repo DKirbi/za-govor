@@ -36,6 +36,86 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
+## 0.10.0 — 16 Nov 2026 · zaprta alfa · alpha fixes (playtest round 3)
+Branch `0.9.0-alpha-fixes`, stacked on 0.9.0 (#12). From the third playtest (two testers on phones)
+and the decisions of 16 Nov.
+- **The journey is saved at checkpoints**, by *Znanje*: Malček every quarter of the road (Peca,
+  Trnovski gozd, Predjamski grad), Učenjak every third (Triglav, Piranske soline), Knjižni molj
+  once, at the half (Trnovski gozd). The result of a checkpoint battle says *Shranjeno*; after
+  closing the page, *Nadaljuj pot* continues from there. A new, finished or lost journey removes
+  the save; a save from an older build is dropped with a message. **This resets nothing saved
+  before: there were no saves.**
+- **Izhod** replaces *Meni* on the road and is in the pause window of journey battles. It asks
+  first and says where the game last saved (*Napredek je shranjen po zadnji zmagi – Peca.*);
+  leaving mid-battle starts that battle again.
+- **Words:** *Pošlji* sits next to the word on phones too (for tapped letters); a dragged word
+  still sends itself. A non-word flashes red and clears. Proposals stand still while dragging
+  and show only the shortest version of a word (DELA, not DELATI or DELALA). *Namig* lasts until
+  its word is played.
+- **Three-letter words count on every level.** **Knjižni molj has no hints at all**: no
+  *Namig*, no *Razkrij črko*, no chest clue (the buttons are gone).
+- **Chests** take the words of their region (`data/words.json`, a first list to review) and never
+  repeat a word on one journey; the clue shows on Malček, on some chests on Učenjak, never on
+  Knjižni molj; ✕ and *Pošlji* sit next to the word. **Rock slides** take their region's words,
+  fall slower (22 s) and say the letters may stand anywhere.
+- **Kaj pomeni?** A word found for the first time with no meaning yet can be asked about in one
+  tap (battle result, chest, rock slide, spikes). **Pošlji besede** (pause, *O igri*) is chips
+  only: missing words and new words, picked and sent together. Both go to the same Google Form
+  (the *Opomba* field carries the kind, *Kje* the region). `data/meanings.json` holds the
+  meanings written so far (none yet).
+- **Flow:** hero screens keep the way on in view (a full-width footer, sticky on phones); every
+  stop names its puzzle; after a signpost the party walks on by itself; an ambush says
+  *Zaseda!* before its crossword; *Kako igrati* ends with a button back to the menu.
+- **O igri:** *Avtor* (developed by Oygn Productions, Davor Kirbiš, a passion project made to
+  promote the Slovene language and folklore), a *Navdih* that names no other game, the sources
+  folded behind ©. The README keeps the full credit to Words for Evil.
+- **Copy:** no more "tap" (*pritisni*, *pritiskaj*), the dual on hero boards (*2 črki*), which
+  words count (no names), *Upravljanje* for phone, tablet and computer.
+
+## 0.9.0 — 16 Nov 2026 · zaprta alfa · skill expansion and fixes
+- **Skills and stopnje.** Experience comes only from beaten enemies. Levels go to 9; every
+  level brings a skill point. Each hero has three skills (one, two or three of their letters
+  in a word, so longer words fire the stronger skills). **Skill 1 is known from the start.** A
+  point learns skill 2 (then 3) or raises a known skill to **stopnja 2 and 3**: +20 % / +40 %
+  power, effects that last 1.5× / 2× as long, and one extra effect at each stopnja (critical
+  hits, healing, hitting every enemy, shields, stuns, fire, weakening). Points are spent in
+  *Veščine* at wells, shrines and pedlars.
+- **A hero with a point to spend glows:** a ring of light rises from the head (seen in the
+  party on the road, in battle and on the hero screens), and a short synthesised heavenly
+  chorus sings when the point arrives.
+- **Hero screens:** a *Veščine* button with the three skills, their stopnje and the XP to the
+  next level; the card shows known skills filled and the rest outlined (a star per stopnja
+  above 1). Tapping the hero still plays the skills they know, but the game no longer tells
+  the player (no *tapni junaka*). The notice (unlocked, room in the party) is at the top, and
+  the skill pills are larger.
+- **Heroes per journey:** three (always Ptuj, plus two random regions), each place favouring
+  its own legend. **Only a hero who joins is unlocked**; greeting one is not enough.
+- **Shrines of challenge (*Svetišče*).** Six shrines, each of one god and each with its own
+  look; a journey passes three of them. The gods are shown only by their signs (lightning,
+  anvil, spindle, sun, wind, horns). Pray at one shrine per journey: the god answers and lends
+  a gift for the rest of the journey (with every third skill fired). When the journey ends,
+  as the ending screen is left, the god comes for a hard challenge using only their special
+  (Perun: a chain of lightning, first hero hit hardest). Winning: the god speaks, raises the
+  fallen, gives everyone 250 XP, is unlocked (never joins by themselves), and the gift lasts
+  the whole next journey. A party god meets their godly version at their own shrine right
+  away; they do not strike it, and winning gives them a skill point at once and everyone
+  250 XP. The old three-battle blessing and cursed-god trial are gone.
+- **Difficulty (*Težavnost*) on *Nova pot*:** *Lahka* (enemies ×0.85; a lost battle is a
+  withdrawal and the journey goes on; the fallen get up after a won battle), *Srednja* (a lost
+  battle ends the journey; the fallen stay down until raised) and *Težka* (enemies ×1.25; a
+  hero still down when a battle ends leaves the party). Pace moved under its own heading,
+  *Tempo*. *Poskusi znova* after a lost battle is left only to practice battles and the test
+  mode.
+- **Wells no longer raise the fallen**; they heal those still standing.
+- **Spikes only hurt** (merged from #11, *Past s konicami*): every letter of a real word
+  closes a slot, the other spikes hit the heroes one by one (each hit shown on its hero),
+  even a full word lets one graze, nothing carries into the next battle. While waiting the
+  wall warns *Konice se sprožijo – pripravi se na umik!*; the intro is shorter and *Začni*
+  stays in view.
+- **Fix:** the word bar no longer grows with long words or many attacking heroes, so the letter
+  grid never moves under a finger (letters shrink, chips use the tile initials on one line).
+- Chests and rock slides pay gold (and items) but no XP.
+
 ## 0.8.0 — 12 Nov 2026 · zaprta alfa
 - **No top bar.** On pages under the menu, *← Nazaj na …* is the header and stays at the
   top while the page scrolls. In battles and events, *Premor* sits at the right end of the

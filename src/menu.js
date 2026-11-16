@@ -11,6 +11,7 @@ const MENU_PAGES = { newrun: 1, howto: 1, about: 1, heroes: 1, settings: 1 };
 function menuItems() {
   const R = S.run, items = [];
   if (R && !R.over) items.push({ id: 'continue', label: 'Nadaljuj pot', sub: WORLD.regions[R.ri].name, fn: () => go('travel') });
+  else if (SAVED) items.push({ id: 'continue', label: 'Nadaljuj pot', sub: `${regionName(SAVED.region)} · shranjeno`, fn: () => { if (loadSave()) go('travel'); } });
   items.push({ id: 'new', label: 'Nova pot', fn: () => go('newrun') },
     { id: 'heroes', label: 'Dosežki in junaki', fn: () => go('heroes') },
     { id: 'howto', label: 'Kako igrati', fn: () => go('howto') },
@@ -33,6 +34,7 @@ function renderTitle() {
     versionLine('mm-version')));
   // keyboard players land on the menu ready to move; on a phone nothing is pre-focused
   if (cur && !S.mobile) cur.focus({ preventScroll: true });
+  if (SAVE_DROPPED) { SAVE_DROPPED = false; toast('Shranjena pot je iz starejše različice igre, zato je ni mogoče nadaljevati.'); }
 }
 // ↑ ↓ (and Home / End) walk the menu; Enter opens the item. A focused button opens itself.
 function menuKey(e) {
@@ -78,6 +80,8 @@ function pageKey(e) {
 const PACE = [
   { id: 'real', name: 'Realni čas', badge: 'priporočeno', text: 'Sovražniki napadajo sproti in počasi topijo zdravje družine.' },
   { id: 'calm', name: 'Mirni način', text: 'Brez časovnega pritiska, sovražniki napadejo na vsakih nekaj potez. Dogodki imajo dvojni čas.' }];
+// Težavnost: what a lost battle and a fallen hero mean (DIFFS in src/game.js)
+const DIFF_CHOICES = [{ id: 'lahka' }, { id: 'srednja', badge: 'priporočeno' }, { id: 'tezka' }];
 const KNOW = [
   { id: 'malcek', text: 'Za učenje besed.' },
   { id: 'ucenjak', text: 'Zahtevnejše besede, malo pomoči.' },
@@ -85,16 +89,16 @@ const KNOW = [
 const setupVal = k => S.setup ? S.setup[k] : S[k];
 function applySetup() {
   const U = S.setup; if (!U) return;
-  S.mode = U.mode; S.know = U.know; S.suggest = U.suggest; S.testMode = U.testMode;
+  S.mode = U.mode; S.know = U.know; S.diff = U.diff; S.suggest = U.suggest; S.testMode = U.testMode;
   S.tutOn = U.tutOn; if (U.tutOn) resetTuts();      // explanations come back for every puzzle type on this journey
-  try { localStorage.setItem('zg-know', U.know); localStorage.setItem('zg-mode', U.mode); localStorage.setItem('zg-tutorials', U.tutOn ? '1' : '0'); } catch (e) { /* no storage */ }
+  try { localStorage.setItem('zg-know', U.know); localStorage.setItem('zg-mode', U.mode); localStorage.setItem('zg-diff', U.diff); localStorage.setItem('zg-tutorials', U.tutOn ? '1' : '0'); } catch (e) { /* no storage */ }
   S.setup = null;
 }
 function setupNext() { sfx('sel'); go('pick'); }
 
 function renderNewRun() {
-  if (!S.setup) S.setup = { mode: S.mode, know: S.know, suggest: S.suggest, tutOn: S.tutOn, testMode: S.testMode };
-  const U = S.setup, R = S.run && !S.run.over ? S.run : null;
+  if (!S.setup) S.setup = { mode: S.mode, know: S.know, diff: S.diff, suggest: S.suggest, tutOn: S.tutOn, testMode: S.testMode };
+  const U = S.setup, R = S.run && !S.run.over ? S.run : null, saved = !R && SAVED ? regionName(SAVED.region) : null;
   const tick = () => h('span', { class: 'tick', 'aria-hidden': 'true' });
   const radio = (group, id, kids, cls = '') => h('label', { class: `choice ${cls}` + (U[group] === id ? ' on' : ''), 'data-group': group, 'data-id': id },
     h('input', { type: 'radio', name: 'zg-' + group, value: id, checked: U[group] === id, onchange: () => setChoice(group, id) }), kids, tick());
@@ -105,7 +109,11 @@ function renderNewRun() {
     crumb(),
     pageH1('Nova pot'),
     h('section', { class: 'set-block' },
-      h('h2', { id: 'set-pace' }, 'Težavnost'),
+      h('h2', { id: 'set-diff' }, 'Težavnost'),
+      h('div', { class: 'choices three', role: 'radiogroup', 'aria-labelledby': 'set-diff' },
+        DIFF_CHOICES.map(d => radio('diff', d.id, [h('h3', {}, DIFFS[d.id].name, d.badge ? h('span', { class: 'badge' }, d.badge) : null), h('p', {}, DIFFS[d.id].text)])))),
+    h('section', { class: 'set-block' },
+      h('h2', { id: 'set-pace' }, 'Tempo'),
       h('div', { class: 'choices', role: 'radiogroup', 'aria-labelledby': 'set-pace' },
         PACE.map(p => radio('mode', p.id, [h('h3', {}, p.name, p.badge ? h('span', { class: 'badge' }, p.badge) : null), h('p', {}, p.text)])))),
     h('section', { class: 'set-block' },
@@ -120,7 +128,8 @@ function renderNewRun() {
       toggle('tutOn', 'Pokaži razlage ugank', 'Pred prvo uganko vsake vrste kratka razlaga s sliko. Čas medtem stoji.'),
       h('div', { class: 'devbox' }, h('span', { class: 'devtag' }, 'Razvoj'),
         toggle('testMode', 'Preizkusni način', '200 zlatnikov, vsi junaki na izbiro, postaje in pokrajine lahko preskočiš.'))),
-    R ? h('p', { class: 'note' }, `Začeta pot (${WORLD.regions[R.ri].name}) se konča, ko izbereš junaka za novo pot.`) : null,
+    R ? h('p', { class: 'note' }, `Začeta pot (${WORLD.regions[R.ri].name}) se konča, ko izbereš junaka za novo pot.`)
+      : saved ? h('p', { class: 'note' }, `Shranjena pot (${saved}) se izbriše, ko izbereš junaka za novo pot.`) : null,
     h('div', { class: 'cta-row' },
       h('button', { class: 'btn primary cta', onclick: setupNext }, 'Izberi junaka', h('span', { 'aria-hidden': 'true' }, ' →')),
       h('kbd', {}, 'Enter'))));
@@ -141,21 +150,41 @@ const CONTROLS_DESK = [
     [['←', '→'], 'izberi sovražnika, ki ga napadeš'], [['1', '2', '3'], 'namig · premešaj mrežo · torba']]],
   ['Križanka', [[['a–ž'], 'vpiši odgovor'], [['Tab', 'Enter'], 'naslednja beseda (Shift + Tab: prejšnja)'], [['←', '↑', '↓', '→'], 'premik po mreži'],
     [['Backspace'], 'briši črko'], [['?'], 'razkrij črko (število je omejeno)']]],
-  ['Skrinja, puščice in plaz', [[['a–ž'], 'tipkaj črke ali klikaj nanje'], [['Enter'], 'pošlji besedo'], [['Backspace', 'Del'], 'briši črko · počisti besedo']]],
+  ['Skrinja, konice in plaz', [[['a–ž'], 'tipkaj črke ali klikaj nanje'], [['Enter'], 'pošlji besedo'], [['Backspace', 'Del'], 'briši črko · počisti besedo']]],
 ];
 const CONTROLS_PHONE = [
-  ['Povsod', [['Premor', 'gumb zgoraj ustavi čas in zakrije uganko; igra se ustavi tudi, ko jo zapustiš'], ['Nazaj', 'tipka nazaj na Androidu ustavi uganko, zapre okno ali te vrne v meni']]],
-  ['Na poti', [['Tap', 'na gumb pod sliko: hodi naprej ali izberi, kaj narediš na postaji'], ['Torba', 'napoji, strupi in predmeti']]],
-  ['Mreža črk', [['Vleci', 'po sosednjih črkah, tudi poševno, in spusti: beseda se pošlje sama'], ['Tapkaj', 'črko za črko; zadnjo tapni še enkrat'],
-    ['Predlog', 'tap na predlog ga pošlje'], ['Gumbi', 'Zagovor, Namig, Premešaj in Torba so pod mrežo']]],
-  ['Križanka in plaz', [['Tipkovnica', 'slovenska tipkovnica v igri, s Č, Š in Ž'], ['Naprej', 'skoči na naslednjo besedo; izbereš jo lahko tudi s tapom v mreži'], ['Razkrij črko', 'pokaže eno črko']]],
-  ['Skrinja in puščice', [['Tapkaj', 'črke v pravem vrstnem redu'], ['Pošlji', 'odda besedo; prva prava beseda šteje']]],
+  ['Povsod', [['Premor', 'gumb zgoraj ustavi čas in zakrije uganko; igra se ustavi tudi, ko jo zapustiš'], ['Izhod', 'na poti in v premoru: pove, kje je igra nazadnje shranila pot'], ['Nazaj', 'tipka nazaj na Androidu ustavi uganko, zapre okno ali te vrne v meni']]],
+  ['Na poti', [['Gumbi', 'pod sliko: hodi naprej ali izberi, kaj narediš na postaji'], ['Torba', 'napoji, strupi in predmeti']]],
+  ['Mreža črk', [['Vleci', 'po sosednjih črkah, tudi poševno, in spusti: beseda se pošlje sama'], ['Pritiskaj', 'črko za črko, nato Pošlji ob besedi ali še enkrat zadnjo črko'],
+    ['Predlog', 'pritisk na predlog ga pošlje'], ['Gumbi', 'Zagovor, Namig, Premešaj in Torba so pod mrežo']]],
+  ['Križanka in plaz', [['Tipkovnica', 'slovenska tipkovnica v igri, s Č, Š in Ž'], ['Naprej', 'skoči na naslednjo besedo; izbereš jo lahko tudi s pritiskom na mrežo'], ['Razkrij črko', 'pokaže eno črko (ne na stopnji Knjižni molj)']]],
+  ['Skrinja in konice', [['Pritiskaj', 'črke v pravem vrstnem redu'], ['✕ in Pošlji', 'ob besedi: počisti jo ali jo oddaj']]],
 ];
-function controlsEl() {
-  const keys = ks => Array.isArray(ks) ? ks.map((k, i) => [i ? ' ' : null, h('kbd', {}, k)]) : h('b', {}, ks);
-  return h('div', { class: 'ctl-groups' }, (S.mobile ? CONTROLS_PHONE : CONTROLS_DESK).map(([title, rows]) =>
+// what each kind of device is, and why a bigger screen is nicer
+const PLATFORMS = [
+  { id: 'telefon', name: 'Telefon', note: 'Vse gre s prstom. Na manjšem zaslonu je vse bolj stisnjeno.' },
+  { id: 'tablica', name: 'Tablica', note: 'Enako kot na telefonu, a z več prostora: večja mreža črk in križanke, manj pomikanja.' },
+  { id: 'racunalnik', name: 'Računalnik', note: 'Tipkovnica in miška: besede tipkaš, križanke izpolnjuješ kot na papirju. Igra je tu najudobnejša.' }];
+const devicePlatform = () => S.mobile ? (Math.min(screen.width, screen.height) >= 600 ? 'tablica' : 'telefon') : 'racunalnik';
+function controlsEl(platform = S.ctlPlatform || devicePlatform()) {
+  // keys of a keyboard are keycaps; the names of touch gestures and buttons are chips
+  const keys = ks => Array.isArray(ks) ? ks.map((k, i) => [i ? ' ' : null, h('kbd', {}, k)]) : h('span', { class: 'ctl-chip' }, ks);
+  return h('div', { class: 'ctl-groups' }, (platform === 'racunalnik' ? CONTROLS_DESK : CONTROLS_PHONE).map(([title, rows]) =>
     h('section', { class: 'ctl-group' }, h('h3', {}, title),
       h('dl', { class: 'ctl' }, rows.map(([k, text]) => [h('dt', {}, keys(k)), h('dd', {}, text)])))));
+}
+// Upravljanje: the controls of this device first; the other devices are one tap away
+function controlsSection() {
+  const cur = S.ctlPlatform || devicePlatform(), P = PLATFORMS.find(p => p.id === cur);
+  const sec = h('section', { class: 'ctl-sec' },
+    h('h2', {}, 'Upravljanje'),
+    h('div', { class: 'ctl-tabs', role: 'group', 'aria-label': 'Naprava' }, PLATFORMS.map(p =>
+      h('button', { class: 'ctl-tab' + (p.id === cur ? ' on' : ''), 'aria-pressed': p.id === cur ? 'true' : 'false',
+        onclick: () => { S.ctlPlatform = p.id; sfx('sel', { vol: .5 }); sec.replaceWith(controlsSection()); } },
+        p.name, p.id === devicePlatform() ? h('small', {}, ' · ta naprava') : null))),
+    h('p', { class: 'muted ctl-note' }, P.note, cur !== 'racunalnik' ? ' Igra je najudobnejša na tablici ali računalniku.' : ''),
+    controlsEl(cur));
+  return sec;
 }
 // the puzzle explanations of the game (src/playtest.js), with timing told for both paces
 function howtoSlides() {
@@ -168,7 +197,7 @@ function howtoSlides() {
       lead: 'Križanko odpre poln zagovor (mogočen udarec), sovražnikovo zaklepanje (mreža črk je zaprta, dokler je ne rešiš) ali zaseda (udariš prvi). Vsaka pravilno rešena beseda je napad.',
       time: 'Pri zagovoru časa ni. Pri zaklepanju in zasedi kaže rdeča črta nad križanko, koliko časa ostane; v mirnem načinu časa ni.' },
     { id: 'chest', short: 'Skrinja', ...T('chest'), time: 'Rdeča črta je čas. Ko poteče, skrinja ostane zaklenjena. V mirnem načinu je časa dvakrat več.' },
-    { id: 'darts', short: 'Puščice', ...T('darts'), time: 'Rdeča črta je čas. Ko poteče, poletijo vse puščice nate. V mirnem načinu je časa dvakrat več.' },
+    { id: 'darts', short: 'Konice', ...T('darts'), time: 'Rdeča črta je čas. Ko poteče, se vse konice sprožijo nate. V mirnem načinu je časa dvakrat več.' },
     { id: 'trap', short: 'Plaz', ...T('trap'), time: 'Skale padajo nekaj sekund. Šteje prva prava beseda; če ne pošlješ nobene, udarijo s polno močjo.' },
   ];
 }
@@ -180,7 +209,10 @@ function carousel(slides, label) {
     idx = clamp(i, 0, n - 1); S.howtoSlide = idx;
     tabs.forEach((t, k) => t.setAttribute('aria-current', k === idx ? 'true' : 'false'));
     els.forEach((s, k) => { if (k === idx) s.removeAttribute('aria-hidden'); else s.setAttribute('aria-hidden', 'true'); });
-    count.textContent = `${idx + 1} / ${n}`; prevB.disabled = idx === 0; nextB.disabled = idx === n - 1;
+    count.textContent = `${idx + 1} / ${n}`; prevB.disabled = idx === 0;
+    // the last slide: the button on the right takes you back to the menu instead of going dark
+    const end = idx === n - 1; nextB.classList.toggle('primary', end); nextB.disabled = false;
+    nextB.firstChild.textContent = end ? 'Na glavni meni' : 'Naslednja'; nextB.lastChild.textContent = end ? ' ↩' : ' →';
     fit();
     if (scroll) track.scrollTo({ left: els[idx].offsetLeft, behavior: scroll === 'jump' || reduce ? 'auto' : 'smooth' });
     const tab = tabs[idx]; if (tab && tab.parentNode.scrollWidth > tab.parentNode.clientWidth) tab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
@@ -205,7 +237,7 @@ function carousel(slides, label) {
     h('div', { class: 'car-nav' },
       h('button', { class: 'btn car-btn', ref: el => prevB = el, onclick: () => go2(idx - 1) }, h('span', { 'aria-hidden': 'true' }, '← '), 'Prejšnja'),
       h('span', { class: 'car-count', ref: el => count = el, 'aria-hidden': 'true' }),
-      h('button', { class: 'btn car-btn', ref: el => nextB = el, onclick: () => go2(idx + 1) }, 'Naslednja', h('span', { 'aria-hidden': 'true' }, ' →'))),
+      h('button', { class: 'btn car-btn', ref: el => nextB = el, onclick: () => idx === n - 1 ? (sfx('sel'), go('title')) : go2(idx + 1) }, h('span', {}, 'Naslednja'), h('span', { 'aria-hidden': 'true' }, ' →'))),
     h('div', { class: 'sr-only', 'aria-live': 'polite', ref: el => live = el }));
   UI.car = { step: d => go2(idx + d), get idx() { return idx; }, fit };
   requestAnimationFrame(() => set(idx, 'jump'));
@@ -215,10 +247,12 @@ function renderHowto() {
   SCR.append(h('div', { class: 'page howto' },
     crumb(),
     pageH1('Kako igrati'),
-    h('p', { class: 'lead' }, 'Na poti te čakajo bitke in dogodki. V vsakem rešiš besedno uganko: prava beseda je napad, daljša udari močneje. Barvne črke povedo, kateri junak napade.'),
-    h('section', {},
-      h('h2', {}, 'Upravljanje', h('span', { class: 'tag' }, S.mobile ? 'telefon' : 'tipkovnica in miška')),
-      controlsEl()),
+    h('p', { class: 'lead' }, 'Na poti te čakajo bitke in dogodki. V vsakem rešiš besedno uganko: prava beseda je napad, daljša udari močneje. Barvne črke povedo, kateri junak napade; več črk iste barve sproži močnejšo veščino.'),
+    h('section', { class: 'words-ok' },
+      h('h2', {}, 'Katere besede veljajo'),
+      h('p', {}, 'Veljajo slovenske besede v vseh oblikah: samostalniki, glagoli, pridevniki, prislovi in druge (', h('i', {}, 'volk, volka, volkom, tečem, lep, hitro'), '). Na vseh stopnjah velja beseda s tremi črkami ali več.'),
+      h('p', { class: 'muted' }, 'Lastna imena oseb in krajev (', h('i', {}, 'Eva, Ptuj'), ') ne veljajo, prav tako ne kratice. Je igra zavrnila pravo besedo? Pošlji nam jo v premoru ali na strani O igri.')),
+    controlsSection(),
     h('section', {},
       h('h2', {}, 'Uganke'),
       h('p', { class: 'muted sec-lead' }, 'Ko uganko srečaš prvič, se razlaga pokaže tudi v igri, in čas medtem stoji. V premoru je vedno na voljo.'),
@@ -233,14 +267,15 @@ function renderAbout(at) {
     crumb(),
     pageH1('O igri'),
     h('p', { class: 'lead' }, h('i', {}, 'Za govor!'), ' je besedna igra vlog s slovanskimi bogovi in junaki slovenskega ljudskega izročila. Junaki se bojujejo z besedami: prava beseda je napad, daljša udari močneje.'),
-    h('p', {}, 'Pot vodi po Sloveniji, od Ptuja do Ljubljanskega gradu, kjer čaka zmaj. Začneš z enim junakom. Na poti srečaš sovražnike, skrinje, plazove, vodnjake, krošnjarje in nove junake; v družini so največ štirje, bog le eden. Zdravje se po bitki ne vrne samo: junaki se pozdravijo pri vodnjaku. Zlatnike zapraviš pri krošnjarju za napoje, strupe in predmete.'),
+    h('p', {}, 'Pot vodi po Sloveniji, od Ptuja do Ljubljanskega gradu, kjer čaka zmaj. Začneš z enim junakom. Na poti srečaš sovražnike, skrinje, plazove, vodnjake, krošnjarje, svetišča bogov in nove junake; v družini so največ štirje, bog le eden. Zdravje se po bitki ne vrne samo: junaki se pozdravijo pri vodnjaku. Zlatnike zapraviš pri krošnjarju za napoje, strupe in predmete.'),
     h('p', { class: 'muted' }, STAGE === 'zaprta alfa' ? 'Igra je v zaprti alfi: igrajo jo povabljeni preizkuševalci. Še nastaja in se po vsakem preizkusu spremeni.' : 'Igra še nastaja in se po vsakem preizkusu spremeni.'),
     versionLine('about-version'),
+    sec('avtor', 'Avtor', creditAuthor()),
     sec('navdih', 'Navdih', creditInspiration()),
-    sec('besede', 'Manjkajoča beseda',
-      h('p', {}, 'Je igra zavrnila pravo slovensko besedo? Sporoči nam jo, da jo dodamo.'),
-      reportButton(openReportWindow, 'Prijavi manjkajočo besedo')),
-    sec('zasluge', 'Zasluge', creditSources())));
+    sec('besede', 'Besede',
+      h('p', {}, 'Je igra zavrnila pravo slovensko besedo? Bi rad vedel, kaj pomeni beseda, ki si jo našel? Izberi jo in nam jo pošlji.'),
+      reportButton(openReportWindow, 'Pošlji besede')),
+    sec('zasluge', 'Zasluge', creditSourcesFolded())));
   focusPage();
   if (at) { const t = $('#o-' + at); if (t) requestAnimationFrame(() => t.scrollIntoView({ block: 'start' })); }
 }

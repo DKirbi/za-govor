@@ -10,10 +10,14 @@ Inputs:  src/index.src.html (template), src/game.css + src/title.css,
            src/mobile.js (phone specifics: in-game Slovene keyboard, haptics),
            src/credits.js (Navdih and Zasluge: the Words for Evil credit and all sources),
            src/report.js (Prijavi besedo: rejected words, reports to a Google Form),
-           src/menu.js (the start menu and its pages: Nova pot, Dosežki in junaki, Kako igrati, O igri),
+           src/menu.js (the start menu and its pages: Nova pot, Dosežki in junaki, Kako igrati, Nastavitve, O igri),
+           src/skills.js (skill texts and stopnje, the skill list, Veščine where points are spent),
+           src/shrines.js (svetišča izziva: prayers, the gods' gifts, the gods as challengers),
+           src/save.js (the journey saved at checkpoints by Znanje, Izhod),
            src/art-title.js + src/title.js (the "Za govor!" title scene, art from tools/art_title.py),
          data/lexicon.bin (word list from tools/build_lexicon.py, inlined as base64),
-         data/clues.json (crossword clue bank), data/world.json (regions and items of the journey)
+         data/clues.json (crossword clue bank), data/world.json (regions and items of the journey),
+         data/words.json (words of each region: chests, rock slides, themes), data/meanings.json (word meanings)
          package.json (version and release stage) and git (commit) for the version line
 Output:  dist/index.html — open it in any modern browser, no server needed.
 """
@@ -23,13 +27,13 @@ root = pathlib.Path(__file__).parent
 read = lambda rel: (root / rel).read_text(encoding='utf-8')
 template = read('src/index.src.html')
 data = {'/*__LEX__*/': base64.b64encode((root / 'data/lexicon.bin').read_bytes()).decode('ascii'),
-        '/*__CLUES__*/': read('data/clues.json'), '/*__WORLD__*/': read('data/world.json')}
+        '/*__CLUES__*/': read('data/clues.json'), '/*__WORLD__*/': read('data/world.json'), '/*__WORDS__*/': read('data/words.json'), '/*__MEANINGS__*/': read('data/meanings.json')}
 for name, text in data.items():
     assert '</script' not in text, f'{name} would close its <script> tag'
 
 js = read('src/game.js')
 for mark, rels in (('/*__LEXICON__*/', ['src/lexicon.js']), ('/*__ART_EXTRA__*/', ['src/art-extra.js', 'src/art-title.js']),
-                   ('/*__JOURNEY__*/', ['src/journey.js', 'src/playtest.js', 'src/mobile.js', 'src/credits.js', 'src/report.js', 'src/menu.js', 'src/title.js'])):
+                   ('/*__JOURNEY__*/', ['src/journey.js', 'src/playtest.js', 'src/mobile.js', 'src/credits.js', 'src/report.js', 'src/menu.js', 'src/skills.js', 'src/shrines.js', 'src/save.js', 'src/title.js'])):
     assert js.count(mark) == 1, f'{mark} must appear exactly once in src/game.js'
     js = js.replace(mark, ''.join(read(rel) for rel in rels))
 

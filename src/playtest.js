@@ -73,7 +73,8 @@ function setPause(on) {
         h('button', { class: 'btn primary', ref: el => first = el, onclick: () => setPause(false) }, 'Nadaljuj ', h('kbd', {}, 'Esc')),
         h('button', { class: 'btn', onclick: () => showTut(curTutKind(), true) }, 'Kako se igra'),
         reportButton(),
-        S.mobile ? null : h('button', { class: 'btn', onclick: toggleFullscreen }, isFs() ? 'Zapri cel zaslon' : 'Cel zaslon')),
+        S.mobile ? null : h('button', { class: 'btn', onclick: toggleFullscreen }, isFs() ? 'Zapri cel zaslon' : 'Cel zaslon'),
+        S.run ? exitBtn() : null),
       soundControls()));
     document.body.append(G.pauseEl);
     first.focus();
@@ -139,13 +140,13 @@ function figTrap() {
 }
 function figDarts() {
   const wall = (cols, sel) => h('div', { class: 'dartcols' }, cols.map((col, c) => h('div', { class: 'dartcol' }, [...col].map((ch, r) => h('div', { class: 'tile' + (sel[c] === r ? ' sel' : '') }, ch)))));
-  const cols = ['kso', 'ermu', 'eauo', 'spjk', 'aten', 'rvlm'].map(x => x.slice(0, 3));
+  const cols = ['kso', 'ermu', 'eauo', 'spjk', 'aten', 'rvlm'].map(x => x.slice(0, 2));   // two rows are enough to show it: the picture stays short
   return [
     wall(cols, [0, 1, 1, 0, 0, 0]),
-    h('div', { class: 'tut-res part' }, h('b', {}, 'KRASAR'), ' ni beseda: če jo pošlješ, poletijo vse puščice nate.'),
+    h('div', { class: 'tut-res part' }, h('b', {}, 'KRASAR'), ' ni beseda: vseh šest konic se sproži v družino.'),
     h('div', { class: 'tut-sep' }),
     wall(cols, [0, 1, 1, 0]),
-    h('div', { class: 'tut-res part' }, h('b', {}, 'KRAS'), ' — prava beseda iz prvih štirih stolpcev: štiri puščice se obrnejo, dve te zadeneta.')];
+    h('div', { class: 'tut-res part' }, h('b', {}, 'KRAS'), ' — prava beseda iz prvih štirih rež: štiri reže zapre, dve konici zadeneta družino.')];
 }
 function tutCross(kind) {
   const real = S.mode === 'real', C = B && B.cw, geslo = !!(C && C.D && C.D.style === 'geslo'), secs = C && C.timerMax !== Infinity ? Math.round(C.timerMax) : 0;
@@ -160,7 +161,8 @@ function tutCross(kind) {
     steps: [
       S.mobile ? ['Rumeno polje kaže opis označene besede. Odgovor vpiši s tipkovnico pod križanko.'] : ['Rumeno polje kaže opis označene besede. Vpiši odgovor.'],
       ['Prava beseda pozeleni in takoj sproži napad. Črne črke pomenijo, da beseda še ni prava.'],
-      S.mobile ? ['Tipka Naprej skoči na naslednjo besedo; izbereš jo lahko tudi s tapom v mreži. Gumb »Razkrij črko« pokaže eno črko.'] : [K('Tab'), ' skoči na naslednjo besedo, ', K('?'), ' razkrije eno črko (število je omejeno).'],
+      S.mobile ? ['Tipka Naprej skoči na naslednjo besedo; izbereš jo lahko tudi s pritiskom na mrežo.' + (LV().reveals ? ' Gumb »Razkrij črko« pokaže eno črko.' : '')]
+        : [K('Tab'), ' skoči na naslednjo besedo', ...(LV().reveals ? [', ', K('?'), ' razkrije eno črko (število je omejeno).'] : ['.'])],
       geslo ? ['Zlat stolpec skriva geslo. Če ga uganeš, je križanka rešena takoj.'] : null] };
 }
 // seconds of the running event, when there is one (Kako igrati shows the same intros without an event)
@@ -169,23 +171,23 @@ const TUT = {
   mesh: () => ({ title: 'Mreža črk', lead: 'Iz sosednjih črk sestavi slovensko besedo. Vsaka beseda je napad na sovražnika.', fig: figMesh(), calm: S.mode !== 'real',
     time: S.mode === 'real' ? 'Sovražniki napadajo sproti. Ko sovražnik zažari, sledi udarec, zato so hitre besede vredne več kot popolne.' : 'V mirnem načinu sovražniki počakajo na tvojo besedo.',
     steps: [
-      S.mobile ? ['Vleci s prstom po sosednjih črkah, tudi poševno.'] : ['Tipkaj besedo; pot po sosednjih črkah se poišče sama. Lahko tudi vlečeš z miško.'],
-      S.mobile ? [`Spusti prst in beseda se pošlje. Imeti mora vsaj ${MINW()} črke; daljša udari močneje. Pri tapkanju še enkrat tapni zadnjo črko.`] : [K('Enter'), ` pošlje besedo. Imeti mora vsaj ${MINW()} črke; daljša udari močneje.`],
-      ['Barvne črke pripadajo junakom: ko jih uporabiš, napade junak te barve.'],
+      S.mobile ? ['Vleci s prstom po sosednjih črkah, tudi poševno, ali pa jih pritiskaj eno za drugo.'] : ['Tipkaj besedo; pot po sosednjih črkah se poišče sama. Lahko tudi vlečeš z miško ali klikaš črke eno za drugo.'],
+      S.mobile ? [`Ko spustiš prst, se beseda pošlje sama. Če črke pritiskaš, pritisni Pošlji ob besedi ali še enkrat zadnjo črko. Beseda ima vsaj ${MINW()} črke; daljša udari močneje.`] : [K('Enter'), ` ali Pošlji odda besedo. Imeti mora vsaj ${MINW()} črke; daljša udari močneje.`],
+      [h('span', { class: 'tile own mini', style: { '--c': ROSTER.krpan.c } }, h('span', { class: 'ini' }, ROSTER.krpan.ini), 'd'), ' Barvne črke pripadajo junakom: ko jih uporabiš, napade junak te barve. Več črk iste barve sproži močnejšo veščino.'],
       S.mobile ? ['Vsaka črka polni zagovor. Ko je poln, gumb Izreci zagovor odpre križanko za mogočen udarec.'] : ['Vsaka črka polni zagovor. Ko je poln, ', K('presledek'), ' odpre križanko za mogočen udarec.']] }),
   finisher: () => tutCross('finisher'), lock: () => tutCross('lock'), ambush: () => tutCross('ambush'),
   chest: () => ({ title: 'Zaklenjena skrinja', lead: 'Iz premešanih črk sestavi skrito besedo. Namig pove, kaj iščeš.', fig: figChest(),
     time: `Rdeča črta je čas${evSecs('timeMax')}. Ko poteče, skrinja ostane zaklenjena.`,
     steps: [
-      S.mobile ? ['Tapkaj črke v pravem vrstnem redu.'] : ['Tipkaj črke ali klikaj nanje.'],
+      S.mobile ? ['Pritiskaj črke v pravem vrstnem redu. Če se zmotiš, besedo počisti z ✕.'] : ['Tipkaj črke ali klikaj nanje. Če se zmotiš, besedo počisti z ✕ ali tipko Del.'],
       S.mobile ? ['Pritisni Pošlji. Prva prava beseda zaključi dogodek.'] : [K('Enter'), ' odda besedo. Prva prava beseda zaključi dogodek.'],
       ['Beseda iz vseh črk odpre skrinjo in prinese celo nagrado. Krajša prava beseda prinese le del.']] }),
-  darts: () => ({ title: 'Puščice v zidu', lead: 'Zid črk v stolpcih. Iz vsakega stolpca vzemi eno črko, od leve proti desni.', fig: figDarts(),
-    time: `Rdeča črta je čas${evSecs('timeMax')}. Ko poteče, poletijo vse puščice nate.`,
+  darts: () => ({ title: 'Past s konicami', lead: 'Zid z režami. Iz vsake reže vzemi eno črko, od leve proti desni.', fig: figDarts(),
+    time: `Rdeča črta je čas${evSecs('timeMax')}. Ko poteče, se vse konice sprožijo nate.`,
     steps: [
-      S.mobile ? ['Tapni eno črko v prvem stolpcu, nato v drugem in tako naprej.'] : ['Tipkaj črke ali klikaj nanje: najprej prvi stolpec, nato drugi in tako naprej.'],
-      ['Besedo lahko pošlješ, še preden prideš do zadnjega stolpca. Vsaka črka prave besede obrne eno puščico proti sovražnikom naslednje bitke.'],
-      ['Puščice, ki ostanejo, zadenejo družino. Beseda, ki ne obstaja, ne obrne nobene.']] }),
+      S.mobile ? ['Pritisni eno črko v prvi reži, nato v drugi in tako naprej.'] : ['Tipkaj črke ali klikaj nanje: najprej prva reža, nato druga in tako naprej.'],
+      ['Besedo lahko pošlješ, še preden prideš do zadnje reže. Vsaka črka prave besede zapre eno režo.'],
+      ['Konice iz odprtih rež zadenejo junake. Beseda iz vseh rež jih ustavi skoraj vse, ena te le oplazi; beseda, ki ne obstaja, ne zapre nobene.']] }),
   trap: () => ({ title: 'Plaz kamenja', lead: 'S pobočja padajo skale. Vsaka nosi črko in ena sama beseda jih lahko razbije.', fig: figTrap(),
     time: `Skale padajo ${S.ev ? Math.round(S.ev.fall) + ' s' : 'nekaj sekund'}. Šteje prva prava beseda; če ne pošlješ nobene, skale udarijo s polno močjo.`,
     steps: [
@@ -230,6 +232,8 @@ function closeTut() {
 // Overlay keys come first (capture), so nothing typed reaches the puzzle underneath, and Esc pauses from anywhere,
 // including the crossword and rock-slide text fields.
 window.addEventListener('keydown', e => {
+  // the exit question (src/save.js) sits over everything, the pause window included
+  if (S.exitEl) { if (S.overlayKey) S.overlayKey(e); e.stopImmediatePropagation(); return; }
   if (G.tut || G.paused) {
     const onControl = e.target && e.target.closest && e.target.closest('.overlay button, .overlay input');
     // text fields in the pause window (Prijavi besedo) type normally; only Esc still resumes
