@@ -44,7 +44,7 @@ run(async () => {
   let p = await play(page, 0, 1);
   const charge = await ev(page, () => window.__ZG.B.enemies[0].charge);
   check(p.dmg[0] === 4, 'Ježevka at rank 1 hits for 4', JSON.stringify(p));
-  check(charge > 0 && charge < 0.25 - 0.15, 'Ježevka puts the škrat\'s next attack back 1,5 s', String(charge));
+  check(Math.abs(charge - (0.25 - 2 / 8.5)) < 1e-9, 'Ježevka puts the škrat\'s next attack back 2 s (calm mode: the same share of its charge)', String(charge));
   await ev(page, () => { const e = window.__ZG.B.enemies[0]; e.hp = 4; e.charge = -99; });
   p = await play(page, 0, 1);
   const xp1 = await ev(page, () => ({ xp: window.__ZG.S.heroes[0].xp, log: window.__ZG.B.logLines.join(' | ') }));
@@ -55,26 +55,39 @@ run(async () => {
   check(/Izkušnje · Kurent/.test(res) && /11 XP/.test(res) && /napadi 2 · škoda 8 · raven 1/.test(res), 'the battle result shows Kurent\'s XP and its parts', res);
   await shot('progression-01-result');
 
-  // 2. Rank progression: points raise Ježevka to rank 2 (7) and rank 3 (10), and no further
+  // 2. Rank progression: points raise Ježevka to rank 2 (6) and rank 3 (8), and no further.
+  //    Delays do not add up: a second Ježevka before the škrat acts moves nothing (the longest delay counts).
   await battle(page, ['kurent']);
+  await ev(page, () => { const e = window.__ZG.B.enemies[0]; e.hp = e.maxHp = 999; e.charge = 0; });
+  await play(page, 0, 1);
+  const c1 = await ev(page, () => window.__ZG.B.enemies[0].charge);
+  await play(page, 0, 1);
+  const c2 = await ev(page, () => window.__ZG.B.enemies[0].charge);
+  check(Math.abs(c2 - c1 - 0.25) < 1e-9, 'a second Ježevka before the enemy acts adds no delay', JSON.stringify({ c1, c2 }));
   const ranks = await ev(page, () => { const Z = window.__ZG, st = Z.S.heroes[0]; st.pts = 4;
     const r = [Z.spendPoint(0, 1), Z.spendPoint(0, 1), Z.spendPoint(0, 1)]; return { r, sk: st.sk.join(), pts: st.pts }; });
   check(ranks.r.join() === 'true,true,false' && ranks.sk === '3,0,0' && ranks.pts === 2, 'two points raise Ježevka to rank 3 and no further', JSON.stringify(ranks));
   await ev(page, () => { window.__ZG.S.heroes[0].sk[0] = 2; });
   p = await play(page, 0, 1);
-  check(p.dmg[0] === 7, 'Ježevka at rank 2 hits for 7', JSON.stringify(p));
+  check(p.dmg[0] === 6, 'Ježevka at rank 2 hits for 6', JSON.stringify(p));
   await ev(page, () => { window.__ZG.S.heroes[0].sk[0] = 3; });
   p = await play(page, 0, 1);
-  check(p.dmg[0] === 10, 'Ježevka at rank 3 hits for 10', JSON.stringify(p));
+  check(p.dmg[0] === 8, 'Ježevka at rank 3 hits for 8', JSON.stringify(p));
   const learn = await ev(page, () => { const Z = window.__ZG; return [Z.spendPoint(0, 3), Z.spendPoint(0, 2), Z.spendPoint(0, 3), Z.S.heroes[0].sk.join()]; });
   check(learn.join() === 'false,true,true,3,1,1', 'skill 3 waits for skill 2; then each is learned with one point', JSON.stringify(learn));
-  // Zvonci: Kurent dances for 2 s, his letters are out of the mesh, and the škrat hits 3 weaker
-  await ev(page, () => { window.__ZG.S.heroes[0].sk = [1, 1, 1]; });
+  // Zvonci: Kurent dances for 2 s (his letters out of the mesh), the bells hit for 3 and the škrat's next blow is 3 weaker
+  await ev(page, () => { window.__ZG.S.heroes[0].sk = [1, 1, 1]; window.__ZG.B.enemies[0].hp = window.__ZG.B.enemies[0].maxHp = 999; });
   p = await play(page, 0, 2);
   const bells = await ev(page, () => { const Z = window.__ZG, B = Z.B, e = B.enemies[0], st = Z.S.heroes[0], hp0 = st.hp;
     const out = { busy: B.busy[0] > B.time, weak: e.weak && e.weak.by, grey: document.querySelectorAll('.puzzle .tile.sleep').length };
-    Z.hurtParty(8, e); out.took = hp0 - st.hp; return out; });
-  check(p.dmg[0] === 0 && bells.busy && bells.weak === 3 && bells.took === 5, 'Zvonci: no damage, Kurent dances (out of the mesh), the škrat\'s next blow is 3 weaker', JSON.stringify({ ...p, ...bells }));
+    Z.hurtParty(8, e); out.took = hp0 - st.hp; out.after = e.weak; const h1 = st.hp; Z.hurtParty(8, e); out.next = h1 - st.hp; return out; });
+  check(p.dmg[0] === 3 && bells.busy && bells.weak === 3 && bells.took === 5 && !bells.after && bells.next === 8,
+    'Zvonci: −3, Kurent dances (out of the mesh), the škrat\'s next blow is 3 weaker and the one after it is not', JSON.stringify({ ...p, ...bells }));
+  // Pregon zime at rank 1: every enemy −4 and its next attack 3 s later
+  await ev(page, () => { const Z = window.__ZG, e = Z.B.enemies[0]; Z.B.busy = {}; e.charge = 0.5; e.dlAmt = 0; });
+  p = await play(page, 0, 3);
+  const winter = await ev(page, () => window.__ZG.B.enemies[0].charge);
+  check(p.dmg[0] === 4 && Math.abs(winter - (0.5 - 3 / 8.5 + 0.25)) < 1e-9, 'Pregon zime at rank 1: −4 and the next attack 3 s later', JSON.stringify({ ...p, winter }));
 
   // 3. A hero without a reviewed specification keeps the enemy's fixed XP beside a reviewed one
   await battle(page, ['kurent', 'krpan']);
@@ -107,12 +120,12 @@ run(async () => {
   await battle(page, ['kresnik'], ['mladic']);
   p = await play(page, 0, 1);
   const fire = await ev(page, () => { const e = window.__ZG.B.enemies[0]; return { turns: e.burnTurns, per: e.burnPer }; });
-  check(p.dmg[0] === 12 && fire.turns === 3 && fire.per === 2, 'Ognjeni meč at rank 1: 8 × 1,5 against the Zmajev mladič, burning 2 for 3 turns', JSON.stringify({ ...p, ...fire }));
+  check(p.dmg[0] === 8 && fire.turns === 2 && fire.per === 2, 'Ognjeni meč at rank 1: 5 × 1,5 (8) against the Zmajev mladič, burning 2 for 2 turns', JSON.stringify({ ...p, ...fire }));
   await ev(page, () => { window.__ZG.S.heroes[0].sk = [1, 1, 1]; });
   p = await play(page, 0, 3);
   const back = await ev(page, () => { const Z = window.__ZG, st = Z.S.heroes[0], g0 = Z.S.run.gold; st.hp = st.maxHp - 10; const h0 = st.hp;
     Z.hurtParty(8, Z.B.enemies[0]); return { got: st.hp - (h0 - 8), gold: Z.S.run.gold - g0, left: Object.keys(Z.B.restore).length }; });
-  check(back.got === 2 && back.gold === 1 && back.left === 0, 'Kresna moč at rank 1: a wound of 8 gives back 2 health and 1 gold, once', JSON.stringify(back));
+  check(p.dmg[0] >= 5 && back.got === 2 && back.gold === 1 && back.left === 0, 'Kresna moč at rank 1: a flame of 5 on every enemy, then a wound of 8 gives back 2 health and 1 gold, once', JSON.stringify({ ...p, ...back }));
 
   // 6. Erazem: Skrivni rov at rank 2 — the blow misses him and he strikes back for 1,5 × Zamah z mečem (7 → 11)
   await battle(page, ['erazem', 'krpan']);

@@ -139,11 +139,20 @@ Built in `src/progression.js` from the reviewed specifications (`docs/characters
 
 | Hero | Skill 1 | Skill 2 | Skill 3 |
 | --- | --- | --- | --- |
-| Kurent | **Ježevka** 4 / 7 / 10; the target's next attack comes 1.5 / 2.5 / 3.5 s later | **Zvonci** (name OPEN): Kurent dances 2 s, out of the letter mesh (still hit); 1 / 2 / 3 enemies hit 3 / 4 / 5 weaker for 2 s | **Pregon zime**: every enemy attacks 3 / 4 / 4 s later; rank 2+: enemies tagged ghost, wind or cold (only Mora for now) take half their attack over 4 s and hit at half for those 4 s; rank 3: their next attack after that is halved too |
+| Kurent (rebalanced) | **Ježevka** 4 / 6 / 8; the target's next attack comes 2 / 3 / 4 s later | **Zvonci** (name OPEN): Kurent dances 2 s, out of the letter mesh (still hit); the bells hit 1 / 2 / 3 enemies for 3 / 4 / 5 and their next blow is 3 / 4 / 5 weaker | **Pregon zime**: every enemy −4 / 6 / 8 and attacks 3 / 4 / 5 s later; rank 2+: enemies tagged ghost, wind or cold (only Mora for now) take half their attack over 4 s and hit at half for those 4 s; rank 3: their next attack after that is halved too |
 | Kralj Matjaž | **Meč** 6 / 12 / 18; ranks 2–3: each hero hit by the next enemy attack takes 3 / 6 less | **Kraljeva vojska**: every hero's next attack +3 / +6 / +10; rank 3: the next two enemy blows −3 on each hero hit | **Prebujenje**: each standing hero +3 / +6 / +6 health, the fallen rise with 15 %, ward 3 / 6 / 6; rank 3: 12 damage to every enemy |
-| Kresnik | **Ognjeni meč** (name OPEN) 8 / 12 / 16, ×1.5 on dragons (Lintvern, Zmajev mladič); burns 2 a second for 3 / 3 / 5 s | **Kresna strela** 12 / 16 / 18, burns 2/s for 3 s; rank 3 jumps to the enemy beside the target for 8 | **Kresna moč** (name OPEN): the next enemy blow that hurts him gives back 25 / 50 / 70 % of it (rounded up, up to full health) and half of that in gold |
+| Kresnik (rebalanced) | **Ognjeni meč** (name OPEN) 5 / 7 / 9, ×1.5 on dragons (Lintvern, Zmajev mladič); burns 2 a second for 2 / 3 / 4 s | **Kresna strela** 10 / 13 / 16, burns 2/s for 3 s; rank 3 jumps to the enemy beside the target for 6 | **Kresna moč** (name OPEN): a flame on every enemy 5 / 7 / 9; the next 1 / 2 / 3 enemy blows that hurt him give back 25 / 50 / 70 % (rounded up, up to full health) and half of that in gold |
 | Erazem | **Zamah z mečem** 7 / 11 / 15 (TEST) | **Češnje** 5 / 7 / 9 (TEST, one target); the heroes beside him +1 / +2 / +3 (TEST), not Erazem | **Skrivni rov**: the next attack that reaches him misses; rank 2 counterattack 1.5× Zamah z mečem, rank 3 the hero beside him evades too and the counter is 1.75× |
 | Ajdovska deklica | **Metanje skal** 6 at one enemy; ranks 2 / 3: 5 / 8 at every enemy (TEST) | **Varstvo popotnikov**: the next 1 / 2 / 3 enemy attacks on the others land on her, halved (rounded up) | **Okamnitev**: 1 / 2 / 2 enemies skip their next 1 / 1 / 2 attacks; burns and poison go on |
+
+**Rebalance of Kurent and Kresnik (16 Nov, from the simulations).** With the reviewed values Kresnik's skill 1 dealt about 15 / 21 / 28 per four-letter word (Matjaž 8 / 15 / 22, Erazem 9 / 13 / 19) and carried a fresh party; Kurent's delays stacked into a near stun-lock; and skills 2 and 3 of both dealt no damage, so learning them made the hero weaker in battle. Now each skill does at least as much as the one below it at the same rank, and the new values replace the specification's numbers for testing (the character specifications still hold the old ones and need updating if this stays). Measured per four-letter word at level 1 (damage on two enemies / enemy attacks per minute out of 12):
+
+| | Skill 1 (rank 1 / 2 / 3) | Skill 2 | Skill 3 |
+| --- | --- | --- | --- |
+| Kurent before | 5 / 9 / 13, attacks 10 / 9 / 8 | 0, attacks 12 | 0, attacks 5 / 2 / 2 |
+| Kurent now | 5 / 8 / 10, attacks 11 / 10.5 / 10 | 4 / 10 / 12 + next blow weaker | 10 / 15 / 19, attacks 9 / 8 / 8 |
+| Kresnik before | 15 / 21 / 28 | 21 / 26 / 43 | 0 |
+| Kresnik now | 10 / 14 / 19 | 18 / 22 / 39 | 12 / 17 / 23 + wounds given back |
 
 **Health per level:** Ajdovska deklica +10 % of her base a level (TEST; others +8 %: 68 against 62 at level 9). Kurent never less than +1 a level (the normal +8 % already gives him 2–3).
 
@@ -153,8 +162,9 @@ Built in `src/progression.js` from the reviewed specifications (`docs/characters
 - Enemy attacks go through, in order: Skrivni rov, the attacker's weakness (Zvonci, Pregon zime), Matjaž's ward and his army's −3, the party's shield, then Varstvo popotnikov. With none of these in force, the old path is unchanged.
 - Skrivni rov waits for an attack that actually reaches Erazem (or, at rank 3, the hero after him in the party, else the one before); the counter goes to the attacker; either hero evading counts.
 - Varstvo popotnikov uses a charge only when another hero would be hurt; her own share is not halved; she can fall from it.
-- Kresna moč: one charge per use (up to 3), used by the next enemy blow that hurts Kresnik while he stays standing. Burns and poison never trigger it.
-- Zvonci picks the target first, then the hardest hitters. The weakening is taken from each hero the blow hits.
+- Kresna moč: 1 / 2 / 3 charges by rank (a new use replaces what is left), each used by an enemy blow that hurts Kresnik while he stays standing. Burns and poison never trigger it.
+- Zvonci picks the target first, then the hardest hitters. The weakening is used up by that enemy's next blow and is taken from each hero the blow hits.
+- **Kurent's delays do not add up:** until an enemy acts, a new delay only moves its attack by what it adds over the longest one so far. Before, every Ježevka and Pregon zime pushed the attack back again, which nearly stopped enemies (two enemies attacked about 2 times a minute instead of 12 under Pregon zime at one word every 5 s).
 - Reviewed heroes' heals go up to full health; the 70 % cap stays for Mokoš and Zeleni Jurij.
 - In calm mode Kresnik's burn is one tick (2) per word for as many words as seconds; Kurent's delays move the enemy's charge by the same share of its attack cycle.
 - Enemy tags: `zmaj` (Lintvern, Zmajev mladič) and `duh` (Mora). The specification asks not to guess the other wind / cold / ghost enemies, so none are tagged yet.

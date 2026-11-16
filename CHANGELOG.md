@@ -50,6 +50,10 @@ unchanged. No new animations or art.
 - **XP from the fight:** a beaten enemy gives these heroes one XP per attack on it, one per point of damage
   dealt to it, plus its level (the region's number). The battle log and the result show the parts.
 - **Health per level:** Ajdovska deklica grows a little more (+10 % a level, a test value); Kurent at least +1.
+- **Kurent and Kresnik rebalanced** after simulating the road: Kresnik's sword hit too hard for a new
+  hero (now 5 / 7 / 9 with a shorter burn), Kurent's delays no longer add up (they nearly froze enemies), and
+  their skills 2 and 3 now deal damage too: *Zvonci* hit and weaken the enemy's next blow, *Pregon zime* hits
+  every enemy, *Kresna moč* is a flame on every enemy before it gives wounds back. Skill 1 at rank 3 is lower.
 - *Veščine* describes every rank of their skills.
 - Values the specifications leave open are placeholders, listed in `docs/progression-design.md` §4a.
 - New test: `tests/progression.test.js` (starts with Kurent against one škrat: 2 attacks + 8 damage + level 1 = 11 XP).

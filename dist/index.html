@@ -2300,7 +2300,7 @@ const CHARS = [
     note: 'Gole roke, usnjen predpasnik s sončnim znakom, brada kot žerjavica. Na največji karti na nakovalu kuje kar sonce.' },
   { id: 'mokos', name: 'Mokoš', c: 'var(--mokos)', sub: 'mati zemlja · zdravi', moves: ['Kapljica', 'Vir', 'Materina roka'], words: ['VODA', 'ZEMLJA', 'VRETENO'], vals: ['+6 zdravja', '+14 zdravja', '+30 zdravja'], extra: 'očisti črke in zbudi junake',
     note: 'Bela peča z žitnim vencem, vezena bluza in predpasnik, preslica z volno. Ko zdravi, pošlje vodo; na največji karti stoji pod mavrico med žitom, kravo in čebelnjakom.' },
-  { id: 'kresnik', name: 'Kresnik', c: 'var(--kresnik)', sub: 'sončni junak · ogenj', moves: ['Ognjeni meč', 'Kresna strela', 'Kresna moč'], words: ['KRES', 'ISKRA', 'POLETJE'], vals: ['−8 · gori', '−12 · gori', 'povrne četrtino rane'], extra: 'zlatniki iz povrnjene moči',
+  { id: 'kresnik', name: 'Kresnik', c: 'var(--kresnik)', sub: 'sončni junak · ogenj', moves: ['Ognjeni meč', 'Kresna strela', 'Kresna moč'], words: ['KRES', 'ISKRA', 'POLETJE'], vals: ['−5 · gori', '−10 · gori', '−5 vsem · povrne četrtino rane'], extra: 'zlatniki iz povrnjene moči',
     note: 'Zlati lasje kot plamen, rdeč telovnik, bakla. Največja karta je kresna noč: kres, goreče kolo, ki se vali po hribu, in praprotni cvet.' },
   { id: 'veles', name: 'Veles', c: 'var(--veles)', sub: 'gospodar živine in spodnjega sveta', moves: ['Kačji pik', 'Medvedja šapa', 'Korenine sveta'], words: ['ROG', 'MEDVED', 'KORENINE'], vals: ['−10 · strup', '−24', '−50'], extra: 'kača ovije vse sovražnike',
     note: 'Rogovi, medvedji kožuh, palica s kačo in zelene oči. Perunov večni nasprotnik, zato je zemeljski in temen, kjer je Perun nebesen in svetel. Najmočnejši med vsemi: večja postava, najtrši udarci. Zaigraš ga lahko šele po koncu zgodbe.' },
@@ -2310,7 +2310,7 @@ CHARS.push(
     note: 'Širok klobuk, brki, telovnik, na hrbtu vreča soli, v roki lipov kij. Na srednji karti dvigne kobilico s ceste, na največji premaga Brdavsa.' },
   { id: 'jurij', name: 'Zeleni Jurij', c: '#4fae5a', sub: 'znanilec pomladi · zdravi malo in pogosto', moves: ['Popek', 'Brstenje', 'Jurjevo'], words: ['LIST', 'BREZA', 'POMLAD'], vals: ['+4 zdravja', '+10 zdravja', '+22 zdravja'], extra: 'odklene vse črke',
     note: 'Od glave do kolen oblečen v brezovo zelenje s cvetjem, v roki brezova veja. Na največji karti prijezdi na belem konju.' },
-  { id: 'kurent', name: 'Kurent', c: '#d9cfae', sub: 'preganjalec zime · zamik in hrup', moves: ['Ježevka', 'Zvonci', 'Pregon zime'], words: ['ZVON', 'MASKA', 'PUST'], vals: ['−4 · zamik 1,5 s', 'napad −3', 'vsi zamudijo 3 s'], extra: 'vsi sovražniki zamudijo napad',
+  { id: 'kurent', name: 'Kurent', c: '#d9cfae', sub: 'preganjalec zime · zamik in hrup', moves: ['Ježevka', 'Zvonci', 'Pregon zime'], words: ['ZVON', 'MASKA', 'PUST'], vals: ['−4 · zamik 2 s', '−3 · udarec −3', '−4 vsem · zamik 3 s'], extra: 'vsi sovražniki zamudijo napad',
     note: 'Ovčji kožuh, usnjena maska z dolgim rdečim jezikom, rogovi s trakovi, zvonci za pasom in ježevka. Na največji karti kurenti preženejo zimo.' },
   { id: 'matjaz', name: 'Kralj Matjaž', c: '#d84a5a', sub: 'speči kralj · ščit in vojska', moves: ['Meč', 'Kraljeva vojska', 'Prebujenje'], words: ['MEČ', 'KRONA', 'KRALJ'], vals: ['−6', 'naslednji napad +3', '+3 zdravja · ščit 3'], extra: 'padli vstanejo',
     note: 'Krona, dolga siva brada, rdeč plašč s hermelinom, meč. Na največji karti se prebudi pod Peco: brada je ovita okrog mize, krokarji letijo, lipa ozeleni.' },
@@ -3783,6 +3783,7 @@ function gainXp(n, k, each, noStat) {   // k = hero index; without it the XP is 
 function enemyAct(e) {
   if (B.over || e.hp <= 0) return;
   // Okamnitev (src/progression.js): turned to stone, the enemy lets this attack pass; burns and poison go on
+  e.dlAmt = 0;   // Kurent's delays (src/progression.js) count again from here
   if (e.stone > 0) { e.stone--; floatOn(e.el, 'okamnel', 'info'); log(`${e.name} je okamnel${e.f ? 'a' : ''} — napad izostane.`); renderEnemies(); return; }
   let act = e.pattern[e.step % e.pattern.length]; e.step++;
   if (act === 'cwlock' && B.cw && B.cw.kind !== 'finisher') act = 'attack';
@@ -6268,6 +6269,9 @@ function renderHeroes() {
 //   repeats, relics and potions, the hero's own words, the hero's level), which is the heart of the game.
 //   Healing, shields, bonuses, reductions, delays, durations and charges are exact.
 // - `TEST` marks a value the specification leaves OPEN: a placeholder for this test, not a decision.
+// - Kurent and Kresnik were rebalanced on 16 Nov from the simulations (`REBALANCE`): their old values carried a fresh
+//   party (Kresnik) or nearly stopped enemies (Kurent's delays stacked), while their skills 2 and 3 dealt no damage, so
+//   learning them made the hero weaker. Now a skill does at least as much as the one below it at the same rank.
 // - Experience: these heroes earn XP from the fight itself — their attacks on an enemy, the damage they dealt to it
 //   and its level — when it is beaten (XP_RULE). Others still get the enemy's fixed XP.
 const REVIEWED = ['ajda', 'erazem', 'matjaz', 'kresnik', 'kurent'];
@@ -6276,9 +6280,11 @@ const isReviewed = id => REVIEWED.includes(id);
 // rank values per skill (index 0 = skill 1); every array is [rank 1, rank 2, rank 3]
 const RK = {
   kurent: [
-    { name: 'Ježevka', dmg: [4, 7, 10], delay: [1.5, 2.5, 3.5] },                       // delay: seconds the target's next attack comes later
-    { name: 'Zvonci', foes: [1, 2, 3], weaken: [3, 4, 5], sec: 2, dance: 2 },           // name OPEN; Kurent dances 2 s, his letters out of the mesh
-    { name: 'Pregon zime', delay: [3, 4, 4], tags: ['duh', 'veter', 'mraz'] },          // rank 2+: those enemies hurt themselves, attack at half
+    // delays never add up: an enemy's next attack moves back by the longest single delay only (delayFoe)
+    { name: 'Ježevka', dmg: [4, 6, 8], delay: [2, 3, 4] },                              // REBALANCE (was 4/7/10, delay 1,5/2,5/3,5 s that stacked)
+    { name: 'Zvonci', foes: [1, 2, 3], dmg: [3, 4, 5], weaken: [3, 4, 5], dance: 2 },  // name OPEN; Kurent dances 2 s, his letters out of the mesh;
+                                                                                         // REBALANCE: the bells hit, and the weakening lasts until that enemy's next blow (was 2 s, no hit)
+    { name: 'Pregon zime', dmg: [4, 6, 8], delay: [3, 4, 5], tags: ['duh', 'veter', 'mraz'] },   // REBALANCE: hits every enemy (was no damage, delay 3/4/4)
   ],
   matjaz: [
     { name: 'Meč', dmg: [6, 12, 18], ward: [0, 3, 6] },                                 // ward: less damage to each hero hit by the next enemy attack
@@ -6286,9 +6292,10 @@ const RK = {
     { name: 'Prebujenje', heal: [3, 6, 6], revive: 0.15, ward: [3, 6, 6], dmg: [0, 0, 12] },
   ],
   kresnik: [
-    { name: 'Ognjeni meč', dmg: [8, 12, 16], burn: [3, 3, 5], vsDragon: 1.5 },          // name OPEN; burn 2 a second for that many seconds
-    { name: 'Kresna strela', dmg: [12, 16, 18], chain: [0, 0, 8], burn: [3, 3, 3] },    // rank 3 jumps to the enemy beside the target
-    { name: 'Kresna moč', back: [0.25, 0.5, 0.7], gold: 0.5, keep: 3 },                 // name OPEN; the next blow that hurts him is partly given back
+    { name: 'Ognjeni meč', dmg: [5, 7, 9], burn: [2, 3, 4], vsDragon: 1.5 },            // name OPEN; burn 2 a second for that many seconds; REBALANCE (was 8/12/16, burn 3/3/5 s)
+    { name: 'Kresna strela', dmg: [10, 13, 16], chain: [0, 0, 6], burn: [3, 3, 3] },    // rank 3 jumps to the enemy beside the target; REBALANCE (was 12/16/18, chain 8)
+    { name: 'Kresna moč', dmg: [5, 7, 9], charges: [1, 2, 3], back: [0.25, 0.5, 0.7], gold: 0.5 },   // name OPEN; a flame on every enemy, then the next
+                                                                                         // 1/2/3 blows that hurt him are partly given back; REBALANCE (was no damage, one blow per use)
   ],
   erazem: [
     { name: 'Zamah z mečem', dmg: [7, 11, 15] },                                        // TEST damage
@@ -6349,12 +6356,17 @@ function xpRows() {
 // ------------------------------------------------------------ helpers
 // Slovene number forms: 1 sovražnik, 2 sovražnika, 3–4 sovražniki, 5+ sovražnikov (and the verb with them)
 const nForm = (n, f) => n === 1 ? f[0] : n === 2 ? f[1] : n < 5 ? f[2] : f[3];
-const FOES_N = ['sovražnik', 'sovražnika', 'sovražniki', 'sovražnikov'], ATTACK_V = ['napada', 'napadata', 'napadajo', 'napada'], ATTACKS_ACC = ['napad', 'napada', 'napade', 'napadov'];
+const FOES_N = ['sovražnik', 'sovražnika', 'sovražniki', 'sovražnikov'], ATTACKS_ACC = ['napad', 'napada', 'napade', 'napadov'];
 const v3 = (arr, r) => Array.isArray(arr) ? arr[clamp(r, 1, 3) - 1] : arr;
 const hasTag = (e, tags) => !!(e.tags && e.tags.some(t => tags.includes(t)));
 const isDragon = e => hasTag(e, ['zmaj', 'kaca']);
 // push an enemy's next attack back by `sec` seconds (its charge runs at 1/speed a second; calm mode moves it the same share)
-function delayFoe(e, sec) { if (e && e.hp > 0) e.charge -= sec / e.speed; }
+// Delays do not add up: until the enemy acts, a new delay only moves its attack by what it adds over the longest so far
+// (enemyAct resets e.dlAmt). Kurent slows an enemy down; he cannot hold it still.
+function delayFoe(e, sec) {
+  if (!e || e.hp <= 0) return;
+  const add = Math.max(0, sec - (e.dlAmt || 0)); e.charge -= add / e.speed; e.dlAmt = Math.max(e.dlAmt || 0, sec);
+}
 // the target first, then the enemies that hit hardest
 function pickFoes(target, n) {
   const rest = B.enemies.filter(e => e.hp > 0 && e !== target).sort((p, q) => q.atk - p.atk);
@@ -6399,17 +6411,18 @@ function reviewedAct(a, target, card) {
     case 'kurent1': { const d = hit(v3(R.dmg, r)), s = v3(R.delay, r); delayFoe(target, s); say.push(`−${d}`, `napad pozneje ${num(s)} s`); break; }
     case 'kurent2': {
       B.busy[k] = B.time + R.dance;
-      const n = v3(R.weaken, r), foes = pickFoes(target, v3(R.foes, r));
-      foes.forEach(e => { e.weak = { by: n, until: B.time + R.sec }; });
-      say.push(`napad −${n}`, foes.length > 1 ? `${foes.length} ${nForm(foes.length, FOES_N)}` : 'cilj'); card.extra = `Kurent pleše ${R.dance} s`;
+      const n = v3(R.weaken, r), foes = pickFoes(target, v3(R.foes, r)); let d = 0;
+      foes.forEach(e => { d = Math.max(d, hit(v3(R.dmg, r), e)); if (e.hp > 0) e.weak = { by: n }; });   // until its next blow
+      say.push(`−${d}${foes.length > 1 ? ' vsakemu' : ''}`, `naslednji udarec −${n}`, foes.length > 1 ? `${foes.length} ${nForm(foes.length, FOES_N)}` : 'cilj'); card.extra = `Kurent pleše ${R.dance} s`;
       renderParty(); renderPuzzle(); renderSide(); break; }
     case 'kurent3': {
-      const s = v3(R.delay, r); let hurt = 0;
+      const s = v3(R.delay, r); let hurt = 0, d = 0;
       alive().forEach(e => {
+        d = Math.max(d, hit(v3(R.dmg, r), e)); if (e.hp <= 0) return;
         delayFoe(e, s);
         if (r >= 2 && hasTag(e, R.tags)) { hurt++; e.bane = { dps: e.atk * 0.5 / 4, until: B.time + 4, by: k }; e.baneAcc = 0; e.half = B.time + 4; if (r >= 3) e.halfNext = true; }
       });
-      say.push(`vsi napadejo ${num(s)} s pozneje`); if (hurt) card.extra = hurt > 1 ? 'zima se obrne proti sovražnikom' : 'zima se obrne proti sovražniku';
+      say.push(`−${d} vsem`, `napadejo ${num(s)} s pozneje`); if (hurt) card.extra = hurt > 1 ? 'zima se obrne proti sovražnikom' : 'zima se obrne proti sovražniku';
       break; }
     // Kralj Matjaž
     case 'matjaz1': { const d = hit(v3(R.dmg, r)), w = v3(R.ward, r); say.push(`−${d}`); if (w) { B.ward = Math.max(B.ward || 0, w); say.push(`ščit ${w} na junaka`); } break; }
@@ -6436,8 +6449,9 @@ function reviewedAct(a, target, card) {
       if (o) { const d2 = hit(c, o); fixedBurn(o, s, k); card.extra = `strela preskoči: −${d2}`; }
       break; }
     case 'kresnik3': {
-      const prev = B.restore[k]; B.restore[k] = { rank: r, n: Math.min(R.keep, ((prev && prev.n) || 0) + 1) };
-      say.push(`povrne ${Math.round(v3(R.back, r) * 100)} % naslednje rane`); break; }
+      let d = 0; alive().forEach(e => { d = Math.max(d, hit(v3(R.dmg, r), e)); });
+      const n = v3(R.charges, r); B.restore[k] = { rank: r, n };
+      say.push(`−${d} vsem`, `povrne ${Math.round(v3(R.back, r) * 100)} % ${n > 1 ? `naslednjih ${n} ran` : 'naslednje rane'}`); break; }
     // Erazem Predjamski
     case 'erazem1': say.push(`−${hit(v3(R.dmg, r))}`); break;
     case 'erazem2': {
@@ -6469,7 +6483,7 @@ function reviewedAct(a, target, card) {
 
 // ------------------------------------------------------------ enemy attacks against the reviewed heroes' protections
 // Anything in force against this attack? If not, hurtParty keeps its old path exactly.
-const foeSoft = e => !!e && ((e.weak && e.weak.until > B.time) || e.half > B.time || !!e.halfNext);
+const foeSoft = e => !!e && (!!e.weak || e.half > B.time || !!e.halfNext);
 function revGuarding(src) {
   if (!src || !B) return false;
   return !!(B.ward || (B.dampen && B.dampen.left > 0) || B.rov || (B.guard && B.guard.left > 0) || (B.restore && Object.keys(B.restore).length) || foeSoft(src));
@@ -6495,7 +6509,8 @@ function revHits(hits, src) {
       }
     }
   } else if (rov) B.rov = null;
-  const half = src.halfNext || src.half > B.time, weak = src.weak && src.weak.until > B.time ? src.weak.by : 0;
+  const half = src.halfNext || src.half > B.time, weak = src.weak ? src.weak.by : 0;
+  src.weak = null;   // Zvonci: the weakening is used up by this blow
   const ward = B.ward || 0, damp = B.dampen && B.dampen.left > 0 ? B.dampen.by : 0;
   hits.forEach(x => { if (x[1] > 0) x[1] = Math.max(0, Math.round(x[1] * (half ? 0.5 : 1)) - weak - ward - damp); });
   if (src.halfNext) src.halfNext = false;
@@ -6534,7 +6549,6 @@ function reviewedTick(dt) {
   if (B.busy) for (const k of Object.keys(B.busy)) if (B.busy[k] <= B.time) { delete B.busy[k]; party = true; }
   for (const e of B.enemies) {
     if (e.hp <= 0) continue;
-    if (e.weak && e.weak.until <= B.time) { e.weak = null; foes = true; }
     if (e.half && e.half <= B.time) { e.half = 0; foes = true; }
     if (e.bane) {
       if (e.bane.until > B.time) {
@@ -6569,10 +6583,10 @@ function reviewedPartyNotes() {
 const SEC = n => `${num(n)} s`;
 const RANK_TEXT = {
   kurent: [
-    (R, r) => `Udarec z ježevko (${v3(R.dmg, r)}); cilj napade ${SEC(v3(R.delay, r))} pozneje.`,
-    (R, r) => { const n = v3(R.foes, r); return `Kurent ${R.dance} s pleše (njegove črke ta čas ne štejejo, rane pa ga dosežejo); ${n > 1 ? `${n} ${nForm(n, FOES_N)}` : 'en sovražnik'} ${R.sec} s ${nForm(n, ATTACK_V)} ${v3(R.weaken, r)} šibkeje.`; },
-    (R, r) => r === 1 ? `Vsi sovražniki napadejo ${SEC(v3(R.delay, r))} pozneje.`
-      : `Vsi napadejo ${SEC(v3(R.delay, r))} pozneje; duhovi in bitja vetra in mraza (Mora) si 4 s škodijo s pol svojega napada in ta čas udarijo s pol moči` + (r === 3 ? '; s pol moči udarijo tudi prvič po tem.' : '.'),
+    (R, r) => `Udarec z ježevko (${v3(R.dmg, r)}); cilj napade ${SEC(v3(R.delay, r))} pozneje. Zamiki se ne seštevajo.`,
+    (R, r) => { const n = v3(R.foes, r); return `Kurent ${R.dance} s pleše (njegove črke ta čas ne štejejo, rane pa ga dosežejo); zvonci zadenejo ${n > 1 ? `${n} ${nForm(n, ['sovražnika', 'sovražnika', 'sovražnike', 'sovražnikov'])}` : 'cilj'} (${v3(R.dmg, r)}), ${n > 1 ? `njihov` : 'njegov'} naslednji udarec je ${v3(R.weaken, r)} šibkejši.`; },
+    (R, r) => r === 1 ? `Vsi sovražniki −${v3(R.dmg, r)} in napadejo ${SEC(v3(R.delay, r))} pozneje.`
+      : `Vsi sovražniki −${v3(R.dmg, r)} in napadejo ${SEC(v3(R.delay, r))} pozneje; duhovi in bitja vetra in mraza (Mora) si 4 s škodijo s pol svojega napada in ta čas udarijo s pol moči` + (r === 3 ? '; s pol moči udarijo tudi prvič po tem.' : '.'),
   ],
   matjaz: [
     (R, r) => `Udarec z mečem (${v3(R.dmg, r)})` + (v3(R.ward, r) ? `; ob naslednjem napadu sovražnika vsak zadeti junak dobi ${v3(R.ward, r)} manj.` : '.'),
@@ -6582,7 +6596,7 @@ const RANK_TEXT = {
   kresnik: [
     (R, r) => `Udarec z ognjenim mečem (${v3(R.dmg, r)}, zmaju ${Math.round(v3(R.dmg, r) * R.vsDragon)}); cilj gori ${v3(R.burn, r)} s po ${BURN_DPS}.`,
     (R, r) => `Strela v cilj (${v3(R.dmg, r)}); cilj gori ${v3(R.burn, r)} s po ${BURN_DPS}` + (v3(R.chain, r) ? `; preskoči še na sosednjega sovražnika (${v3(R.chain, r)}), ki tudi gori.` : '.'),
-    (R, r) => `Ko ga sovražnik naslednjič rani, si povrne ${Math.round(v3(R.back, r) * 100)} % rane; družina dobi pol toliko zlatnikov.`,
+    (R, r) => { const n = v3(R.charges, r); return `Plamen zadene vse sovražnike (${v3(R.dmg, r)}); od ${n > 1 ? `naslednjih ${n} ran` : 'naslednje rane'} si povrne ${Math.round(v3(R.back, r) * 100)} %, družina dobi pol toliko zlatnikov.`; },
   ],
   erazem: [
     (R, r) => `Zamah z mečem (${v3(R.dmg, r)}).`,
