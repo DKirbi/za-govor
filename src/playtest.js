@@ -161,7 +161,8 @@ function tutCross(kind) {
     steps: [
       S.mobile ? ['Rumeno polje kaže opis označene besede. Odgovor vpiši s tipkovnico pod križanko.'] : ['Rumeno polje kaže opis označene besede. Vpiši odgovor.'],
       ['Prava beseda pozeleni in takoj sproži napad. Črne črke pomenijo, da beseda še ni prava.'],
-      S.mobile ? ['Tipka Naprej skoči na naslednjo besedo; izbereš jo lahko tudi s tapom v mreži. Gumb »Razkrij črko« pokaže eno črko.'] : [K('Tab'), ' skoči na naslednjo besedo, ', K('?'), ' razkrije eno črko (število je omejeno).'],
+      S.mobile ? ['Tipka Naprej skoči na naslednjo besedo; izbereš jo lahko tudi s tapom v mreži.' + (LV().reveals ? ' Gumb »Razkrij črko« pokaže eno črko.' : '')]
+        : [K('Tab'), ' skoči na naslednjo besedo', ...(LV().reveals ? [', ', K('?'), ' razkrije eno črko (število je omejeno).'] : ['.'])],
       geslo ? ['Zlat stolpec skriva geslo. Če ga uganeš, je križanka rešena takoj.'] : null] };
 }
 // seconds of the running event, when there is one (Kako igrati shows the same intros without an event)

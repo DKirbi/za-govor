@@ -825,7 +825,9 @@ const CHESTS = [
 // ============================================================ knowledge levels
 // The second difficulty choice; pace (real-time or calm) is the first.
 // Malček: learning words — the original game. Učenjak: longer, harder words and few tips.
-// Knjižni molj: crosswords in the style of paper crosswords, no tips in the letter mesh.
+// Knjižni molj: crosswords in the style of paper crosswords, and no hints anywhere: no Namig, no letters
+// revealed in crosswords, no clue at chests, and the buttons are not there at all (noHints).
+// Three-letter words count on every level (16 Nov 2026).
 // Crossword settings: fin = finisher crosswords, easy = ambush and forced (enemy) crosswords;
 // banks feed the grid, maxLen caps word length, rowMax / X / size shape the keyword column.
 // tools/cluebank.py mirrors the crossword settings to validate the clue banks.
@@ -833,10 +835,10 @@ const LEVELS = {
   malcek: { name: 'Malček', minWord: 3, hints: 3, proposals: true, meshCount: true, coach: true, reveals: 5, showLen: true,
     fin:  { banks: ['malcek'], maxLen: 7, rowMax: 6, X: 3, size: 9, count: 6 },
     easy: { banks: ['malcek'], maxLen: 5, rowMax: 5, X: 2, size: 7, count: 4, d: 1 } },
-  ucenjak: { name: 'Učenjak', minWord: 4, hints: 1, proposals: false, meshCount: true, coach: true, reveals: 2, showLen: true,
+  ucenjak: { name: 'Učenjak', minWord: 3, hints: 1, proposals: false, meshCount: true, coach: true, reveals: 2, showLen: true,
     fin:  { banks: ['ucenjak'], maxLen: 9, rowMax: 8, X: 4, size: 9, count: 6 },
     easy: { banks: ['malcek'], maxLen: 6, rowMax: 6, X: 2, size: 7, count: 4 } },
-  molj: { name: 'Knjižni molj', minWord: 4, hints: 0, proposals: false, meshCount: false, coach: false, reveals: 1, showLen: false,
+  molj: { name: 'Knjižni molj', minWord: 3, hints: 0, noHints: true, proposals: false, meshCount: false, coach: false, reveals: 0, showLen: false,
     fin:  { banks: ['molj', 'ucenjak'], maxLen: 9, rowMax: 8, X: 4, size: 9, count: 7 },
     easy: { banks: ['molj', 'ucenjak'], maxLen: 6, rowMax: 6, X: 2, size: 7, count: 4 } },
 };
@@ -1177,7 +1179,7 @@ function startBattle(node) {
   const def = node.battle;
   B = S.battle = {
     node, def, enemies: def.enemies.map((k, i) => makeEnemy(k, i, def.scale)), target: 0, grid: [], path: [], typed: '', nopath: false,
-    lemmaUses: new Map(), meter: Math.round(METER_MAX * Math.max(def.meterStart, S.meterBonus)), hints: LV().hints + (has('praprotno-seme') ? 1 : 0), shield: has('svarogovo-kladivo') ? 8 : 0,
+    lemmaUses: new Map(), meter: Math.round(METER_MAX * Math.max(def.meterStart, S.meterBonus)), hints: LV().noHints ? 0 : LV().hints + (has('praprotno-seme') ? 1 : 0), shield: has('svarogovo-kladivo') ? 8 : 0,
     boost: 0, double: 1, evade: 0, grow: 0, snapBag: S.run ? JSON.stringify(S.run.bag) : null, snapGold: S.run ? S.run.gold : 0,
     get hp() { return S.partyHp; }, set hp(v) { S.partyHp = v; }, snap: JSON.stringify(S.heroes), revived: false, sleep: {}, time: 0, paused: false, over: false, cw: null, words: 0, logLines: [], fbTimer: 0,
     stats: { words: 0, longest: '', best: 0, cw: 0, xp: 0, gold: 0 }, lastFinisher: null,
@@ -1315,7 +1317,7 @@ function renderSide() {
         h('button', { class: 'btn zgbtn' + (full ? ' primary' : ''), disabled: !full, onclick: openFinisher },
           full ? null : h('i', { class: 'fill', style: { width: (100 * B.meter / METER_MAX) + '%' } }),
           h('span', {}, full ? 'Izreci zagovor' : `Zagovor ${Math.floor(B.meter)}/${METER_MAX}`)),
-        LV().hints || B.hints > 0 ? h('button', { class: 'btn', disabled: B.hints <= 0, onclick: useHint }, `Namig (${B.hints})`) : null,
+        !LV().noHints && (LV().hints || B.hints > 0) ? h('button', { class: 'btn', disabled: B.hints <= 0, onclick: useHint }, `Namig (${B.hints})`) : null,
         h('button', { class: 'btn', onclick: () => shuffleGrid(true) }, 'Premešaj'),
         bagCount(true) ? h('button', { class: 'btn', onclick: () => openBag() }, `Torba (${bagCount(true)})`) : null));
     return;
@@ -1329,7 +1331,7 @@ function renderSide() {
       h('button', { class: 'btn' + (full ? ' primary' : ''), disabled: !full || !!B.cw, onclick: openFinisher, style: { width: '100%' } },
         'Izreci zagovor ', h('kbd', {}, 'presledek'))),
     h('div', { class: 'box', style: { display: 'flex', gap: '8px' } },
-      LV().hints || B.hints > 0 ? h('button', { class: 'btn small', style: { flex: 1 }, disabled: !!B.cw || B.hints <= 0, onclick: useHint }, `Namig (${B.hints}) `, h('kbd', {}, '1')) : null,
+      !LV().noHints && (LV().hints || B.hints > 0) ? h('button', { class: 'btn small', style: { flex: 1 }, disabled: !!B.cw || B.hints <= 0, onclick: useHint }, `Namig (${B.hints}) `, h('kbd', {}, '1')) : null,
       h('button', { class: 'btn small', style: { flex: 1 }, disabled: !!B.cw, onclick: () => shuffleGrid(true) }, 'Premešaj ', h('kbd', {}, '2')),
       S.run ? h('button', { class: 'btn small', style: { flex: 1 }, disabled: !bagCount(true), onclick: () => openBag() }, `Torba (${bagCount(true)}) `, h('kbd', {}, '3')) : null),
     h('div', { class: 'box' }, h('h4', {}, 'Junaki in barve'),
@@ -2127,7 +2129,7 @@ function battleTick(dt) {
 // ------------------------------------------------------------ hint + shuffle
 function useHint() {
   if (B.cw) return;
-  if (B.hints <= 0) { fb(LV().hints ? 'Namigov je zmanjkalo.' : 'Knjižni molj igra brez namigov.', 'warn'); return; }
+  if (B.hints <= 0) { fb(LV().noHints ? 'Knjižni molj igra brez namigov.' : 'Namigov je zmanjkalo.', 'warn'); return; }
   const words = shortestForms([...allWords(400).entries()].filter(([w]) => w.length >= 4 && w.length <= 7));
   if (!words.length) { fb('Ni dobrih besed — premešaj mrežo.', 'warn'); return; }
   words.sort((a, b) => b[1].reduce((s, i) => s + tileScore(i), 0) - a[1].reduce((s, i) => s + tileScore(i), 0));
@@ -2720,12 +2722,25 @@ function letterKey(e) {
 // ============================================================ chest event (timed)
 // Any real word built from the letters earns a partial reward (longer word, bigger reward).
 // The hidden word opens the chest and earns the big reward.
+const REGION_WORDS = (() => { try { return JSON.parse($('#wordsdata').textContent).regions || {}; } catch (e) { return {}; } })();
+const ALL_CHESTS = Object.values(REGION_WORDS).flatMap(r => (r.chest || []).map(([w, clue]) => ({ w, clue }))).concat(CHESTS);
+// The chest word comes from the region's list; a word already opened on this journey is not offered again.
+function chestItem() {
+  const R = S.run, reg = R ? WORLD.regions[R.ri] : null, seen = R ? (R.chestSeen || (R.chestSeen = [])) : [];
+  const own = reg && REGION_WORDS[reg.id] ? (REGION_WORDS[reg.id].chest || []).map(([w, clue]) => ({ w, clue })) : [];
+  const fresh = list => list.filter(it => !seen.includes(it.w) && WORDS.has(it.w));
+  const item = pick(fresh(own).length ? fresh(own) : fresh(ALL_CHESTS).length ? fresh(ALL_CHESTS) : ALL_CHESTS);
+  if (R) seen.push(item.w);
+  return item;
+}
+// the clue under the chest: always on Malček, on about every other chest on Učenjak, never on Knjižni molj
+const chestClue = () => S.know === 'malcek' ? true : S.know === 'ucenjak' ? Math.random() < 0.5 : false;
 function startChest(node) {
-  const item = pick(CHESTS);
+  const item = chestItem();
   let letters = shuffle([...item.w]);
   while (letters.join('') === item.w) letters = shuffle(letters);
   const t = (S.mode === 'real' ? 40 : 80) * (has('pisanica') ? 1.5 : 1);
-  S.ev = { node, kind: 'chest', item, letters: letters.map(ch => ({ ch, used: false })), sel: [], time: t, timeMax: t,
+  S.ev = { node, kind: 'chest', item, clue: chestClue(), letters: letters.map(ch => ({ ch, used: false })), sel: [], time: t, timeMax: t,
     done: false, found: [], msg: '', msgKind: '' };
   renderChest();
   showTut('chest');
@@ -2737,19 +2752,20 @@ function renderChest() {
     h('div', { class: 'bhead' }, h('div', { class: 't' }, 'Zaklenjena skrinja', h('small', {}, 'dogodek na čas')), pauseBtn()),
     h('div', { class: 'panel' },
       h('div', { class: 'chestbox' }, objEl('skrinja', E.done && E.win ? 1 : 0, 'big'),
-        h('div', {}, h('div', {}, 'Iz črk sestavi besedo in jo pošlji. Imaš en poskus: beseda iz vseh črk odpre skrinjo, krajša prava beseda jo le priškrne in prinese del nagrade (daljša beseda, večji del).'),
-          h('div', { style: { color: 'var(--gold)', 'margin-top': '6px' } }, 'Namig za skrito besedo: ', E.item.clue))),
+        h('div', {}, h('div', {}, 'Iz črk sestavi besedo in jo pošlji. Imaš en poskus: beseda iz vseh črk odpre skrinjo, krajša prava beseda jo le priškrne in prinese del nagrade (daljša beseda, večji del). Če se zmotiš, besedo počisti in začni znova.'),
+          E.clue ? h('div', { class: 'chestclue', style: { color: 'var(--gold)', 'margin-top': '6px' } }, 'Namig za skrito besedo: ', E.item.clue) : null)),
       h('div', { class: 'timer', style: { margin: '14px 0 4px' } }, h('i', { ref: el => UI.evTimer = el, style: { width: clamp(100 * E.time / E.timeMax, 0, 100) + '%' } })),
       h('div', { class: 'sendrow' },
         h('div', { class: 'guess' }, [...E.item.w].map((_, k) => h('span', { class: 'lt' }, E.sel[k] != null ? E.letters[E.sel[k]].ch : ''))),
-        E.done ? null : h('button', { class: 'btn primary send' + (guess.length >= MINW() ? ' ready' : ''), disabled: guess.length < MINW(), onclick: chestSubmit }, 'Pošlji ', h('kbd', {}, 'Enter'))),
+        E.done ? null : h('div', { class: 'wbtns' },
+          h('button', { class: 'btn clr', onclick: chestClear, disabled: !guess.length, 'aria-label': 'Počisti besedo', title: 'Počisti besedo (Del)' }, '✕'),
+          h('button', { class: 'btn primary send' + (guess.length >= MINW() ? ' ready' : ''), disabled: guess.length < MINW(), onclick: chestSubmit }, 'Pošlji', S.mobile ? null : [' ', h('kbd', {}, 'Enter')]))),
       h('div', { class: 'letters' }, E.letters.map((l, i) => h('div', { class: 'tile' + (l.used ? ' used' : ''), onclick: () => chestPick(i) }, l.ch))),
       E.msg ? h('p', { class: 'fb ' + E.msgKind }, E.msg) : null,
       E.loot ? h('p', { class: 'lootline' }, itemIcon(E.loot.id), h('b', {}, E.loot.name), ' — ', E.loot.text) : null,
       E.done ? h('div', {}, h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')))
       : h('div', { class: 'row', style: { 'justify-content': 'flex-start', 'flex-wrap': 'wrap' } },
-        h('button', { class: 'btn small', onclick: chestBack }, '⌫ Briši'),
-        h('button', { class: 'btn small', onclick: chestClear }, 'Počisti ', h('kbd', {}, 'Del')),
+        h('button', { class: 'btn small', onclick: chestBack }, '⌫ Zadnja črka'),
         h('button', { class: 'btn small', onclick: () => { E.letters = shuffle(E.letters.map((l, i) => ({ ...l, i }))); chestRemap(); } }, 'Premešaj')),
       null)));
 }
@@ -2815,10 +2831,11 @@ function chestTick(dt) {
 // rock exists. You get one word: the rocks it names break, the others graze the party.
 const TRAP_HIT = 8, TRAP_GRAZE = 4, TRAP_GOLD = 3;
 function startTrap(node) {
-  const real = S.mode === 'real';
-  const pool = LEX.suggestedWords(5, 7).filter(w => new Set(w).size >= 4);
+  const real = S.mode === 'real', reg = S.run ? REGION_WORDS[WORLD.regions[S.run.ri].id] : null;
+  const own = reg && reg.rocks ? reg.rocks.filter(w => WORDS.has(w) && new Set(w).size >= 4) : [];
+  const pool = own.length ? own : LEX.suggestedWords(5, 7).filter(w => new Set(w).size >= 4);
   const letters = shuffle([...new Set(pick(pool))]).slice(0, 4);
-  S.ev = { node, kind: 'trap', time: 0, fall: (real ? 16 : 32) * (has('pisanica') ? 1.5 : 1), used: new Set(), broken: 0, hits: 0, dmg: 0, done: false, word: '',
+  S.ev = { node, kind: 'trap', time: 0, fall: (real ? 22 : 40) * (has('pisanica') ? 1.5 : 1), used: new Set(), broken: 0, hits: 0, dmg: 0, done: false, word: '',
     rocks: letters.map((ch, i) => ({ ch, lane: [14, 38, 62, 86][i], spawn: 0.5 + i * 0.3, y: -60, state: 'wait', el: null })) };
   renderTrap();
   showTut('trap');
@@ -2828,7 +2845,7 @@ function renderTrap() {
   SCR.append(h('div', { class: 'event' },
     h('div', { class: 'bhead' }, h('div', { class: 't' }, 'Plaz kamenja', h('small', {}, 'dogodek na čas')),
       h('div', { class: 'meta' }, `Družina ${S.partyHp}/${S.maxHp}`), pauseBtn()),
-    h('div', { class: 'panel' }, 'Vsaka skala nosi črko. Imaš eno besedo: skale, katerih črke so v njej, se razbijejo, druge te oplazijo. Beseda z vsemi črkami razbije ves plaz. Če ne pošlješ nobene, skale padejo s polno močjo.'),
+    h('div', { class: 'panel' }, 'Vsaka skala nosi črko. Imaš eno besedo: skale, katerih črke so v njej, se razbijejo, druge te oplazijo. ', h('b', {}, 'Črke so v besedi lahko kjerkoli in v poljubnem vrstnem redu.'), ' Beseda z vsemi črkami razbije ves plaz. Če ne pošlješ nobene, skale padejo s polno močjo.'),
     h('div', { class: 'lanes', ref: el => UI.lanes = el }, h('div', { class: 'ground' })),
     h('div', { class: 'panel' },
       h('div', { class: 'sendrow' },
@@ -2977,6 +2994,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.diff = d; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.diff = d; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 

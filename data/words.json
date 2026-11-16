@@ -1,0 +1,123 @@
+{
+  "note": "Words of each region for the puzzles on the road, a first list to be reviewed and filled in by hand. chest: [word, clue] for the locked chest (the word must be in the word list; clues are shown by Znanje: always on Malček, on some chests on Učenjak, never on Knjižni molj). rocks: words the rock slide builds its rocks from (hillside regions only). theme: words of the place, its enemies and its hero, for seeding the letter puzzles (not used yet: next branch). Region ids as in world.json.",
+  "regions": {
+    "ptuj": {
+      "chest": [
+        ["kurent", "Kosmat lik, ki z zvonci odganja zimo"],
+        ["zvonec", "Kurentu zvoni za pasom"],
+        ["maska", "Z njo si na pustni torek nekdo drug"],
+        ["kožuh", "Ovčja koža, ki jo nosi kurent"],
+        ["grozdje", "Iz njega je vino"],
+        ["vinograd", "Na pobočju zorijo grozdi"],
+        ["krof", "Pustna sladica z marmelado"]
+      ],
+      "theme": ["pust", "zvon", "maska", "krof", "kožuh", "vino", "grad", "zima", "ples", "hrup"]
+    },
+    "peca": {
+      "chest": [
+        ["kralj", "Matjaž spi v gori, a je še vedno …"],
+        ["votlina", "V njej spi Matjaževa vojska"],
+        ["krokar", "Črna ptica, ki kroži nad goro"],
+        ["brada", "Kralju raste okoli mize"],
+        ["vojska", "Spi s kraljem pod goro"],
+        ["rudnik", "Pod goro so v njem kopali svinec"],
+        ["svinec", "Težka siva kovina iz Mežice"]
+      ],
+      "rocks": ["kralj", "krokar", "votlina", "rudnik", "vojska", "svinec", "brada"],
+      "theme": ["kralj", "meč", "miza", "brada", "gora", "jama", "krokar", "vojska", "ruda", "spanje"]
+    },
+    "triglav": {
+      "chest": [
+        ["planika", "Bela gorska cvetlica, simbol Alp"],
+        ["gams", "Plezalec po skalah z zakrivljenimi rogovi"],
+        ["stena", "Navpična skala, ki jo preplezaš"],
+        ["melišče", "Pobočje drobnega kamenja pod steno"],
+        ["jezero", "Sedem jih je v dolini pod Triglavom"],
+        ["koča", "Planinska … ti ponudi zavetje"],
+        ["zlatorog", "Beli gams z zlatimi rogovi"]
+      ],
+      "rocks": ["planika", "stena", "skala", "jezero", "melišče", "kamen", "sneg"],
+      "theme": ["gora", "vrh", "skala", "kamen", "sneg", "gams", "rog", "stena", "pot", "led"]
+    },
+    "bled": {
+      "chest": [
+        ["otok", "Kopno sredi jezera"],
+        ["pletna", "Lesen čoln, ki vozi na otok"],
+        ["kremšnita", "Blejska sladica z vaniljevo kremo"],
+        ["cerkev", "Stoji na otoku sredi jezera"],
+        ["veslo", "Z njim poganjaš čoln"],
+        ["labod", "Bela ptica na jezeru"],
+        ["stopnice", "Do cerkve na otoku jih je 99"]
+      ],
+      "theme": ["otok", "zvon", "čoln", "voda", "grad", "jezero", "veslo", "labod", "želja", "skala"]
+    },
+    "gozd": {
+      "chest": [
+        ["kobila", "Krpanova zvesta žival"],
+        ["tovor", "Krpan ga je nosil čez hrib"],
+        ["bukev", "Drevo, ki ga je v tem gozdu največ"],
+        ["medved", "Kosmat gospodar gozda"],
+        ["burja", "Veter, ki piha v Vipavsko dolino"],
+        ["tihotapec", "Kdor nosi blago mimo mitnice"],
+        ["lipa", "Iz njenega lesa je Krpanov kij"]
+      ],
+      "theme": ["gozd", "drevo", "list", "sol", "kij", "lipa", "medved", "volk", "mrak", "kobila"]
+    },
+    "piran": {
+      "chest": [
+        ["solinar", "Delavec na solnih poljih"],
+        ["galeb", "Bela ptica nad morjem"],
+        ["svetilnik", "Ponoči kaže pot ladjam"],
+        ["školjka", "V njej raste biser"],
+        ["ribič", "Zjutraj prinese mrežo polno rib"],
+        ["sardela", "Majhna riba iz Jadrana"],
+        ["obala", "Kjer se kopno sreča z morjem"]
+      ],
+      "theme": ["sol", "morje", "val", "obala", "ladja", "riba", "galeb", "pena", "jadro", "sonce"]
+    },
+    "predjama": {
+      "chest": [
+        ["vitez", "Erazem je bil …"],
+        ["češnja", "Erazem jih je metal oblegovalcem"],
+        ["netopir", "Ponoči leti iz jame"],
+        ["kapnik", "Raste s stropa jame, kaplja za kapljo"],
+        ["močeril", "Jamska žival, ki so jo imeli za zmajevega mladiča"],
+        ["oklep", "Vitezova kovinska obleka"],
+        ["stolp", "Najvišji del gradu"]
+      ],
+      "theme": ["grad", "jama", "rov", "vitez", "skala", "stolp", "oklep", "češnja", "tema", "kamen"]
+    },
+    "barje": {
+      "chest": [
+        ["kolišče", "Hiša na kolih sredi močvirja"],
+        ["močvirje", "Mokra zemlja, kjer raste trstičje"],
+        ["kolo", "Najstarejše leseno … na svetu so našli tu"],
+        ["šota", "Gorivo, izkopano iz barja"],
+        ["čaplja", "Dolgonoga ptica v plitvi vodi"],
+        ["trstika", "Visoka trava ob vodi"],
+        ["deblak", "Čoln, izdolben iz enega debla"]
+      ],
+      "theme": ["blato", "voda", "megla", "kol", "kolo", "šota", "trava", "čoln", "žaba", "ptica"]
+    },
+    "reka": {
+      "chest": [
+        ["vrtinec", "Povodni mož te potegne vanj"],
+        ["most", "Tromostovje jih ima tri"],
+        ["ples", "Urška je šla nanj in se ni vrnila"],
+        ["tržnica", "Plečnikove arkade ob reki"],
+        ["zmaj", "Varuh mesta na mostu"],
+        ["čoln", "Z njim pluješ po reki"]
+      ],
+      "theme": ["reka", "voda", "most", "ples", "val", "riba", "čoln", "vrtinec", "breg", "megla"]
+    },
+    "grad": {
+      "chest": [
+        ["vzpenjača", "Pelje te na grajski hrib"],
+        ["obzidje", "Kamnit zid okoli gradu"],
+        ["zmaj", "Na gradu čaka na koncu poti"],
+        ["stolp", "Z njega vidiš vse mesto"]
+      ],
+      "theme": ["grad", "zmaj", "stolp", "zid", "ogenj", "krilo", "luskina", "pepel", "hrib", "mesto"]
+    }
+  }
+}

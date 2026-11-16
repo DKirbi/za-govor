@@ -16,7 +16,8 @@ Inputs:  src/index.src.html (template), src/game.css + src/title.css,
            src/save.js (the journey saved at checkpoints by Znanje, Izhod),
            src/art-title.js + src/title.js (the "Za govor!" title scene, art from tools/art_title.py),
          data/lexicon.bin (word list from tools/build_lexicon.py, inlined as base64),
-         data/clues.json (crossword clue bank), data/world.json (regions and items of the journey)
+         data/clues.json (crossword clue bank), data/world.json (regions and items of the journey),
+         data/words.json (words of each region: chests, rock slides, themes)
          package.json (version and release stage) and git (commit) for the version line
 Output:  dist/index.html — open it in any modern browser, no server needed.
 """
@@ -26,7 +27,7 @@ root = pathlib.Path(__file__).parent
 read = lambda rel: (root / rel).read_text(encoding='utf-8')
 template = read('src/index.src.html')
 data = {'/*__LEX__*/': base64.b64encode((root / 'data/lexicon.bin').read_bytes()).decode('ascii'),
-        '/*__CLUES__*/': read('data/clues.json'), '/*__WORLD__*/': read('data/world.json')}
+        '/*__CLUES__*/': read('data/clues.json'), '/*__WORLD__*/': read('data/world.json'), '/*__WORDS__*/': read('data/words.json')}
 for name, text in data.items():
     assert '</script' not in text, f'{name} would close its <script> tag'
 
