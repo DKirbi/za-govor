@@ -82,9 +82,10 @@ run(async () => {
 
   // 5. the choices are a draft: leaving Nova pot keeps the journey under way as it was
   await page.evaluate(() => { const Z = window.__ZG; Z.go('title'); Z.newRun('krpan'); Z.go('travel'); }); await sleep(150);
-  await page.evaluate(() => [...document.querySelectorAll('.travelwrap .bhead .btn')].find(b => b.textContent === 'Meni').click()); await sleep(150);
+  await page.click('.travelwrap .bhead .exitbtn'); await sleep(150);
+  await page.click('.exitdlg .btn.primary'); await sleep(150);
   const withRun = await items(page);
-  check(withRun[0].startsWith('Nadaljuj pot') && /\(.+\)/.test(withRun[0]) && await focused(page) === 'continue', 'Meni on the road leads to the menu with Nadaljuj pot (and the region) first and focused', withRun[0]);
+  check(withRun[0].startsWith('Nadaljuj pot') && /\(.+\)/.test(withRun[0]) && await focused(page) === 'continue', 'Izhod on the road leads to the menu with Nadaljuj pot (and the region) first and focused', withRun[0]);
   await shot('menu-03-continue');
   await page.evaluate(() => window.__ZG.go('newrun')); await sleep(150);
   check(await page.evaluate(() => /se konča/.test(document.querySelector('.setup .note').textContent)), 'Nova pot warns that the journey under way will end');

@@ -11,6 +11,7 @@ const MENU_PAGES = { newrun: 1, howto: 1, about: 1, heroes: 1, settings: 1 };
 function menuItems() {
   const R = S.run, items = [];
   if (R && !R.over) items.push({ id: 'continue', label: 'Nadaljuj pot', sub: WORLD.regions[R.ri].name, fn: () => go('travel') });
+  else if (SAVED) items.push({ id: 'continue', label: 'Nadaljuj pot', sub: `${regionName(SAVED.region)} · shranjeno`, fn: () => { if (loadSave()) go('travel'); } });
   items.push({ id: 'new', label: 'Nova pot', fn: () => go('newrun') },
     { id: 'heroes', label: 'Dosežki in junaki', fn: () => go('heroes') },
     { id: 'howto', label: 'Kako igrati', fn: () => go('howto') },
@@ -33,6 +34,7 @@ function renderTitle() {
     versionLine('mm-version')));
   // keyboard players land on the menu ready to move; on a phone nothing is pre-focused
   if (cur && !S.mobile) cur.focus({ preventScroll: true });
+  if (SAVE_DROPPED) { SAVE_DROPPED = false; toast('Shranjena pot je iz starejše različice igre, zato je ni mogoče nadaljevati.'); }
 }
 // ↑ ↓ (and Home / End) walk the menu; Enter opens the item. A focused button opens itself.
 function menuKey(e) {
@@ -96,7 +98,7 @@ function setupNext() { sfx('sel'); go('pick'); }
 
 function renderNewRun() {
   if (!S.setup) S.setup = { mode: S.mode, know: S.know, diff: S.diff, suggest: S.suggest, tutOn: S.tutOn, testMode: S.testMode };
-  const U = S.setup, R = S.run && !S.run.over ? S.run : null;
+  const U = S.setup, R = S.run && !S.run.over ? S.run : null, saved = !R && SAVED ? regionName(SAVED.region) : null;
   const tick = () => h('span', { class: 'tick', 'aria-hidden': 'true' });
   const radio = (group, id, kids, cls = '') => h('label', { class: `choice ${cls}` + (U[group] === id ? ' on' : ''), 'data-group': group, 'data-id': id },
     h('input', { type: 'radio', name: 'zg-' + group, value: id, checked: U[group] === id, onchange: () => setChoice(group, id) }), kids, tick());
@@ -126,7 +128,8 @@ function renderNewRun() {
       toggle('tutOn', 'Pokaži razlage ugank', 'Pred prvo uganko vsake vrste kratka razlaga s sliko. Čas medtem stoji.'),
       h('div', { class: 'devbox' }, h('span', { class: 'devtag' }, 'Razvoj'),
         toggle('testMode', 'Preizkusni način', '200 zlatnikov, vsi junaki na izbiro, postaje in pokrajine lahko preskočiš.'))),
-    R ? h('p', { class: 'note' }, `Začeta pot (${WORLD.regions[R.ri].name}) se konča, ko izbereš junaka za novo pot.`) : null,
+    R ? h('p', { class: 'note' }, `Začeta pot (${WORLD.regions[R.ri].name}) se konča, ko izbereš junaka za novo pot.`)
+      : saved ? h('p', { class: 'note' }, `Shranjena pot (${saved}) se izbriše, ko izbereš junaka za novo pot.`) : null,
     h('div', { class: 'cta-row' },
       h('button', { class: 'btn primary cta', onclick: setupNext }, 'Izberi junaka', h('span', { 'aria-hidden': 'true' }, ' →')),
       h('kbd', {}, 'Enter'))));

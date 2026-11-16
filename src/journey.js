@@ -174,7 +174,7 @@ function pickKey(e) {
   else if (e.key === 'Enter') { e.preventDefault(); startJourney(); }
   else if (e.key === 'Escape') go('newrun');
 }
-function startJourney() { const ids = starterChoices(), id = ids[clamp(S.pickSel, 0, ids.length - 1)]; applySetup(); newRun(id); S.pickSel = 0; go('travel'); }
+function startJourney() { const ids = starterChoices(), id = ids[clamp(S.pickSel, 0, ids.length - 1)]; applySetup(); clearSave(); newRun(id); S.pickSel = 0; go('travel'); }
 
 // ------------------------------------------------------------ a run and its regions
 // Heroes on the road: one waits at Ptuj, and two more in other regions picked at random, so a journey
@@ -267,7 +267,7 @@ function renderTravel() {
     h('div', { class: 'bhead' },
       h('div', { class: 't' }, reg.name, h('small', {}, `pokrajina ${R.ri + 1} od ${WORLD.regions.length}`)),
       h('div', { class: 'regdots', title: 'Pot do Ljubljanskega gradu' }, WORLD.regions.map((r, i) => h('i', { class: i < R.ri ? 'done' : i === R.ri ? 'on' : '', title: r.name }))),
-      h('button', { class: 'btn small', onclick: () => go('title') }, 'Meni')),
+      exitBtn('small')),
     h('p', { class: 'tv-intro' }, reg.intro),
     scene,
     h('div', { class: 'tv-prompt', ref: el => T.prompt = el }),
@@ -420,6 +420,7 @@ function openShop(stop) {
 function renderEnding() {
   const R = S.run || { battles: 0, words: 0, gold: 0, relics: [] };
   R.over = true;   // a finished journey cannot be continued from the menu
+  clearSave();
   SCR.append(h('div', { class: 'title ending' },
     h('div', { class: 'logo' }, 'Ljubljana je rešena'),
     h('div', { class: 'tagline' }, 'Lintvern je premagan. Z grajskega stolpa se vidi vsa pot, ki si jo prehodil — od Ptuja do sem.'),

@@ -1196,3 +1196,14 @@ body.mobile .godspirit { height: 250px; } body.mobile .godspirit .hero.spr { --p
 @media (max-width: 760px) { .shrine-body { grid-template-columns: 1fr; } .shrine-art { height: 250px; } }
 body.mobile .shrine-body { grid-template-columns: 1fr; padding: 12px; } body.mobile .shrine-art { height: 250px; } body.mobile .shrine-obj .obj.spr { --px: 3px; }
 @media (prefers-reduced-motion: reduce) { .godsign, .shrine-art .mote { animation: none !important; } }
+
+/* ============================================================ saving and Izhod (src/save.js) */
+.exitbtn { font-weight: 700; border-color: color-mix(in srgb, var(--gold) 55%, var(--line)); }
+.exitbtn:hover { border-color: var(--gold); }
+.bhead .exitbtn.small { padding: 6px 12px; }
+body.mobile .bhead .exitbtn.small { min-height: 40px; padding: 8px 14px; font-size: 14px; }
+.exitdlg .dialog { max-width: 420px; }
+.exitdlg .saveline { margin: 8px 0 16px; font-size: 15px; }
+.savednote { margin: 8px 0; padding: 8px 10px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--good) 45%, var(--line));
+  background: color-mix(in srgb, var(--good) 12%, var(--panel)); font-size: 14px; }
+.savednote b { color: var(--good); }

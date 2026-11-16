@@ -1204,6 +1204,17 @@ body.mobile .godspirit { height: 250px; } body.mobile .godspirit .hero.spr { --p
 body.mobile .shrine-body { grid-template-columns: 1fr; padding: 12px; } body.mobile .shrine-art { height: 250px; } body.mobile .shrine-obj .obj.spr { --px: 3px; }
 @media (prefers-reduced-motion: reduce) { .godsign, .shrine-art .mote { animation: none !important; } }
 
+/* ============================================================ saving and Izhod (src/save.js) */
+.exitbtn { font-weight: 700; border-color: color-mix(in srgb, var(--gold) 55%, var(--line)); }
+.exitbtn:hover { border-color: var(--gold); }
+.bhead .exitbtn.small { padding: 6px 12px; }
+body.mobile .bhead .exitbtn.small { min-height: 40px; padding: 8px 14px; font-size: 14px; }
+.exitdlg .dialog { max-width: 420px; }
+.exitdlg .saveline { margin: 8px 0 16px; font-size: 15px; }
+.savednote { margin: 8px 0; padding: 8px 10px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--good) 45%, var(--line));
+  background: color-mix(in srgb, var(--good) 12%, var(--panel)); font-size: 14px; }
+.savednote b { color: var(--good); }
+
 /* ---------- Title scene: "Za govor!" over a dusk landscape (src/title.js, art from tools/art_title.py) ----------
    Sizes are in art pixels times --s, the whole-number scale; animations move one art pixel per step. */
 .sr-only { position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
@@ -1301,6 +1312,8 @@ body.mobile .title-stage + .mainmenu { margin-top: -40px; }
 <script id="worlddata" type="application/json">{
   "note": "Journey data shared by the browser prototype and, later, the Godot game: regions in travel order, items, shop sizes. Text is Slovene. Edit by hand, then run tools/art_extra.py (item icons) and build.py. Potions and poisons are used automatically; `when` names the trigger (start of a battle, a hurt hero, a fallen hero, locked letters).",
   "stopGap": 620,
+  "checkpointsNote": "Where the journey is saved, by Znanje: after the last battle of these regions. Malček every quarter of the road, Učenjak every third, Knjižni molj once, at the half (after the shrines at Bled). Counted in battles (19 on the road), rounded to the nearest region end.",
+  "checkpoints": { "malcek": [ "peca", "gozd", "predjama" ], "ucenjak": [ "triglav", "piran" ], "molj": [ "gozd" ] },
   "regions": [
     { "id": "ptuj", "name": "Ptuj", "bg": "ptuj", "intro": "Pustni čas na Ptuju. Kurenti z zvonci preganjajo zimo, a letos se noče umakniti.", "stops": [ "battle", "hero", "chest", "battle" ], "pool": [ "skrat", "vesca" ] },
     { "id": "peca", "name": "Peca", "bg": "peca", "intro": "Pod goro Peco spi kralj Matjaž s svojo vojsko. Nad votlino krožijo krokarji.", "stops": ["battle", "trap", "hero", "well", "god", "battle"], "pool": [ "perkmandeljc", "skrat", "pesjan" ] },
@@ -2365,7 +2378,7 @@ function reviveHero(k) {
   const st = S.heroes[k]; st.down = false; st.hp = Math.max(1, Math.round(st.maxHp * 0.4));
   log(`${HEROES[k].name} spet vstane.`); if (B) { renderParty(); renderPuzzle(); renderSide(); }
 }
-function resetRun() { S.run = null; setParty(CLASSIC); S.meterBonus = 0; }
+function resetRun() { S.run = null; setParty(CLASSIC); S.meterBonus = 0; clearSave(); }
 
 // ============================================================ global state
 const S = {
@@ -2403,7 +2416,7 @@ const xpNeed = () => 100 * S.level;
 const letterEq = (tile, typed) => tile === typed;
 
 // Version of this build, filled in by build.py from package.json and git (see CHANGELOG.md).
-const BUILD = {"version": "0.9.0", "stage": "zaprta alfa", "commit": "3855a29"};
+const BUILD = {"version": "0.9.0", "stage": "zaprta alfa", "commit": ""};
 const app = $('#app');
 let SCR = null;   // current screen container
 // There is no top bar: pages under the menu have a sticky way back, timed puzzles a Premor button in their header,
@@ -4006,7 +4019,9 @@ function showResult(win) {
     if (D.rise) S.heroes.forEach(x => { if (x.down) { x.down = false; x.hp = Math.max(1, Math.round(x.maxHp * D.rise)); } });
     else if (D.leave) left = leaveFallen();
   }
-  B.result = { god, left };
+  // a checkpoint (src/save.js): the last battle of a checkpoint region for this Znanje
+  const saved = !!(win && R && node.stop && !C && saveAtCheckpoint(node.stop));
+  B.result = { god, left, saved };
   const hurt = S.heroes.some(x => !x.down && x.hp < x.maxHp), down = S.heroes.some(x => x.down);
   const lost = !R ? 'Vsi junaki so obležali. Poskusi znova.'
     : C && C.final ? `Vsi junaki so obležali. ${GOD[C.god].name} je ${GOD[C.god].f ? 'močnejša' : 'močnejši'}.`
@@ -4015,6 +4030,7 @@ function showResult(win) {
     h('h2', {}, win ? 'Zmaga!' : 'Poraz'),
     h('div', { class: 'muted' }, win ? (C ? `${GOD[C.god].name} je ${GOD[C.god].f ? 'premagana' : 'premagan'}.` : R ? (hurt || down ? 'Sovražniki so premagani. Rane ostanejo: junaki se pozdravijo pri vodnjaku.' : 'Sovražniki so premagani.') : 'Sovražniki so premagani.') : lost),
     left.length ? h('p', { class: 'note' }, leftLine(left)) : null,
+    saved ? h('p', { class: 'savednote', role: 'status' }, h('b', {}, 'Shranjeno.'), ' Pot lahko zdaj zapustiš in jo pozneje nadaljuješ od tod.') : null,
     h('div', { class: 'stats' },
       h('div', {}, 'Izrečene besede'), h('div', {}, st.words),
       h('div', {}, 'Najdaljša beseda'), h('div', {}, st.longest ? UP(st.longest) : '—'),
@@ -4500,7 +4516,7 @@ function pickKey(e) {
   else if (e.key === 'Enter') { e.preventDefault(); startJourney(); }
   else if (e.key === 'Escape') go('newrun');
 }
-function startJourney() { const ids = starterChoices(), id = ids[clamp(S.pickSel, 0, ids.length - 1)]; applySetup(); newRun(id); S.pickSel = 0; go('travel'); }
+function startJourney() { const ids = starterChoices(), id = ids[clamp(S.pickSel, 0, ids.length - 1)]; applySetup(); clearSave(); newRun(id); S.pickSel = 0; go('travel'); }
 
 // ------------------------------------------------------------ a run and its regions
 // Heroes on the road: one waits at Ptuj, and two more in other regions picked at random, so a journey
@@ -4593,7 +4609,7 @@ function renderTravel() {
     h('div', { class: 'bhead' },
       h('div', { class: 't' }, reg.name, h('small', {}, `pokrajina ${R.ri + 1} od ${WORLD.regions.length}`)),
       h('div', { class: 'regdots', title: 'Pot do Ljubljanskega gradu' }, WORLD.regions.map((r, i) => h('i', { class: i < R.ri ? 'done' : i === R.ri ? 'on' : '', title: r.name }))),
-      h('button', { class: 'btn small', onclick: () => go('title') }, 'Meni')),
+      exitBtn('small')),
     h('p', { class: 'tv-intro' }, reg.intro),
     scene,
     h('div', { class: 'tv-prompt', ref: el => T.prompt = el }),
@@ -4746,6 +4762,7 @@ function openShop(stop) {
 function renderEnding() {
   const R = S.run || { battles: 0, words: 0, gold: 0, relics: [] };
   R.over = true;   // a finished journey cannot be continued from the menu
+  clearSave();
   SCR.append(h('div', { class: 'title ending' },
     h('div', { class: 'logo' }, 'Ljubljana je rešena'),
     h('div', { class: 'tagline' }, 'Lintvern je premagan. Z grajskega stolpa se vidi vsa pot, ki si jo prehodil — od Ptuja do sem.'),
@@ -4965,7 +4982,8 @@ function setPause(on) {
         h('button', { class: 'btn primary', ref: el => first = el, onclick: () => setPause(false) }, 'Nadaljuj ', h('kbd', {}, 'Esc')),
         h('button', { class: 'btn', onclick: () => showTut(curTutKind(), true) }, 'Kako se igra'),
         reportButton(),
-        S.mobile ? null : h('button', { class: 'btn', onclick: toggleFullscreen }, isFs() ? 'Zapri cel zaslon' : 'Cel zaslon')),
+        S.mobile ? null : h('button', { class: 'btn', onclick: toggleFullscreen }, isFs() ? 'Zapri cel zaslon' : 'Cel zaslon'),
+        S.run ? exitBtn() : null),
       soundControls()));
     document.body.append(G.pauseEl);
     first.focus();
@@ -5122,6 +5140,8 @@ function closeTut() {
 // Overlay keys come first (capture), so nothing typed reaches the puzzle underneath, and Esc pauses from anywhere,
 // including the crossword and rock-slide text fields.
 window.addEventListener('keydown', e => {
+  // the exit question (src/save.js) sits over everything, the pause window included
+  if (S.exitEl) { if (S.overlayKey) S.overlayKey(e); e.stopImmediatePropagation(); return; }
   if (G.tut || G.paused) {
     const onControl = e.target && e.target.closest && e.target.closest('.overlay button, .overlay input');
     // text fields in the pause window (Prijavi besedo) type normally; only Esc still resumes
@@ -5224,6 +5244,7 @@ document.addEventListener('visibilitychange', () => { if (document.hidden && !he
 // choice, to Dosežki in junaki from a hero card, otherwise to the start screen).
 window.zgBack = () => {
   try {
+    if (S.exitEl) { S.overlayKey(new KeyboardEvent('keydown', { key: 'Escape' })); return 'ok'; }
     if (G.tut) { closeTut(); return 'ok'; }
     if (G.paused) { setPause(false); return 'ok'; }
     if (S.overlayKey) { S.overlayKey(new KeyboardEvent('keydown', { key: 'Escape' })); return 'ok'; }
@@ -5237,6 +5258,7 @@ window.zgBack = () => {
     if (S.screen === 'shrine') { shrineKey(new KeyboardEvent('keydown', { key: 'Escape' })); return 'ok'; }
     if (S.screen === 'godword') { S.godArg.next(); return 'ok'; }
     if (S.screen === 'ending') { leaveEnding(); return 'ok'; }
+    if (S.screen === 'travel' && S.run) { askExit(); return 'ok'; }   // leaving the road asks first and says where it saved
     go('title');
     return 'ok';
   } catch (err) { console.error(err); return 'ok'; }
@@ -5463,6 +5485,7 @@ const MENU_PAGES = { newrun: 1, howto: 1, about: 1, heroes: 1, settings: 1 };
 function menuItems() {
   const R = S.run, items = [];
   if (R && !R.over) items.push({ id: 'continue', label: 'Nadaljuj pot', sub: WORLD.regions[R.ri].name, fn: () => go('travel') });
+  else if (SAVED) items.push({ id: 'continue', label: 'Nadaljuj pot', sub: `${regionName(SAVED.region)} · shranjeno`, fn: () => { if (loadSave()) go('travel'); } });
   items.push({ id: 'new', label: 'Nova pot', fn: () => go('newrun') },
     { id: 'heroes', label: 'Dosežki in junaki', fn: () => go('heroes') },
     { id: 'howto', label: 'Kako igrati', fn: () => go('howto') },
@@ -5485,6 +5508,7 @@ function renderTitle() {
     versionLine('mm-version')));
   // keyboard players land on the menu ready to move; on a phone nothing is pre-focused
   if (cur && !S.mobile) cur.focus({ preventScroll: true });
+  if (SAVE_DROPPED) { SAVE_DROPPED = false; toast('Shranjena pot je iz starejše različice igre, zato je ni mogoče nadaljevati.'); }
 }
 // ↑ ↓ (and Home / End) walk the menu; Enter opens the item. A focused button opens itself.
 function menuKey(e) {
@@ -5548,7 +5572,7 @@ function setupNext() { sfx('sel'); go('pick'); }
 
 function renderNewRun() {
   if (!S.setup) S.setup = { mode: S.mode, know: S.know, diff: S.diff, suggest: S.suggest, tutOn: S.tutOn, testMode: S.testMode };
-  const U = S.setup, R = S.run && !S.run.over ? S.run : null;
+  const U = S.setup, R = S.run && !S.run.over ? S.run : null, saved = !R && SAVED ? regionName(SAVED.region) : null;
   const tick = () => h('span', { class: 'tick', 'aria-hidden': 'true' });
   const radio = (group, id, kids, cls = '') => h('label', { class: `choice ${cls}` + (U[group] === id ? ' on' : ''), 'data-group': group, 'data-id': id },
     h('input', { type: 'radio', name: 'zg-' + group, value: id, checked: U[group] === id, onchange: () => setChoice(group, id) }), kids, tick());
@@ -5578,7 +5602,8 @@ function renderNewRun() {
       toggle('tutOn', 'Pokaži razlage ugank', 'Pred prvo uganko vsake vrste kratka razlaga s sliko. Čas medtem stoji.'),
       h('div', { class: 'devbox' }, h('span', { class: 'devtag' }, 'Razvoj'),
         toggle('testMode', 'Preizkusni način', '200 zlatnikov, vsi junaki na izbiro, postaje in pokrajine lahko preskočiš.'))),
-    R ? h('p', { class: 'note' }, `Začeta pot (${WORLD.regions[R.ri].name}) se konča, ko izbereš junaka za novo pot.`) : null,
+    R ? h('p', { class: 'note' }, `Začeta pot (${WORLD.regions[R.ri].name}) se konča, ko izbereš junaka za novo pot.`)
+      : saved ? h('p', { class: 'note' }, `Shranjena pot (${saved}) se izbriše, ko izbereš junaka za novo pot.`) : null,
     h('div', { class: 'cta-row' },
       h('button', { class: 'btn primary cta', onclick: setupNext }, 'Izberi junaka', h('span', { 'aria-hidden': 'true' }, ' →')),
       h('kbd', {}, 'Enter'))));
@@ -6124,6 +6149,113 @@ function challengeWon(node) {
   if (C.final) keepNextGift(C.god);
   return { raised, fresh };
 }
+
+// ============================================================ saving the journey
+// The journey is saved at checkpoints: after the last battle of certain regions, chosen by Znanje
+// (data/world.json → checkpoints). Counted in battles (19 on the road), rounded to a region's end:
+//   malček        every quarter of the road: Peca, Trnovski gozd, Predjamski grad
+//   učenjak       every third: Triglav, Piranske soline
+//   knjižni molj  once, at the half: Trnovski gozd (after the shrines at Bled)
+// The save lives in this browser (localStorage `zg-save`), so closing the page at any moment is safe:
+// Nadaljuj pot on the start screen picks the journey up from the last checkpoint, and whatever happened
+// after it is played again. Starting a new journey, reaching the end or losing the journey removes it.
+// Izhod (on the road and in the pause window) says where the game last saved before it leaves.
+const SAVE_KEY = 'zg-save', SAVE_V = 1;
+const CHECKPOINTS = WORLD.checkpoints || {};
+const checkpointIds = (know = S.know) => CHECKPOINTS[know] || CHECKPOINTS.malcek || [];
+const regionName = id => (WORLD.regions.find(r => r.id === id) || {}).name || id;
+
+// a save from another build that no longer fits the road or the roster is dropped, not loaded half-broken
+function saveFits(s) {
+  try {
+    const R = s.run, reg = WORLD.regions[R.ri];
+    return s.v === SAVE_V && !!reg && reg.id === s.region && Array.isArray(s.party) && s.party.length >= 1 && s.party.length <= 4 &&
+      s.party.every(id => ROSTER[id]) && Array.isArray(s.heroes) && s.heroes.length === s.party.length && !!LEVELS[s.know] && !!DIFFS[s.diff] &&
+      Array.isArray(R.stops) && R.stops.every(st => st && typeof st.kind === 'string');
+  } catch (e) { return false; }
+}
+let SAVED = null, SAVE_DROPPED = false;
+try {
+  const raw = localStorage.getItem(SAVE_KEY);
+  if (raw) { const s = JSON.parse(raw); if (saveFits(s)) SAVED = s; else { localStorage.removeItem(SAVE_KEY); SAVE_DROPPED = true; } }
+} catch (e) { /* no storage, or a broken save: start without one */ }
+
+function writeSave() {
+  const R = S.run; if (!R) return false;
+  const s = { v: SAVE_V, t: Date.now(), build: BUILD.version, region: WORLD.regions[R.ri].id,
+    know: S.know, diff: S.diff, mode: S.mode, suggest: S.suggest, testMode: !!S.testMode,
+    party: HEROES.map(x => x.id), heroes: S.heroes.map(st => ({ ...st, leveled: false })),
+    run: JSON.parse(JSON.stringify({ ...R, prompt: null, walking: false, over: false })) };
+  SAVED = s;   // kept for this visit even where the browser keeps nothing
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(s)); return true; } catch (e) { return false; }
+}
+function clearSave() { SAVED = null; try { localStorage.removeItem(SAVE_KEY); } catch (e) { /* no storage */ } }
+// the saved journey becomes the current one: settings it began with, the party, the road
+function loadSave() {
+  const s = SAVED; if (!s) return false;
+  S.know = s.know; S.diff = s.diff; S.mode = s.mode; S.suggest = !!s.suggest; S.testMode = !!s.testMode;
+  S.run = JSON.parse(JSON.stringify(s.run));
+  HEROES.length = 0; s.party.forEach(id => HEROES.push(ROSTER[id]));
+  S.heroes = s.heroes.map(st => ({ ...st, leveled: false })); S.lastHero = 0; S.meterBonus = 0;
+  return true;
+}
+// A won battle is a checkpoint when it is the last battle of a checkpoint region for this Znanje.
+function isCheckpoint(stop) {
+  const R = S.run; if (!R || !stop || !['battle', 'elite', 'boss'].includes(stop.kind)) return false;
+  if (!checkpointIds().includes(WORLD.regions[R.ri].id)) return false;
+  return !R.stops.some(x => x !== stop && x.enemies && !x.passed);   // no battle of this region left ahead
+}
+function saveAtCheckpoint(stop) { return isCheckpoint(stop) && writeSave(); }
+// the next checkpoint still ahead on this journey (for the exit dialog before the first save)
+function nextCheckpoint() {
+  const R = S.run, ids = checkpointIds(); if (!R) return null;
+  const reg = WORLD.regions.slice(R.ri).find(r => ids.includes(r.id));
+  return reg ? reg.name : null;
+}
+// what Izhod says: where the game last saved this journey
+function saveLine() {
+  if (SAVED && S.run && SAVED.run.starter === S.run.starter) return `Napredek je shranjen po zadnji zmagi – ${regionName(SAVED.region)}.`;
+  const nx = nextCheckpoint();
+  return 'Napredek še ni shranjen' + (nx ? ` – prvo shranjevanje: ${nx}.` : '.');
+}
+
+// ------------------------------------------------------------ Izhod: leave for the start screen
+// On the road and in the pause window. In a battle, the battle starts again from its beginning
+// when the journey continues (health, bag and gold go back to how they were when it began).
+function exitBtn(cls = '') {
+  return h('button', { class: 'btn exitbtn ' + cls, onclick: askExit, title: 'Izhod na glavni meni' },
+    h('span', { 'aria-hidden': 'true' }, '⏏ '), 'Izhod');
+}
+function askExit() {
+  if (S.exitEl) return;
+  const wasPaused = G.paused;
+  const close = () => { ov.remove(); S.exitEl = null; S.overlayKey = keep; };
+  const leave = () => {
+    close();
+    if (B && S.screen === 'battle' && !B.over) {
+      S.heroes = JSON.parse(B.snap);
+      if (S.run && B.snapBag) { S.run.bag = JSON.parse(B.snapBag); S.run.gold = B.snapGold; }
+      if (B.node.stop) B.node.stop.passed = false;
+      B.over = true;
+    }
+    if (S.run) { S.run.prompt = null; S.run.walking = false; }
+    if (G.paused) setPause(false);
+    LATER.length = 0;
+    go('title');
+  };
+  const keep = S.overlayKey;
+  if (S.run && S.screen === 'travel' && S.run.walking) { S.run.walking = false; renderTravelPanel(); }
+  let first;
+  const ov = h('div', { class: 'overlay exitdlg', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Izhod' }, h('div', { class: 'dialog' },
+    h('h2', {}, 'Izhod'),
+    h('p', { class: 'saveline' }, saveLine()),
+    h('div', { class: 'row' },
+      h('button', { class: 'btn', ref: el => first = el, onclick: close }, wasPaused ? 'Nazaj na premor' : 'Ostani'),
+      h('button', { class: 'btn primary', onclick: leave }, 'Izhod ', h('kbd', {}, 'Enter')))));
+  document.body.append(ov); S.exitEl = ov;
+  S.overlayKey = e => { if (e.key === 'Escape') { e.preventDefault(); close(); } else if (e.key === 'Enter') { e.preventDefault(); leave(); } };
+  first.focus();
+}
 // ============================================================ title scene: "Za govor!" over a dusk landscape
 // The art is in src/art-title.js (tools/art_title.py): a 480 x 160 scene in layers, the wordmark and its ribbon.
 // titleStage() returns the whole header; it is self-contained so any start-screen layout can put it on top.
@@ -6263,7 +6395,7 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.diff = d; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.diff = d; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 
 </script>

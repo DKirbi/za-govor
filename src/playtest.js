@@ -73,7 +73,8 @@ function setPause(on) {
         h('button', { class: 'btn primary', ref: el => first = el, onclick: () => setPause(false) }, 'Nadaljuj ', h('kbd', {}, 'Esc')),
         h('button', { class: 'btn', onclick: () => showTut(curTutKind(), true) }, 'Kako se igra'),
         reportButton(),
-        S.mobile ? null : h('button', { class: 'btn', onclick: toggleFullscreen }, isFs() ? 'Zapri cel zaslon' : 'Cel zaslon')),
+        S.mobile ? null : h('button', { class: 'btn', onclick: toggleFullscreen }, isFs() ? 'Zapri cel zaslon' : 'Cel zaslon'),
+        S.run ? exitBtn() : null),
       soundControls()));
     document.body.append(G.pauseEl);
     first.focus();
@@ -230,6 +231,8 @@ function closeTut() {
 // Overlay keys come first (capture), so nothing typed reaches the puzzle underneath, and Esc pauses from anywhere,
 // including the crossword and rock-slide text fields.
 window.addEventListener('keydown', e => {
+  // the exit question (src/save.js) sits over everything, the pause window included
+  if (S.exitEl) { if (S.overlayKey) S.overlayKey(e); e.stopImmediatePropagation(); return; }
   if (G.tut || G.paused) {
     const onControl = e.target && e.target.closest && e.target.closest('.overlay button, .overlay input');
     // text fields in the pause window (Prijavi besedo) type normally; only Esc still resumes
