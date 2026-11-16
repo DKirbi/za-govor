@@ -35,9 +35,9 @@ The delay is a control effect on the enemy's next attack, not a general round-ba
 
 ### Skill 2 — Bells (Slovene skill name OPEN)
 
-**CONFIRMED animation:** Kurent shimmies and jumps in place. His belt of large cowbells visibly shakes and rings, with a distinctive sound animation.
+**CONFIRMED animation and action commitment:** Kurent shimmies and jumps in place. His belt of large cowbells visibly shakes and rings, with a distinctive sound animation. While performing this action, Kurent is unavailable to the letter mesh and cannot contribute letters to word puzzles. He can still receive damage. Taking damage does not interrupt the dance; Kurent completes the full action duration.
 
-**CONFIRMED effect:** Reduce the attack damage of selected enemies for 2 seconds.
+**CONFIRMED effect:** Reduce the attack damage of selected enemies for 2 seconds. Because the action runs to completion even when Kurent takes damage, its duration can stack without being cancelled by incoming hits.
 
 | Rank | Enemies affected | Attack damage reduction per enemy | Duration |
 |---|---:|---:|---:|
@@ -45,7 +45,7 @@ The delay is a control effect on the enemy's next attack, not a general round-ba
 | 2 | 2 | 4 each | 2 seconds |
 | 3 | 3 | 5 each | 2 seconds |
 
-Exact target selection (nearest, strongest, or player-selected), stacking with other attack debuffs, and whether the reduction applies to an attack already in progress remain OPEN.
+Exact target selection (nearest, strongest, or player-selected), stacking with other attack debuffs, and whether the reduction applies to an attack already in progress remain OPEN. The action commitment above is confirmed; the damage-reduction effect's stacking behaviour is not yet specified.
 
 ### Skill 3 — Pregon zime
 
@@ -92,7 +92,16 @@ The final image should evoke the recognisable public celebration while remaining
 - Keep the existing starter availability unless a later Game Director decision changes it.
 - His control-oriented kit is intended to remain useful in later regions and against bosses, not only early encounters.
 
-## 6. Open decisions
+## 7. Shared combat principles established during character review
+
+These are system-wide design rules, not Kurent-exclusive mechanics. They should eventually be consolidated in the central combat-system documentation.
+
+- **Actions and statuses are distinct concepts.** Actions are things visibly performed on screen; statuses describe conditions/effects applied to a combatant. An action or status may be instantaneous or last for a duration.
+- **Timed attacks can clash.** Enemies and heroes have timed attacks. If their attacks resolve against one another at the same time, they can interrupt each other's attacks.
+- **Interruption does not cancel an attack.** The interrupted attack still goes through, but deals reduced damage. The exact normal-unit and boss/mini-boss multipliers require confirmation (see Open decisions).
+- **Damage-over-time effects are unaffected by interruption.** Existing poison and burn effects continue unchanged.
+
+## 8. Open decisions
 
 - Final Slovene name for the Bells skill.
 - Whether Ježevka's attack delay postpones an already charging attack or only the next attack that has not begun.
@@ -101,15 +110,17 @@ The final image should evoke the recognisable public celebration while remaining
 - Final enemy affinity tags for wind, cold and ghost; Mora is a confirmed example of the intended ghost category.
 - Whether the spirit visual differs by affinity or uses one shared indicator.
 - Exact base HP and final level-scaling formula, while preserving at least +1 HP per level.
+- Exact interruption damage multipliers for normal combatants and bosses/mini-bosses (the stated `0.75%` value needs clarification: does this mean 75% damage / a `0.75×` multiplier?).
+- Whether the interruption rules have any exceptions beyond damage-over-time effects.
 - Folklore-source review for the devil figure in the final Kurentovanje card.
 
-## 7. Implementation notes
+## 9. Implementation notes
 
 - Existing character data is in `src/game.js`; progression and roster data are in `docs/progression-design.md`.
 - Do not alter implementation until the Game Director approves the remaining timing and targeting rules.
 - Distinguish documented costume, objects and ritual practice from supernatural game effects.
 - Keep Kurent's identity grounded in the living Kurentovanje tradition.
 
-## 8. Sources
+## 10. Sources
 
 Initial folklore research and source verification to be expanded in [references/README.md](references/README.md).
