@@ -94,11 +94,14 @@ Ljubljana castle is the last battle.
 | 6 | **Piranske soline** | Lepa Vida | two battles, a pedlar, a well, a shrine (Stribog or Dažbog) |
 | 7 | **Predjamski grad** | Erazem Predjamski | a battle, spikes, a rock slide, a chest, an ambush |
 | 8 | **Ljubljansko barje** | Zeleni Jurij | two battles, a well, a pedlar, a shrine (Veles or Mokoš) |
-| 9 | **Ljubljanica** | Peter Klepec | a battle, a well, **Povodni mož** (boss) |
-| 10 | **Ljubljanski grad** | — | a pedlar, a rock slide, spikes, a well, **Lintvern**, the Ljubljana dragon (final boss) |
+| 9 | **Ljubljanica** | Peter Klepec | a chest, a battle, a well, **Povodni mož** (boss) |
+| 10 | **Ljubljanski grad** | — | a chest, a pedlar, a rock slide, spikes, a well, **Lintvern**, the Ljubljana dragon (final boss) |
 
 Only **three of the six shrines** stand on any one journey (picked at random, each for a
-different god), and only three heroes wait on the road, so no two journeys are alike.
+different god), and only three heroes wait on the road, so no two journeys are alike. **Chests
+stand by chance too:** each of the six chest stops stays with a chance set by *Težavnost* (Lahka
+90 %, Srednja 70 %, Težka 50 %; `data/world.json → chests`), and a journey always keeps at least
+one.
 
 - **Walking:** press `→` (or *Naprej*) and the party walks to the next stop; a prompt offers
   what can be done there (`Enter` for the main choice, `Esc` to walk past where that is allowed).

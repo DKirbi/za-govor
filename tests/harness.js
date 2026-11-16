@@ -38,7 +38,7 @@ const PHONE = { viewport: { width: 390, height: 844, deviceScaleFactor: 2, isMob
 
 // every browser a test opens, so a crashed test still closes them and the process exits
 const OPEN = [];
-async function openGame({ phone = false, width = 1100, height = 1000, intros = false } = {}) {
+async function openGame({ phone = false, width = 1100, height = 1000, intros = false, randomChests = false } = {}) {
   if (!fs.existsSync(path.resolve(__dirname, '../dist/index.html'))) throw new Error('dist/index.html missing — run `python3 build.py` first.');
   fs.mkdirSync(OUT_DIR, { recursive: true });
   const browser = await puppeteer.launch({ executablePath: chromePath(), headless: 'new', args: ['--no-sandbox'] });
@@ -52,6 +52,8 @@ async function openGame({ phone = false, width = 1100, height = 1000, intros = f
   // Puzzle intros ("Kako se igra") hold every clock until dismissed; tests switch them off unless they ask for them.
   await page.waitForFunction(() => !!window.__ZG);
   if (!intros) await page.evaluate(() => { window.__ZG.S.tutOn = false; });
+  // chests stand on a journey by chance (data/world.json → chests); tests that walk the road want every chest there
+  if (!randomChests) await page.evaluate(() => { const C = window.__ZG.WORLD.chests; if (C) Object.keys(C).forEach(k => { C[k] = 1; }); });
   await sleep(400);
   const shot = name => page.screenshot({ path: path.join(OUT_DIR, name + '.png') });
   return { browser, page, errors, shot };

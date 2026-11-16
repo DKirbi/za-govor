@@ -57,7 +57,11 @@ and the decisions of 16 Nov.
 - **Chests** take the words of their region (`data/words.json`, a first list to review) and never
   repeat a word on one journey; the clue shows on Malček, on some chests on Učenjak, never on
   Knjižni molj; ✕ and *Pošlji* sit next to the word. **Rock slides** take their region's words,
-  fall slower (22 s) and say the letters may stand anywhere.
+  fall slower (22 s) and say the letters may stand anywhere. Rock slides now also on the cliff of
+  Predjamski grad and the castle hill of Ljubljanski grad; 114 chest words in all.
+- **Chests by chance:** new chests at the start of Ljubljanica and of Ljubljanski grad (before the
+  pedlar). Each of the six chest stops stays on a journey with a chance set by *Težavnost* — Lahka
+  90 %, Srednja 70 %, Težka 50 % — and a journey always keeps at least one.
 - **Kaj pomeni?** A word found for the first time with no meaning yet can be asked about in one
   tap (battle result, chest, rock slide, spikes). **Pošlji besede** (pause, *O igri*) is chips
   only: missing words and new words, picked and sent together. Both go to the same Google Form

@@ -12,7 +12,7 @@ This replaces the earlier "three starters and cursed-god bosses" proposal. Every
 - **13 Nov, v0.9.0 (built, "skill expansion and fixes"):** XP only from beaten enemies; levels 1–9, each with a skill point; three heroes per journey, favouring the hero of each place; only a hero who joins is unlocked; spikes that only hurt.
 - **12 Nov (built):** the darts event (*Puščice v zidu*, renamed *Past s konicami* on 13 Nov), the start screen with silhouettes and three known starters, attacks for the healers, every potion used automatically.
 - **Evening fixes (built, 11 Nov):** partial healing outside wells, automatic potions, wells raise the fallen (no longer, 16 Nov), gold and XP from every enemy, one-word chests and rock slides with partial outcomes, Krpan as the first starter with unlocks.
-- **Built:** the journey (ten regions, 54 stop slots; a journey keeps three hero stops and three shrines), choosing the first hero, meeting and swapping heroes, shrines of the gods, wells, the pedlar, gold, 23 items, random regional enemies, sprites for every stop, four new heroes, battle abilities for all fifteen heroes.
+- **Built:** the journey (ten regions, 56 stop slots; a journey keeps three hero stops, three shrines and some of the six chests), choosing the first hero, meeting and swapping heroes, shrines of the gods, wells, the pedlar, gold, 23 items, random regional enemies, sprites for every stop, four new heroes, battle abilities for all fifteen heroes.
 - **Gods as challengers (16 Nov, replacing the cursed-god trial of 13 Nov):** a god you pray to lends a gift for the journey and comes for a challenge when it ends (section 2a).
 - **Not balance-tested:** the journey runs end to end in automated tests, but nobody has played it through for difficulty.
 
@@ -37,13 +37,14 @@ One road, walked left to right. The party stands still and the world scrolls pas
 | 6 | Piranske soline | salt pans, Piran at sunset | Lepa Vida | battle, pedlar, hero, well, shrine, battle | Vodna vila, Pesjan, Mora |
 | 7 | Predjamski grad | the castle in the cliff | Erazem Predjamski | battle, spikes, hero, rock slide, chest, ambush | Zmajev mladič, Perkmandeljc, Volkodlak |
 | 8 | Ljubljansko barje | pile dwellings in the mist | Zeleni Jurij | battle, well, hero, pedlar, shrine, battle | Škrat, Mora, Volkodlak, Vodna vila |
-| 9 | Ljubljanica | Tromostovje | Peter Klepec | battle, hero, well, **boss: Povodni mož** | Vodna vila, Mora |
-| 10 | Ljubljanski grad | the castle wall at sunset | — | pedlar, rock slide, spikes, well, **boss: Lintvern** | — |
+| 9 | Ljubljanica | Tromostovje | Peter Klepec | chest, battle, hero, well, **boss: Povodni mož** | Vodna vila, Mora |
+| 10 | Ljubljanski grad | the castle wall at sunset | — | chest, pedlar, rock slide, spikes, well, **boss: Lintvern** | — |
 
 - **Random enemies:** each battle draws its enemies from the region's pool. One enemy while the party is a single hero, two after that. The very first fight is always one Škrat with the tutorial tips.
 - **Scaling:** enemy health +10 % and attack +6 % per region (bosses are fixed).
 - **Three heroes per journey (13 Nov):** a hero always waits at Ptuj; two more regions with a hero stop are picked at random and the other hero stops are left out, so one journey never meets everyone. At a hero stop the hero of the place is six times as likely as anyone else, and heroes not yet unlocked twice as likely; if nobody is left, the stop becomes a well. **(16 Nov, stricter — see §11.2: at most one recruitable hero per region, randomized among the region's own heroes when several belong there. *Not built.*)**
 - **Shrines and heroes are planned per journey:** only three of the six shrines and three of the hero stops stay on any one journey (sections 1 and 2a).
+- **Chests by chance (16 Nov, v0.10.0):** each of the six chest stops (Ptuj, Bled, Trnovski gozd, Predjamski grad, Ljubljanica, Ljubljanski grad) stays on a journey with a chance set by Težavnost — Lahka 90 %, Srednja 70 %, Težka 50 % (`data/world.json → chests`) — and a journey always keeps at least one (on average about 5, 4 and 3 chests).
 - **Data:** regions, stop order, enemy pools, items and save checkpoints live in `data/world.json`, the words of each region in `data/words.json`, so the Godot game can read the same files.
 
 ## 2. Party rules
@@ -222,7 +223,7 @@ On the name *Perun's Hammer*: in the sources Perun's weapon is an axe (and the t
 8. Znanje scaling monster health overlaps Težavnost's ×0.85–×1.25: the combined formula needs deciding when building (§11.3). *Not built.*
 9. ~~Three-letter words~~ — **decided and built 16 Nov:** accepted on every tier (§11.3).
 10. ~~Save details~~ — **decided 16 Nov:** checkpoints are sparse by Znanje, so a replayed stretch after quitting is the cost of quitting; no per-stop saves, no seed, no special rule for quitting mid-battle (§11.11).
-11. Chests at Ljubljanica and Ljubljanski grad (and Peca, Triglav, Piran, Barje)? Their chest words are written, but those regions have no chest stop.
+11. ~~Chests at Ljubljanica and Ljubljanski grad~~ — **decided and built 16 Nov:** a chest at the start of each, and every chest stands by chance, fewer on harder Težavnost (§1). Peca, Triglav, Piran and Barje have chest words but no chest stop. Open: should the chest odds follow Težavnost (as built) or Znanje?
 
 ## 11. Decisions of 16 Nov, from the Round 3 playtest
 
@@ -272,7 +273,7 @@ Built (v0.10.0): the rocks come from the region's rock words (`data/words.json`:
 - **Placement:** rock slides appear only near the **hillsides** of regions: Peca, Triglav, the cliff of Predjamski grad and the castle hill of Ljubljanski grad (the last two added 16 Nov, v0.10.0).
 
 ### 11.7 Chests and traps — built (v0.10.0), except the wheel
-- **Far wider word pools:** each region has its own chest words with clues in `data/words.json` (a first list of 114 words, 11–13 per region, to review); a chest never repeats a word on one journey. Chests stand at Ptuj, Bled, Trnovski gozd and Predjamski grad; the other regions' words wait for chests there (§10 item 11).
+- **Far wider word pools:** each region has its own chest words with clues in `data/words.json` (a first list of 114 words, 11–13 per region, to review); a chest never repeats a word on one journey. Chests stand at Ptuj, Bled, Trnovski gozd, Predjamski grad, Ljubljanica and Ljubljanski grad (the start of each of the last two), each by chance on a journey (§1).
 - **The clue by Znanje:** always on *malček*, on about every other chest on *učenjak*, never on *knjižni molj*.
 - **Chest UI:** ✕ and *Pošlji* sit next to the assembled word; the text says a mistake can be cleared.
 - *Not built:* the letter wheel here too, with shorter words from the visible letters allowed (§11.4).

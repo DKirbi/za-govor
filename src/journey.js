@@ -193,11 +193,21 @@ function pickHero(regionId) {
   for (let i = 0; i < free.length; i++) { r -= w[i]; if (r <= 0) return free[i]; }
   return free[free.length - 1];
 }
+// Chests: not every chest stands on every journey. Each chest stop stays with a chance set by Težavnost
+// (data/world.json → chests: fewer on harder settings), and a journey always keeps at least one.
+const CHEST_ODDS = WORLD.chests || {};
+function planChests(diff = S.diff) {
+  const slots = WORLD.regions.map((r, i) => r.stops.includes('chest') ? i : -1).filter(i => i >= 0);
+  const p = CHEST_ODDS[diff] != null ? CHEST_ODDS[diff] : 0.7;
+  const at = slots.filter(() => Math.random() < p);
+  if (!at.length && slots.length) at.push(pick(slots));
+  return at.sort((a, b) => a - b);
+}
 function newRun(starterId) {
   S.run = { ri: 0, x: 0, endX: 0, stops: [], gold: S.testMode ? 200 : 20, relics: [], bag: {}, rozaUsed: false, jurijUsed: false,
     battles: 0, words: 0, firstBattle: true, met: [starterId], walking: false, prompt: null, starter: starterId, heroAt: null,
     shrines: null, prayer: null, challenged: false, gifts: [] };
-  S.run.heroAt = planHeroes(); S.run.shrines = planShrines(starterId);
+  S.run.heroAt = planHeroes(); S.run.shrines = planShrines(starterId); S.run.chestAt = planChests();
   const g = takeNextGift(); if (g) S.run.gifts.push(g);   // the gift of a god beaten at the end of the last journey
   setParty([starterId]); S.meterBonus = 0;
   enterRegion(0);
@@ -212,8 +222,9 @@ function enemyGroup(reg, ri, kind) {
 function enterRegion(i) {
   const R = S.run, reg = WORLD.regions[i], gap = WORLD.stopGap;
   R.ri = i; R.x = 0; R.stops = []; R.prompt = null; R.walking = false;
-  // a hero stop and a shrine only stay in the regions picked for this journey
-  const kinds = reg.stops.filter(kind => (kind !== 'hero' || !R.heroAt || R.heroAt.includes(i)) && (kind !== 'god' || (R.shrines && R.shrines[i])));
+  // a hero stop, a shrine and a chest only stay in the regions picked for this journey
+  const kinds = reg.stops.filter(kind => (kind !== 'hero' || !R.heroAt || R.heroAt.includes(i)) && (kind !== 'god' || (R.shrines && R.shrines[i]))
+    && (kind !== 'chest' || !R.chestAt || R.chestAt.includes(i)));
   kinds.forEach((kind, n) => {
     const stop = { kind, x: (n + 1) * gap, done: false, passed: false };
     if (kind === 'battle' || kind === 'elite' || kind === 'boss') stop.enemies = enemyGroup(reg, i, kind);
