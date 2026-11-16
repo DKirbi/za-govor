@@ -851,16 +851,20 @@ const LV = () => LEVELS[S.know] || LEVELS.malcek;
 // ============================================================ combat consequences, set by Znanje (LEVELS[…].diff)
 // Decide what a lost battle means and what happens to a fallen hero, and scale the enemies' health.
 // Wells never raise the fallen: that takes a healer (Mokoš, Zeleni Jurij), Mrtva voda or a beaten god.
-//   lahka (Malček):         a lost battle is not the end — the party withdraws, gets up with a third of its health and the
-//            enemies still block the road; after a won battle the fallen get up with a quarter of their health
+//   lahka (Malček):         the first lost battle of a journey is not the end — the party withdraws, gets up with full
+//                           health and the enemies still block the road; a second lost battle ends the journey (withdraw:
+//                           how many such rescues a journey has; S.run.rescues counts them; until 0.11.0 it was a third
+//                           of health, every time); after a won battle the fallen get up with a quarter of their health
 //   srednja (Učenjak):      a lost battle ends the journey; the fallen stay down until someone raises them
 //   tezka (Knjižni molj):   a lost battle ends the journey; a hero still down when the battle ends leaves the party; enemies are tougher
 const DIFFS = {
-  lahka: { name: 'Lahka', foeHp: 0.85, withdraw: true, rise: 0.25, leave: false, text: 'Poraz ni konec poti: družina se umakne in poskusi znova. Padli po zmagi vstanejo.' },
-  srednja: { name: 'Srednja', foeHp: 1, withdraw: false, rise: 0, leave: false, text: 'Poraz konča pot. Padli obležijo, dokler jih kdo ne obudi.' },
-  tezka: { name: 'Težka', foeHp: 1.25, withdraw: false, rise: 0, leave: true, text: 'Močnejši sovražniki. Kdor pade in ga do konca bitke nihče ne obudi, zapusti družino.' },
+  lahka: { name: 'Lahka', foeHp: 0.85, withdraw: 1, rise: 0.25, leave: false, text: 'Prvi poraz ni konec poti: družina si opomore do polnega zdravja in poskusi znova. Drugi poraz konča pot. Padli po zmagi vstanejo.' },
+  srednja: { name: 'Srednja', foeHp: 1, withdraw: 0, rise: 0, leave: false, text: 'Poraz konča pot. Padli obležijo, dokler jih kdo ne obudi.' },
+  tezka: { name: 'Težka', foeHp: 1.25, withdraw: 0, rise: 0, leave: true, text: 'Močnejši sovražniki. Kdor pade in ga do konca bitke nihče ne obudi, zapusti družino.' },
 };
 const DIFF = () => DIFFS[LV().diff] || DIFFS.srednja;
+// a lost battle on this journey still has a rescue left (Malček: the first one)
+const canWithdraw = () => !!(S.run && DIFF().withdraw && (S.run.rescues || 0) < DIFF().withdraw);
 const MINW = () => LV().minWord;
 
 const FINISHER_FX = {
@@ -2680,10 +2684,11 @@ function showResult(win) {
   const hurt = S.heroes.some(x => !x.down && x.hp < x.maxHp), down = S.heroes.some(x => x.down);
   const lost = !R ? 'Vsi junaki so obležali. Poskusi znova.'
     : C && C.final ? `Vsi junaki so obležali. ${GOD[C.god].name} je ${GOD[C.god].f ? 'močnejša' : 'močnejši'}.`
-    : D.withdraw ? 'Vsi junaki so obležali. Družina se umakne, si oddahne in poskusi znova.' : 'Vsi junaki so obležali. Pot je končana.';
+    : canWithdraw() ? 'Vsi junaki so obležali. Družina se umakne in si opomore do polnega zdravja. To je edina druga priložnost na tej poti.'
+    : D.withdraw ? 'Vsi junaki so obležali že drugič. Pot je končana.' : 'Vsi junaki so obležali. Pot je končana.';
   const ov = h('div', { class: 'overlay' }, h('div', { class: 'dialog' },
     h('h2', {}, win ? 'Zmaga!' : 'Poraz'),
-    h('div', { class: 'muted' }, win ? (C ? `${GOD[C.god].name} je ${GOD[C.god].f ? 'premagana' : 'premagan'}.` : R ? (hurt || down ? 'Sovražniki so premagani. Rane ostanejo: junaki se pozdravijo pri vodnjaku.' : 'Sovražniki so premagani.') : 'Sovražniki so premagani.') : lost),
+    h('div', { class: 'muted' }, win ? (C ? `${GOD[C.god].name} je ${GOD[C.god].f ? 'premagana' : 'premagan'}.` : R ? (hurt || down ? 'Sovražniki so premagani. Rane ostanejo: junaki se pozdravijo pri vodnjaku ali na koncu pokrajine.' : 'Sovražniki so premagani.') : 'Sovražniki so premagani.') : lost),
     left.length ? h('p', { class: 'note' }, leftLine(left)) : null,
     saved ? h('p', { class: 'savednote', role: 'status' }, h('b', {}, 'Shranjeno.'), ' Pot lahko zdaj zapustiš in jo pozneje nadaljuješ od tod.') : null,
     win && B.found ? newWordsRow(B.found, 'mreza') : null,
@@ -2702,7 +2707,7 @@ function showResult(win) {
       !win && (!R || S.testMode) ? h('button', { class: 'btn', onclick: () => {
         ov.remove(); S.heroes = JSON.parse(B.snap); if (R && B.snapBag) { R.bag = JSON.parse(B.snapBag); R.gold = B.snapGold; } go('battle', node); } }, 'Poskusi znova') : null,
       h('button', { class: 'btn primary', onclick: () => { ov.remove(); afterResult(win); } },
-        win ? 'Naprej ' : !R ? 'Nazaj ' : C && C.final ? 'Naprej ' : D.withdraw ? 'Umakni se ' : 'Konec poti ', h('kbd', {}, 'Enter')))));
+        win ? 'Naprej ' : !R ? 'Nazaj ' : C && C.final ? 'Naprej ' : canWithdraw() ? 'Umakni se ' : 'Konec poti ', h('kbd', {}, 'Enter')))));
   document.body.append(ov);
   S.screen = 'result'; S.resultEl = ov; S.resultNode = node;
 }
@@ -2721,7 +2726,7 @@ function afterResult(win) {
     if (!R) return go('title');
     // the god's challenge at the end of the journey: the god leaves, the journey is over either way
     if (C && C.final) return go('godword', { god: C.god, won: false, final: true, next: () => { resetRun(); go('title'); }, nextLabel: 'Nova pot ' });
-    if (D.withdraw) return withdraw(node);
+    if (canWithdraw()) return withdraw(node);
     resetRun(); return go('title');
   }
   const last = R && node && node.stop && node.stop.kind === 'boss' && R.ri === WORLD.regions.length - 1;
@@ -2736,16 +2741,17 @@ function afterResult(win) {
   }
   after();
 }
-// Lahka: a lost battle is not the end. Everyone gets up with a third of their health; the enemies still
-// block the road (a god's godly version goes back into the shrine).
+// Lahka (Malček): the first lost battle of a journey is not the end. Everyone gets up with full health; the
+// enemies still block the road (a god's godly version goes back into the shrine). The next loss ends the journey.
 function withdraw(node) {
   const R = S.run, stop = node.stop, C = node.challenge;
-  S.heroes.forEach(x => { x.down = false; x.hp = Math.max(1, Math.round(x.maxHp / 3)); x.leveled = false; });
+  R.rescues = (R.rescues || 0) + 1;
+  S.heroes.forEach(x => { x.down = false; x.hp = x.maxHp; x.leveled = false; });
   const on = { label: 'Naprej ▶', primary: true, fn: () => { R.prompt = null; R.walking = true; renderTravelPanel(); } };
   if (C || !stop) { if (stop) stop.passed = true; R.prompt = { text: C ? `${GOD[C.god].name} se vrne v svetišče. Družina se umakne in nadaljuje pot.` : 'Družina se umakne.', actions: [on], keep: true }; }
   else {
     const names = stop.enemies.map(k => ENEMIES[k].name).join(' in ');
-    R.prompt = { text: `Družina se umakne in si oddahne: junaki vstanejo s tretjino zdravja. Pot še vedno zapira: ${names}.`,
+    R.prompt = { text: `Družina se umakne in si opomore: vsi junaki so spet polno zdravi. Drugi poraz konča pot. Pot še vedno zapira: ${names}.`,
       actions: [{ label: 'V boj', primary: true, fn: () => stopBattle(stop) }, ...(S.testMode ? [{ label: 'Preskoči', fn: () => { stop.passed = true; R.prompt = null; R.walking = true; go('travel'); } }] : [])], keep: true };
   }
   go('travel');
@@ -2995,7 +3001,7 @@ function trapShowEnd() {
   const E = S.ev; UI.trapEnd.innerHTML = '';
   if (UI.trapInput) UI.trapInput.blur();
   if (UI.trapKb) { UI.trapKb.remove(); UI.trapKb = null; }
-  UI.trapEnd.append(h('p', {}, `Razbite skale: ${E.broken}/${E.rocks.length} · prejeta škoda: ${E.dmg}.` + (E.gold ? ` +${E.gold} zlatnikov.` : '') + (E.dmg ? ' Rane ostanejo do naslednjega vodnjaka.' : '')),
+  UI.trapEnd.append(h('p', {}, `Razbite skale: ${E.broken}/${E.rocks.length} · prejeta škoda: ${E.dmg}.` + (E.gold ? ` +${E.gold} zlatnikov.` : '') + (E.dmg ? ' Rane ostanejo do vodnjaka ali do konca pokrajine.' : '')),
     E.word && (E.isNew || meaningOf(E.word)) ? h('div', { class: 'newwords' }, meaningChip(E.word, 'plaz')) : null,
     h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')));
 }
@@ -3063,6 +3069,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { canWithdraw, restAfterRegion, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 

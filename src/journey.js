@@ -3,8 +3,8 @@
 // stops — battles with random enemies, chests, rock slides, wells, pedlars, heroes to meet and
 // shrines of challenge (src/shrines.js). You start with one hero; up to four travel together and only
 // one of them may be a god. Health does not come back after a battle: it is restored at wells (which
-// stand by chance, like chests: planStops) and by a new level; wells no longer raise the fallen (that takes
-// a healer, Mrtva voda or a beaten god; see DIFFS in src/game.js).
+// stand by chance, like chests: planStops), by a new level and at the end of every region (restAfterRegion);
+// none of these raise the fallen (that takes a healer, Mrtva voda or a beaten god; see DIFFS in src/game.js).
 const WORLD = JSON.parse($('#worlddata').textContent);
 const ITEMS = Object.fromEntries(WORLD.items.map(it => [it.id, it]));
 const TV_SPEED = 240;                      // walking speed, world pixels per second
@@ -230,8 +230,16 @@ function enemyGroup(reg, ri, kind) {
   const n = HEROES.length <= 1 && kind !== 'elite' ? 1 : 2;
   return Array.from({ length: n }, () => pick(reg.pool));
 }
+// Finishing a region heals the party: every hero still standing gets full health (16 Nov 2026). The fallen
+// stay down, as at a well: raising them takes a healer, Mrtva voda or a beaten god. Returns the health restored.
+function restAfterRegion() {
+  let got = 0;
+  S.heroes.forEach(st => { if (st.down) return; got += st.maxHp - st.hp; st.hp = st.maxHp; });
+  return got;
+}
 function enterRegion(i) {
   const R = S.run, reg = WORLD.regions[i], gap = WORLD.stopGap;
+  if (i > 0 && i !== R.ri) { const got = restAfterRegion(); if (got) toast(`${WORLD.regions[R.ri].name} je za vami: junaki so spet polno zdravi (+${got} zdravja).`); }
   R.ri = i; R.x = 0; R.stops = []; R.prompt = null; R.walking = false;
   // a hero stop, a shrine, a chest and a well only stay in the regions picked for this journey
   const kinds = reg.stops.filter(kind => (kind !== 'hero' || !R.heroAt || R.heroAt.includes(i)) && (kind !== 'god' || (R.shrines && R.shrines[i]))
@@ -352,7 +360,7 @@ function promptFor(stop) {
   const skip = S.testMode && stop ? [{ label: 'Preskoči', fn: () => pass(false) }] : [];
   if (!stop) {
     const next = WORLD.regions[R.ri + 1];
-    return { text: `Kažipot kaže naprej: ${next.name}.`, actions: [{ label: `Naprej: ${next.name}`, primary: true, fn: () => { enterRegion(R.ri + 1); S.run.walking = true; sfx('ok'); go('travel'); } }] };
+    return { text: `Kažipot kaže naprej: ${next.name}. Ob koncu pokrajine si junaki opomorejo do polnega zdravja.`, actions: [{ label: `Naprej: ${next.name}`, primary: true, fn: () => { enterRegion(R.ri + 1); S.run.walking = true; sfx('ok'); go('travel'); } }] };
   }
   if (stop.enemies) {
     const names = stop.enemies.map(k => ENEMIES[k].name).join(' in ');

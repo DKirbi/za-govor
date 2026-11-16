@@ -127,8 +127,9 @@ in each half of the road.
   power, effects that last 1.5× / 2× as long (stuns, burns, poison, weakening, dodges), and one
   extra effect at each stopnja (a critical hit, healing, hitting every enemy, a shield, a
   stun, fire or weakening). Points are spent in ***Veščine*** at a **well, a shrine or a pedlar**.
-- **Health stays as it is after a battle.** **Wells** heal everyone who is standing, and a new
-  level heals that hero; wells **no longer raise the fallen**. A fallen hero gets up only through
+- **Health stays as it is after a battle.** **Wells** heal everyone who is standing, a new level
+  heals that hero, and **finishing a region heals everyone standing to full**; none of these
+  **raise the fallen**. A fallen hero gets up only through
   a healer's skill (Mokoš, Zeleni Jurij), *Mrtva voda*, a beaten god — or, on *Malček*, by
   themselves after a won battle (see *Pace and knowledge* below). Healers heal only up to 70 % of health, and they attack as well —
   weakly at first, stronger with every level.
@@ -293,7 +294,7 @@ until 0.11.0; its three settings now come with the three levels, and each card s
 | --- | --- | --- | --- |
 | Who it's for | Learning words | Learning longer and harder words | Seasoned crossword solvers |
 | Enemy health | ×0.85 | ×1 | ×1.25 |
-| A lost battle | The party withdraws: everyone gets up with a third of their health, the enemies still block the road, the journey goes on | The journey ends | The journey ends |
+| A lost battle | The first time on a journey: the party withdraws with **full health**, the enemies still block the road, the journey goes on. **The second time the journey ends.** | The journey ends | The journey ends |
 | A hero who falls | Gets up after a won battle with a quarter of their health | Stays down until a healer, *Mrtva voda* or a beaten god raises them | Leaves the party if still down when the battle ends |
 | Shortest word in the mesh | 3 letters | 3 letters | 3 letters |
 | Starter words in the mesh | Four (5, 4, 4, 3 letters), first half of the road | Three (4, 3, 3), first quarter | Two of 3 letters, first region only |
