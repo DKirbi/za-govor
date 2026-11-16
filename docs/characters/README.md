@@ -13,6 +13,8 @@ Each character has an individual folder containing their approved character spec
 | Kralj Matjaž | Folklore hero / legendary king | Peca — exclusive recruitment location | [Character specification](./kralj-matjaz/character.md) |
 | Kresnik | Folklore hero / mythological figure | Bled — associated region; recruitment exclusivity open | [Character specification](./kresnik/character.md) |
 | Kurent | Living carnival / folklore figure | Ptuj — starting character | [Character specification](./kurent/character.md) |
+| Lepa Vida | Folk-ballad heroine | Piranske soline — designated location; also eligible for generic recruitment | [Character specification](./lepa-vida/character.md) |
+| Martin Krpan | Literary / literary-folklore hero | Starting character | [Character specification](./martin-krpan/character.md) |
 
 ## Documentation rules
 
