@@ -131,7 +131,8 @@ run(async () => {
     return { id, unlocked: Z.UNLOCKED.has(id), screen: Z.S.screen }; });
   check(!passBy.unlocked && passBy.screen === 'travel', 'a hero you leave behind stays locked', JSON.stringify(passBy));
 
-  // on to Peca: the well heals; skill points are spent at the well
+  // on to Peca: the well heals; skill points are spent at the well (Ptuj's own well is walked past for this)
+  await page.evaluate(() => { const R = window.__ZG.S.run; if (R.ri === 0) R.stops.forEach(x => { if (x.kind === 'well') x.passed = true; }); });
   await skipTo(page, 'well');
   await page.evaluate(() => { const Z = window.__ZG; Z.S.testMode = true; Z.S.run.gold = 300; Z.S.heroes[0].hp = 3; });
   s = await state(page);
@@ -143,8 +144,9 @@ run(async () => {
   check(heal.capped === Math.floor(heal.max * 0.7), 'a hero\'s healing skill stops at 70 % of health', `${heal.capped}/${heal.max}`);
   check(heal.drank && heal.after > 5 && heal.after < heal.max && heal.left === 0, 'a hero under 30 % drinks Živa voda and the flask is gone', JSON.stringify(heal));
   // a level brings a point; the well offers Veščine
-  const lv = await page.evaluate(() => { const Z = window.__ZG, st = Z.S.heroes[0]; const x = Z.LV_XP[2] - st.xp; Z.gainXp(x, 0); return { lvl: st.lvl, pts: st.pts, xp: st.xp }; });
+  const lv = await page.evaluate(() => { const Z = window.__ZG, st = Z.S.heroes[0], hp0 = st.hp; const x = Z.LV_XP[2] - st.xp; Z.gainXp(x, 0); return { lvl: st.lvl, pts: st.pts, xp: st.xp, hp0, hp: st.hp, max: st.maxHp }; });
   check(lv.lvl === 3 && lv.pts === 2, 'every new level brings a skill point', JSON.stringify(lv));
+  check(lv.hp0 === 3 && lv.hp === lv.max, 'a new level heals the hero fully', JSON.stringify(lv));
   await walk(page);
   const wellActs = await page.evaluate(() => window.__ZG.S.run.prompt.actions.map(a => a.label));
   check(wellActs.some(l => /^Veščine · 2 točki/.test(l)), 'with points to spend the well offers Veščine', wellActs.join(' | '));
@@ -322,9 +324,11 @@ run(async () => {
   // another god's shrine stays closed to a party that travels with a god
   check(await page.evaluate(() => /ne dovoli/.test(shrinePrompt({ kind: 'god', god: 'veles' }, () => {}, null).text)), 'another god\'s shrine stays closed while a god travels with you');
 
-  // difficulty: enemies' health, and what a lost battle and a fallen hero mean
-  const diff = await page.evaluate(() => { const Z = window.__ZG, hp = d => { Z.setDiff(d); return makeEnemy('skrat', 0, null).maxHp; }; const r = { lahka: hp('lahka'), srednja: hp('srednja'), tezka: hp('tezka') }; Z.setDiff('srednja'); return r; });
-  check(diff.lahka < diff.srednja && diff.srednja < diff.tezka, 'enemies have less health on Lahka and more on Težka', JSON.stringify(diff));
+  // Znanje sets the combat consequences (Lahka on Malček, Srednja on Učenjak, Težka on Knjižni molj):
+  // enemies' health, and what a lost battle and a fallen hero mean
+  const diff = await page.evaluate(() => { const Z = window.__ZG, hp = k => { Z.S.know = k; return makeEnemy('skrat', 0, null).maxHp; }; const r = { malcek: hp('malcek'), ucenjak: hp('ucenjak'), molj: hp('molj') }; Z.S.know = 'malcek'; return r; });
+  check(diff.malcek < diff.ucenjak && diff.ucenjak < diff.molj, 'enemies have less health on Malček and more on Knjižni molj', JSON.stringify(diff));
+  check(await page.evaluate(() => { const Z = window.__ZG; return ['malcek', 'ucenjak', 'molj'].map(k => Z.LEVELS[k].diff).join() === 'lahka,srednja,tezka'; }), 'each Znanje carries its consequences: Malček Lahka, Učenjak Srednja, Knjižni molj Težka');
   const lose = async d => {
     await page.evaluate(d => { const Z = window.__ZG; Z.setDiff(d); Z.S.testMode = false; Z.newRun('krpan'); Z.joinHero('kurent'); const R = Z.S.run, stop = R.stops.find(x => x.enemies); R.x = stop.x; R.prompt = null; R.stops.forEach(x => { if (x !== stop && x.x < stop.x) x.passed = true; }); Z.go('travel'); }, d);
     await walk(page); await page.keyboard.press('Enter'); await sleep(900);
@@ -335,17 +339,17 @@ run(async () => {
   };
   const easy = await lose('lahka');
   check(easy.btns.join() === 'Umakni se Enter' && easy.screen === 'travel' && easy.run && /umakne/.test(easy.prompt) && easy.hp.every(([hp, max, down]) => !down && hp >= Math.round(max / 3)),
-    'Lahka: a lost battle is not the end — the party withdraws, gets up with a third of its health and the enemies still block the road', JSON.stringify(easy));
+    'Malček (Lahka): a lost battle is not the end — the party withdraws, gets up with a third of its health and the enemies still block the road', JSON.stringify(easy));
   const hard = await lose('srednja');
-  check(hard.btns.join() === 'Konec poti Enter' && hard.screen === 'title' && !hard.run, 'Srednja: a lost battle ends the journey (no retrying outside the test mode)', JSON.stringify(hard));
+  check(hard.btns.join() === 'Konec poti Enter' && hard.screen === 'title' && !hard.run, 'Učenjak (Srednja): a lost battle ends the journey (no retrying outside the test mode)', JSON.stringify(hard));
   // Težka: a hero still down when the battle is won leaves the party
   await page.evaluate(() => { const Z = window.__ZG; Z.setDiff('tezka'); Z.newRun('krpan'); Z.joinHero('kurent'); Z.joinHero('jurij'); const R = Z.S.run, stop = R.stops.find(x => x.enemies); R.x = stop.x; R.prompt = null; R.stops.forEach(x => { if (x !== stop && x.x < stop.x) x.passed = true; }); Z.go('travel'); });
   await walk(page); await page.keyboard.press('Enter'); await sleep(900);
   await page.evaluate(() => { woundHero(1, 9999); });
   await winBattle(page);
   const left = await page.evaluate(() => ({ party: window.__ZG.HEROES.map(h => h.id), note: (document.querySelector('.overlay .note') || {}).textContent }));
-  check(left.party.join() === 'krpan,jurij' && /Kurent je padel in zapustil družino/.test(left.note || ''), 'Težka: a hero still down when the battle is won leaves the party', JSON.stringify(left));
-  await page.evaluate(() => { const Z = window.__ZG; Z.setDiff('srednja'); Z.S.testMode = true; Z.newRun('krpan'); Z.go('travel'); }); await sleep(200);
+  check(left.party.join() === 'krpan,jurij' && /Kurent je padel in zapustil družino/.test(left.note || ''), 'Knjižni molj (Težka): a hero still down when the battle is won leaves the party', JSON.stringify(left));
+  await page.evaluate(() => { const Z = window.__ZG; Z.S.know = 'malcek'; Z.S.testMode = true; Z.newRun('krpan'); Z.go('travel'); }); await sleep(200);
 
   // a full party: the fifth hero can only replace someone
   await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run; R.prompt = null;

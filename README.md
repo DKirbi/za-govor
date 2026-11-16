@@ -86,19 +86,26 @@ Ljubljana castle is the last battle.
 
 | # | Region | Legend of the place | On the road |
 | --- | --- | --- | --- |
-| 1 | **Ptuj** | Kurent | two battles, a chest |
-| 2 | **Peca** | Kralj Matjaž | two battles, a rock slide, a well, a shrine (Svarog or Perun) |
+| 1 | **Ptuj** | Kurent | two battles |
+| 2 | **Peca** | Kralj Matjaž | two battles, a rock slide, a shrine (Svarog or Perun) |
 | 3 | **Triglav** | Ajdovska deklica | two battles, a rock slide, a pedlar, a shrine (Perun or Stribog) |
-| 4 | **Bled** | the old gods (an island shrine of Živa) | two battles, a chest, a well, a shrine (Dažbog or Mokoš) |
-| 5 | **Trnovski gozd** | Martin Krpan | two battles, a chest, spikes, a shrine (Veles or Mokoš) |
-| 6 | **Piranske soline** | Lepa Vida | two battles, a pedlar, a well, a shrine (Stribog or Dažbog) |
-| 7 | **Predjamski grad** | Erazem Predjamski | a battle, spikes, a rock slide, a chest, an ambush |
-| 8 | **Ljubljansko barje** | Zeleni Jurij | two battles, a well, a pedlar, a shrine (Veles or Mokoš) |
-| 9 | **Ljubljanica** | Peter Klepec | a battle, a well, **Povodni mož** (boss) |
-| 10 | **Ljubljanski grad** | — | a pedlar, a rock slide, spikes, a well, **Lintvern**, the Ljubljana dragon (final boss) |
+| 4 | **Bled** | the old gods (an island shrine of Živa) | two battles, a shrine (Dažbog or Mokoš) |
+| 5 | **Trnovski gozd** | Martin Krpan | two battles, spikes, a shrine (Veles or Mokoš) |
+| 6 | **Piranske soline** | Lepa Vida | two battles, a pedlar, a shrine (Stribog or Dažbog) |
+| 7 | **Predjamski grad** | Erazem Predjamski | a battle, spikes, a rock slide, an ambush |
+| 8 | **Ljubljansko barje** | Zeleni Jurij | two battles, a pedlar, a shrine (Veles or Mokoš) |
+| 9 | **Ljubljanica** | Peter Klepec | a battle, **Povodni mož** (boss) |
+| 10 | **Ljubljanski grad** | — | a pedlar, a rock slide, spikes, **Lintvern**, the Ljubljana dragon (final boss) |
+
+Every region also has a place for **a chest and a well** (Ljubljanica and Ljubljanski grad open
+with their chest), and heroes wait in some regions.
 
 Only **three of the six shrines** stand on any one journey (picked at random, each for a
-different god), and only three heroes wait on the road, so no two journeys are alike.
+different god), and only three heroes wait on the road, so no two journeys are alike. **Chests
+and wells stand by chance too:** when a journey starts, each region's chest and well stay with a
+chance set by *Znanje* (chests 60 / 45 / 30 %, wells 75 / 55 / 40 % on Malček / Učenjak /
+Knjižni molj; `data/world.json → chance`). A journey always keeps at least one chest, and a well
+in each half of the road.
 
 - **Walking:** press `→` (or *Naprej*) and the party walks to the next stop; a prompt offers
   what can be done there (`Enter` for the main choice, `Esc` to walk past where that is allowed).
@@ -111,7 +118,7 @@ different god), and only three heroes wait on the road, so no two journeys are a
   journey meets others. **Only a hero who joins is unlocked** for later journeys; greeting
   one and walking on is not enough, so a full party has to decide whom to leave.
 - **Levels and skills:** experience comes **only from beaten enemies**. Every new level
-  (up to 9) brings health and one **skill point**; a hero with a point to spend **glows** — a
+  (up to 9) brings more health, **heals the hero fully** and gives one **skill point**; a hero with a point to spend **glows** — a
   ring of light rises from their head, so it shows in the party — and a short heavenly chorus
   sings when the point arrives. Each hero has three skills: a word with one, two or three of
   their letters (so a longer word) fires skill 1, 2 or 3, if the hero knows it, and otherwise
@@ -120,10 +127,10 @@ different god), and only three heroes wait on the road, so no two journeys are a
   power, effects that last 1.5× / 2× as long (stuns, burns, poison, weakening, dodges), and one
   extra effect at each stopnja (a critical hit, healing, hitting every enemy, a shield, a
   stun, fire or weakening). Points are spent in ***Veščine*** at a **well, a shrine or a pedlar**.
-- **Health stays as it is after a battle.** **Wells** heal everyone who is standing; they
-  **no longer raise the fallen**. A fallen hero gets up only through a healer's skill (Mokoš,
-  Zeleni Jurij), *Mrtva voda*, a beaten god — or, on *Lahka*, by themselves after a won battle
-  (see *Težavnost* below). Healers heal only up to 70 % of health, and they attack as well —
+- **Health stays as it is after a battle.** **Wells** heal everyone who is standing, and a new
+  level heals that hero; wells **no longer raise the fallen**. A fallen hero gets up only through
+  a healer's skill (Mokoš, Zeleni Jurij), *Mrtva voda*, a beaten god — or, on *Malček*, by
+  themselves after a won battle (see *Pace and knowledge* below). Healers heal only up to 70 % of health, and they attack as well —
   weakly at first, stronger with every level.
 - **Potions and poisons are used automatically:** a badly hurt hero drinks *Živa voda*, a
   fallen one is raised by *Mrtva voda*, battle potions are opened when a fight begins.
@@ -269,36 +276,42 @@ everyone).
   shrines stay closed to a party that travels with a god.
 - **Bag:** `T` on the road, `3` in a battle. It only shows what you carry; the heroes use it themselves.
 
-### Difficulty, pace and knowledge
-All three are chosen on *Nova pot*, before the first hero, and hold for the whole journey:
-the choices only count once the journey starts, so looking at *Nova pot* in the middle of a
+### Pace and knowledge
+Both are chosen on *Nova pot*, before the first hero, and hold for the whole journey: the
+choices only count once the journey starts, so looking at *Nova pot* in the middle of a
 journey changes nothing. The last choices are remembered for the next journey.
-
-**Difficulty** (*Težavnost*) decides what losing means and how tough enemies are:
-
-| | Lahka | Srednja (recommended) | Težka |
-| --- | --- | --- | --- |
-| Enemy health | ×0.85 | ×1 | ×1.25 |
-| A lost battle | The party withdraws: everyone gets up with a third of their health, the enemies still block the road, the journey goes on | The journey ends | The journey ends |
-| A hero who falls | Gets up after a won battle with a quarter of their health | Stays down until a healer, *Mrtva voda* or a beaten god raises them | Leaves the party if still down when the battle ends; only a healer's skill, *Mrtva voda* or a beaten god can save them in time |
-
-Trying a lost battle again from where it started (*Poskusi znova*) is left only for the
-practice battles and the test mode.
 
 **Pace** (*Tempo*): **real-time** (recommended) has no countdown — enemies attack at
 their own pace and wear the party down; **calm mode** (*mirni način*) only lets enemies act
 after you play words (they strike every few moves).
 
-**Knowledge** (*Znanje*), chosen below the pace, each with its own pixel figure:
+**Knowledge** (*Znanje*), chosen below the pace, each with its own pixel figure, is **the one
+difficulty**: it sets the puzzle help and what losing means. (*Težavnost* was a choice of its own
+until 0.11.0; its three settings now come with the three levels, and each card says what they mean.)
 
 | | Malček (baby) | Učenjak (scholar) | Knjižni molj (book worm) |
 | --- | --- | --- | --- |
 | Who it's for | Learning words | Learning longer and harder words | Seasoned crossword solvers |
-| Shortest word in the mesh | 3 letters | 4 letters | 4 letters |
-| Mesh tips | Word proposals, 3 hints per battle, word count, coaching tips | 1 hint per battle, word count, coaching tips | None |
+| Enemy health | ×0.85 | ×1 | ×1.25 |
+| A lost battle | The party withdraws: everyone gets up with a third of their health, the enemies still block the road, the journey goes on | The journey ends | The journey ends |
+| A hero who falls | Gets up after a won battle with a quarter of their health | Stays down until a healer, *Mrtva voda* or a beaten god raises them | Leaves the party if still down when the battle ends |
+| Shortest word in the mesh | 3 letters | 3 letters | 3 letters |
+| Starter words in the mesh | Four (5, 4, 4, 3 letters), first half of the road | Three (4, 3, 3), first quarter | Two of 3 letters, first region only |
+| Mesh tips | Word proposals, 3 hints per battle, word count, coaching tips | 1 hint per battle, word count, coaching tips | None (no *Namig* at all) |
+| Chest clue | Always | On about every other chest | Never |
+| Chests / wells (chance per place) | 60 % / 75 % | 45 % / 55 % | 30 % / 40 % |
+| Journey saved | Every quarter of the road | Every third | Once, at the half |
 | Finisher crosswords | 359 everyday clues, words up to 7 letters | 219 longer, harder words (school subjects, society, Slovenia, harder proverbs), up to 9 letters | 257 paper-crossword clues (capitals, rivers, Slovene places and writers, art, music, antiquity, science, classic crossword animals) plus the Učenjak words |
 | Enemy crosswords | Easiest words, up to 5 letters | Malček words, up to 6 letters | Molj and Učenjak words, up to 6 letters |
-| Crossword tips | Letter counts, 5 revealed letters | Letter counts, 2 revealed letters | No letter counts, 1 revealed letter |
+| Crossword tips | Letter counts, 5 revealed letters | Letter counts, 2 revealed letters | No letter counts, no revealed letters |
+
+**Starter words:** while the help lasts, a battle's letter mesh opens with whole words laid in
+rows, readable from the left or the right; about half are words of the region, in any of their
+forms. The battle log (and on Malček and Učenjak the coach tip) points them out; *Premešaj* lets
+them go.
+
+Trying a lost battle again from where it started (*Poskusi znova*) is left only for the
+practice battles and the test mode.
 
 Malček is the game as it was before the levels were added.
 
@@ -440,14 +453,15 @@ CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 | `tests/levels.test.js` | Each knowledge level: chosen on *Nova pot* and saved when the journey starts, hints and proposals, word count and coaching tips, shortest word, crossword bank, letter counts, revealed letters (and half power), mouse clicks reaching the crossword |
 | `tests/keyword.test.js` | Guessing the keyword early ends the crossword and fires the zagovor; in Povodni mož's whirlpool *urska* with a plain s stays black and *urška* breaks it |
 | `tests/phone.test.js` | On a 390×844 touch screen: the mesh sends without *Pošlji* (second tap, lifted drag, non-words clear), the in-game keyboard types crosswords and the rock slide with the system keyboard closed, wrong entries stay black and correct ones fire, chest partial rewards, darts fit 360 px, *Premor*, and the Android back button |
-| `tests/menu.test.js` | The start menu: items with and without a journey, no top bar, the version at the bottom, `↑` `↓` `Enter` `Esc`, *← Nazaj na glavni meni* on every page and sticky while *O igri* scrolls, one way back on a hero card; *Nastavitve* (sound off is remembered and greys out the volume, fullscreen only on a computer); *Nova pot* copy (*Težavnost*, *Tempo*, *Znanje*), figures, *Predlogi besed* under Malček only, explanations on by default, test mode as a developer option, choices that only count once the journey starts; *Kako igrati* controls per device and the puzzle carousel (buttons, keys, tabs, swipe); heroes and their cards; no *Nadaljuj pot* after the ending; phone fit and the Android back button |
+| `tests/menu.test.js` | The start menu: items with and without a journey, no top bar, the version at the bottom, `↑` `↓` `Enter` `Esc`, *← Nazaj na glavni meni* on every page and sticky while *O igri* scrolls, one way back on a hero card; *Nastavitve* (sound off is remembered and greys out the volume, fullscreen only on a computer); *Nova pot* copy (*Tempo* and *Znanje* only, each level saying what losing means), figures, *Predlogi besed* under Malček only, explanations on by default, test mode as a developer option, choices that only count once the journey starts; *Kako igrati* controls per device and the puzzle carousel (buttons, keys, tabs, swipe); heroes and their cards; no *Nadaljuj pot* after the ending; phone fit and the Android back button |
 | `tests/credits.test.js` | *O igri* names the maker (Oygn Productions, Davor Kirbiš), why the game was made, a *Navdih* that names no other game, every source folded behind ©; the ending names the maker and links to *O igri*; no other game is named anywhere in the game; phone fit; Esc and the Android back button |
 | `tests/report.test.js` | *Pošlji besede*: rejected and newly found words are remembered, chips only (no text fields), pick and drop, one row per word with its kind (`manjka` / `pomen`), *Kaj pomeni?* on a battle result in one tap and never again, meanings for every form of a word, the queue without a form, lists survive a reload, the panel fits a 360 px phone; *jasa* and base forms are accepted |
-| `tests/save.test.js` | Checkpoints by *Znanje* (Malček every quarter, Učenjak every third, Knjižni molj once at Trnovski gozd), *Shranjeno* on the checkpoint result, *Nadaljuj pot* after closing the page, *Izhod* on the road and in the pause (asks first, says where it saved, resets a battle left midway), a lost journey removes its save, an old save is dropped with a message |
+| `tests/save.test.js` | Checkpoints by *Znanje* (Malček every quarter, Učenjak every third, Knjižni molj once at Trnovski gozd), *Shranjeno* on the checkpoint result, *Nadaljuj pot* after closing the page, *Izhod* on the road and in the pause (asks first, says where it saved, resets a battle left midway), a lost journey removes its save, the planned chests and wells are kept, a 0.10.0 save still loads, an old save is dropped with a message |
 | `tests/input.test.js` | Word input: proposals stand still during a drag, only the shortest version of a word is proposed, *Namig* lasts until its word is played or the mesh is shuffled |
-| `tests/words.test.js` | `data/words.json`: every word is in the word list, chests take the region's words without repeats, the chest clue by *Znanje*, ✕ and *Pošlji* next to the chest's word, rock slides from the region's words and slower, no hints at all on Knjižni molj, 3-letter words on every level |
+| `tests/words.test.js` | `data/words.json`: every word is in the word list, chests take the region's words without repeats, the chest clue by *Znanje*, ✕ and *Pošlji* next to the chest's word, rock slides from the region's words and slower, a chest and a well place in every region, chests and wells by chance (fewer on higher *Znanje*, never no chest, a well in each half of the road), no hints at all on Knjižni molj, 3-letter words on every level |
+| `tests/starters.test.js` | Starter words: Malček four words (5, 4, 4, 3 letters), Učenjak three, Knjižni molj two three-letter ones; one per row, forwards or backwards, playable, one form per base form; the help lasts half / a quarter of the road / the first region; about half are the region's words in any form; the log and coach tip point them out; *Premešaj* lets them go |
 | `tests/flow.test.js` | Hero screens keep the way on in view (also on a 360×640 phone), stops name their puzzle, the signpost walks on by itself, an ambush is announced, *Kako igrati* ends in the menu |
-| `tests/journey.test.js` | The road: the first hero, three heroes per journey (Ptuj and two random regions, each place favouring its own hero), only a hero who joins is unlocked, XP only from beaten enemies, levels bring skill points, *Veščine* at the well (learn, stopnja 2 and 3, never past 3), a word fires the strongest skill the hero knows, a higher stopnja hits harder, the hero screen's *Veščine* button and the unannounced tap-to-demo, wells that heal but no longer raise the fallen, the chest's gold and item, the pedlar, potions, three shrines per journey each of another god, *Svetišče* with the god's sign (never the god), the prayer's answer and gift, Perun coming for the challenge as the ending is left, his chain of lightning, the god's last word, unlock, raised heroes and next-journey gift, a party god's godly version (not struck by the party god, a point and XP when beaten), heroes with points glowing on the road, the three difficulties (enemy health, withdrawing on Lahka, the end on Srednja, the fallen leaving on Težka), a full party swap, spikes that only hurt (spread over the heroes, never fatal), every hero's three skills at stopnja 3, and the dragon |
+| `tests/journey.test.js` | The road: the first hero, three heroes per journey (Ptuj and two random regions, each place favouring its own hero), only a hero who joins is unlocked, XP only from beaten enemies, levels bring skill points and heal fully, *Znanje* sets the losing rules, *Veščine* at the well (learn, stopnja 2 and 3, never past 3), a word fires the strongest skill the hero knows, a higher stopnja hits harder, the hero screen's *Veščine* button and the unannounced tap-to-demo, wells that heal but no longer raise the fallen, the chest's gold and item, the pedlar, potions, three shrines per journey each of another god, *Svetišče* with the god's sign (never the god), the prayer's answer and gift, Perun coming for the challenge as the ending is left, his chain of lightning, the god's last word, unlock, raised heroes and next-journey gift, a party god's godly version (not struck by the party god, a point and XP when beaten), heroes with points glowing on the road, the three difficulties (enemy health, withdrawing on Lahka, the end on Srednja, the fallen leaving on Težka), a full party swap, spikes that only hurt (spread over the heroes, never fatal), every hero's three skills at stopnja 3, and the dragon |
 | `tests/lexicon.test.js` | The word list in the browser: over a million forms accepted and a common part suggested, the 217-word coverage set accepted and its non-words (Croatian, English, made up) refused, the reported words (*jasa*, *loj*, *runa*, *seks*) and *ritem*/*ritual*/*riti*, vulgar words accepted but never suggested, mythology names, *deny.json*, non-standard forms, base forms (*ljudje* → *človek*), headwords Sloleks lacks (*zborišča*, *sedemkotnik*), and at 4× slower CPU a mesh walk under 50 ms and a lookup under 20 µs |
 | `tests/title.test.js` | The title scene: the *Za govor!* heading and tab title, whole-number scaling (3× at 1280 px, 4× at 1920, 2× on a phone), square wordmark pixels, full width with no sideways scrolling (also at an odd width), starting at the top of the page (below a phone's status bar), room left for the menu, the wordmark standing still, sparks rising in whole art pixels and not restarting when the start screen is rebuilt, a still picture with reduced motion |
 | `tests/desktop.test.js` | A keyboard playthrough: c/s/z are not accepted for č/š/ž, first battle, result and hero screens, chest, finisher, Lintvern's letter lock and forced crossword, ambush, rock slide, and no console errors anywhere |

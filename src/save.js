@@ -19,7 +19,7 @@ function saveFits(s) {
   try {
     const R = s.run, reg = WORLD.regions[R.ri];
     return s.v === SAVE_V && !!reg && reg.id === s.region && Array.isArray(s.party) && s.party.length >= 1 && s.party.length <= 4 &&
-      s.party.every(id => ROSTER[id]) && Array.isArray(s.heroes) && s.heroes.length === s.party.length && !!LEVELS[s.know] && !!DIFFS[s.diff] &&
+      s.party.every(id => ROSTER[id]) && Array.isArray(s.heroes) && s.heroes.length === s.party.length && !!LEVELS[s.know] &&
       Array.isArray(R.stops) && R.stops.every(st => st && typeof st.kind === 'string');
   } catch (e) { return false; }
 }
@@ -32,7 +32,7 @@ try {
 function writeSave() {
   const R = S.run; if (!R) return false;
   const s = { v: SAVE_V, t: Date.now(), build: BUILD.version, region: WORLD.regions[R.ri].id,
-    know: S.know, diff: S.diff, mode: S.mode, suggest: S.suggest, testMode: !!S.testMode,
+    know: S.know, mode: S.mode, suggest: S.suggest, testMode: !!S.testMode,
     party: HEROES.map(x => x.id), heroes: S.heroes.map(st => ({ ...st, leveled: false })),
     run: JSON.parse(JSON.stringify({ ...R, prompt: null, walking: false, over: false })) };
   SAVED = s;   // kept for this visit even where the browser keeps nothing
@@ -42,8 +42,9 @@ function clearSave() { SAVED = null; try { localStorage.removeItem(SAVE_KEY); } 
 // the saved journey becomes the current one: settings it began with, the party, the road
 function loadSave() {
   const s = SAVED; if (!s) return false;
-  S.know = s.know; S.diff = s.diff; S.mode = s.mode; S.suggest = !!s.suggest; S.testMode = !!s.testMode;
+  S.know = s.know; S.mode = s.mode; S.suggest = !!s.suggest; S.testMode = !!s.testMode;
   S.run = JSON.parse(JSON.stringify(s.run));
+  if (!S.run.wellAt) S.run.wellAt = planWells();   // a save from 0.10.0: wells did not stand by chance yet
   HEROES.length = 0; s.party.forEach(id => HEROES.push(ROSTER[id]));
   S.heroes = s.heroes.map(st => ({ ...st, leveled: false })); S.lastHero = 0; S.meterBonus = 0;
   return true;
