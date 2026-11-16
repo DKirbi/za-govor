@@ -205,7 +205,8 @@ run(async () => {
     const Z = window.__ZG, B = Z.B, st = Z.S.heroes[0], rnd = Math.random, wait = ms => new Promise(r => setTimeout(r, ms));
     const all = [...Z.allWords().keys()], w = all.find(x => x.length >= 4 && !/[čšž]/.test(x) && !Z.HEROES.some(h => h.domain.includes(x))), path = Z.findPath(w);
     path.forEach((t, j) => { B.grid[t].owner = j < 1 ? 0 : -1; B.grid[t].lockUntil = 0; B.grid[t].lockWords = 0; });
-    const saved = B.grid.map(t => ({ ...t })), play = async () => { B.grid = saved.map(t => ({ ...t })); B.enemies.forEach(e => { e.hp = e.maxHp = 999; }); B.target = 0; B.boost = 0; B.lemmaUses = new Map();   // no repeat penalty
+    // no repeat penalty, and no burn left from an earlier word (Kresnik may have joined) ticking into the measurement
+    const saved = B.grid.map(t => ({ ...t })), play = async () => { B.grid = saved.map(t => ({ ...t })); B.enemies.forEach(e => { e.hp = e.maxHp = 999; e.burn = null; e.burnTurns = 0; e.bane = null; }); B.target = 0; B.boost = 0; B.lemmaUses = new Map();
       B.path = path.slice(); B.typed = w; document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await wait(450); return 999 - B.enemies[0].hp; };
     Math.random = () => 0.99;
     st.sk = [1, 1, 1]; const base = await play();
@@ -220,7 +221,10 @@ run(async () => {
   const pre = await state(page), foeXp = await page.evaluate(() => { const B = window.__ZG.B; B.enemies.forEach(e => { e.maxHp = 40; }); return B.enemies.map(e => e.xp); });
   await winBattle(page);
   s = await state(page);
-  check(s.xp.every((x, i) => x - pre.xp[i] === foeXp[0] + foeXp[1]) && s.gold > pre.gold, 'both defeated enemies drop gold and give their experience to every hero', JSON.stringify({ xp: s.xp, was: pre.xp, foeXp, gold: [pre.gold, s.gold] }));
+  // a reviewed hero (src/progression.js) earns attacks + damage + enemy level instead of the enemy's fixed XP
+  const why = await page.evaluate(() => { const Z = window.__ZG; return Z.HEROES.map(h => Z.REVIEWED.includes(h.id) ? (Z.B.xpWhy[h.id] || { n: 0, a: 0, d: 0, lv: 0 }) : null); });
+  check(s.xp.every((x, i) => x - pre.xp[i] === (why[i] ? why[i].n : foeXp[0] + foeXp[1])) && why.every(w => !w || (w.n === w.a + w.d + w.lv && w.lv > 0)) && s.gold > pre.gold,
+    'both defeated enemies drop gold and give experience to every hero (reviewed heroes: attacks + damage + level)', JSON.stringify({ xp: s.xp, was: pre.xp, foeXp, why, gold: [pre.gold, s.gold] }));
   // the hero screen after a battle: the Veščine button, skills on the card, tap the hero for a skill
   for (let i = 0; i < 3 && (await state(page)).screen !== 'hero'; i++) { await page.keyboard.press('Enter'); await sleep(450); }
   const after = await page.evaluate(() => ({ btn: !!document.querySelector('.hm .skillbtn'), pills: [...document.querySelectorAll('.hm .face.front .mv em')].map(e => e.className) }));
