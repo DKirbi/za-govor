@@ -21,18 +21,19 @@ One road, walked left to right. The party stands still and the world scrolls pas
 | --- | --- | --- | --- | --- | --- |
 | 1 | Ptuj | castle above the snowy town | Kurent | battle, hero, chest, battle | Škrat, Vešča |
 | 2 | Peca | King Matjaž's cave | Kralj Matjaž | battle, rock slide, hero, well, shrine, battle | Perkmandeljc, Škrat, Pesjan |
-| 3 | Triglav | the three peaks | Ajdovska deklica | battle, rock slide, hero, pedlar, battle | Pesjan, Perkmandeljc, Vešča |
-| 4 | Bled | island church, castle on the cliff | — (Kresnik has no home and turns up anywhere) | battle, chest, **shrine**, well, battle | Vodna vila, Vešča, Škrat |
-| 5 | Trnovski gozd | moonlit forest | Martin Krpan | battle, chest, hero, battle | Mora, Volkodlak, Vešča |
-| 6 | Piranske soline | salt pans, Piran at sunset | Lepa Vida | battle, pedlar, hero, well, battle | Vodna vila, Pesjan, Mora |
-| 7 | Predjamski grad | the castle in the cliff | Erazem Predjamski | battle, rock slide, hero, chest, ambush | Zmajev mladič, Perkmandeljc, Volkodlak |
-| 8 | Ljubljansko barje | pile dwellings in the mist | Zeleni Jurij | battle, well, hero, pedlar, battle | Škrat, Mora, Volkodlak, Vodna vila |
+| 3 | Triglav | the three peaks | Ajdovska deklica | battle, rock slide, hero, pedlar, shrine, battle | Pesjan, Perkmandeljc, Vešča |
+| 4 | Bled | island church, castle on the cliff | — (Kresnik has no home and turns up anywhere) | battle, chest, shrine, well, battle | Vodna vila, Vešča, Škrat |
+| 5 | Trnovski gozd | moonlit forest | Martin Krpan | battle, chest, spikes, hero, shrine, battle | Mora, Volkodlak, Vešča |
+| 6 | Piranske soline | salt pans, Piran at sunset | Lepa Vida | battle, pedlar, hero, well, shrine, battle | Vodna vila, Pesjan, Mora |
+| 7 | Predjamski grad | the castle in the cliff | Erazem Predjamski | battle, spikes, hero, chest, ambush | Zmajev mladič, Perkmandeljc, Volkodlak |
+| 8 | Ljubljansko barje | pile dwellings in the mist | Zeleni Jurij | battle, well, hero, pedlar, shrine, battle | Škrat, Mora, Volkodlak, Vodna vila |
 | 9 | Ljubljanica | Tromostovje | Peter Klepec | battle, hero, well, **boss: Povodni mož** | Vodna vila, Mora |
-| 10 | Ljubljanski grad | the castle wall at sunset | — | pedlar, well, **boss: Lintvern** | — |
+| 10 | Ljubljanski grad | the castle wall at sunset | — | pedlar, spikes, well, **boss: Lintvern** | — |
 
 - **Random enemies:** each battle draws its enemies from the region's pool. One enemy while the party is a single hero, two after that. The very first fight is always one Škrat with the tutorial tips.
 - **Scaling:** enemy health +10 % and attack +6 % per region (bosses are fixed).
 - **Three heroes per journey (13 Nov):** a hero always waits at Ptuj; two more regions with a hero stop are picked at random and the other hero stops are left out, so one journey never meets everyone. At a hero stop the hero of the place is six times as likely as anyone else, and heroes not yet unlocked twice as likely; if nobody is left, the stop becomes a well.
+- **Shrines and heroes are planned per journey:** only three of the six shrines and three of the hero stops stay on any one journey (sections 1 and 2a).
 - **Data:** regions, stop order, enemy pools and items live in `data/world.json`, so the Godot game can read the same file.
 
 ## 2. Party rules
@@ -79,17 +80,6 @@ One road, walked left to right. The party stands still and the world scrolls pas
 - **A fallen hero stays down** until a hero's skill (Mokoš's Materina roka once per battle, Zeleni Jurij's Jurjevo once per journey), *Mrtva voda* or a beaten god raises them — or the difficulty decides otherwise (section 3c). Until then their letters are grey, and they can be left behind when a new hero is met.
 - *Poskusi znova* after a lost battle is only offered in practice battles and the test mode.
 
-## 3c. Difficulty — *Težavnost* (16 Nov; `DIFFS` in `src/game.js`)
-Chosen on *Nova pot* above *Tempo* (pace) and *Znanje* (knowledge), remembered as `zg-diff`; default *Srednja*.
-
-| | Lahka | Srednja | Težka |
-| --- | --- | --- | --- |
-| Enemy health (journey only) | ×0.85 | ×1 | ×1.25 |
-| Lost battle | **withdraw:** everyone gets up with a third of their health; the enemies still block the road (a god's godly version goes back into the shrine) | the journey ends | the journey ends |
-| A hero down when a battle is won | gets up with a quarter of their health | stays down | **leaves the party** |
-
-On *Težka* only a healer's skill or *Mrtva voda* during the battle (or a beaten god at its end) saves a fallen hero.
-
 ## 3a. Rewards
 - **Experience comes only from beaten enemies (13 Nov):** every defeated enemy drops gold at once (4 + a share of its XP) and gives its full XP to every hero still standing. Words, crosswords, chests, rock slides and darts give no XP.
 - **Chest (one word):** the hidden word, or any real word from all the letters, opens it: 15–25 gold, one item, and a half-full zagovor in the next battle. A real word that leaves letters unused ends the chest with a share of the gold (no item). Running out of time gives nothing.
@@ -103,6 +93,17 @@ On *Težka* only a healer's skill or *Mrtva voda* during the battle (or a beaten
 - Like the chest and the rock slide it has a *Kako se igra* intro with a solved example, and Esc pauses it (Delete clears the letters).
 - On the road it stands in Trnovski gozd, at Predjamski grad and before the dragon. It has its own sprite (a stone wall with iron spikes coming out of the slots).
 - Internal ids stay `darts` and `puscice`, so saved runs, `data/world.json` and the missing-word reports keep working.
+
+## 3c. Difficulty — *Težavnost* (16 Nov; `DIFFS` in `src/game.js`)
+Chosen on *Nova pot* above *Tempo* (pace) and *Znanje* (knowledge), remembered as `zg-diff`; default *Srednja*.
+
+| | Lahka | Srednja | Težka |
+| --- | --- | --- | --- |
+| Enemy health (journey only) | ×0.85 | ×1 | ×1.25 |
+| Lost battle | **withdraw:** everyone gets up with a third of their health; the enemies still block the road (a god's godly version goes back into the shrine) | the journey ends | the journey ends |
+| A hero down when a battle is won | gets up with a quarter of their health | stays down | **leaves the party** |
+
+On *Težka* only a healer's skill or *Mrtva voda* during the battle (or a beaten god at its end) saves a fallen hero.
 
 ## 4. Levels, skill points and skills (13 Nov, stopnje 16 Nov)
 - **Levels 1–9** at 0, 60, 140, 240, 360, 500, 660, 840 and 1050 XP. Each level adds 8 % health and 4 % attack, a little extra for long words (up to +10 % per letter beyond the fourth at level 9), and **one skill point**.
