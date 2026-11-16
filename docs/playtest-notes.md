@@ -1,5 +1,42 @@
 # Za govor — playtest notes
 
+## Round 3 (13–16 Nov 2026, two testers on Android phones)
+
+Both testers started playing without reading the intros, so the rules that matter also have to
+live in the puzzles themselves. What changed is in the CHANGELOG (0.10.0) and
+`docs/progression-design.md` §11.
+
+### What testing found
+1. **Sending a tapped word** (both testers): one couldn't send at all; the other expected the
+   last tap to send, but also said auto-send would take a shorter word too early.
+2. **The crossword on a phone**: no entry solved; the in-game keyboard is the weak spot.
+3. **Chests** served the same two words every time.
+4. **Buttons below the fold** on hero screens; **reading is tiring** on a phone.
+5. Smaller things: the pause button not found, no warning which puzzle waits, two *Pošlji*,
+   a second *Naprej* after the signpost, an abrupt ambush, the rock-slide rule (letters
+   anywhere in the word) not understood, the report form (no deselect, unclear note), names
+   like *Eva* rejected without saying why, a dual error (*2 črke*), "tapkaj" reads badly.
+6. **What worked:** the translations, the game was played through to the end, tapping feels
+   easy once found, the chip UI.
+
+### What changed (0.10.0)
+- Pošlji next to a tapped word; a dragged word sends itself; a non-word flashes red and clears.
+- Proposals stand still while dragging and show only the shortest version of a word; Namig lasts.
+- Chests take their region's words (`data/words.json`) and never repeat on a journey; ✕ and
+  Pošlji next to the word; the rock slide says the letters may stand anywhere and falls slower.
+- Hero screens keep the way on in view; stops name their puzzle; the signpost walks on; the
+  ambush is announced; Kako igrati ends in the menu.
+- Words to the developer are chips only, with *Kaj pomeni?* for new words.
+- The journey is saved at checkpoints by Znanje; Izhod on the road and in the pause.
+- No "tap" wording, the dual fixed, which words count explained, controls for phone, tablet
+  and computer, the maker named on O igri.
+
+### Still open from this round
+- The crossword on phones: the letter wheel (next branch).
+- Readability on phones: only small labels were enlarged; check again in the next round.
+- Round 2's questions still without data: attack-sound level, Delete to clear, text at 78 %
+  scale (a desktop round is needed).
+
 ## Round 2 (11 Nov 2026)
 
 ### What testing found
