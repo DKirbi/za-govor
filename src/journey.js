@@ -329,6 +329,7 @@ function renderTravel() {
     h('div', { class: 'road', ref: el => T.road = el, style: { 'background-image': `url(${ART.road})` } }),
     h('div', { class: 'tv-objs', ref: el => T.layer = el }),
     h('div', { class: 'party', ref: el => T.party = el }));
+  T.pbg = bgLayers(scene, reg.bg, 'travel');   // a background being A/B tested (src/backgrounds.js); null = variant A as built above
   R.stops.forEach(stop => {
     let body, cap;
     if (stop.enemies) {
@@ -398,6 +399,7 @@ function layoutTravel() {
   T.road.style.backgroundPositionX = Math.round(-R.x * k) + 'px';
   const pan = Math.max(0, Ht * 384 / 120 - W);
   T.scene.style.backgroundPositionX = Math.round(-pan * clamp(R.x / R.endX, 0, 1)) + 'px';
+  if (T.pbg) bgPlace(T.pbg, R.x * k, R.endX ? R.x / R.endX : 0, performance.now());   // the layers scroll with the road, each at its own speed
   T.scene.classList.toggle('walking', !!R.walking);
 }
 function travelTick(dt) {

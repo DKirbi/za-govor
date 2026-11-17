@@ -36,6 +36,22 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
+## 0.14.0 — 17 Nov 2026 · zaprta alfa · a background A/B test for Ptuj (variant B waits for its art)
+Branch `feat/ptuj-bg-ab`. Details: `docs/art-benchmarks/ptuj-background/INTEGRATION.md`.
+- **Variant A, the Ptuj background in use, is unchanged.** Variant B, GPT's layered sunset pack, is connected
+  but not delivered yet. `build.py` builds it in once `art/manifests/ptuj.json` and all of its layer PNGs are
+  committed. Until then players see exactly what they saw in 0.13.0.
+- **Parallax on the road and in battle** for a layered pack (`src/backgrounds.js`): each layer scrolls with
+  the walk at its own speed, the battle shows the scene still with drifting clouds, a foreground layer stands
+  in front of the heroes but under the battle UI, and nothing drifts under reduced motion. Speeds are tuning
+  values in `data/backgrounds.json`.
+- **The A/B test is off** (`live: false`). Turned on, each install keeps one variant (localStorage
+  `zg-ab`). `?ozadje=B` in the address previews B, and *Liki in karte → Ozadja* shows it.
+- **Battle statistics name the background variant** (`ozadje-ptuj=A`, or `B(predogled)` for a preview).
+  The consent text says so (*različica igre in ozadja*).
+- GPT's reference image is committed as `docs/art-benchmarks/ptuj-background/ptuj-parallax-preview.png`
+  (reference only). New test file `tests/backgrounds.test.js` (26 checks, with a synthetic test pack).
+
 ## 0.13.0 — 17 Nov 2026 · zaprta alfa · balance D: the party levels together, a difficulty curve, a new Lintvern
 Branch `feat/balance-d`, from the balance simulations of 16–17 Nov (version D of four compared). The working
 balance until monsters and gods are reviewed. Saves from 0.12.0 still load. Details: `docs/progression-design.md` §4b.

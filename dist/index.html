@@ -1315,6 +1315,17 @@ body.mobile .report .rp-send .btn, body.mobile .report .rp-close { min-height: 4
 .train-pool { margin: 0 0 6px; color: var(--gold); }
 @media (prefers-reduced-motion: reduce) { .foe.spr.charging, .tile.scorch::before { animation: none; } }
 
+/* ---------- background variants (src/backgrounds.js): a layered pack in place of the one picture ---------- */
+/* Positions and sizes are set per layer in bgPlace; variant A never gets these classes. */
+.pbg-l, .pbg-dim { position: absolute; inset: 0; pointer-events: none; background-repeat: no-repeat; image-rendering: pixelated; }
+.pbg-l.tx { background-repeat: repeat-x; }
+.scene.pbg-noroad > .road { display: none; }
+/* a foreground layer stands in front of the heroes and enemies, never in front of the battle UI */
+.scene.pbg > .pbg-l.front { z-index: 1; }
+.scene.pbg > .partyhp, .scene.pbg > .cards, .scene.pbg > .floats { z-index: 2; }
+.scene.travel.pbg > .pbg-l.front { z-index: 3; }
+.gbg .gpbg { position: relative; width: 100%; overflow: hidden; border-radius: 6px; border: 1px solid var(--line); background: #1a1e2b; }
+
 /* ---------- Title scene: "Za govor!" over a dusk landscape (src/title.js, art from tools/art_title.py) ----------
    Sizes are in art pixels times --s, the whole-number scale; animations move one art pixel per step. */
 .sr-only { position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
@@ -1637,6 +1648,7 @@ body.mobile .title-stage + .mainmenu { margin-top: -40px; }
   "words": {}
 }
 </script>
+<script id="bgdata" type="application/json">{"tests":{"ptuj":{"live":false,"variants":{"B":"ptuj"},"share":{"A":50,"B":50}}},"packs":{}}</script>
 <script>
 'use strict';
 /* Za govor! — UX prototype of the mini-games.
@@ -2743,7 +2755,7 @@ const xpNeed = () => 100 * S.level;
 const letterEq = (tile, typed) => tile === typed;
 
 // Version of this build, filled in by build.py from package.json and git (see CHANGELOG.md).
-const BUILD = {"version": "0.13.0", "stage": "zaprta alfa", "commit": ""};
+const BUILD = {"version": "0.14.0", "stage": "zaprta alfa", "commit": ""};
 const app = $('#app');
 let SCR = null;   // current screen container
 // There is no top bar: pages under the menu have a sticky way back, timed puzzles a Premor button in their header,
@@ -2893,7 +2905,7 @@ function renderGallery() {
   const board = (id, t, cap) => { const f = h('figure', { class: 'gboard' }); f.innerHTML = CardArt.svg(id, t); f.append(h('figcaption', {}, cap)); return f; };
   wrap.append(h('p', { class: 'lead' }, 'Vsi liki so igralni. Pot začneš z enim, drugi se ti pridružijo na poti; v družini so največ štirje. Bogovi so močnejši od ljudskih junakov, zato gre s teboj le eden. Oznaka ob imenu pove, kam kdo sodi.'));
   renderGalleryExtras(wrap);
-  wrap.append(h('h2', {}, 'Ozadja'), h('div', { class: 'gbg' }, BG_INFO.map(([k, cap]) => h('figure', {}, h('img', { src: BG[k], alt: cap }), cap))));
+  wrap.append(h('h2', {}, 'Ozadja'), h('div', { class: 'gbg' }, BG_INFO.map(([k, cap]) => h('figure', {}, h('img', { src: BG[k], alt: cap }), cap)), bgGalleryFigures()));
   wrap.append(h('h2', {}, 'Junaki'));
   CHARS.forEach(ch => {
     const ctx = {};
@@ -3019,6 +3031,7 @@ function buildBattleDom() {
       h('div', { class: 'puzzle', ref: el => UI.puzzle = el }),
       h('aside', { class: 'side', ref: el => UI.side = el })),
     h('div', { class: 'log', ref: el => UI.log = el })));
+  bgLayers(UI.scene, nodeBg(B.node), 'battle');   // a background being A/B tested (src/backgrounds.js); variant A leaves the scene as built
   // the phone layout sizes the battle to the space below the top bar (see .battle in game.css)
   battle.style.setProperty('--battle-top', Math.round(battle.getBoundingClientRect().top + scrollY) + 'px');
   renderMeta(); renderParty(); renderEnemies(); renderPuzzle(); renderSide(); renderWord(); renderCoach(); renderLog();
@@ -5272,6 +5285,7 @@ function renderTravel() {
     h('div', { class: 'road', ref: el => T.road = el, style: { 'background-image': `url(${ART.road})` } }),
     h('div', { class: 'tv-objs', ref: el => T.layer = el }),
     h('div', { class: 'party', ref: el => T.party = el }));
+  T.pbg = bgLayers(scene, reg.bg, 'travel');   // a background being A/B tested (src/backgrounds.js); null = variant A as built above
   R.stops.forEach(stop => {
     let body, cap;
     if (stop.enemies) {
@@ -5341,6 +5355,7 @@ function layoutTravel() {
   T.road.style.backgroundPositionX = Math.round(-R.x * k) + 'px';
   const pan = Math.max(0, Ht * 384 / 120 - W);
   T.scene.style.backgroundPositionX = Math.round(-pan * clamp(R.x / R.endX, 0, 1)) + 'px';
+  if (T.pbg) bgPlace(T.pbg, R.x * k, R.endX ? R.x / R.endX : 0, performance.now());   // the layers scroll with the road, each at its own speed
   T.scene.classList.toggle('walking', !!R.walking);
 }
 function travelTick(dt) {
@@ -5599,6 +5614,103 @@ function dartsTick(dt) {
   E.time -= dt;
   if (UI.evTimer) UI.evTimer.style.width = clamp(100 * E.time / E.timeMax, 0, 100) + '%';
   if (E.time <= 0) dartsEnd(0, `Prepozno: vseh ${E.cols.length} konic se sproži v družino. Skrita beseda je bila ${UP(E.word)}.`, 'err');
+}
+// ============================================================ background variants for A/B tests
+// data/backgrounds.json names the region backgrounds being compared. Variant A is always the art in use (BG, from
+// tools/art_extra.py), drawn exactly as before. A pack variant is a layered parallax background: its files, sizes
+// and back-to-front order come from the pack's manifest (art/manifests/<pack>.json, by the art's author), and
+// build.py builds it in only when every layer file is committed. Until then only A exists and nothing changes.
+// Which variant a player sees:
+//   ?ozadje=A or ?ozadje=B in the address: that one, for this visit (a preview; the statistics mark it)
+//   a test with "live": true: one variant per install, drawn by "share" and kept in localStorage zg-ab
+//   otherwise: A
+// The variant goes into the tester statistics (src/stats.js), so the rows of A and B can be compared.
+const BGX = (() => { try { const v = JSON.parse($('#bgdata').textContent); return { tests: v.tests || {}, packs: v.packs || {} }; } catch (e) { return { tests: {}, packs: {} }; } })();
+const AB_KEY = 'zg-ab';
+const AB = (() => { try { const v = JSON.parse(localStorage.getItem(AB_KEY) || '{}'); return v && typeof v === 'object' && !Array.isArray(v) ? v : {}; } catch (e) { return {}; } })();
+let bgForce = (() => { try { const v = (new URLSearchParams(location.search).get('ozadje') || '').toUpperCase(); return /^[A-Z]$/.test(v) ? v : null; } catch (e) { return null; } })();
+const bgPack = (key, v) => { const t = BGX.tests[key], id = t && t.variants && t.variants[v]; return id ? BGX.packs[id] || null : null; };
+const bgReady = (key, v) => v === 'A' || !!bgPack(key, v);
+const bgForced = key => !!(bgForce && BGX.tests[key] && bgReady(key, bgForce));
+function bgDraw(share, vs) {
+  const w = vs.map(v => Math.max(0, +((share || {})[v]) || 0)), sum = w.reduce((a, b) => a + b, 0);
+  if (!sum) return vs[rnd(vs.length)];
+  let r = Math.random() * sum;
+  for (let i = 0; i < vs.length; i++) { r -= w[i]; if (r < 0) return vs[i]; }
+  return vs[vs.length - 1];
+}
+function bgVariant(key) {
+  const t = BGX.tests[key];
+  if (!t) return 'A';
+  if (bgForced(key)) return bgForce;
+  if (!t.live) return 'A';
+  const vs = ['A', ...Object.keys(t.variants || {})];
+  if (!vs.every(v => bgReady(key, v))) return 'A';   // a variant missing from the build: the test is not running, nobody is assigned
+  if (!vs.includes(AB[key])) { AB[key] = bgDraw(t.share, vs); try { localStorage.setItem(AB_KEY, JSON.stringify(AB)); } catch (e) { /* no storage: drawn again next visit */ } }
+  return AB[key];
+}
+// for src/stats.js: ozadje-ptuj=B, or B(predogled) when the address chose it
+const bgStatTags = () => Object.keys(BGX.tests).map(k => `ozadje-${k}=${bgVariant(k)}${bgForced(k) ? '(predogled)' : ''}`);
+
+const bgMotion = () => !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+// The pack's layers in a scene (travel, battle, gallery), or null for variant A, whose scene keeps its one background.
+// Layers behind the actors go first, under the same dimming variant A gets in that scene; a foreground layer goes
+// in front of the actors but under the battle UI (game.css: .scene.pbg).
+function bgLayers(scene, key, where) {
+  const v = bgVariant(key), P = v === 'A' ? null : bgPack(key, v);
+  if (!P || !scene) return null;
+  const els = P.layers.map(L => h('i', { class: 'pbg-l' + (L.tileX ? ' tx' : '') + (L.front ? ' front' : ''), 'data-layer': L.id, 'aria-hidden': 'true',
+    style: { 'background-image': `url(${L.src})` } }));
+  const back = els.filter((el, i) => !P.layers[i].front), front = els.filter((el, i) => P.layers[i].front);
+  const dim = { battle: 'linear-gradient(rgba(14,16,26,.36), rgba(14,16,26,.16))', travel: 'linear-gradient(rgba(14,16,26,.2), rgba(14,16,26,.05))' }[where];
+  scene.style.removeProperty('background-image');
+  scene.classList.add('pbg'); scene.classList.toggle('pbg-noroad', !!P.hideRoad);
+  scene.prepend(...back, ...(dim ? [h('i', { class: 'pbg-dim', 'aria-hidden': 'true', style: { 'background-image': dim } })] : []));
+  scene.append(...front);
+  const M = { key, v, P, els, scene, where, size: '' };
+  if (where !== 'travel') { bgPlace(M, null, 0, performance.now()); BG_STILL.add(M); }   // the road places its layers in layoutTravel
+  return M;
+}
+// Where each layer's picture sits: the pack's canvas scaled to the scene height with whole pixels kept sharp (as
+// variant A), every layer registered on that canvas. camX = how far the walk has gone in CSS pixels (travel):
+// a tiling layer scrolls camX × its speed; a layer that does not tile pans once across the region with progress,
+// as variant A's single picture does. camX null = a still scene (battle, gallery): the canvas centred.
+function bgPlace(M, camX, progress, now) {
+  const sc = M.scene, W = sc.clientWidth, H = sc.clientHeight;
+  if (!H || !W) return;
+  const P = M.P, s = H / P.canvas.h, cw = P.canvas.w * s, t = bgMotion() ? now / 1000 : 0;
+  M.size = W + 'x' + H;
+  M.els.forEach((el, i) => {
+    const L = P.layers[i], tw = L.w * s;
+    let x = camX == null ? (W - cw) / 2 : L.tileX ? -camX * L.speed : -Math.max(0, cw - W) * clamp(progress, 0, 1);
+    x += L.x * s;
+    if (L.tileX) { x -= L.drift * s * t; x = ((x % tw) + tw) % tw - tw; }   // the same tile, kept near zero so the numbers stay small
+    el.style.backgroundSize = `${Math.round(tw)}px ${Math.round(L.h * s)}px`;
+    el.style.backgroundPosition = `${Math.round(x)}px ${Math.round(L.y * s)}px`;
+  });
+}
+// still scenes are placed again when their size changes (fit to screen, rotating a phone) and, with drifting layers, every frame
+const BG_STILL = new Set();
+(function bgFrame(now) {
+  BG_STILL.forEach(M => {
+    if (!M.scene.isConnected) { BG_STILL.delete(M); return; }
+    const drifts = bgMotion() && M.P.layers.some(L => L.tileX && L.drift);
+    if (drifts || M.size !== M.scene.clientWidth + 'x' + M.scene.clientHeight) bgPlace(M, null, 0, now);
+  });
+  requestAnimationFrame(bgFrame);
+})(performance.now());
+// Liki in karte → Ozadja: each built pack variant next to the pictures of variant A
+function bgGalleryFigures() {
+  const out = [];
+  Object.entries(BGX.tests).forEach(([key, t]) => Object.keys(t.variants || {}).forEach(v => {
+    const P = bgPack(key, v); if (!P) return;
+    const box = h('div', { class: 'gpbg', style: { 'aspect-ratio': `${P.canvas.w} / ${P.canvas.h}` } });
+    const M = { key, v, P, els: [], scene: box, where: 'gallery', size: '' };
+    M.els = P.layers.map(L => h('i', { class: 'pbg-l' + (L.tileX ? ' tx' : ''), 'data-layer': L.id, style: { 'background-image': `url(${L.src})` } }));
+    box.append(...M.els); BG_STILL.add(M);
+    out.push(h('figure', {}, box, `${P.name} — različica ${v}${P.status === 'approved' ? '' : ' (v pregledu)'}`));
+  }));
+  return out;
 }
 // ============================================================ playtest round 2: pause, puzzle intros, fullscreen, fit to screen
 // One hold switch for the whole game: while the player pauses or reads a puzzle intro, no clock runs
@@ -6236,7 +6348,8 @@ function reportButton(onclick = openReportInPause, label = 'Pošlji besede') {
 //   Beseda  = zmaga / poraz (a battle) or pot-rešena / pot-končana (a journey)
 //   Kje     = region · kind of battle
 //   Podatki = key=value pairs (see statRow): Znanje, tempo, device, version, enemies, duration, words, seconds
-//             per word on the letter mesh (crosswords and pauses left out), party level, heroes, health, fallen
+//             per word on the letter mesh (crosswords and pauses left out), party level, heroes, health, fallen,
+//             and the background variant of each A/B test (src/backgrounds.js: ozadje-ptuj=A or B)
 // Nothing personal and none of the words typed are sent. A random id per journey (not per device or player)
 // lets the rows of one journey be read together. This collection must be declared in the stores' privacy
 // forms (docs/store-release.md).
@@ -6256,7 +6369,7 @@ const statHeroes = () => S.heroes.map((st, k) => `${HEROES[k].id}(${st.sk.join('
 const statBase = () => {
   const R = S.run;
   return [`pot=${R.sid}`, `znanje=${S.know}`, `tempo=${S.mode === 'real' ? 'realni' : 'mirni'}`, `naprava=${statDevice()}`,
-    `v=${BUILD.version}${BUILD.commit ? '+' + BUILD.commit : ''}`, `raven=${R.plvl || 1}`, `tocke=${R.pts || 0}`, `junaki=${statHeroes()}`];
+    `v=${BUILD.version}${BUILD.commit ? '+' + BUILD.commit : ''}`, `raven=${R.plvl || 1}`, `tocke=${R.pts || 0}`, `junaki=${statHeroes()}`, ...bgStatTags()];
 };
 function queueStat(w, where, meta) {
   if (!statsOn()) return null;
@@ -6312,7 +6425,7 @@ function flushStats() {
 }
 setTimeout(() => { if (statsOn() && STATS.some(r => !r.sent)) flushStats(); }, 3500);
 
-const STAT_TEXT = 'Po vsakem boju na poti gre razvijalcu ena vrstica: izid, pokrajina, sovražniki, Znanje, tempo, naprava, različica igre, trajanje, število besed in čas na besedo, raven družine, junaki in njihove veščine, izgubljeno zdravje. Nič osebnega in nobene besede, ki jih vpišeš.';
+const STAT_TEXT = 'Po vsakem boju na poti gre razvijalcu ena vrstica: izid, pokrajina, sovražniki, Znanje, tempo, naprava, različica igre in ozadja, trajanje, število besed in čas na besedo, raven družine, junaki in njihove veščine, izgubljeno zdravje. Nič osebnega in nobene besede, ki jih vpišeš.';
 // Nastavitve: the switch, what is sent, and how much is waiting
 function statsSection() {
   const waiting = STATS.filter(r => !r.sent).length;
@@ -7630,7 +7743,7 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, stopBattle, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, gainPartyXp, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, gainPartyXp, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 
 </script>

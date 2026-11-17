@@ -1,0 +1,24 @@
+{
+  "note": "Background A/B tests (src/backgrounds.js). Variant A is always the background in use (BG in src/art-extra.js, from tools/art_extra.py) and is never changed by a test. A pack variant is a layered parallax background whose files and layer order come from its manifest (art/manifests/<pack>.json, owned by the art pack's author). build.py builds a pack in only when its manifest and every layer file it lists are committed; until then the variant does not exist and everyone sees A.",
+  "testsNote": "tests.<bg key> (the bg of a region in world.json): variants maps a letter to a pack id; live: false = nobody is assigned a variant (A for all, ?ozadje=B previews B); live: true = each install gets one variant by share, kept in localStorage zg-ab. Turning live on is the Game Director's call.",
+  "tests": {
+    "ptuj": { "live": false, "variants": { "B": "ptuj" }, "share": { "A": 50, "B": 50 } }
+  },
+  "packsNote": "packs.<id>: manifest path, hideRoad (the pack brings its own ground, so the road strip of variant A is hidden), and runtime tuning per layer id. speed = how fast a tiling layer scrolls compared with the road while the party walks (1 = with the road, 0 = still); drift = steady sideways motion of a tiling layer in art pixels per second (clouds), off under reduced motion. These are PROPOSED starting values tuned in the browser, not art specifications. A layer the manifest has but this list does not gets a speed from its depth, and the build says so.",
+  "packs": {
+    "ptuj": {
+      "manifest": "art/manifests/ptuj.json",
+      "hideRoad": true,
+      "layers": {
+        "sky": { "speed": 0 },
+        "clouds": { "speed": 0.03, "drift": 3 },
+        "distant-hills": { "speed": 0.06 },
+        "castle-hill": { "speed": 0.12 },
+        "town": { "speed": 0.22 },
+        "reflections": { "speed": 0.35 },
+        "drava-water": { "speed": 0.35 },
+        "road-tile": { "speed": 1 }
+      }
+    }
+  }
+}

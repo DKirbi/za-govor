@@ -1307,3 +1307,14 @@ body.mobile .report .rp-send .btn, body.mobile .report .rp-close { min-height: 4
 @keyframes ember { from { opacity: .35; } to { opacity: .95; } }
 .train-pool { margin: 0 0 6px; color: var(--gold); }
 @media (prefers-reduced-motion: reduce) { .foe.spr.charging, .tile.scorch::before { animation: none; } }
+
+/* ---------- background variants (src/backgrounds.js): a layered pack in place of the one picture ---------- */
+/* Positions and sizes are set per layer in bgPlace; variant A never gets these classes. */
+.pbg-l, .pbg-dim { position: absolute; inset: 0; pointer-events: none; background-repeat: no-repeat; image-rendering: pixelated; }
+.pbg-l.tx { background-repeat: repeat-x; }
+.scene.pbg-noroad > .road { display: none; }
+/* a foreground layer stands in front of the heroes and enemies, never in front of the battle UI */
+.scene.pbg > .pbg-l.front { z-index: 1; }
+.scene.pbg > .partyhp, .scene.pbg > .cards, .scene.pbg > .floats { z-index: 2; }
+.scene.travel.pbg > .pbg-l.front { z-index: 3; }
+.gbg .gpbg { position: relative; width: 100%; overflow: hidden; border-radius: 6px; border: 1px solid var(--line); background: #1a1e2b; }
