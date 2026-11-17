@@ -4,51 +4,37 @@
 
 ## Included variants
 
-- **Sunset:** retains the original warm palette and road.
-- **Winter:** adds snow to roofs, tree crowns, and the foreground road. The Drava remains open water; no frozen-river claim is implied.
-- **Shared bridge:** a multi-arch bridge appears at the far left, per the Game Director's direction. It is stylized game art, not a documentary depiction of the present-day Puh bridge.
+- **Sunset:** retains the warm palette and original road.
+- **Winter:** adds snow to roofs, tree crowns, the riverbank wall coping, and foreground road. The Drava remains open water.
+- **Shared bridge and riverbank wall:** the wall defines the city's far bank, runs behind the river edge, and meets the left end of the stylized bridge. This is based on the supplied visual reference; it is not a verified historical reconstruction.
 
-The Game Director identifies the winter background as the setting where Kurent is recruitable. Other winter-scene assignments remain OPEN for future direction.
+The Game Director identifies the winter background as the setting where Kurent is recruitable. Other winter-scene assignments remain OPEN.
 
 ## File checks
 
-- Source and export PNGs were opened and inspected. Source layers retain their full generated canvases; transparent exports are cropped to opaque bounds and carry binary alpha. The opaque sky layers remain full-canvas.
-- Both road exports use a horizontally mirrored half, so the first and last columns match. A three-copy winter-road preview was visually inspected; no edge seam is apparent.
-- Sunset and winter previews were assembled from the exported layers. Their transforms and placements are review proposals, not runtime coordinates.
-- The manifest records each cropped export's source-canvas offset and dimensions.
-- Text in the JSON manifest and this report is UTF-8.
+- Source and export PNGs were opened and inspected. Transparent exports use binary alpha and are cropped to opaque bounds; the manifest records their offsets.
+- Winter town and reflection source canvases now match the 1672 × 941 review canvas. The one-pixel transparent extension does not alter their painted content.
+- Both road exports mirror one half across the other, so their left and right edge columns match. Three-copy road previews were visually checked for seams.
+- Sunset and winter previews include the new wall and show it joining the bridge. The wall layers sit between the town/river and the foreground bridge.
+- The road ground lines in the preview match the manifest: sunset y=761, winter y=750.
 
-## Runtime and geography limits
+## Runtime and integration limits
 
-- The inspected GitHub `main` branch at the time of review did not contain a background renderer, parallax loader, background configuration, or asset tests. Runtime dimensions, scaling, draw order, and alpha handling remain unconfirmed.
-- Feedback mentioned a 1672 × 560 runtime view and `data/backgrounds.json`; neither was present in the inspected `main` branch. The 1672 × 941 value is the generated source/review canvas only.
-- Official local tourism information places Ptuj Castle on Castle Hill above the old town. The generated skyline and viewpoint are stylized and are not a surveyed view.
-- Ptuj's current Puh bridge is a contemporary structure. The multi-arch bridge in this pack is a visual interpretation, not a claim that it depicts the current Puh bridge.
-- Clouds, water, and reflections are still frames. Movement and animation are not implemented, and no numeric parallax speeds are approved.
+- The inspected GitHub main branch does not contain a background renderer, parallax loader, configuration, or asset tests. The 1672 × 941 canvas is a review canvas, not a confirmed runtime size.
+- The referenced 1672 × 560 view and data/backgrounds.json are on the separate open PR 32 branch, not main.
+- PR 32's build helper reads dimensions.export and tileable.horizontal from layersBackToFront entries, then uses data/backgrounds.json for scene placement. PR 33's descriptive manifest uses exportSize, a boolean tileable, and offset. It therefore needs a metadata and placement adapter before that build can consume this pack. The build helper checks PNG dimensions and is expected to stop on a missing size declaration; it does not silently accept those missing dimensions.
+- The new wall and winter layers are not added to PR 32's data/backgrounds.json or runtime scene layout. This remains OPEN for game integration; the winter background is not assigned to an A/B test here.
+- The ground line remains OPEN. On the 941 px review canvas the road starts at y=761 (sunset) and y=750 (winter), while the A/B prototype's actor feet are placed substantially higher. The wall fixes the city's visible riverbank, but does not solve the battle-layout ground placement. The two road lines also differ by 11 px.
+- Ptuj Castle's hilltop relationship to the old town is supported by [Visit Ptuj](https://visitptuj.eu/en/see-do/culture-heritage/sightseeing/ptuj-castle/). The skyline, wall, and multi-arch bridge are stylized scene art; the bridge is not a depiction of the present-day Puh bridge, and the wall is not asserted as a verified historical structure.
 
 ## Review files
 
 - Sunset preview: `assembled.jpg`
 - Winter preview: `winter-assembled.jpg`
-- Winter road repeat check: `winter-road-repeat-3x.jpg`
+- Sunset road repeat preview: `road-repeat-3x.jpg`
+- Winter road repeat preview: `winter-road-repeat-3x.jpg`
 - Source layers: `art/source/environments/ptuj/`
 - Cropped exports: `art/exports/environments/ptuj/`
-- Machine-readable manifest: `art/manifests/ptuj.json`
+- Manifest: `art/manifests/ptuj.json`
 
-No game tests were run because this asset pack is not connected to a renderer or asset test suite in the inspected repository.
-
-## Review check, 2026-11-17 (manifest 0.2.1)
-
-Checked against the exported PNG files:
-
-- All 17 export layers have binary alpha; no partial-alpha pixels were found.
-- Every export's pixel size matches its manifest `exportSize`.
-- Every offset plus export size fits the 1672 × 941 canvas. The road tiles are horizontal repeats and are excluded from this check.
-- The road tiles sit at the bottom of their 724 px source. Their canvas ground lines are 761 (sunset) and 750 (winter). Manifest 0.2.1 records these as `groundY`.
-
-Open items:
-
-- The ground lines are at 80–81% of canvas height. In the browser prototype, enemies stand at about 62–70% of scene height and heroes at about 75–87%, so the party would appear to stand on the river. The composition decision is still open.
-- The sunset and winter ground lines differ by 11 px.
-- The winter town and winter reflections sources are 1671 px wide against the 1672 px canvas.
-- Manifest 0.2.x uses `exportSize`, `offset` and a boolean `tileable`. The 0.1.0 reader expected `dimensions.export`, `tileable.horizontal` and `x`/`y`, so the reader must be updated before this manifest is integrated.
+No game tests were run. The art pack remains unintegrated and the relevant renderer is only on the separate PR 32 branch.
