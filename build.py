@@ -80,7 +80,7 @@ def background_packs():
                 t = {'speed': round(depth / max(1, len(ordered) - 1), 2)}
                 notes.append(f"background pack {pid}: layer {L['id']} has no tuning in data/backgrounds.json, speed {t['speed']} from its depth")
             layers.append({'id': L['id'], 'w': w, 'h': h, 'x': x, 'y': y, 'tileX': bool(L.get('tileX')),
-                           'front': t.get('front', L.get('role') == 'foreground'), 'speed': t.get('speed', 0), 'drift': t.get('drift', 0),
+                           'front': t.get('front', L.get('role') == 'foreground'), 'speed': t.get('speed', 0), 'drift': t.get('drift', 0), 'pan': t.get('pan', 1),
                            'src': 'data:image/png;base64,' + base64.b64encode(raw).decode('ascii')})
             size += len(raw)
         packs[pid] = {'name': man.get('name', pid), 'version': man.get('version', ''), 'status': man.get('status', 'draft'),

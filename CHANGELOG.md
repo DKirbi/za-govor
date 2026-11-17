@@ -36,21 +36,30 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
-## 0.14.0 — 17 Nov 2026 · zaprta alfa · a background A/B test for Ptuj (variant B waits for its art)
+## 0.14.0 — 17 Nov 2026 · zaprta alfa · Ptuj gets a second background for an A/B test
 Branch `feat/ptuj-bg-ab`. Details: `docs/art-benchmarks/ptuj-background/INTEGRATION.md`.
-- **Variant A, the Ptuj background in use, is unchanged.** Variant B, GPT's layered sunset pack, is connected
-  but not delivered yet. `build.py` builds it in once `art/manifests/ptuj.json` and all of its layer PNGs are
-  committed. Until then players see exactly what they saw in 0.13.0.
-- **Parallax on the road and in battle** for a layered pack (`src/backgrounds.js`): each layer scrolls with
-  the walk at its own speed, the battle shows the scene still with drifting clouds, a foreground layer stands
-  in front of the heroes but under the battle UI, and nothing drifts under reduced motion. Speeds are tuning
-  values in `data/backgrounds.json`.
-- **The A/B test is off** (`live: false`). Turned on, each install keeps one variant (localStorage
-  `zg-ab`). `?ozadje=B` in the address previews B, and *Liki in karte → Ozadja* shows it.
+- **Variant B, *Ptuj — večer ob Dravi*:** a layered pixel-art background after GPT's reference.
+  - It shows a sunset sky with clouds, distant hills with vine rows, the wooded castle hill with Ptuj Castle,
+    the old town with Minoritski samostan, Mestni stolp and St George, the Drava with the town's reflection
+    and the sun's road, a riverside meadow and a cobbled promenade.
+  - There are 10 layers on a 640 × 165 canvas (the heroes' pixel size on desktop), 25 KB together, drawn by
+    `tools/art_ptuj_parallax.py` into `art/exports/environments/ptuj/` with `art/manifests/ptuj.json`.
+  - The enemies stand on the meadow and the heroes on the promenade, laid out from where the game puts their
+    feet. There is no bridge.
+- **Variant A, the snowy Ptuj in use, is unchanged**, and it is what players see: the A/B test is off
+  (`live: false` in `data/backgrounds.json`). `?ozadje=B` previews B, and *Liki in karte → Ozadja* shows it.
+  Turned on, each install keeps one variant (localStorage `zg-ab`).
+- **Parallax** for a layered pack (`src/backgrounds.js`):
+  - On the road each layer moves at its own speed, from the same centred framing as the battles. The sky
+    and the sun's road pan together, and the reflection moves with the town.
+  - In battle the clouds drift and the river flows. Nothing moves under reduced motion.
+  - The foreground stands in front of the actors and under the battle UI.
+- **`build.py`** builds in a pack once its manifest and layers are committed, and stops on a layer that
+  contradicts its manifest.
 - **Battle statistics name the background variant** (`ozadje-ptuj=A`, or `B(predogled)` for a preview).
   The consent text says so (*različica igre in ozadja*).
-- GPT's reference image is committed as `docs/art-benchmarks/ptuj-background/ptuj-parallax-preview.png`
-  (reference only). New test file `tests/backgrounds.test.js` (26 checks, with a synthetic test pack).
+- GPT's reference sheet is committed as `docs/art-benchmarks/ptuj-background/ptuj-parallax-preview.png`
+  (reference only). New test file: `tests/backgrounds.test.js` (26 checks).
 
 ## 0.13.0 — 17 Nov 2026 · zaprta alfa · balance D: the party levels together, a difficulty curve, a new Lintvern
 Branch `feat/balance-d`, from the balance simulations of 16–17 Nov (version D of four compared). The working

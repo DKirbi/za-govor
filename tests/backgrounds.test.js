@@ -1,25 +1,10 @@
 // Background A/B tests (src/backgrounds.js, data/backgrounds.json): variant A is the background in use and stays
-// exactly as it was; a pack variant draws a layered parallax background on the road and in battle.
-// No art pack is committed yet, so the pack variant is checked with a synthetic test pack drawn on a canvas in
-// the page: flat colour bands, not artwork. They only prove the wiring (order, registration, scrolling, drift,
-// foreground, the A/B draw and the statistics), never what the real Ptuj layers will look like.
+// exactly as it was; variant B is the layered Ptuj pack (tools/art_ptuj_parallax.py → art/exports/environments/ptuj,
+// art/manifests/ptuj.json), drawn with parallax on the road and still, with drifting clouds and water, in battle.
 const { openGame, runner, sleep } = require('./harness');
 const { check, run } = runner('Background variants (A/B tests)');
 
-// a 480×120 test canvas: sky, drifting clouds, hills, a town that does not tile, a road and a foreground strip
-const TEST_PACK = () => {
-  const png = (w, h, paint) => { const c = document.createElement('canvas'); c.width = w; c.height = h; paint(c.getContext('2d'), w, h); return c.toDataURL('image/png'); };
-  const band = (col, stripe) => (g, w, h) => { g.fillStyle = col; g.fillRect(0, 0, w, h); if (stripe) { g.fillStyle = stripe; for (let x = 0; x < w; x += 16) g.fillRect(x, 0, 8, h); } };
-  const L = (id, w, h, x, y, tileX, speed, more = {}) => ({ id, w, h, x, y, tileX, speed, drift: 0, front: false, ...more, src: png(w, h, more.paint || band('#888')) });
-  return { name: 'TEST', version: 'test', status: 'draft', canvas: { w: 480, h: 120 }, hideRoad: true, layers: [
-    L('sky', 480, 120, 0, 0, true, 0, { paint: band('#3a3a7a') }),
-    L('clouds', 200, 30, 0, 8, true, 0.03, { drift: 3, paint: (g, w, h) => { g.fillStyle = '#ddd'; g.fillRect(20, 6, 60, 14); g.fillRect(120, 10, 50, 12); } }),
-    L('distant-hills', 480, 50, 0, 50, true, 0.06, { paint: band('#5a4a8a', '#4a3a7a') }),
-    L('town', 480, 40, 0, 62, false, 0.22, { paint: band('#c86', '#a64') }),
-    L('road-tile', 64, 22, 0, 98, true, 1, { paint: band('#a98', '#876') }),
-    L('fg', 80, 10, 0, 110, true, 1, { front: true, paint: band('#3a5', '#294') }),
-  ] };
-};
+const ORDER = 'sky,clouds,distant-hills,castle-hill,town,drava-water,reflections,sun-glint,road-tile,foreground';
 const mod = (x, tw) => ((x % tw) + tw) % tw - tw;
 
 run(async () => {
@@ -27,17 +12,23 @@ run(async () => {
   const { page, errors, shot } = ctx;
   const ev = (fn, ...a) => page.evaluate(fn, ...a);
   const sceneInfo = () => ev(() => { const sc = document.querySelector('.scene'); if (!sc) return null;
-    const st = getComputedStyle(sc), road = sc.querySelector('.road');
+    const road = sc.querySelector('.road');
     return { pbg: sc.classList.contains('pbg'), layers: [...sc.querySelectorAll(':scope > .pbg-l')].map(e => e.dataset.layer), dim: !!sc.querySelector(':scope > .pbg-dim'),
-      bgimg: (sc.style.backgroundImage || '').replace(/base64,[^"')]+/g, 'base64,…'), roadShown: road ? getComputedStyle(road).display !== 'none' : null, cls: sc.className, h: sc.clientHeight, w: sc.clientWidth, comp: st.backgroundImage.slice(0, 40) }; });
+      bgimg: (sc.style.backgroundImage || '').replace(/base64,[^"')]+/g, 'base64,…'), roadShown: road ? getComputedStyle(road).display !== 'none' : null, cls: sc.className }; });
+  // where each layer's picture is, and the numbers the placement is computed from
+  const layerPos = () => ev(() => { const sc = document.querySelector('.scene'), pos = {}, P = window.__ZG.BGX.packs.ptuj;
+    sc.querySelectorAll(':scope > .pbg-l').forEach(e => { pos[e.dataset.layer] = parseFloat(e.style.backgroundPositionX); });
+    return { pos, W: sc.clientWidth, H: sc.clientHeight, L: Object.fromEntries(P.layers.map(l => [l.id, { w: l.w, speed: l.speed, pan: l.pan, tileX: l.tileX }])) }; });
 
-  // ---------------------------------------------------------------- nothing delivered: everyone sees A, as before
-  const none = await ev(() => { const Z = window.__ZG; localStorage.removeItem('zg-ab');
-    return { packs: Object.keys(Z.BGX.packs), test: !!Z.BGX.tests.ptuj, live: Z.BGX.tests.ptuj.live, v: Z.bgVariant('ptuj'), tags: Z.bgStatTags(), ab: localStorage.getItem('zg-ab') }; });
-  check(none.test && none.packs.length === 0 && none.live === false, 'data/backgrounds.json names the Ptuj test; no pack is built while its art is not committed', JSON.stringify(none));
-  check(none.v === 'A' && none.ab === null, 'without the pack everyone sees A and nobody is assigned a variant');
-  check(none.tags.join() === 'ozadje-ptuj=A', 'the statistics carry the variant: ozadje-ptuj=A', none.tags.join());
+  // ---------------------------------------------------------------- the pack in the build
+  const built = await ev(() => { const Z = window.__ZG, P = Z.BGX.packs.ptuj; localStorage.removeItem('zg-ab');
+    return P && { ids: P.layers.map(l => l.id).join(), canvas: P.canvas, status: P.status, name: P.name, front: P.layers.filter(l => l.front).map(l => l.id),
+      tiles: P.layers.filter(l => !l.tileX).map(l => l.id), live: Z.BGX.tests.ptuj.live, v: Z.bgVariant('ptuj'), tags: Z.bgStatTags(), ab: localStorage.getItem('zg-ab') }; });
+  check(built && built.ids === ORDER && built.canvas.w === 640 && built.canvas.h === 165, 'the Ptuj pack is built in: ten layers in manifest order on a 640×165 canvas', JSON.stringify(built && { ids: built.ids, canvas: built.canvas }));
+  check(built.status === 'review' && built.front.join() === 'foreground' && built.tiles.join() === 'sky,sun-glint', 'status review; only the foreground stands in front; sky and the sun\'s road do not tile', JSON.stringify(built));
+  check(built.live === false && built.v === 'A' && built.ab === null && built.tags.join() === 'ozadje-ptuj=A', 'the test is not live: everyone sees A, nobody is assigned, the statistics say ozadje-ptuj=A');
 
+  // ---------------------------------------------------------------- variant A, as before
   await ev(() => { const Z = window.__ZG; Z.S.testMode = true; Z.S.mode = 'calm'; Z.newRun('krpan'); Z.go('travel'); }); await sleep(250);
   const ptujA = await sceneInfo();
   check(ptujA && !ptujA.pbg && ptujA.layers.length === 0 && /data:image\/png/.test(ptujA.bgimg) && ptujA.roadShown === true, 'variant A on the Ptuj road: the one picture and the road strip, no layers', JSON.stringify(ptujA));
@@ -46,62 +37,55 @@ run(async () => {
   check(battleA && !battleA.pbg && /data:image\/png/.test(battleA.bgimg) && /linear-gradient/.test(battleA.bgimg), 'variant A in a Ptuj battle: the dimmed picture as before', battleA && battleA.cls);
   await shot('bg-00-ptuj-battle-A');
 
-  // ---------------------------------------------------------------- a built pack that is not live: still A unless previewed
-  await ev(fn => { const Z = window.__ZG; Z.BGX.packs.ptuj = (new Function('return (' + fn + ')()'))(); }, TEST_PACK.toString());
-  const notLive = await ev(() => ({ v: window.__ZG.bgVariant('ptuj'), ab: localStorage.getItem('zg-ab') }));
-  check(notLive.v === 'A' && notLive.ab === null, 'a built pack is not shown to players while the test is not live', JSON.stringify(notLive));
-
   // ---------------------------------------------------------------- preview (?ozadje=B): the road
   await ev(() => { const Z = window.__ZG; Z.setBgForce('B'); Z.newRun('krpan'); Z.go('travel'); }); await sleep(250);
   const tagsB = await ev(() => window.__ZG.bgStatTags());
   check(tagsB.join() === 'ozadje-ptuj=B(predogled)', 'a preview is marked in the statistics, so it never counts as an assigned B', tagsB.join());
   const ptujB = await sceneInfo();
-  check(ptujB.pbg && ptujB.layers.join() === 'sky,clouds,distant-hills,town,road-tile,fg' && ptujB.dim, 'variant B on the road: every layer, back to front as the manifest orders them, under the road dimming', JSON.stringify(ptujB.layers));
-  check(ptujB.bgimg === '' && ptujB.roadShown === false, 'the pack brings its own ground: the single picture and the road strip of A are not drawn under it');
+  check(ptujB.pbg && ptujB.layers.join() === ORDER && ptujB.dim, 'variant B on the road: every layer, back to front, under the road dimming', ptujB.layers.join());
+  check(ptujB.bgimg === '' && ptujB.roadShown === false, 'the pack brings its own path: the single picture and the road strip of A are not drawn under it');
   const stack = await ev(() => { const sc = document.querySelector('.scene'), z = s => getComputedStyle(sc.querySelector(s)).zIndex;
     return { fg: z('.pbg-l.front'), party: z(':scope > .party'), kids: [...sc.children].map(e => e.className.split(' ')[0]) }; });
-  check(+stack.fg > +stack.party && stack.kids.indexOf('pbg-l') === 0 && stack.kids.indexOf('road') > stack.kids.indexOf('pbg-dim'), 'the foreground layer stands in front of the walking party; the others behind the stops and the party', JSON.stringify(stack));
+  check(+stack.fg > +stack.party && stack.kids.indexOf('pbg-l') === 0 && stack.kids.indexOf('road') > stack.kids.indexOf('pbg-dim'), 'the foreground stands in front of the walking party; the other layers behind the stops and the party', JSON.stringify(stack));
 
-  // walking: each tiling layer moves with the road × its speed; the town (no tiling) pans once across the region
-  const at = x => ev(async x => { const Z = window.__ZG, R = Z.S.run; R.prompt = null; R.walking = false; R.x = x; await new Promise(r => setTimeout(r, 120));
-    const sc = document.querySelector('.scene'), pos = {};
-    sc.querySelectorAll(':scope > .pbg-l').forEach(e => { pos[e.dataset.layer] = parseFloat(e.style.backgroundPositionX); });
-    return { pos, W: sc.clientWidth, H: sc.clientHeight, endX: R.endX, mobile: Z.S.mobile }; }, x);
-  await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);   // no cloud drift, so the numbers are exact
-  const p0 = await at(0), p1 = await at(600);
-  const s = p1.H / 120, k = p1.mobile ? 0.62 : 1, P = await ev(() => window.__ZG.BGX.packs.ptuj.layers.map(L => ({ id: L.id, w: L.w, speed: L.speed })));
-  const want = id => { const L = P.find(l => l.id === id); return Math.round(mod(-600 * k * L.speed, Math.round(L.w * s))); };
+  // walking: tiling layers scroll with the road × their speed from the battle's centred framing; sky and sun pan together
+  await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);   // no drift, so the numbers are exact
+  const at = x => ev(async x => { const Z = window.__ZG, R = Z.S.run; R.prompt = null; R.walking = false; R.x = x; await new Promise(r => setTimeout(r, 120)); return { endX: R.endX, mobile: Z.S.mobile }; }, x);
+  await at(0); const p0 = await layerPos();
+  const r1 = await at(1200), p1 = await layerPos();
+  const s = p1.H / 165, k = r1.mobile ? 0.62 : 1, c0 = (p1.W - 640 * s) / 2;
+  const tileWant = (id, x) => Math.round(mod(c0 - x * k * p1.L[id].speed, Math.round(p1.L[id].w * s)));
   const near = (a, b) => Math.abs(a - b) <= 1;
-  check(near(p1.pos['road-tile'], want('road-tile')) && near(p1.pos['distant-hills'], want('distant-hills')) && near(p1.pos.clouds, want('clouds')),
-    'after 600 px of road the road layer has moved 600 px, the hills 6 %, the clouds 3 % (wrapped on their tile)', JSON.stringify({ got: p1.pos, road: want('road-tile'), hills: want('distant-hills') }));
-  check(p0.pos.sky === p1.pos.sky, 'the sky (speed 0) stands still', `${p0.pos.sky} → ${p1.pos.sky}`);
-  const townWant = Math.round(-Math.max(0, 480 * s - p1.W) * 600 / p1.endX);
-  check(near(p1.pos.town, townWant), 'a layer that does not tile pans once across the region with the progress of the walk', `${p1.pos.town} vs ${townWant}`);
-  await shot('bg-01-ptuj-road-B');
+  check(near(p0.pos['road-tile'], tileWant('road-tile', 0)) && near(p0.pos.town, tileWant('town', 0)) && near(p0.pos.sky, Math.round(c0)), 'at the start of the road the canvas is centred, as in battle', JSON.stringify({ got: p0.pos.sky, want: Math.round(c0) }));
+  check(['road-tile', 'foreground', 'town', 'castle-hill', 'distant-hills', 'drava-water', 'clouds'].every(id => near(p1.pos[id], tileWant(id, 1200))),
+    'after 1200 px of road each tiling layer has moved by its speed: path 1, town 0.16, castle hill 0.09, hills 0.05, clouds 0.03', JSON.stringify(p1.pos));
+  check(p1.pos.reflections === p1.pos.town, 'the town\'s reflection moves with the town', `${p1.pos.reflections} / ${p1.pos.town}`);
+  const skyWant = Math.round(c0 - Math.max(0, 640 * s - p1.W) / 2 * (1200 / r1.endX) * 0.5);
+  check(near(p1.pos.sky, skyWant) && p1.pos['sun-glint'] === p1.pos.sky, 'the sky pans slowly with the walk and the sun\'s road on the water stays under the sun', `${p1.pos.sky} vs ${skyWant}, glint ${p1.pos['sun-glint']}`);
+  await at(2400); await shot('bg-01-ptuj-road-B');
 
   // ---------------------------------------------------------------- preview: a Ptuj battle
   await ev(() => { const Z = window.__ZG; Z.stopBattle(Z.S.run.stops.find(s => s.kind === 'battle' && !s.done)); Z.B.enemies.forEach(e => { e.charge = -99; }); }); await sleep(300);
   const battleB = await sceneInfo();
-  check(battleB.pbg && battleB.layers.length === 6 && battleB.bgimg === '' && battleB.dim, 'variant B in a Ptuj battle: the layers under the battle dimming, no single picture', JSON.stringify(battleB.layers));
+  check(battleB.pbg && battleB.layers.join() === ORDER && battleB.bgimg === '' && battleB.dim, 'variant B in a Ptuj battle: the layers under the battle dimming, no single picture', battleB.layers.join());
   const bstack = await ev(() => { const sc = document.querySelector('.scene'), z = e => getComputedStyle(e).zIndex, q = s => sc.querySelector(s);
-    const dim = getComputedStyle(q('.pbg-dim')).backgroundImage;
-    return { fg: z(q('.pbg-l.front')), hp: z(q('.partyhp')), cards: z(q('.cards')), floats: z(q('.floats')), party: z(q('.party')), enemies: z(q('.enemies')), dim }; });
+    return { fg: z(q('.pbg-l.front')), hp: z(q('.partyhp')), cards: z(q('.cards')), floats: z(q('.floats')), party: z(q('.party')), enemies: z(q('.enemies')), dim: getComputedStyle(q('.pbg-dim')).backgroundImage }; });
   check(bstack.fg === '1' && bstack.party === 'auto' && bstack.enemies === 'auto' && bstack.hp === '2' && bstack.cards === '2' && bstack.floats === '2',
     'in battle the foreground is in front of heroes and enemies but under the health bar, the attack cards and the numbers', JSON.stringify(bstack));
   check(/0\.36/.test(bstack.dim) && /0\.16/.test(bstack.dim), 'the pack gets the same battle dimming as variant A, so A and B are compared fairly');
-  const centred = await ev(() => { const sc = document.querySelector('.scene'), s = sc.clientHeight / 120, cw = 480 * s, x0 = (sc.clientWidth - cw) / 2;
-    const at = id => parseFloat(sc.querySelector(`[data-layer="${id}"]`).style.backgroundPositionX);
-    return { sky: at('sky'), skyWant: Math.round((((x0 % cw) + cw) % cw) - cw), town: at('town'), townWant: Math.round(x0), size: sc.querySelector('[data-layer="sky"]').style.backgroundSize, h: sc.clientHeight }; });
-  check(Math.abs(centred.sky - centred.skyWant) <= 1 && Math.abs(centred.town - centred.townWant) <= 1 && centred.size.endsWith(centred.h + 'px'),
-    'the battle shows the canvas centred and scaled to the scene height', JSON.stringify(centred));
+  const pb = await layerPos(), sb = pb.H / 165, cb = (pb.W - 640 * sb) / 2;
+  check(near(pb.pos.sky, Math.round(cb)) && near(pb.pos.town, Math.round(mod(cb, Math.round(640 * sb)))) && near(pb.pos['road-tile'], Math.round(mod(cb, Math.round(192 * sb)))),
+    'the battle shows the canvas centred and scaled to the scene height', JSON.stringify({ sky: pb.pos.sky, want: Math.round(cb) }));
   const still = await ev(async () => { const c = () => document.querySelector('[data-layer="clouds"]').style.backgroundPositionX; const a = c(); await new Promise(r => setTimeout(r, 700)); return [a, c()]; });
   check(still[0] === still[1], 'with reduced motion the clouds stand still', still.join(' → '));
   await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'no-preference' }]);
-  const drift = await ev(async () => { const q = id => document.querySelector(`[data-layer="${id}"]`), c = () => parseFloat(q('clouds').style.backgroundPositionX), f = () => q('fg').style.backgroundPositionX;
-    await new Promise(r => setTimeout(r, 200)); const a = c(), fa = f(); await new Promise(r => setTimeout(r, 1500));
-    const tw = parseFloat(q('clouds').style.backgroundSize), d = ((c() - a) % tw + tw * 1.5) % tw - tw / 2;
-    return { d: Math.round(d), want: Math.round(-3 * document.querySelector('.scene').clientHeight / 120 * 1.5), fa, fb: f() }; });
-  check(Math.abs(drift.d - drift.want) <= 5 && drift.fa === drift.fb, 'otherwise the clouds drift 3 art pixels a second; the foreground never moves in battle', JSON.stringify(drift));
+  const drift = await ev(async () => { const q = id => document.querySelector(`[data-layer="${id}"]`), x = id => parseFloat(q(id).style.backgroundPositionX);
+    const step = (id, a) => { const tw = parseFloat(q(id).style.backgroundSize); return Math.round(((x(id) - a) % tw + tw * 1.5) % tw - tw / 2); };
+    await new Promise(r => setTimeout(r, 200)); const c = x('clouds'), w = x('drava-water'), f = q('foreground').style.backgroundPositionX, t = q('town').style.backgroundPositionX;
+    await new Promise(r => setTimeout(r, 1500)); const s = document.querySelector('.scene').clientHeight / 165;
+    return { clouds: step('clouds', c), cloudsWant: Math.round(-2 * s * 1.5), water: step('drava-water', w), waterWant: Math.round(1.5 * s * 1.5), still: f === q('foreground').style.backgroundPositionX && t === q('town').style.backgroundPositionX }; });
+  check(Math.abs(drift.clouds - drift.cloudsWant) <= 3 && Math.abs(drift.water - drift.waterWant) <= 3 && drift.still,
+    'otherwise the clouds drift left and the Drava flows right; the town and the foreground never move in battle', JSON.stringify(drift));
   await shot('bg-02-ptuj-battle-B');
 
   // other regions are never touched by the Ptuj test
@@ -109,11 +93,11 @@ run(async () => {
   const peca = await sceneInfo();
   check(!peca.pbg && peca.layers.length === 0 && /data:image\/png/.test(peca.bgimg), 'Peca keeps its own picture with the Ptuj preview on', peca.cls);
 
-  // the gallery shows the built pack next to the pictures of A
+  // the gallery shows the pack next to the pictures of A
   await ev(() => window.__ZG.go('gallery')); await sleep(300);
   const gal = await ev(() => { const f = [...document.querySelectorAll('.gbg figure')]; const b = f.find(x => x.querySelector('.gpbg'));
     return { n: f.length, cap: b ? b.textContent : '', layers: b ? b.querySelectorAll('.pbg-l').length : 0, h: b ? b.querySelector('.gpbg').clientHeight : 0 }; });
-  check(gal.layers === 6 && gal.h > 0 && /različica B \(v pregledu\)/.test(gal.cap), 'Liki in karte → Ozadja shows the pack variant as "v pregledu" until it is approved', JSON.stringify(gal));
+  check(gal.layers === 10 && gal.h > 0 && gal.cap === 'Ptuj — večer ob Dravi — različica B (v pregledu)', 'Liki in karte → Ozadja shows variant B as "v pregledu" until it is approved', JSON.stringify(gal));
 
   // ---------------------------------------------------------------- live: one variant per install, kept
   const draw = await ev(() => { const Z = window.__ZG, T = Z.BGX.tests.ptuj; Z.setBgForce(null); T.live = true;
