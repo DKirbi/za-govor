@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280" height="720" viewBox="0 0 640 360" shape-rendering="crispEdges">
+<style>
+@keyframes cloud-drift{from{transform:translateX(-5px)}to{transform:translateX(12px)}}
+@keyframes hills-drift{from{transform:translateX(2px)}to{transform:translateX(-2px)}}
+@keyframes castle-drift{from{transform:translateX(1px)}to{transform:translateX(-3px)}}
+@keyframes town-drift{from{transform:translateX(1px)}to{transform:translateX(-4px)}}
+@keyframes water-shimmer{from{transform:translateX(-3px);opacity:.65}to{transform:translateX(3px);opacity:1}}
+@keyframes foreground-drift{from{transform:translateX(1px)}to{transform:translateX(-5px)}}
+.clouds{animation:cloud-drift 42s linear infinite alternate}
+.hills{animation:hills-drift 95s ease-in-out infinite alternate}
+.castle{animation:castle-drift 78s ease-in-out infinite alternate}
+.town{animation:town-drift 68s ease-in-out infinite alternate}
+.reflections{animation:water-shimmer 7s ease-in-out infinite alternate}
+.foreground{animation:foreground-drift 56s ease-in-out infinite alternate}
+@media(prefers-reduced-motion:reduce){.clouds,.hills,.castle,.town,.reflections,.foreground{animation:none!important}}
+</style>
+<image href="layers/sky.svg" x="0" y="0" width="640" height="360"/>
+<image class="clouds" href="layers/clouds.svg" x="0" y="0" width="640" height="360"/>
+<image class="hills" href="layers/distant-hills.svg" x="0" y="0" width="640" height="360"/>
+<image class="castle" href="layers/castle-hill.svg" x="0" y="0" width="640" height="360"/>
+<image class="town" href="layers/old-town.svg" x="0" y="0" width="640" height="360"/>
+<image href="layers/drava.svg" x="0" y="0" width="640" height="360"/>
+<image class="reflections" href="layers/reflections.svg" x="0" y="0" width="640" height="360"/>
+<image href="layers/ambient.svg" x="0" y="0" width="640" height="360"/>
+<image class="foreground" href="layers/foreground.svg" x="0" y="0" width="640" height="360"/>
+</svg>

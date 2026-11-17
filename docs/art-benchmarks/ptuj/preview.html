@@ -1,11 +1,10 @@
 <!doctype html>
 <html lang="sl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Za govor! — Ptuj parallax benchmark</title>
 <style>
-:root{color-scheme:dark;--gold:#e6b86e;--ink:#111725;--panel:#1b2230}
+:root{color-scheme:dark;--gold:#e6b86e;--panel:#1b2230}
 *{box-sizing:border-box}body{margin:0;background:#101522;color:#f2e6d1;font:15px/1.5 system-ui,sans-serif}
 main{max-width:1100px;margin:auto;padding:28px 20px 48px}
 header{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:18px}
@@ -14,22 +13,20 @@ h1{font:600 clamp(25px,4vw,38px)/1.1 Georgia,serif;margin:0;color:#f4d39b}
 p{color:#c7c5c0;max-width:760px}
 .stage{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;border:2px solid var(--gold);border-radius:8px;background:#302e68;box-shadow:0 16px 48px #0008;image-rendering:pixelated}
 .layer{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;image-rendering:pixelated;pointer-events:none}
-.clouds{animation:cloud-drift 42s linear infinite}
-.hills{animation:hills-drift 95s ease-in-out infinite alternate}
-.castle{animation:castle-drift 78s ease-in-out infinite alternate}
-.town{animation:town-drift 68s ease-in-out infinite alternate}
-.reflections{animation:water-shimmer 7s ease-in-out infinite alternate}
-.foreground{animation:foreground-drift 56s ease-in-out infinite alternate}
+.clouds{animation:cloud-drift 42s linear infinite alternate}.hills{animation:hills-drift 95s ease-in-out infinite alternate}
+.castle{animation:castle-drift 78s ease-in-out infinite alternate}.town{animation:town-drift 68s ease-in-out infinite alternate}
+.reflections{animation:water-shimmer 7s ease-in-out infinite alternate}.foreground{animation:foreground-drift 56s ease-in-out infinite alternate}
 @keyframes cloud-drift{from{transform:translateX(-5px)}to{transform:translateX(12px)}}
 @keyframes hills-drift{from{transform:translateX(2px)}to{transform:translateX(-2px)}}
 @keyframes castle-drift{from{transform:translateX(1px)}to{transform:translateX(-3px)}}
 @keyframes town-drift{from{transform:translateX(1px)}to{transform:translateX(-4px)}}
 @keyframes water-shimmer{from{transform:translateX(-3px);opacity:.65}to{transform:translateX(3px);opacity:1}}
 @keyframes foreground-drift{from{transform:translateX(1px)}to{transform:translateX(-5px)}}
-.controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0 20px}
+.controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0}
 button{background:#282f3d;border:1px solid #806746;color:#f4e6ce;border-radius:6px;padding:8px 14px;cursor:pointer}
-button:hover{background:#343d4e}.control-label{color:#d8c8ad;font-size:13px}
-input{accent-color:#d8aa64}
+button:hover{background:#343d4e}.control-label{color:#d8c8ad;font-size:13px}input{accent-color:#d8aa64}
+.layer-toggles{display:flex;gap:8px 16px;flex-wrap:wrap;background:var(--panel);padding:12px;border-radius:7px;margin:0 0 20px}
+.layer-toggles label{font-size:12px;color:#d8c8ad;white-space:nowrap}.layer-toggles input{margin-right:5px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
 .card{background:var(--panel);border:1px solid #3d4554;border-radius:7px;padding:14px}
 .card b{color:#f0c982}.card small{display:block;color:#b5b4b0;margin-top:3px}
@@ -38,26 +35,23 @@ footer{color:#8e929b;font-size:12px;margin-top:20px}
 .paused .layer{animation-play-state:paused!important}
 </style>
 </head>
-<body>
-<main>
+<body><main>
 <header><div><div class="kicker">Za govor! · art benchmark 01</div><h1>Ptuj — mesto ob Dravi</h1></div><div class="kicker">16-bit pixel art · 640 × 360</div></header>
 <p>Prvi večplastni lokacijski background: pozni zimski mrak, Ptujski grad nad starim mestnim jedrom in Drava v ospredju. Premikaj kazalec nad prizorom za občutek globine; animacije so namenoma zelo umirjene.</p>
 <div class="stage" id="stage" aria-label="Animirano večplastno ozadje Ptuja">
-<img class="layer" src="layers/sky.svg" alt="">
-<img class="layer clouds" src="layers/clouds.svg" alt="">
-<img class="layer hills" src="layers/distant-hills.svg" alt="">
-<img class="layer castle" src="layers/castle-hill.svg" alt="">
-<img class="layer town" src="layers/old-town.svg" alt="">
-<img class="layer" src="layers/drava.svg" alt="">
-<img class="layer reflections" src="layers/reflections.svg" alt="">
-<img class="layer" src="layers/ambient.svg" alt="">
+<img class="layer" src="layers/sky.svg" alt=""><img class="layer clouds" src="layers/clouds.svg" alt="">
+<img class="layer hills" src="layers/distant-hills.svg" alt=""><img class="layer castle" src="layers/castle-hill.svg" alt="">
+<img class="layer town" src="layers/old-town.svg" alt=""><img class="layer" src="layers/drava.svg" alt="">
+<img class="layer reflections" src="layers/reflections.svg" alt=""><img class="layer" src="layers/ambient.svg" alt="">
 <img class="layer foreground" src="layers/foreground.svg" alt="">
 </div>
-<div class="controls">
-<button id="toggle" type="button">⏸ Ustavi animacijo</button>
-<label class="control-label" for="speed">Hitrost gibanja</label><input id="speed" type="range" min=".5" max="1.5" step=".1" value="1">
-<span class="control-label" id="speed-value">1×</span>
-</div>
+<div class="controls"><button id="toggle" type="button">⏸ Ustavi animacijo</button><label class="control-label" for="speed">Hitrost gibanja</label><input id="speed" type="range" min=".5" max="1.5" step=".1" value="1"><span class="control-label" id="speed-value">1×</span></div>
+<div class="layer-toggles" aria-label="Vklop in izklop plasti">
+<label><input type="checkbox" data-layer="sky" checked>Nebo</label><label><input type="checkbox" data-layer="clouds" checked>Oblaki</label>
+<label><input type="checkbox" data-layer="hills" checked>Griči</label><label><input type="checkbox" data-layer="castle" checked>Grad</label>
+<label><input type="checkbox" data-layer="town" checked>Mesto</label><label><input type="checkbox" data-layer="drava" checked>Drava</label>
+<label><input type="checkbox" data-layer="reflections" checked>Odsevi</label><label><input type="checkbox" data-layer="ambient" checked>Ambient</label>
+<label><input type="checkbox" data-layer="foreground" checked>Bližnji plan</label></div>
 <section class="grid">
 <div class="card"><b>L5 · Nebo in oblaki</b><small>Oblaki se počasi premikajo; nebo ostane statično.</small></div>
 <div class="card"><b>L4 · Oddaljeni griči</b><small>Minimalen parallax, brez alpskih vrhov.</small></div>
@@ -75,6 +69,5 @@ const durations={clouds:42,hills:95,castle:78,town:68,reflections:7,foreground:5
 speed.addEventListener('input',()=>{const factor=Number(speed.value);speedValue.textContent=factor.toFixed(1)+'×';stage.querySelectorAll('.layer').forEach(el=>{const key=[...el.classList].find(c=>durations[c]);if(key)el.style.animationDuration=(durations[key]/factor)+'s';});});
 stage.addEventListener('pointermove',e=>{const r=stage.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5;stage.querySelectorAll('.layer').forEach(el=>{const cls=[...el.classList].find(c=>['clouds','hills','castle','town','reflections','foreground'].includes(c));const depth={clouds:.15,hills:.25,castle:.4,town:.55,reflections:.7,foreground:1}[cls]||0;el.style.marginLeft=(x*depth*7)+'px';});});
 stage.addEventListener('pointerleave',()=>stage.querySelectorAll('.layer').forEach(el=>el.style.marginLeft='0'));
-</script>
-</body>
-</html>
+document.querySelectorAll('[data-layer]').forEach(input=>input.addEventListener('change',()=>{const layer=input.dataset.layer;const image=stage.querySelector('.layer.'+layer)||stage.querySelector('.layer[src="layers/'+layer+'.svg"]');if(image)image.style.display=input.checked?'block':'none';}));
+</script></body></html>

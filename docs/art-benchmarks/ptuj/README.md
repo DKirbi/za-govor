@@ -19,14 +19,15 @@ The view is a game-art interpretation, not a measured reconstruction of one exac
 
 ## Files
 
-- preview.html — standalone animated preview with pause and motion-speed controls.
+- preview.html — standalone animated preview with pause, speed and individual layer controls.
+- ptuj-parallax.svg — composed animation preview using the separate layers.
 - layers/sky.svg — static sunset sky.
 - layers/clouds.svg — slow independent cloud layer.
 - layers/distant-hills.svg — low distant hills.
 - layers/castle-hill.svg — castle and its wooded hill.
 - layers/old-town.svg — historic town roofline and towers.
 - layers/drava.svg — water surface.
-- layers/reflections.svg — separate animated reflection and ripple overlay.
+- layers/reflections.svg — separate reflection and ripple overlay.
 - layers/foreground.svg — near bank, path, snow, plants and framing tree.
 - layers/ambient.svg — restrained windows, lantern and occasional glints.
 
