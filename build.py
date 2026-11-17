@@ -44,10 +44,28 @@ def png_info(raw, rel):
     return w, h, alpha
 
 
+def manifest_layers(man):
+    """The layers of a pack manifest, back to front, in one shape. Two formats are read:
+    layers: [{id, order, file, width, height, x, y, alpha, tileX, role}] (tools/art_ptuj_parallax.py), and the
+    asset-library format layersBackToFront: [{id, export, dimensions.export, alpha (text), tileable.horizontal}]."""
+    if man.get('layers'): return sorted(man['layers'], key=lambda L: L['order'])
+    out = []
+    for i, L in enumerate(man.get('layersBackToFront') or []):
+        w, h = (L.get('dimensions') or {}).get('export') or (None, None)
+        a = L.get('alpha')
+        out.append({'id': L['id'], 'order': i + 1, 'file': L.get('export') or L.get('file', ''), 'width': w, 'height': h,
+                    'alpha': a if isinstance(a, bool) else not str(a).lower().startswith('opaque'),
+                    'tileX': bool((L.get('tileable') or {}).get('horizontal')), 'role': L.get('role', 'background')})
+    return out
+
+
 def background_packs():
     """data/backgrounds.json with every delivered pack built in. A pack whose manifest or layer files are not all
     committed is left out (its variant does not exist, everyone sees A) and reported; a delivered pack that
-    contradicts its manifest stops the build, so a broken pack never reaches a player."""
+    contradicts its manifest stops the build, so a broken pack never reaches a player.
+    Placement: a layer sits where its manifest puts it (x, y; without y on the bottom of the canvas). When the
+    manifest leaves placement open, data/backgrounds.json places it for the game's scene: the pack's view (the
+    canvas the scene is fitted to) and per layer x, y and scale, in canvas pixels."""
     cfg = json.loads(read('data/backgrounds.json'))
     packs, notes = {}, []
     for pid, pc in cfg.get('packs', {}).items():
@@ -57,33 +75,37 @@ def background_packs():
         man = json.loads(read(mrel))
         if man.get('status') == 'superseded':
             notes.append(f'background pack {pid}: {mrel} is superseded, left out'); continue
-        mls = man.get('layers') or []
-        missing = [L.get('file', '?') for L in mls if not (root / L.get('file', '')).is_file()]
+        mls = manifest_layers(man)
+        missing = [L.get('file') or '?' for L in mls if not (root / (L.get('file') or '')).is_file()]
         if not mls or missing:
             notes.append(f'background pack {pid}: {len(missing)} of {len(mls)} layer files not committed, left out'); continue
-        cv = man.get('canvas') or {}
-        cw = cv.get('width') or max(L.get('x', 0) + L['width'] for L in mls)
-        ch = cv.get('height') or max(L.get('y', 0) + L['height'] for L in mls)
+        cv, view = man.get('canvas') or {}, pc.get('view') or {}
+        cw = view.get('width') or cv.get('width') or max(L.get('x', 0) + L['width'] for L in mls)
+        ch = view.get('height') or cv.get('height') or max(L.get('y', 0) + L['height'] for L in mls)
         assert len({L['id'] for L in mls}) == len(mls), f'{mrel}: layer ids must be unique'
         assert len({L['order'] for L in mls}) == len(mls), f'{mrel}: layer orders must be unique'
         tune, layers, size = pc.get('layers', {}), [], 0
-        ordered = sorted(mls, key=lambda L: L['order'])
-        for depth, L in enumerate(ordered):
+        for depth, L in enumerate(mls):
             raw = (root / L['file']).read_bytes()
             w, h, alpha = png_info(raw, L['file'])
             assert (w, h) == (L['width'], L['height']), f"{L['file']} is {w}×{h}, {mrel} says {L['width']}×{L['height']}"
             assert not L.get('alpha') or alpha, f"{L['file']}: {mrel} says it is transparent, the PNG has no alpha"
-            x, y = L.get('x', 0), L.get('y', ch - h)   # a layer without an offset sits on the bottom of the canvas
-            assert 0 <= x and x + w <= cw and 0 <= y and y + h <= ch, f"{L['file']} lies outside the {cw}×{ch} canvas"
             t = tune.get(L['id'])
             if t is None:
-                t = {'speed': round(depth / max(1, len(ordered) - 1), 2)}
+                t = {'speed': round(depth / max(1, len(mls) - 1), 2)}
                 notes.append(f"background pack {pid}: layer {L['id']} has no tuning in data/backgrounds.json, speed {t['speed']} from its depth")
-            layers.append({'id': L['id'], 'w': w, 'h': h, 'x': x, 'y': y, 'tileX': bool(L.get('tileX')),
+            k = t.get('scale', 1)
+            if any(key in t for key in ('x', 'y', 'scale')):   # placed for the scene by data/backgrounds.json
+                x, y = t.get('x', L.get('x', 0)), t.get('y', L.get('y', ch - h * k))
+                assert x < cw and y < ch and x + w * k > 0 and y + h * k > 0, f"{pid}/{L['id']}: placed entirely outside the {cw}×{ch} view"
+            else:   # placed by its manifest
+                x, y = L.get('x', 0), L.get('y', ch - h)   # a layer without an offset sits on the bottom of the canvas
+                assert 0 <= x and (L.get('tileX') or x + w <= cw) and 0 <= y and y + h <= ch, f"{L['file']} lies outside the {cw}×{ch} canvas"
+            layers.append({'id': L['id'], 'w': w, 'h': h, 'x': x, 'y': y, 'scale': k, 'tileX': bool(L.get('tileX')),
                            'front': t.get('front', L.get('role') == 'foreground'), 'speed': t.get('speed', 0), 'drift': t.get('drift', 0), 'pan': t.get('pan', 1),
                            'src': 'data:image/png;base64,' + base64.b64encode(raw).decode('ascii')})
             size += len(raw)
-        packs[pid] = {'name': man.get('name', pid), 'version': man.get('version', ''), 'status': man.get('status', 'draft'),
+        packs[pid] = {'name': pc.get('name') or man.get('name') or pid, 'version': man.get('version', ''), 'status': man.get('status', 'draft'),
                       'canvas': {'w': cw, 'h': ch}, 'hideRoad': bool(pc.get('hideRoad')), 'layers': layers}
         notes.append(f"background pack {pid}: {len(layers)} layers, {cw}×{ch}, {size // 1024} KB, status {packs[pid]['status']}"
                      + (' — large for a single-file build' if size > 1536 * 1024 else ''))

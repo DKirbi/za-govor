@@ -113,11 +113,13 @@ function renderNewRun() {
       h('div', { class: 'choices', role: 'radiogroup', 'aria-labelledby': 'set-pace' },
         PACE.map(p => radio('mode', p.id, [h('h3', {}, p.name, p.badge ? h('span', { class: 'badge' }, p.badge) : null), h('p', {}, p.text)])))),
     h('section', { class: 'set-block' },
-      h('h2', { id: 'set-know' }, 'Znanje'),
+      h('div', { class: 'set-head' }, h('h2', { id: 'set-know' }, 'Znanje'),
+        h('button', { type: 'button', class: 'lv-more', 'aria-expanded': String(!!U.knowMore), 'aria-controls': KNOW.map(k => 'lv-more-' + k.id).join(' '),
+          onclick: e => toggleKnowMore(e.currentTarget) }, h('span', {}, U.knowMore ? 'Skrij podrobnosti' : 'Podrobnosti'), h('span', { class: 'chev', 'aria-hidden': 'true' }))),
       h('div', { class: 'lv-grid', role: 'radiogroup', 'aria-labelledby': 'set-know' },
         KNOW.map(k => [
           radio('know', k.id, [h('span', { class: 'lv-art', 'aria-hidden': 'true' }, h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES['lv-' + k.id]})` } })),
-            h('h3', {}, LEVELS[k.id].name), h('p', {}, k.text), h('p', { class: 'lv-stakes' }, DIFFS[LEVELS[k.id].diff].text)], 'lv'),
+            h('h3', {}, LEVELS[k.id].name), h('p', {}, k.text), h('p', { class: 'lv-stakes', id: 'lv-more-' + k.id, hidden: !U.knowMore }, DIFFS[LEVELS[k.id].diff].text)], 'lv'),
           LEVELS[k.id].proposals ? h('div', { class: 'subopt', 'data-for': k.id, hidden: U.know !== k.id },
             toggle('suggest', 'Predlogi besed med igro', 'Pod mrežo se pokažejo besede, ki jih lahko sestaviš.')) : null]))),
     h('div', { class: 'set-opts' },
@@ -131,6 +133,15 @@ function renderNewRun() {
       h('button', { class: 'btn primary cta', onclick: setupNext }, 'Izberi junaka', h('span', { 'aria-hidden': 'true' }, ' →')),
       h('kbd', {}, 'Enter'))));
   focusPage();
+}
+// Znanje: what losing and a fallen hero mean stays folded until asked for; one toggle opens all three cards
+// at once, so they can be compared and the row keeps one height. The toggle sits outside the cards: a button
+// inside a card's <label> would also pick that Znanje.
+function toggleKnowMore(btn) {
+  const U = S.setup, open = !U.knowMore; U.knowMore = open;
+  btn.setAttribute('aria-expanded', String(open)); btn.firstChild.textContent = open ? 'Skrij podrobnosti' : 'Podrobnosti';
+  KNOW.forEach(k => { const p = document.getElementById('lv-more-' + k.id); if (p) p.hidden = !open; });
+  sfx('sel', { vol: .4 });
 }
 function setChoice(group, id) {
   S.setup[group] = id; sfx('sel', { rate: group === 'know' ? 1.1 : 1, vol: .6 });

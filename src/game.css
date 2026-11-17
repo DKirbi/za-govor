@@ -1027,6 +1027,19 @@ body.mobile .crumbs { margin: 0 -10px 6px; padding: max(8px, var(--sat)) 10px 2p
 .lv-grid > .choice h3 { justify-content: center; margin-top: 8px; }
 .lv-grid > .choice p { margin-top: 4px; }
 .setup .lv-grid > .choice p.lv-stakes { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 13px; }
+.setup .lv-grid > .choice p.lv-stakes[hidden] { display: none; }
+/* Znanje: the Podrobnosti toggle beside the heading (menu.js toggleKnowMore) */
+.set-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.page .set-head h2 { margin: 0; }
+.lv-more { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 4px 12px; border: 1px solid var(--line); border-radius: 99px;
+  background: none; color: var(--dim); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.lv-more:hover, .lv-more:focus-visible { color: var(--ink); border-color: var(--dim); }
+.lv-more:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.lv-more[aria-expanded="true"] { color: var(--ink); }
+.lv-more .chev { width: 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform .15s; }
+.lv-more[aria-expanded="true"] .chev { transform: translateY(2px) rotate(-135deg); }
+body.mobile .lv-more { min-height: 44px; }
+@media (prefers-reduced-motion: reduce) { .lv-more .chev { transition: none; } }
 .lv-art { position: relative; width: 96px; height: 96px; --px: 2px; }
 .lv-art::before { content: ''; position: absolute; left: 20%; right: 20%; bottom: -2px; height: 8px; border-radius: 50%; background: #000; opacity: .35; }
 .lv-art .sp { animation: none; }
@@ -1068,6 +1081,7 @@ body.mobile .lv-grid > .choice p { margin: 2px 0 0; align-self: start; }
 body.mobile .lv-art { grid-row: span 2; width: 64px; height: 64px; --px: 1px; }
 body.mobile .setup .lv-grid > .choice p.lv-stakes { grid-column: 1 / -1; justify-self: stretch; margin-top: 8px; }   /* under both columns, not in the picture's */
 body.mobile .tick { top: 50%; margin-top: -10px; }
+body.mobile .lv-grid > .choice:has(.lv-stakes:not([hidden])) .tick { top: 32px; margin-top: 0; }   /* details open: stay level with the figure */
 body.mobile .cta-row { margin: 16px -10px 0; padding: 20px 10px calc(12px + env(safe-area-inset-bottom)); }
 body.mobile .btn.cta { flex: 1; min-height: 52px; font-size: 17px; }
 

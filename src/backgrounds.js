@@ -54,23 +54,27 @@ function bgLayers(scene, key, where) {
   if (where !== 'travel') { bgPlace(M, null, 0, performance.now()); BG_STILL.add(M); }   // the road places its layers in layoutTravel
   return M;
 }
-// Where each layer's picture sits: the pack's canvas scaled to the scene height with whole pixels kept sharp (as
-// variant A), every layer registered on that canvas and centred, as in battle. camX = how far the walk has gone in
-// CSS pixels (travel): a tiling layer scrolls camX × its speed; a layer that does not tile pans once across the
-// region with progress, from the centre towards its right edge × its pan (1 = all the way), so it never shows an
-// edge. camX null = a still scene (battle, gallery).
+// Where each layer's picture sits. The pack's canvas is fitted to the scene: to its height, or to its width when the
+// scene is wider than the canvas (a short window), then kept on the scene's bottom, where the actors stand. Every
+// layer is registered on that canvas (x, y and its own scale, in canvas pixels) and the canvas is centred, as in battle.
+// camX = how far the walk has gone in CSS pixels (travel): a tiling layer scrolls camX × its speed; a layer that does
+// not tile pans once across the region with progress, from the centre towards its right edge × its pan (1 = all the
+// way), so it never shows an edge. camX null = a still scene (battle, gallery). A picture drawn at least at its own
+// size keeps hard pixel edges (pixel art); a larger picture shrunk to the scene is smoothed instead of aliased.
 function bgPlace(M, camX, progress, now) {
   const sc = M.scene, W = sc.clientWidth, H = sc.clientHeight;
   if (!H || !W) return;
-  const P = M.P, s = H / P.canvas.h, cw = P.canvas.w * s, c0 = (W - cw) / 2, t = bgMotion() ? now / 1000 : 0;
+  const P = M.P, s = Math.max(H / P.canvas.h, W / P.canvas.w), cw = P.canvas.w * s, c0 = (W - cw) / 2, oy = H - P.canvas.h * s;
+  const t = bgMotion() ? now / 1000 : 0;
   M.size = W + 'x' + H;
   M.els.forEach((el, i) => {
-    const L = P.layers[i], tw = Math.round(L.w * s);   // the tile as the browser repeats it
+    const L = P.layers[i], k = L.scale || 1, tw = Math.round(L.w * k * s);   // the tile as the browser repeats it
     let x = camX == null ? c0 : L.tileX ? c0 - camX * L.speed : c0 - Math.max(0, cw - W) / 2 * clamp(progress, 0, 1) * (L.pan == null ? 1 : L.pan);
     x += L.x * s;
     if (L.tileX) { x -= L.drift * s * t; x = ((x % tw) + tw) % tw - tw; }   // the same tile, kept near zero so the numbers stay small
-    el.style.backgroundSize = `${tw}px ${Math.round(L.h * s)}px`;
-    el.style.backgroundPosition = `${Math.round(x)}px ${Math.round(L.y * s)}px`;
+    el.style.backgroundSize = `${tw}px ${Math.round(L.h * k * s)}px`;
+    el.style.backgroundPosition = `${Math.round(x)}px ${Math.round(oy + L.y * s)}px`;
+    el.style.imageRendering = k * s >= 1 ? 'pixelated' : 'auto';
   });
 }
 // still scenes are placed again when their size changes (fit to screen, rotating a phone) and, with drifting layers, every frame

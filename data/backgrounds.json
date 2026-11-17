@@ -1,13 +1,31 @@
 {
   "note": "Background A/B tests (src/backgrounds.js). Variant A is always the background in use (BG in src/art-extra.js, from tools/art_extra.py) and is never changed by a test. A pack variant is a layered parallax background whose files and layer order come from its manifest (art/manifests/<pack>.json). build.py builds a pack in only when its manifest and every layer file it lists are committed; without them the variant does not exist and everyone sees A.",
-  "testsNote": "tests.<bg key> (the bg of a region in world.json): variants maps a letter to a pack id; live: false = nobody is assigned a variant (A for all, ?ozadje=B previews B); live: true = each install gets one variant by share, kept in localStorage zg-ab. Turning live on is the Game Director's call.",
+  "testsNote": "tests.<bg key> (the bg of a region in world.json): variants maps a letter to a pack id; share = how installs are split when live (a variant with 0 is never drawn, it can only be previewed with ?ozadje=<letter>); live: false = nobody is assigned a variant (A for all); live: true = each install gets one variant by share, kept in localStorage zg-ab. Turning live on is the Game Director's call.",
   "tests": {
-    "ptuj": { "live": false, "variants": { "B": "ptuj" }, "share": { "A": 50, "B": 50 } }
+    "ptuj": { "live": false, "variants": { "B": "ptuj", "C": "ptuj-vecer" }, "share": { "A": 50, "B": 50, "C": 0 } }
   },
-  "packsNote": "packs.<id>: manifest path, hideRoad (the pack brings its own ground, so the road strip of variant A is hidden), and runtime tuning per layer id. speed = how fast a tiling layer scrolls compared with the road while the party walks (1 = with the road, 0 = still); pan = how far a layer that does not tile moves across a region (1 = from the centre to its right edge); drift = steady sideways motion of a tiling layer in art pixels per second (negative = to the right), off under reduced motion. Layers that must stay together share a value: town and reflections (the mirror image), sky and sun-glint (the sun's road on the water). These are PROPOSED values tuned in the browser, not art specifications. A layer the manifest has but this list does not gets a speed from its depth, and the build says so.",
+  "packsNote": "packs.<id>: manifest path; name (shown in Liki in karte → Ozadja); hideRoad (the pack brings its own ground, so the road strip of variant A is hidden); view {width, height} = the canvas the scene is fitted to, when the art's own canvas does not suit the scene; and per layer id: x, y, scale = where the layer is placed on that canvas (canvas pixels, for a manifest that leaves placement open); speed = how fast a tiling layer scrolls compared with the road while the party walks (1 = with the road); pan = how far a layer that does not tile moves across a region (1 = from the centre to its right edge); drift = steady sideways motion of a tiling layer in canvas pixels per second (negative = to the right), off under reduced motion. Layers that must stay together share their values. All are PROPOSED values tuned in the browser against where the game stands its actors (enemies' feet at 62–70 % of the scene height, heroes' at 75–87 %), not art specifications.",
   "packs": {
     "ptuj": {
       "manifest": "art/manifests/ptuj.json",
+      "name": "Ptuj — sončni zahod nad Dravo",
+      "hideRoad": true,
+      "viewNote": "Codex pack (#33), drawn on a 1672×941 16:9 canvas with the road in its bottom fifth. The game's scene is about 3:1 and needs ground from 58 % of its height, so the view is 1672×560: the sky shows its sun, the castle hill keeps Codex's proposed 0.6 scale, the town, river and reflections move up, and the road is enlarged 1.3× to reach from 58 % to the bottom. No pixel is changed.",
+      "view": { "width": 1672, "height": 560 },
+      "layers": {
+        "sky": { "y": -252, "pan": 0.3 },
+        "clouds": { "y": -36, "pan": 0.4 },
+        "distant-hills": { "y": -639, "pan": 0.5 },
+        "castle-hill": { "x": 560, "y": -210, "scale": 0.6, "pan": 0.7 },
+        "town": { "y": -337, "pan": 0.85 },
+        "drava-water": { "y": -337, "pan": 0.85 },
+        "reflections": { "y": -400, "pan": 0.85 },
+        "road-tile": { "y": -381, "scale": 1.3, "speed": 1 }
+      }
+    },
+    "ptuj-vecer": {
+      "manifest": "art/manifests/ptuj-vecer.json",
+      "name": "Ptuj — večer ob Dravi",
       "hideRoad": true,
       "layers": {
         "sky": { "pan": 0.5 },

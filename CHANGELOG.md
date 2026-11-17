@@ -36,30 +36,42 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
-## 0.14.0 — 17 Nov 2026 · zaprta alfa · Ptuj gets a second background for an A/B test
-Branch `feat/ptuj-bg-ab`. Details: `docs/art-benchmarks/ptuj-background/INTEGRATION.md`.
-- **Variant B, *Ptuj — večer ob Dravi*:** a layered pixel-art background after GPT's reference.
-  - It shows a sunset sky with clouds, distant hills with vine rows, the wooded castle hill with Ptuj Castle,
-    the old town with Minoritski samostan, Mestni stolp and St George, the Drava with the town's reflection
-    and the sun's road, a riverside meadow and a cobbled promenade.
-  - There are 10 layers on a 640 × 165 canvas (the heroes' pixel size on desktop), 25 KB together, drawn by
-    `tools/art_ptuj_parallax.py` into `art/exports/environments/ptuj/` with `art/manifests/ptuj.json`.
-  - The enemies stand on the meadow and the heroes on the promenade, laid out from where the game puts their
-    feet. There is no bridge.
+## 0.15.0 — 17 Nov 2026 · zaprta alfa · Ptuj gets a second background for an A/B test
+Branch `feat/ptuj-bg-ab`, with the Codex art pack (#33). Details: `docs/art-benchmarks/ptuj-background/INTEGRATION.md`.
+- **Variant B is the Codex pack, *Ptuj — sončni zahod nad Dravo*** (`art/manifests/ptuj.json`): sunset sky,
+  clouds, distant hills, the castle hill with Ptuj Castle, the town on the Drava, the river with its
+  reflections and a road of big cobbles.
+  - The pack leaves placement open, so `data/backgrounds.json` places its layers for the game's scene: a
+    1672 × 560 view, the town and river moved up, the castle hill at Codex's 0.6 scale, and the road
+    enlarged 1.3× to reach from 58 % of the scene to the bottom.
+  - Every hero and enemy stands on the cobbles in battle and on the road. No pixel is changed.
 - **Variant A, the snowy Ptuj in use, is unchanged**, and it is what players see: the A/B test is off
-  (`live: false` in `data/backgrounds.json`). `?ozadje=B` previews B, and *Liki in karte → Ozadja* shows it.
-  Turned on, each install keeps one variant (localStorage `zg-ab`).
-- **Parallax** for a layered pack (`src/backgrounds.js`):
-  - On the road each layer moves at its own speed, from the same centred framing as the battles. The sky
-    and the sun's road pan together, and the reflection moves with the town.
-  - In battle the clouds drift and the river flows. Nothing moves under reduced motion.
-  - The foreground stands in front of the actors and under the battle UI.
-- **`build.py`** builds in a pack once its manifest and layers are committed, and stops on a layer that
-  contradicts its manifest.
+  (`live: false`). Turned on, each install keeps A or B (localStorage `zg-ab`). `?ozadje=B` previews B,
+  and *Liki in karte → Ozadja* shows it.
+- **Variant C, *Ptuj — večer ob Dravi*,** is Claude's pixel-art pack (`tools/art_ptuj_parallax.py`, 10
+  layers, 25 KB). It is a preview only (`?ozadje=C`, share 0) and has its own id, so it never touches the
+  Codex files.
+- **Backgrounds in layers** (`src/backgrounds.js`):
+  - Each layer moves at its own rate on the road, from the same centred framing as the battles.
+  - The view covers short, wide scenes without side gaps, with the ground kept at the bottom.
+  - Large pictures are shrunk smoothly, while pixel art keeps hard edges.
+  - A foreground layer stands in front of the actors and under the battle UI.
+  - Nothing drifts under reduced motion.
+- **`build.py`** reads both manifest formats, takes placement from `data/backgrounds.json`, builds a pack
+  in only when all its files are committed, and stops on a layer that contradicts its manifest.
 - **Battle statistics name the background variant** (`ozadje-ptuj=A`, or `B(predogled)` for a preview).
   The consent text says so (*različica igre in ozadja*).
-- GPT's reference sheet is committed as `docs/art-benchmarks/ptuj-background/ptuj-parallax-preview.png`
-  (reference only). New test file: `tests/backgrounds.test.js` (26 checks).
+- **Size:** the Codex layers grow the single-file build from 2.7 MB to about 9 MB. Runtime-sized
+  exports are an open question.
+- GPT's reference sheet is committed as a reference only. New test file: `tests/backgrounds.test.js`
+  (33 checks).
+
+## 0.14.0 — 17 Nov 2026 · zaprta alfa · Znanje cards fold their details
+- **Nova pot:** each Znanje card shows its figure, name and one line. What losing and a fallen hero
+  mean is folded behind **Podrobnosti** beside the *Znanje* heading; it opens all three cards at once
+  (they can be compared and the row keeps one height) and picks none. *Skrij podrobnosti* folds them
+  again. The toggle sits outside the cards, so it never changes the chosen Znanje.
+- `tests/menu.test.js`: folded by default, one toggle opens all three, Enter on it stays on Nova pot.
 
 ## 0.13.0 — 17 Nov 2026 · zaprta alfa · balance D: the party levels together, a difficulty curve, a new Lintvern
 Branch `feat/balance-d`, from the balance simulations of 16–17 Nov (version D of four compared). The working
