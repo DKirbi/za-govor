@@ -124,6 +124,7 @@ function renderNewRun() {
       toggle('tutOn', 'Pokaži razlage ugank', 'Pred prvo uganko vsake vrste kratka razlaga s sliko. Čas medtem stoji.'),
       h('div', { class: 'devbox' }, h('span', { class: 'devtag' }, 'Razvoj'),
         toggle('testMode', 'Preizkusni način', '200 zlatnikov, vsi junaki na izbiro, postaje in pokrajine lahko preskočiš.'))),
+    statsAsk(),
     R ? h('p', { class: 'note' }, `Začeta pot (${WORLD.regions[R.ri].name}) se konča, ko izbereš junaka za novo pot.`)
       : saved ? h('p', { class: 'note' }, `Shranjena pot (${saved}) se izbriše, ko izbereš junaka za novo pot.`) : null,
     h('div', { class: 'cta-row' },
@@ -283,6 +284,7 @@ function renderSettings() {
     crumb(),
     pageH1('Nastavitve'),
     h('section', {}, h('h2', {}, 'Zvok'), soundControls()),
+    statsSection(),
     S.mobile ? null : h('section', {}, h('h2', {}, 'Zaslon'),
       h('label', { class: 'toggle' },
         h('input', { type: 'checkbox', class: 'set-fs', checked: isFs(), onchange: e => {

@@ -217,7 +217,7 @@ function planWells(know) { return planStops('well', know); }
 function newRun(starterId) {
   S.run = { ri: 0, x: 0, endX: 0, stops: [], gold: S.testMode ? 200 : 20, relics: [], bag: {}, rozaUsed: false, jurijUsed: false,
     battles: 0, words: 0, firstBattle: true, met: [starterId], walking: false, prompt: null, starter: starterId, heroAt: null,
-    shrines: null, prayer: null, challenged: false, gifts: [], pxp: 0, plvl: 1, pts: 0 };   // the party's XP, level and shared skill points
+    shrines: null, prayer: null, challenged: false, gifts: [], pxp: 0, plvl: 1, pts: 0, t0: Date.now() };   // the party's XP, level and shared skill points
   S.run.heroAt = planHeroes(); S.run.shrines = planShrines(starterId); S.run.chestAt = planChests(); S.run.wellAt = planWells();
   const g = takeNextGift(); if (g) S.run.gifts.push(g);   // the gift of a god beaten at the end of the last journey
   setParty([starterId]); S.meterBonus = 0;
@@ -508,6 +508,7 @@ function openShop(stop) {
 // ------------------------------------------------------------ the end of the road
 function renderEnding() {
   const R = S.run || { battles: 0, words: 0, gold: 0, relics: [] };
+  statJourney(true);   // src/stats.js, once
   R.over = true;   // a finished journey cannot be continued from the menu
   clearSave();
   SCR.append(h('div', { class: 'title ending' },

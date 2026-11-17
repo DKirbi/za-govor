@@ -10,6 +10,7 @@ Inputs:  src/index.src.html (template), src/game.css + src/title.css,
            src/mobile.js (phone specifics: in-game Slovene keyboard, haptics),
            src/credits.js (Navdih and Zasluge: the Words for Evil credit and all sources),
            src/report.js (Prijavi besedo: rejected words, reports to a Google Form),
+           src/stats.js (opt-in battle statistics for balancing, to the same form),
            src/menu.js (the start menu and its pages: Nova pot, Dosežki in junaki, Kako igrati, Nastavitve, O igri),
            src/progression.js (the reviewed heroes' own skill kits with ranks 1–3, their XP from the fight),
            src/skills.js (skill texts and stopnje, the skill list, Veščine where points are spent),
@@ -34,7 +35,7 @@ for name, text in data.items():
 
 js = read('src/game.js')
 for mark, rels in (('/*__LEXICON__*/', ['src/lexicon.js']), ('/*__ART_EXTRA__*/', ['src/art-extra.js', 'src/art-title.js']),
-                   ('/*__JOURNEY__*/', ['src/journey.js', 'src/playtest.js', 'src/mobile.js', 'src/credits.js', 'src/report.js', 'src/menu.js', 'src/progression.js', 'src/skills.js', 'src/shrines.js', 'src/save.js', 'src/title.js'])):
+                   ('/*__JOURNEY__*/', ['src/journey.js', 'src/playtest.js', 'src/mobile.js', 'src/credits.js', 'src/report.js', 'src/stats.js', 'src/menu.js', 'src/progression.js', 'src/skills.js', 'src/shrines.js', 'src/save.js', 'src/title.js'])):
     assert js.count(mark) == 1, f'{mark} must appear exactly once in src/game.js'
     js = js.replace(mark, ''.join(read(rel) for rel in rels))
 

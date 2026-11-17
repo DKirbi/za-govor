@@ -128,6 +128,41 @@ run(async () => {
     'an older save loads into the party: the best hero\'s XP, its level for everyone, the unspent points pooled', JSON.stringify(loaded));
   await ev(page, () => { localStorage.removeItem('zg-save'); });
 
+  // ---- tester statistics (src/stats.js): off until the player agrees, one row per journey battle, none of the words
+  await ev(page, () => { window.__posted = []; window.fetch = async (url, o) => { window.__posted.push({ url, body: String(o && o.body) }); return {}; }; });
+  const before = await ev(page, () => { const Z = window.__ZG; Z.go('newrun'); return { ok: Z.STATS_OK, card: !!document.querySelector('.stat-ask'), btns: [...document.querySelectorAll('.stat-ask .btn')].map(b => b.textContent.trim()) }; });
+  check(before.ok === null && before.card && before.btns.join() === 'Da, pošiljaj,Ne, hvala', 'Nova pot asks once whether to send battle statistics; nothing is sent until then', JSON.stringify(before));
+  await shot('balance-03-stats-ask');
+  const quiet = await ev(page, () => { const Z = window.__ZG; Z.S.testMode = true; Z.S.mode = 'calm'; Z.newRun('krpan'); Z.stopBattle(Z.S.run.stops.find(s => s.kind === 'battle'));
+    Z.B.over = true; return { row: Z.statBattle(true), queued: Z.STATS.length, posted: window.__posted.length }; });
+  check(quiet.row === null && quiet.queued === 0 && quiet.posted === 0, 'without a yes no battle is counted', JSON.stringify(quiet));
+  const yes = await ev(page, () => { const Z = window.__ZG; Z.go('newrun'); document.querySelector('.stat-ask .btn.primary').click();
+    return { ok: Z.STATS_OK, card: !!document.querySelector('.stat-ask'), thanks: (document.querySelector('.stat-done') || {}).textContent, stored: localStorage.getItem('zg-stats-ok') }; });
+  check(yes.ok === true && !yes.card && /Nastavitvah/.test(yes.thanks) && yes.stored === '1', '»Da, pošiljaj« turns it on and the card thanks the player (the switch stays in Nastavitve)', JSON.stringify(yes));
+  await ev(page, () => { const Z = window.__ZG; Z.S.testMode = true; Z.S.mode = 'calm'; Z.newRun('krpan'); Z.joinHero('kurent'); Z.stopBattle(Z.S.run.stops.find(s => s.kind === 'battle')); Z.B.enemies.forEach(e => { e.charge = -99; }); });
+  const word = await ev(page, () => { const Z = window.__ZG, B = Z.B, w = [...Z.allWords().keys()].find(x => x.length >= 4); Z.closeTut(); B.path = Z.findPath(w); B.typed = w; B.meshT = 12;
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true })); return w; });
+  await sleep(600);
+  await ev(page, () => { const Z = window.__ZG, B = Z.B; Z.S.heroes[1].hp = 3; B.enemies.forEach(e => { if (e.hp > 0) Z.damageEnemy(e, 999); }); });
+  await page.waitForFunction(() => window.__ZG.B.won === true && window.__posted.length, { timeout: 8000 }).catch(() => {});
+  const row = await ev(page, () => ({ posted: window.__posted.map(p => Object.fromEntries(new URLSearchParams(p.body))), left: window.__ZG.STATS.length }));
+  const r0 = row.posted[0] || {}, F = await ev(page, () => window.__ZG.REPORT_FORM.entry), meta = r0['entry.' + F.meta] || '';
+  check(row.posted.length === 1 && r0['entry.' + F.word] === 'zmaga' && r0['entry.' + F.note] === 'statistika' && /^Ptuj · battle$/.test(r0['entry.' + F.where]) && row.left === 0,
+    'a won battle sends one row (zmaga · Ptuj · battle, Opomba statistika); sent rows are not kept', JSON.stringify(row));
+  check(/pot=[a-z0-9]{3,} · znanje=\w+ · tempo=mirni · naprava=namizje · v=[\d.]+/.test(meta) && /raven=1/.test(meta) && /junaki=krpan\(\d+\) kurent\(\d+\)/.test(meta)
+    && /sovrazniki=\S/.test(meta) && /besede=1 · s\/besedo=1[2-4]\.\d/.test(meta) && /zdravje=100→\d+%/.test(meta) && /padli=0\/2/.test(meta), 'the row has Znanje, pace, device, version, party, enemies, words and seconds per word on the mesh', meta);
+  check(!meta.includes(word) && !Object.values(r0).some(v => String(v).includes(word)), 'none of the words played are sent', word);
+  const practice = await ev(page, () => { const Z = window.__ZG; window.__posted.length = 0; const run = Z.S.run; Z.S.run = null; Z.go('battle', Z.NODES.find(n => n.battle && !n.stop) || { battle: { enemies: ['skrat'], scale: 1, meterStart: 0 }, title: 'Vaja', sub: '' });
+    Z.B.over = true; const r = Z.statBattle(true); Z.S.run = run; return r; });
+  check(practice === null, 'practice battles from the menu are not counted', String(practice));
+  const end = await ev(page, () => { const Z = window.__ZG; window.__posted.length = 0; Z.S.run.battles = 3; const r = Z.statJourney(false), again = Z.statJourney(false); return { r, again }; });
+  check(end.r && end.r.w === 'pot-končana' && /bitke=3/.test(end.r.meta) && /trajanje=\d+min/.test(end.r.meta) && end.again === null, 'a journey that ends sends one row (pot-končana, battles, minutes)', JSON.stringify(end));
+  const off = await ev(page, () => { const Z = window.__ZG; window.fetch = async () => { throw new Error('offline'); }; Z.S.run.statDone = false; Z.statJourney(true); const waiting = Z.STATS.length;
+    Z.go('settings'); const box = document.querySelector('.set-stats'), had = box.checked, note = (document.querySelector('.settings .muted') || {}).textContent;
+    box.click(); return { waiting, had, note, now: Z.STATS_OK, queue: Z.STATS.length, stored: localStorage.getItem('zg-stats-ok') }; });
+  check(off.waiting === 1 && off.had && /Čaka na pošiljanje: 1/.test(off.note) && off.now === false && off.queue === 0 && off.stored === '0', 'offline rows wait; switching it off in Nastavitve drops them', JSON.stringify(off));
+  await ev(page, () => { localStorage.removeItem('zg-stats-ok'); });
+
   check(!errors.length, 'no page errors', errors.join(' | '));
   return ctx;
 });
