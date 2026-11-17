@@ -36,3 +36,19 @@ The Game Director identifies the winter background as the setting where Kurent i
 - Machine-readable manifest: `art/manifests/ptuj.json`
 
 No game tests were run because this asset pack is not connected to a renderer or asset test suite in the inspected repository.
+
+## Review check, 2026-11-17 (manifest 0.2.1)
+
+Checked against the exported PNG files:
+
+- All 17 export layers have binary alpha; no partial-alpha pixels were found.
+- Every export's pixel size matches its manifest `exportSize`.
+- Every offset plus export size fits the 1672 × 941 canvas. The road tiles are horizontal repeats and are excluded from this check.
+- The road tiles sit at the bottom of their 724 px source. Their canvas ground lines are 761 (sunset) and 750 (winter). Manifest 0.2.1 records these as `groundY`.
+
+Open items:
+
+- The ground lines are at 80–81% of canvas height. In the browser prototype, enemies stand at about 62–70% of scene height and heroes at about 75–87%, so the party would appear to stand on the river. The composition decision is still open.
+- The sunset and winter ground lines differ by 11 px.
+- The winter town and winter reflections sources are 1671 px wide against the 1672 px canvas.
+- Manifest 0.2.x uses `exportSize`, `offset` and a boolean `tileable`. The 0.1.0 reader expected `dimensions.export`, `tileable.horizontal` and `x`/`y`, so the reader must be updated before this manifest is integrated.
