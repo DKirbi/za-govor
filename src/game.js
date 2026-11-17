@@ -596,7 +596,7 @@ const CHARS = [
     note: 'Gole roke, usnjen predpasnik s sončnim znakom, brada kot žerjavica. Na največji karti na nakovalu kuje kar sonce.' },
   { id: 'mokos', name: 'Mokoš', c: 'var(--mokos)', sub: 'mati zemlja · zdravi', moves: ['Kapljica', 'Vir', 'Materina roka'], words: ['VODA', 'ZEMLJA', 'VRETENO'], vals: ['+6 zdravja', '+14 zdravja', '+30 zdravja'], extra: 'očisti črke in zbudi junake',
     note: 'Bela peča z žitnim vencem, vezena bluza in predpasnik, preslica z volno. Ko zdravi, pošlje vodo; na največji karti stoji pod mavrico med žitom, kravo in čebelnjakom.' },
-  { id: 'kresnik', name: 'Kresnik', c: 'var(--kresnik)', sub: 'sončni junak · ogenj', moves: ['Ognjeni meč', 'Kresna strela', 'Kresna moč'], words: ['KRES', 'ISKRA', 'POLETJE'], vals: ['−8 · gori', '−12 · gori', 'povrne četrtino rane'], extra: 'zlatniki iz povrnjene moči',
+  { id: 'kresnik', name: 'Kresnik', c: 'var(--kresnik)', sub: 'sončni junak · ogenj', moves: ['Ognjeni meč', 'Kresna strela', 'Kresna moč'], words: ['KRES', 'ISKRA', 'POLETJE'], vals: ['−5 · gori', '−10 · gori', '−5 vsem · povrne četrtino rane'], extra: 'zlatniki iz povrnjene moči',
     note: 'Zlati lasje kot plamen, rdeč telovnik, bakla. Največja karta je kresna noč: kres, goreče kolo, ki se vali po hribu, in praprotni cvet.' },
   { id: 'veles', name: 'Veles', c: 'var(--veles)', sub: 'gospodar živine in spodnjega sveta', moves: ['Kačji pik', 'Medvedja šapa', 'Korenine sveta'], words: ['ROG', 'MEDVED', 'KORENINE'], vals: ['−10 · strup', '−24', '−50'], extra: 'kača ovije vse sovražnike',
     note: 'Rogovi, medvedji kožuh, palica s kačo in zelene oči. Perunov večni nasprotnik, zato je zemeljski in temen, kjer je Perun nebesen in svetel. Najmočnejši med vsemi: večja postava, najtrši udarci. Zaigraš ga lahko šele po koncu zgodbe.' },
@@ -606,7 +606,7 @@ CHARS.push(
     note: 'Širok klobuk, brki, telovnik, na hrbtu vreča soli, v roki lipov kij. Na srednji karti dvigne kobilico s ceste, na največji premaga Brdavsa.' },
   { id: 'jurij', name: 'Zeleni Jurij', c: '#4fae5a', sub: 'znanilec pomladi · zdravi malo in pogosto', moves: ['Popek', 'Brstenje', 'Jurjevo'], words: ['LIST', 'BREZA', 'POMLAD'], vals: ['+4 zdravja', '+10 zdravja', '+22 zdravja'], extra: 'odklene vse črke',
     note: 'Od glave do kolen oblečen v brezovo zelenje s cvetjem, v roki brezova veja. Na največji karti prijezdi na belem konju.' },
-  { id: 'kurent', name: 'Kurent', c: '#d9cfae', sub: 'preganjalec zime · zamik in hrup', moves: ['Ježevka', 'Zvonci', 'Pregon zime'], words: ['ZVON', 'MASKA', 'PUST'], vals: ['−4 · zamik 1,5 s', 'napad −3', 'vsi zamudijo 3 s'], extra: 'vsi sovražniki zamudijo napad',
+  { id: 'kurent', name: 'Kurent', c: '#d9cfae', sub: 'preganjalec zime · zamik in hrup', moves: ['Ježevka', 'Zvonci', 'Pregon zime'], words: ['ZVON', 'MASKA', 'PUST'], vals: ['−4 · zamik 2 s', '−3 · udarec −3', '−4 vsem · zamik 3 s'], extra: 'vsi sovražniki zamudijo napad',
     note: 'Ovčji kožuh, usnjena maska z dolgim rdečim jezikom, rogovi s trakovi, zvonci za pasom in ježevka. Na največji karti kurenti preženejo zimo.' },
   { id: 'matjaz', name: 'Kralj Matjaž', c: '#d84a5a', sub: 'speči kralj · ščit in vojska', moves: ['Meč', 'Kraljeva vojska', 'Prebujenje'], words: ['MEČ', 'KRONA', 'KRALJ'], vals: ['−6', 'naslednji napad +3', '+3 zdravja · ščit 3'], extra: 'padli vstanejo',
     note: 'Krona, dolga siva brada, rdeč plašč s hermelinom, meč. Na največji karti se prebudi pod Peco: brada je ovita okrog mize, krokarji letijo, lipa ozeleni.' },
@@ -636,7 +636,7 @@ const FOE_CHARS = [
   { id: 'volkodlak', name: 'Volkodlak', sub: 'volk v človeški koži', plays: [['Zobje', 1, '−6'], ['Hrani se s ponovitvijo', 2, 'napad +1']], note: 'Siv kožuh, rdeče oči, raztrgane hlače. Ko ponoviš besedo, zatuli v polno luno in postane močnejši.' },
   { id: 'vila', name: 'Vodna vila', sub: 'vila iz Ljubljanice', plays: [['Val', 1, '−4'], ['Poplava', 3, null, 'spodnja vrsta je poplavljena']], note: 'Dolgi zeleni lasje z lokvanjem, bela obleka, ki se spodaj spremeni v val. Poplava na karti odnaša črke.' },
   { id: 'povodni', name: 'Povodni mož', sub: 'gospodar reke · šef', plays: [['Objem vode', 1, '−8'], ['Vrtinec', 3, null, 'reši križanko, da se rešiš']], note: 'Večja sličica (64 × 64): zelen, luskast, z brado iz vodnih trav in plavutastimi ušesi. Vrtinec na karti vrti črke.' },
-  { id: 'lintvern', name: 'Lintvern', sub: 'ljubljanski zmaj · šef', plays: [['Udarec z repom', 1, '−9'], ['Ognjeni dih', 3, '−22']], note: 'Večja sličica (64 × 64): zelen zmaj z rdečimi krili in repom s puščico. Na kartah je za njim ljubljanski grad; na drugi gori.' },
+  { id: 'lintvern', name: 'Lintvern', sub: 'ljubljanski zmaj · šef', plays: [['Kremplji', 1, '−11'], ['Topot', 2, '−4 vsem'], ['Ognjeni dih', 3, '−13 vsem · gori']], note: 'Večja sličica (64 × 64): zelen zmaj z rdečimi krili in repom s puščico. Na kartah je za njim ljubljanski grad; na drugi gori.' },
 ];
 
 // ============================================================ sound (synthesised with ZzFX, MIT, Frank Force)
@@ -759,12 +759,20 @@ const ENEMIES = {
     pattern: ['attack'], moves: { attack: 'Zobje' } },
   vila: { name: 'Vodna vila', f: true, hp: 30, atk: 4, speed: 9, calmStep: 0.34, size: 64, xp: 30,
     pattern: ['attack', 'flood'], moves: { attack: 'Val', flood: 'Poplava' } },
-  povodni: { name: 'Povodni mož', hp: 110, atk: 8, speed: 12.5, calmStep: 0.25, size: 100, xp: 90, boss: true, cwlock: 'vrtinec',
+  povodni: { name: 'Povodni mož', hp: 240, atk: 12, speed: 12.5, calmStep: 0.25, size: 100, xp: 90, boss: true, cwlock: 'vrtinec',
     pattern: ['attack', 'attack', 'cwlock'], moves: { attack: 'Objem vode', cwlock: 'Vrtinec' } },
-  lintvern: { name: 'Lintvern', tags: ['zmaj'], hp: 180, atk: 9, speed: 11.5, calmStep: 0.25, size: 100, xp: 150, boss: true, cwlock: 'zmaj',
-    pattern: ['attack', 'lock', 'attack', 'heavy'],
-    phase2: { at: 0.5, pattern: ['cwlock', 'attack', 'lock', 'heavy'], speed: 10, calmStep: 0.34 },
-    moves: { attack: 'Udarec z repom', lock: 'Pepel', heavy: 'Ognjeni dih', cwlock: 'Zmajeva uganka' } },
+  // Lintvern (balance D, 17 Nov 2026): three attacks of his own — Kremplji (one hero), Topot (everyone a little, and
+  // heroes knocked out of the letter mesh for a while) and his signature, Ognjeni dih: at 66 % and 33 % of his health
+  // he draws breath for a long, visible moment (longer on Malček, shorter on Knjižni molj), then burns every hero
+  // and scorches letters that fade one by one; a scorched letter used in a word burns that hero again. Nothing
+  // stops his attacks (stuns, Okamnitev) and delays on him are halved. At half health he enrages: faster, Zmajeva
+  // uganka, and as many wyverns again as he started with (data/world.json → grad.adds). Health by Znanje (hpBy).
+  lintvern: { name: 'Lintvern', tags: ['zmaj'], hp: 250, hpBy: { lahka: 200, srednja: 250, tezka: 250 }, atk: 11, speed: 11.5, calmStep: 0.25, size: 100, xp: 150, boss: true, cwlock: 'zmaj', unstoppable: true,
+    pattern: ['scratch', 'scratch', 'stomp'],
+    phase2: { at: 0.5, pattern: ['scratch', 'stomp', 'scratch', 'cwlock'], speed: 10, calmStep: 0.34, summon: true },
+    breath: { at: [0.66, 0.33], sec: { lahka: 14, srednja: 8, tezka: 6 }, words: { lahka: 4, srednja: 3, tezka: 2 }, hit: 1.2, burn: 4, scorch: 10, fade: 2.5, fadeWords: 3, use: 4 },
+    stomp: { hit: 0.4, out: { lahka: 1, srednja: 2, tezka: 2 }, sec: 6, words: 2 },
+    moves: { attack: 'Kremplji', scratch: 'Kremplji', stomp: 'Topot', breath: 'Ognjeni dih', cwlock: 'Zmajeva uganka' } },
 };
 
 // Regional enemies share a sprite with one of the six above (`art`) and are tinted in CSS.
@@ -775,6 +783,9 @@ Object.assign(ENEMIES, {
     pattern: ['attack', 'lock'], moves: { attack: 'Kramp', lock: 'Zasutje' } },
   pesjan: { name: 'Pesjan', art: 'volkodlak', tint: 'sepia(.7) saturate(1.6) hue-rotate(-12deg)', hp: 52, atk: 7, speed: 12, calmStep: 0.25, size: 76, xp: 44,
     pattern: ['attack', 'attack', 'heavy'], moves: { attack: 'Ugriz', heavy: 'Lov' } },
+  // the Lintvern's wyverns (balance D): the same numbers everywhere (`fixed`), smaller dragon sprite (`scale`); working name
+  zmajcek: { name: 'Zmajček', tags: ['zmaj'], art: 'lintvern', tint: 'hue-rotate(-28deg) saturate(1.7) brightness(.92)', scale: 0.62, fixed: true, hp: 55, atk: 6, speed: 9.5, calmStep: 0.25, size: 64, xp: 30,
+    pattern: ['attack', 'attack', 'heavy'], moves: { attack: 'Ugriz', heavy: 'Iskre' } },
   mladic: { name: 'Zmajev mladič', tags: ['zmaj'], art: 'lintvern', tint: 'saturate(.35) brightness(1.5) sepia(.25)', hp: 40, atk: 6, speed: 10, calmStep: 0.25, size: 80, xp: 40,
     pattern: ['attack', 'lock', 'attack'], moves: { attack: 'Ugriz', lock: 'Jamski prah' } },
 });
@@ -809,9 +820,9 @@ const NODES = [
       { until: 4, text: 'Vodna vila poplavlja spodnjo vrsto črk. Povodni mož te lahko potegne v vrtinec — takrat je mreža zaprta.' },
       { until: 99, text: 'Mokošina druga ali tretja veščina (dve ali tri zelene črke) osuši poplavljene črke.' } ] } },
   { id: 'grad', type: 'battle', title: 'Ljubljanski grad', sub: 'Bitka · Lintvern',
-    teach: 'Šefovski boj v dveh fazah: zaklenjene črke, ognjeni dih in zmajeva uganka.',
+    teach: 'Šefovski boj: kremplji, topot, ognjeni dih z ožganimi črkami in, ko pobesni, zmajeva uganka.',
     battle: { enemies: ['lintvern'], finishers: ['triglav', 'kres'], meterStart: 0.3, tips: [
-      { until: 4, text: 'Lintvern zasipa črke s pepelom. Pod polovico zdravja pobesni in te sili v zmajevo uganko.' },
+      { until: 4, text: 'Ko Lintvern zajema sapo, ga nič ne ustavi: ognjeni dih ožge črke — kdor jih uporabi, se opeče. Pod polovico zdravja pobesni in te sili v zmajevo uganko.' },
       { until: 99, text: 'Triglavski zagovor omami sovražnika — prihrani ga za drugo fazo.' } ] } },
 ];
 
@@ -851,16 +862,30 @@ const LV = () => LEVELS[S.know] || LEVELS.malcek;
 // ============================================================ combat consequences, set by Znanje (LEVELS[…].diff)
 // Decide what a lost battle means and what happens to a fallen hero, and scale the enemies' health.
 // Wells never raise the fallen: that takes a healer (Mokoš, Zeleni Jurij), Mrtva voda or a beaten god.
-//   lahka (Malček):         a lost battle is not the end — the party withdraws, gets up with a third of its health and the
-//            enemies still block the road; after a won battle the fallen get up with a quarter of their health
-//   srednja (Učenjak):      a lost battle ends the journey; the fallen stay down until someone raises them
+//   lahka (Malček):         the first lost battle of a journey is not the end — the party withdraws, gets up with full
+//                           health and the enemies still block the road; a second lost battle ends the journey (withdraw:
+//                           how many such rescues a journey has; S.run.rescues counts them; until 0.11.0 it was a third
+//                           of health, every time); after a won battle the fallen get up with a quarter of their health
+//   srednja (Učenjak):      a lost battle ends the journey; the fallen stay down until someone raises them or the region
+//                           ends (balance D: then they get up with half their health, regionRise)
+// On every Znanje a lost battle at Ptuj (the tutorial) never ends the journey, and on Malček the final battle with the
+// Lintvern can always be tried once more, rescue or not (freeRetry).
 //   tezka (Knjižni molj):   a lost battle ends the journey; a hero still down when the battle ends leaves the party; enemies are tougher
 const DIFFS = {
-  lahka: { name: 'Lahka', foeHp: 0.85, withdraw: true, rise: 0.25, leave: false, text: 'Poraz ni konec poti: družina se umakne in poskusi znova. Padli po zmagi vstanejo.' },
-  srednja: { name: 'Srednja', foeHp: 1, withdraw: false, rise: 0, leave: false, text: 'Poraz konča pot. Padli obležijo, dokler jih kdo ne obudi.' },
-  tezka: { name: 'Težka', foeHp: 1.25, withdraw: false, rise: 0, leave: true, text: 'Močnejši sovražniki. Kdor pade in ga do konca bitke nihče ne obudi, zapusti družino.' },
+  lahka: { name: 'Lahka', foeHp: 0.85, withdraw: 1, rise: 0.25, leave: false, finalRetry: true, text: 'Prvi poraz ni konec poti: družina si opomore do polnega zdravja in poskusi znova. Drugi poraz konča pot, a Lintverna lahko vedno izzoveš še enkrat. Padli po zmagi vstanejo.' },
+  srednja: { name: 'Srednja', foeHp: 1, withdraw: 0, rise: 0, regionRise: 0.5, leave: false, text: 'Poraz konča pot. Padli obležijo do konca pokrajine, nato vstanejo s polovico zdravja.' },
+  tezka: { name: 'Težka', foeHp: 1.25, withdraw: 0, rise: 0, leave: true, text: 'Močnejši sovražniki, ki so proti koncu poti vse hitrejši. Poraz konča pot. Kdor pade in ga do konca bitke nihče ne obudi, zapusti družino.' },
 };
 const DIFF = () => DIFFS[LV().diff] || DIFFS.srednja;
+// a lost battle on this journey still has a rescue left (Malček: the first one)
+// a retry that costs no rescue: any battle at Ptuj, and on Malček the final battle once (node: the lost battle)
+function freeRetry(node) {
+  const R = S.run, stop = node && node.stop; if (!R || !stop || node.challenge) return null;
+  if (R.ri === 0) return 'ptuj';
+  if (DIFF().finalRetry && stop.kind === 'boss' && R.ri === WORLD.regions.length - 1 && !R.finalRetry) return 'final';
+  return null;
+}
+const canWithdraw = node => !!(S.run && (freeRetry(node) || (DIFF().withdraw && (S.run.rescues || 0) < DIFF().withdraw)));
 const MINW = () => LV().minWord;
 
 const FINISHER_FX = {
@@ -889,7 +914,11 @@ const HERO_HP = { krpan: 36, jurij: 26, kurent: 30, matjaz: 34, kresnik: 28, era
 // a stronger attack, effects that last longer (×1,5, ×2) and one extra effect each.
 // Points are spent at wells, shrines and pedlars (screen "Veščine", src/skills.js).
 // Outside a journey (practice battles, the gallery) every skill is known at stopnja 1.
-const MAX_LV = 9, LV_XP = [0, 60, 140, 240, 360, 500, 660, 840, 1050];
+// Balance D (17 Nov 2026): on a journey the party levels together. XP comes from the fight (src/progression.js:
+// attacks + damage + the enemy's level) into one pool; every hero has the party's level, and each new level adds
+// PTS_PER_LV skill points to a shared pool that any hero can spend (src/skills.js). Curve from the road simulations
+// (docs/progression-design.md §4b): level 3 by the end of Ptuj, level 9 before the last two bosses.
+const MAX_LV = 9, LV_XP = [0, 45, 110, 220, 360, 540, 760, 1020, 1350], PTS_PER_LV = 3;
 const lvHp = lvl => 1 + 0.08 * (lvl - 1), lvAtk = lvl => 1 + 0.04 * (lvl - 1), lvLong = lvl => 0.0125 * (lvl - 1);
 // reviewed heroes (src/progression.js): Ajdovska deklica gains a little more health per level (TEST: +10 % for +8 %),
 // Kurent never less than +1 a level
@@ -898,7 +927,11 @@ const baseHpAt = (id, lvl) => { const b = HERO_HP[id] || 28; return Math.max(b *
 const levelFor = xp => { let l = 1; while (l < MAX_LV && xp >= LV_XP[l]) l++; return l; };
 const heroMaxHp = (id, lvl) => Math.round(baseHpAt(id, lvl) * (has('alatir') ? 1.2 : 1));
 // sk[t]: 0 = skill t+1 not learned yet, 1–3 = its stopnja (rank)
-const heroState = (id, lvl = 1) => ({ id, hp: heroMaxHp(id, lvl), maxHp: heroMaxHp(id, lvl), lvl, xp: LV_XP[lvl - 1], pts: lvl - 1, sk: [1, 0, 0], down: false, leveled: false });
+const heroState = (id, lvl = 1) => ({ id, hp: heroMaxHp(id, lvl), maxHp: heroMaxHp(id, lvl), lvl, xp: LV_XP[lvl - 1], pts: 0, sk: [1, 0, 0], down: false, leveled: false });
+// the shared pool of skill points on a journey, and whether hero `st` still has a skill to learn or raise
+const poolPts = () => (S.run && S.run.pts) || 0;
+const canGrow = st => !!(S.run && st && poolPts() > 0 && st.sk.some((r, i) => r ? r < MAX_RANK : i === 0 || st.sk[i - 1] > 0));
+const ptsWord = n => n === 1 ? 'točka veščin' : n === 2 ? 'točki veščin' : n < 5 ? 'točke veščin' : 'točk veščin';
 const MAX_RANK = 3;
 const RANK_POW = [0, 1, 1.2, 1.4], RANK_DUR = [0, 1, 1.5, 2];   // power and effect length by stopnja
 const skillLv = (st, t) => !S.run ? 1 : (st && st.sk ? st.sk[t - 1] : t === 1 ? 1 : 0);   // practice battles: every skill known
@@ -910,11 +943,12 @@ function firedTier(k, n) { const st = S.heroes[k]; let t = clamp(n, 1, 3); while
 function setParty(ids) { HEROES.length = 0; ids.forEach(id => HEROES.push(ROSTER[id])); S.heroes = ids.map(id => heroState(id)); S.lastHero = 0; }
 // a hero joins: in a free place, or instead of the one at index `at`
 function joinHero(id, at) {
-  // a newcomer brings half the party's average experience (and the skill points of the levels it gives)
-  const xp = Math.floor(S.heroes.reduce((a, x) => a + x.xp, 0) / Math.max(1, S.heroes.length) / 2);
-  const st = heroState(id, levelFor(xp)); st.xp = xp;
+  // on a journey a newcomer arrives at the party's level and knows skill 1; the shared points pay for the rest
+  const R = S.run, xp = R ? R.pxp || 0 : Math.floor(S.heroes.reduce((a, x) => a + x.xp, 0) / Math.max(1, S.heroes.length) / 2);
+  const st = heroState(id, R ? R.plvl || 1 : levelFor(xp)); st.xp = xp;
   if (at == null || at < 0) { HEROES.push(ROSTER[id]); S.heroes.push(st); } else { HEROES[at] = ROSTER[id]; S.heroes[at] = st; }
   S.lastHero = 0;
+  if (S.run && typeof fitGroups === 'function') fitGroups();   // battles ahead in this region match the new party size
 }
 const partyGod = () => HEROES.findIndex(x => x.god);
 const living = () => S.heroes.map((st, k) => k).filter(k => !S.heroes[k].down);
@@ -1078,11 +1112,11 @@ function renderHeroMoment(arg) {
     spawnCard(heroEl, { tier: t, c: ch.c, name: ch.name, move: ch.moves[t - 1], word: ch.words[t - 1], value: ch.vals[t - 1], extra: t === 3 ? ch.extra : null, art: id }, ctx);
   };
   const spirit = h('div', { class: 'spirit' + (kind === 'freed' ? ' cursed' : '') + (hs && hs.down ? ' down' : '') + (id === 'veles' ? ' grand' : ''), ref: el => ctx.scene = el },
-    h('button', { class: 'spirit-hit', 'aria-label': `${ch.name}: pokaži veščino`, title: 'Pokaži veščino', onclick: demo }, heroEl = spriteEl(id, ch.c, sst && S.run && sst.pts > 0 && !(hs && hs.down) ? 'glow' : '')),
+    h('button', { class: 'spirit-hit', 'aria-label': `${ch.name}: pokaži veščino`, title: 'Pokaži veščino', onclick: demo }, heroEl = spriteEl(id, ch.c, canGrow(sst) && !(hs && hs.down) ? 'glow' : '')),
     [18, 34, 52, 68, 82].map((x, i) => h('span', { class: 'mote', style: { left: x + '%', 'animation-delay': (-i * .8) + 's', 'animation-duration': (3.4 + (i % 3) * .7) + 's' } })),
     h('div', { class: 'cards', ref: el => ctx.cards = el }),
     h('button', { class: 'btn small skillbtn', onclick: () => openSkillInfo(id, sst) },
-      h('span', { class: 'i', 'aria-hidden': 'true' }, 'i'), 'Veščine', sst && S.run && sst.pts ? h('span', { class: 'ptsbadge', title: 'neporabljene točke' }, sst.pts) : null));
+      h('span', { class: 'i', 'aria-hidden': 'true' }, 'i'), 'Veščine', canGrow(sst) ? h('span', { class: 'ptsbadge', title: 'neporabljene točke družine' }, poolPts()) : null));
   const flip = h('div', { class: 'flip' });
   const front = h('div', { class: 'face front' }); front.innerHTML = CardArt.svg(id, 1);
   // the skills on the card: filled when known, outlined when not yet; a star for stopnja 2, two for stopnja 3
@@ -1097,7 +1131,7 @@ function renderHeroMoment(arg) {
   const wrap = h('div', { class: 'hm', style: { '--c': ch.c } },
     arg.crumb ? crumb(arg.crumb, () => arg.next()) : null,
     h('div', {}, h('div', { class: 'kind' }, HM_KIND[kind]), h('h2', {}, ch.name, h('small', {}, ch.sub)),
-      hs ? h('div', { class: 'hstat' }, hs.down ? 'Obležal. Obudi ga junak z zdravilno močjo, mrtva voda ali premagan bog; vodnjak ne.' : [`Raven ${hs.lvl} · zdravje ${hs.hp}/${hs.maxHp}`, hs.leveled ? h('b', {}, ' · nova raven: polno zdravje, +1 točka veščine!') : null,
+      hs ? h('div', { class: 'hstat' }, hs.down ? 'Obležal. Obudi ga junak z zdravilno močjo, mrtva voda ali premagan bog; vodnjak ne.' : [`Raven ${hs.lvl} · zdravje ${hs.hp}/${hs.maxHp}`, hs.leveled ? h('b', {}, ` · nova raven družine: polno zdravje, +${PTS_PER_LV} točke za veščine!`) : null,
         hs.lvl < MAX_LV ? ` · do naslednje ravni še ${LV_XP[hs.lvl] - hs.xp} XP` : ' · najvišja raven']) : null),
     // what this moment means (unlocked, room in the party, a freed god) comes first, before the pictures
     kind === 'freed' ? h('div', { class: 'note' }, CHAR_ST[id] === 'konec' ? `${ch.name} se ti pridruži šele po koncu zgodbe — takrat lahko zaigraš tudi z njim.` : `${ch.name} se ti ne pridruži takoj: svojo moč ti posodi, ko se srečata na naslednji poti.`) : null,
@@ -1175,9 +1209,19 @@ let B = null;          // current battle
 const UI = {};         // DOM refs for the battle screen
 
 const OWN_SHARE = [0, 0.3, 0.46, 0.56, 0.62];   // share of coloured tiles by party size
-function makeEnemy(key, i, sc) {
-  const t = ENEMIES[key], hp = Math.round(t.hp * (sc ? sc.hp : 1) * (S.run ? DIFF().foeHp : 1));
-  return { key, i, ...t, lvl: S.run ? S.run.ri + 1 : 1, atk: Math.round(t.atk * (sc ? sc.atk : 1)), pattern: t.pattern.slice(), maxHp: hp, hp, charge: Math.random() * 0.25, step: 0,
+// Balance D: ordinary enemies grow by region (sc, data/world.json → balance); bosses and the Lintvern's wyverns keep
+// their own numbers. Znanje scales health (Ptuj, the tutorial, is the same on every Znanje), and on Knjižni molj
+// enemies also grow tougher and quicker region by region (steep). A strong enemy (Silni …) has more of both.
+function makeEnemy(key, i, sc, strong) {
+  const t = ENEMIES[key], run = S.run, ri = run ? run.ri : 0, own = t.boss || t.fixed;
+  const s = own ? null : sc, el = strong && !own ? (WORLD.balance || {}).strong : null;
+  const steep = run && !t.boss ? (((WORLD.balance || {}).steep || {})[S.know] || [0, 0]) : [0, 0], last = WORLD.regions.length - 1;
+  const tier = !run ? 1 : ri === 0 ? DIFFS.lahka.foeHp : DIFF().foeHp, slow = 1 - steep[1] * ri / last;
+  const base = run && t.hpBy ? t.hpBy[LV().diff] || t.hp : t.hp;
+  const hp = Math.round(base * (s ? s.hp : 1) * tier * (1 + steep[0] * ri / last) * (el ? el.hp : 1));
+  const name = el ? (t.f ? 'Silna ' : 'Silni ') + t.name[0].toLowerCase() + t.name.slice(1) : t.name;
+  return { key, i, ...t, name, strong: !!el, lvl: run ? run.ri + 1 : 1, atk: Math.round(t.atk * (s ? s.atk : 1) * (el ? el.atk : 1)), speed: t.speed * slow, calmStep: t.calmStep / slow,
+    pattern: t.pattern.slice(), maxHp: hp, hp, charge: Math.random() * 0.25, step: 0,
     stunUntil: 0, stunWords: 0, burn: null, burnAcc: 0, burnTurns: 0, burnPer: 0, phase2on: false, el: null };
 }
 function newTile() {
@@ -1186,9 +1230,9 @@ function newTile() {
 function startBattle(node) {
   const def = node.battle;
   B = S.battle = {
-    node, def, enemies: def.enemies.map((k, i) => makeEnemy(k, i, def.scale)), target: 0, grid: [], path: [], typed: '', nopath: false,
+    node, def, enemies: def.enemies.map((k, i) => makeEnemy(k, i, def.scale, i === def.strong)), target: 0, grid: [], path: [], typed: '', nopath: false,
     lemmaUses: new Map(), meter: Math.round(METER_MAX * Math.max(def.meterStart, S.meterBonus)), hints: LV().noHints ? 0 : LV().hints + (has('praprotno-seme') ? 1 : 0), shield: has('svarogovo-kladivo') ? 8 : 0,
-    boost: 0, double: 1, evade: 0, grow: 0, ward: 0, rally: {}, busy: {}, restore: {}, guard: null, dampen: null, rov: null, xpBy: {}, xpWhy: {}, snapBag: S.run ? JSON.stringify(S.run.bag) : null, snapGold: S.run ? S.run.gold : 0,
+    boost: 0, double: 1, evade: 0, grow: 0, heroBurn: {}, hbAcc: {}, scorchNext: 0, ward: 0, rally: {}, busy: {}, restore: {}, guard: null, dampen: null, rov: null, xpBy: {}, xpWhy: {}, snapBag: S.run ? JSON.stringify(S.run.bag) : null, snapGold: S.run ? S.run.gold : 0,
     get hp() { return S.partyHp; }, set hp(v) { S.partyHp = v; }, snap: JSON.stringify(S.heroes), revived: false, sleep: {}, time: 0, paused: false, over: false, cw: null, words: 0, logLines: [], fbTimer: 0,
     stats: { words: 0, longest: '', best: 0, cw: 0, xp: 0, gold: 0 }, lastFinisher: null,
   };
@@ -1261,8 +1305,8 @@ function renderParty() {
   UI.party.innerHTML = ''; UI.heroBars = [];
   UI.heroEls = HEROES.map((hr, i) => {
     const st = S.heroes[i], sleeping = !!B.sleep[i] && !st.down;
-    const el = spriteEl(hr.id, hr.c, st.down ? 'down' : sleeping ? 'asleep' : st.pts > 0 && S.run ? 'glow' : '');
-    el.title = hr.name; el.append(h('span', { class: 'st' }, st.down ? '' : sleeping ? 'spi' : busy(i) ? 'pleše' : ''));
+    const el = spriteEl(hr.id, hr.c, st.down ? 'down' : sleeping ? 'asleep' : canGrow(st) ? 'glow' : '');
+    el.title = hr.name; el.append(h('span', { class: 'st' }, st.down ? '' : sleeping ? (B.sleep[i] && B.sleep[i].why === 'topot' ? 'omamljen' : 'spi') : busy(i) ? 'pleše' : ''));
     const bar = {};
     UI.party.append(h('div', { class: 'herowrap' + (st.down ? ' isdown' : ''), ref: w => bar.wrap = w }, el,
       h('div', { class: 'hpbar', ref: b => bar.bar = b }, h('i', { ref: f => bar.fill = f })),
@@ -1286,14 +1330,15 @@ function renderEnemies() {
   UI.enemies.innerHTML = '';
   B.enemies.forEach((e, i) => {
     const statuses = [];
-    if (e.hp > 0 && (e.stunUntil > B.time || e.stunWords > 0)) statuses.push('omamljen');
+    if (e.hp > 0 && !e.unstoppable && (e.stunUntil > B.time || e.stunWords > 0)) statuses.push('omamljen');
+    if (e.hp > 0 && e.charging) statuses.push('zajema sapo');
     if (e.hp > 0 && ((e.burn && e.burn.until > B.time) || e.burnTurns > 0)) statuses.push(e.dot || 'gori');
     if (e.hp > 0) statuses.push(...reviewedStatuses(e));
     const isT = i === B.target && e.hp > 0;
     const since = performance.now() - (e.atkT || -1e9), atk = e.hp > 0 && since < 600;
-    e.el = h('div', { class: 'actor foe spr' + (atk ? (e.atkTier === 3 ? ' atk atk3' : ' atk') : '') + (e.boss ? ' boss' : '') + (e.hp <= 0 ? ' dead' : '') + (isT ? ' target' : '') +
+    e.el = h('div', { class: 'actor foe spr' + (atk ? (e.atkTier === 3 ? ' atk atk3' : ' atk') : '') + (e.boss ? ' boss' : '') + (e.strong ? ' strong' : '') + (e.charging && e.hp > 0 ? ' charging' : '') + (e.hp <= 0 ? ' dead' : '') + (isT ? ' target' : '') +
         (statuses.includes('omamljen') ? ' stunned' : '') + (e.hp > 0 && performance.now() - (e.hitT || -1e9) < 250 ? ' hit' : ''),
-      style: { '--art': SPR_SIZE[foeArt(e)] }, title: e.name, onclick: () => setTarget(i) },
+      style: { '--art': Math.round(SPR_SIZE[foeArt(e)] * (e.scale || 1) * (e.strong ? 1.12 : 1)) }, title: e.name, onclick: () => setTarget(i) },
       h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[foeArt(e)]})`, filter: e.tint || '', 'animation-delay': atk ? (-since) + 'ms' : (-(i * 400)) + 'ms' } }), h('span', { class: 'st' }, statuses.join(' · ')));
     const pips = S.mode === 'calm' && e.hp > 0 ? (() => {
       const steps = Math.round(1 / e.calmStep), on = Math.round(e.charge / e.calmStep);
@@ -1353,7 +1398,7 @@ function renderSide() {
     h('div', { class: 'box' }, h('h4', {}, 'Junaki in barve'),
       h('div', { class: 'legend' }, HEROES.map((hr, i) => h('div', { style: { '--c': hr.c } },
         h('span', { class: 'sw' }), h('span', {}, h('b', {}, hr.ini), ' ', hr.name, ' · ', hr.role),
-        h('span', { class: 'zz' }, S.heroes[i].down ? 'padel' : busy(i) && !B.sleep[i] ? 'pleše' : asleep(i) ? 'spi' : ''))))),
+        h('span', { class: 'zz' }, S.heroes[i].down ? 'padel' : busy(i) && !B.sleep[i] ? 'pleše' : asleep(i) ? (B.sleep[i] && B.sleep[i].why === 'topot' ? 'omamljen' : 'spi') : ''))))),
     h('div', { class: 'box keys' },
       h('kbd', {}, 'Enter'), h('span', {}, 'potrdi'), h('kbd', {}, 'Del'), h('span', {}, 'počisti'), h('kbd', {}, 'Esc'), h('span', {}, 'premor'),
       h('kbd', {}, '← →'), h('span', {}, 'cilj')));
@@ -1580,7 +1625,7 @@ function renderPuzzle() {
     const hero = t.owner >= 0 ? HEROES[t.owner] : null;
     const locked = isLocked(t);
     const el = h('div', { class: 'tile' + (hero && !locked ? ' own' : '') + (locked ? ' locked' : '') + (locked && t.flood ? ' flood' : '') +
-        (!locked && SUMNIKI.includes(t.ch) ? ' sumnik' : '') + (hero && !locked && asleep(t.owner) ? ' sleep' : '') + (t.pop ? ' pop' : ''),
+        (!locked && SUMNIKI.includes(t.ch) ? ' sumnik' : '') + (hero && !locked && asleep(t.owner) ? ' sleep' : '') + (t.scorch && !locked ? ' scorch' : '') + (t.pop ? ' pop' : ''),
       'data-i': i, style: hero ? { '--c': hero.c } : null },
       hero && !locked ? h('span', { class: 'ini' }, hero.ini) : null, t.ch);
     t.pop = false;
@@ -1838,6 +1883,9 @@ function resolveWord(w, path) {
     const up = ups.reduce((m, t) => m * (t === 'moc' ? 1.25 : 1), 1), krit = ups.includes('krit') && Math.random() < 0.3;
     // reviewed heroes (src/progression.js): their rank values replace TIER × RANK_POW (and SKILL_UPS, see upTags); the word's own multipliers stay
     const rev = hr.kit === 'reviewed', word = (1 + 0.15 * more) * up * (krit ? 2 : 1) * lenM * rep * crit * gear * heroMult(k, w.length) * (dom ? 1.5 : 1);
+    // Balance D: a reviewed hero fires every skill they know up to the number of their letters, lowest first, each at its
+    // own rank, so learning a skill only ever adds to a word (two letters: skills 1 and 2; three: all three)
+    if (rev) { for (let t = 1; t <= tier; t++) acts.push({ k, tier: t, rank: skillLv(S.heroes[k], t), dom, ups: [], krit, crit: crit > 1 || krit, power: word, gift: TIER[t] * word }); return; }
     acts.push({ k, tier, rank, dom, ups, krit, crit: crit > 1 || krit, power: (rev ? 1 : TIER[tier] * RANK_POW[rank]) * word, gift: TIER[tier] * word });
   });
   if (!acts.length) acts.push({ k: -1, tier: 1, power: 0.6 * lenM * rep * crit * gear * lvl });
@@ -1869,6 +1917,7 @@ function resolveWord(w, path) {
   B.meter = Math.min(METER_MAX, B.meter + w.length * rep * (has('mokosino-vreteno') ? 1.3 : 1));
   if (S.run) S.run.words++;
   if (B.meter >= METER_MAX) fb('Zagovor je pripravljen — pritisni presledek.', 'ok');
+  scorchedUsed(path);   // the Lintvern's scorched letters burn whoever uses them
   path.forEach(i => { B.grid[i] = newTile(); });
   balanceVowels(path);
   B.path = []; B.typed = ''; B.nopath = false;
@@ -1891,16 +1940,17 @@ function heroAct(a, w) {
   attackAnim(el, a.tier, UI.scene); S.lastHero = a.k;
   // Ajdovska deklica, Erazem, Kralj Matjaž, Kresnik and Kurent: their own kits with ranks 1–3 (src/progression.js)
   if (hero.kit === 'reviewed') { reviewedAct(a, target, card); spawnCard(el, card); renderEnemies(); return; }
+  noteAttack(target, a.k);   // the party's XP counts every hero's attacks (src/progression.js)
   const others = () => B.enemies.filter(e => e !== target && e.hp > 0), alive = () => B.enemies.filter(e => e.hp > 0);
   const hit = (m, e = target) => damageEnemy(e, m * p + rallyBonus(a.k, e === target), { crit: a.crit, by: a.k });   // + Kraljeva vojska's bonus, once
   const shield = m => { const sh = Math.round(m * p); B.shield = Math.min(30, B.shield + sh); renderPartyHp(); floatOn(UI.party, `ščit +${sh}`, 'info'); return sh; };
   // a skill at a higher stopnja lasts longer: stuns, burns, poison, weakening and dodges (×1,5 and ×2)
   const dur = RANK_DUR[a.rank || 1];
-  const stun = (e, sec, words) => { if (S.mode === 'real') e.stunUntil = Math.max(e.stunUntil, B.time + sec * dur); else e.stunWords = Math.max(e.stunWords, Math.round(words * dur)); };
+  const stun = (e, sec, words) => { if (e.unstoppable) { floatOn(e.el, 'neustavljiv', 'info'); return; } if (S.mode === 'real') e.stunUntil = Math.max(e.stunUntil, B.time + sec * dur); else e.stunWords = Math.max(e.stunWords, Math.round(words * dur)); };
   const burn = (e, m, label) => applyBurn(e, m, label, false, dur);
   const cleanse = () => {
-    const had = B.grid.some(isLocked) || Object.keys(B.sleep).length;
-    B.grid.forEach(t => { t.lockUntil = 0; t.lockWords = 0; t.flood = false; }); B.sleep = {};
+    const had = B.grid.some(t => isLocked(t) || t.scorch) || Object.keys(B.sleep).length;
+    B.grid.forEach(t => { t.lockUntil = 0; t.lockWords = 0; t.flood = false; t.scorch = false; }); B.sleep = {};
     if (had) { log(`${hero.name} očisti zaklenjene črke in zbudi junake.`); renderPuzzle(); renderParty(); renderSide(); }
     return had;
   };
@@ -1990,10 +2040,13 @@ function damageEnemy(e, amount, opts = {}) {
   floatOn(e.el, `−${a}`, opts.burn ? 'burn' : opts.crit ? 'crit' : 'dmg');
   if (a > B.stats.best) B.stats.best = a;
   if (e.phase2 && !e.phase2on && e.hp > 0 && e.hp / e.maxHp <= e.phase2.at) {
-    e.phase2on = true; e.pattern = e.phase2.pattern.slice(); e.step = 0; e.speed = e.phase2.speed; e.calmStep = e.phase2.calmStep; e.charge = 0.4;
-    spawnCard(e.el, { tier: 3, foe: true, name: e.name, move: `${e.name} pobesni!`, extra: 'druga faza: hitrejši napadi, zmajeva uganka' });
-    log(`${e.name} pobesni — druga faza!`);
+    e.phase2on = true; e.pattern = e.phase2.pattern.slice(); e.step = 0;
+    if (e.charging) { e.spd0 = e.phase2.speed; e.cs0 = e.phase2.calmStep; } else { e.speed = e.phase2.speed; e.calmStep = e.phase2.calmStep; e.charge = 0.4; }
+    const calls = e.phase2.summon ? summonAdds(e) : 0;
+    spawnCard(e.el, { tier: 3, foe: true, name: e.name, move: `${e.name} pobesni!`, extra: 'druga faza: hitrejši napadi, zmajeva uganka' + (calls ? ` · prileti ${calls} ${calls === 1 ? 'zmajček' : 'zmajčka'}` : '') });
+    log(`${e.name} pobesni — druga faza!` + (calls ? ` Prileti ${calls === 1 ? 'zmajček' : 'še ' + calls + ' zmajčka'}.` : ''));
   }
+  if (e.breath && e.hp > 0) breathCheck(e);
   if (e.hp <= 0) {
     sfx('dead', { delay: .28 });
     e.charge = 0; e.burn = null; e.burnTurns = 0;
@@ -2059,6 +2112,7 @@ function heroFalls(k) {
 
 function gainXp(n, k, each, noStat) {   // k = hero index; without it the XP is split among the heroes still standing, or with `each` everyone gets all of it
   if (B && !noStat) B.stats.xp += n;
+  if (S.run) return gainPartyXp(n);   // on a journey the party levels together (balance D)
   const who = k != null && k >= 0 ? [k] : living();
   who.forEach(i => {
     const st = S.heroes[i]; if (st.down) return;
@@ -2075,10 +2129,35 @@ function gainXp(n, k, each, noStat) {   // k = hero index; without it the XP is 
   renderMeta();
 }
 
+// The party's experience on a journey: one pool, one level for everyone, PTS_PER_LV shared points a level.
+// A new level heals every hero still standing; the fallen get the new maximum and stay down.
+function gainPartyXp(n) {
+  const R = S.run; R.pxp = (R.pxp || 0) + n; R.plvl = R.plvl || 1;
+  let up = 0;
+  while (R.plvl < MAX_LV && R.pxp >= LV_XP[R.plvl]) { R.plvl++; up++; }
+  S.heroes.forEach(st => { st.xp = R.pxp; });
+  if (up) {
+    const pts = up * PTS_PER_LV; R.pts = (R.pts || 0) + pts;
+    HEROES.forEach((hr, i) => { const st = S.heroes[i]; st.lvl = R.plvl; st.leveled = true; st.maxHp = heroMaxHp(hr.id, st.lvl); if (!st.down) st.hp = st.maxHp; });
+    if (B) B.leveled = true;
+    chorus();
+    if (B) {
+      log(`Družina doseže raven ${R.plvl}! Polno zdravje in +${pts} ${ptsWord(pts)} (porabiš jih po bitki, pri vodnjaku, v svetišču ali pri krošnjarju).`);
+      fb(`Raven ${R.plvl}: polno zdravje in +${pts} ${ptsWord(pts)}!`, 'ok');
+      HEROES.forEach((_, i) => { if (UI.heroEls && UI.heroEls[i] && !S.heroes[i].down) { floatOn(UI.heroEls[i], `raven ${R.plvl}`, 'heal'); UI.heroEls[i].classList.add('glow'); } });
+      renderPartyHp();
+    }
+  }
+  if (B) renderMeta();
+}
+
 // ------------------------------------------------------------ enemies
 function enemyAct(e) {
   if (B.over || e.hp <= 0) return;
   // Okamnitev (src/progression.js): turned to stone, the enemy lets this attack pass; burns and poison go on
+  e.dlAmt = 0;   // Kurent's delays (src/progression.js) count again from here
+  if (e.unstoppable) e.stone = 0;   // Lintvern: Okamnitev does not hold him
+  if (e.charging) return breathe(e);
   if (e.stone > 0) { e.stone--; floatOn(e.el, 'okamnel', 'info'); log(`${e.name} je okamnel${e.f ? 'a' : ''} — napad izostane.`); renderEnemies(); return; }
   let act = e.pattern[e.step % e.pattern.length]; e.step++;
   if (act === 'cwlock' && B.cw && B.cw.kind !== 'finisher') act = 'attack';
@@ -2086,7 +2165,18 @@ function enemyAct(e) {
   e.atkT = performance.now(); e.atkTier = act === 'attack' ? 1 : 3;
   if (act !== 'attack' && UI.scene) { replay(UI.scene, 'flash'); setTimeout(() => UI.scene && UI.scene.classList.remove('flash'), 420); }
   setTimeout(() => { if (e.el) e.el.classList.remove('atk', 'atk3'); }, 660);
-  if (act === 'attack') {
+  if (act === 'scratch') {   // Lintvern's Kremplji: one hero
+    const d = hurtParty(e.atk, e);
+    spawnCard(e.el, { tier: 2, foe: true, name: e.name, move: mv, value: d ? `−${d}` : 'ščit ujame' });
+    log(d ? `${e.name}: ${mv} (−${d}).` : `${e.name}: ${mv} — ščit ujame udarec.`);
+  } else if (act === 'stomp') {   // Lintvern's Topot: everyone a little, and heroes knocked out of the letter mesh for a while
+    const T = e.stomp, d = hurtEach(living().map(() => Math.round(e.atk * T.hit)), e);
+    const out = shuffle(living().filter(k => !asleep(k))).slice(0, T.out[LV().diff] || 1);
+    out.forEach(k => { B.sleep[k] = { until: B.time + T.sec, words: T.words, why: 'topot' }; });
+    spawnCard(e.el, { tier: 3, foe: true, name: e.name, move: mv, value: `−${d}`, extra: out.length ? `omamljen: ${out.map(k => HEROES[k].name).join(', ')}` : '', portrait: e.name[0] });
+    log(`${e.name}: ${mv}! (−${d})` + (out.length ? ` ${out.map(k => HEROES[k].name).join(' in ')} ${out.length > 1 ? 'sta omamljena' : 'je omamljen'} — ${out.length > 1 ? 'njune črke' : 'njegove črke'} za hip ugasnejo.` : ''));
+    renderParty(); renderPuzzle(); renderSide();
+  } else if (act === 'attack') {
     const d = hurtParty(e.atk, e);
     spawnCard(e.el, { tier: 1, foe: true, name: e.name, move: mv, value: d ? `−${d}` : 'ščit ujame' });
     log(d ? `${e.name}: ${mv} (−${d}).` : `${e.name}: ${mv} — ščit ujame udarec.`);
@@ -2125,17 +2215,115 @@ function lockTiles(n) {
   if (!B.cw) renderPuzzle();
   return targets;
 }
+// ------------------------------------------------------------ the Lintvern (balance D): Ognjeni dih, wyverns, burns, scorched letters
+// At each of his breath thresholds (66 % and 33 % of his health) he starts to draw breath: his attack charge now runs
+// for e.breath.sec[Znanje] seconds (calm mode: that many words), seen as the wind-up glow and »zajema sapo«. When it
+// is full he breathes. A threshold crossed during a charge waits for the next one.
+function breathCheck(e) {
+  e.breathDone = e.breathDone || [];
+  e.breath.at.forEach(th => {
+    if (e.hp / e.maxHp > th || e.breathDone.includes(th)) return;
+    e.breathDone.push(th);
+    if (e.charging) e.breathQ = (e.breathQ || 0) + 1; else startCharge(e);
+  });
+}
+function startCharge(e) {
+  const d = LV().diff;
+  e.charging = true; e.spd0 = e.speed; e.cs0 = e.calmStep; e.charge = 0;
+  e.speed = e.breath.sec[d] || 8; e.calmStep = 1 / (e.breath.words[d] || 3);
+  spawnCard(e.el, { tier: 3, foe: true, name: e.name, move: e.moves.breath, extra: 'zajema sapo …', portrait: e.name[0] });
+  log(`${e.name} zajema sapo za ${e.moves.breath.toLowerCase()}! Ničesar ga ne ustavi — pripravi se.`);
+  fb(`${e.name} zajema sapo: kmalu bo bruhnil ogenj!`, 'warn');
+  renderEnemies();
+}
+// every hero still standing is hit (e.breath.hit × his attack each) and burns; letters in the mesh are scorched
+function breathe(e) {
+  const T = e.breath;
+  e.charging = false; e.speed = e.spd0; e.calmStep = e.cs0; e.charge = 0;
+  e.atkT = performance.now(); e.atkTier = 3;
+  if (UI.scene) { replay(UI.scene, 'flash'); setTimeout(() => UI.scene && UI.scene.classList.remove('flash'), 420); }
+  const d = hurtEach(living().map(() => Math.round(e.atk * T.hit)), e);
+  living().forEach(k => { B.heroBurn[k] = (B.heroBurn[k] || 0) + T.burn; });
+  const n = scorchTiles(T.scorch);
+  spawnCard(e.el, { tier: 3, foe: true, name: e.name, move: e.moves.breath, value: `−${d}`, extra: `junaki gorijo · ${n} ožganih črk`, portrait: e.name[0] });
+  log(`${e.name}: ${e.moves.breath}! (−${d}) Junaki gorijo, ${n} črk je ožganih: kdor jih uporabi, se opeče.`);
+  sfx('lose', { vol: .45, rate: 1.4 });
+  if (e.breathQ > 0) { e.breathQ--; startCharge(e); }
+  renderParty(); renderPartyHp(); renderEnemies();
+}
+// n free letters are scorched; they fade one by one (real time: every e.breath.fade s; calm mode: fadeWords a word)
+function scorchTiles(n) {
+  const free = shuffle(B.grid.map((t, i) => i).filter(i => !isLocked(B.grid[i]) && !B.grid[i].scorch)).slice(0, n);
+  free.forEach(i => { B.grid[i].scorch = true; });
+  B.scorchNext = B.time + ((B.enemies.find(x => x.breath) || {}).breath || { fade: 2.5 }).fade;
+  if (!B.cw) renderPuzzle();
+  return free.length;
+}
+function fadeScorch(n) {
+  const lit = shuffle(B.grid.filter(t => t.scorch)).slice(0, n);
+  lit.forEach(t => { t.scorch = false; });
+  return lit.length > 0;
+}
+// the wyverns the Lintvern calls when he enrages: as many as he started with (one per hero beyond the first, at most two)
+function summonAdds(e) {
+  const reg = S.run ? WORLD.regions[S.run.ri] : null, adds = reg && reg.adds;
+  const n = adds ? Math.min(adds.max || 2, Math.max(0, HEROES.length - 1)) : 0;
+  for (let k = 0; k < n; k++) { const a = makeEnemy(adds.key, B.enemies.length, null); a.charge = 0.3; B.enemies.push(a); }
+  if (n) renderEnemies();
+  return n;
+}
+// a hero burns: n damage, never through the shield, and it never triggers Kresna moč
+function burnHero(k, n) {
+  const st = S.heroes[k]; if (!st || st.down) { delete B.heroBurn[k]; return; }
+  B.heroBurn[k] = Math.max(0, (B.heroBurn[k] || 0) - n);
+  const real = Math.min(st.hp, n); st.hp -= real;
+  if (UI.heroEls && UI.heroEls[k]) floatOn(UI.heroEls[k], `−${real}`, 'burn');
+  if (st.hp <= 0) { if (has('zlatorogova-roza') && S.run && !S.run.rozaUsed) { S.run.rozaUsed = true; st.hp = 1; } else heroFalls(k); }
+  renderPartyHp();
+  const b = B; if (!living().length) later(() => { if (B === b) checkEnd(); }, 400);
+}
+// real time: burns tick one a second, scorched letters fade; returns whether the mesh changed
+function realDragonTick(dt) {
+  for (const k of Object.keys(B.heroBurn)) {
+    if (!(B.heroBurn[k] > 0)) continue;
+    B.hbAcc[k] = (B.hbAcc[k] || 0) + dt;
+    if (B.hbAcc[k] >= 1) { B.hbAcc[k] -= 1; burnHero(+k, 1); if (B.over) return false; }
+  }
+  if (B.scorchNext && B.time >= B.scorchNext && B.grid.some(t => t.scorch)) {
+    const T = (B.enemies.find(x => x.breath) || {}).breath || { fade: 2.5 };
+    B.scorchNext = B.time + T.fade; return fadeScorch(1);
+  }
+  return false;
+}
+// calm mode: after every word burns take two each and fadeWords scorched letters fade
+function calmDragonWord() {
+  for (const k of Object.keys(B.heroBurn)) if (B.heroBurn[k] > 0) burnHero(+k, Math.min(2, B.heroBurn[k]));
+  const T = (B.enemies.find(x => x.breath) || {}).breath;
+  if (T && B.grid.some(t => t.scorch)) fadeScorch(T.fadeWords);
+}
+// a word that uses scorched letters: each one burns the hero of its colour (an uncoloured one, the hero in front)
+function scorchedUsed(path) {
+  const T = (B.enemies.find(x => x.breath) || {}).breath, burnt = path.filter(i => B.grid[i].scorch);
+  if (!T || !burnt.length) return;
+  const who = new Map();
+  burnt.forEach(i => { const t = B.grid[i], k = t.owner >= 0 && !S.heroes[t.owner].down ? t.owner : living()[0]; if (k == null) return;
+    B.heroBurn[k] = (B.heroBurn[k] || 0) + T.use; who.set(k, (who.get(k) || 0) + 1); });
+  const names = [...who.keys()].map(k => HEROES[k].name).join(', ');
+  if (names) { log(`Ožgane črke (${burnt.length}): ${names} ${who.size > 1 ? 'se opečejo' : 'se opeče'}.`); fb(`Ožgane črke: ${names} gori${who.size > 1 ? 'jo' : ''}!`, 'warn'); }
+}
 function enemyActFallback(e) { const d = hurtParty(e.atk, e); spawnCard(e.el, { tier: 1, foe: true, name: e.name, move: e.moves.attack, value: `−${d}` }); }
 
 function calmAfterWord() {
   // statuses tick per word in calm mode
   B.grid.forEach(t => { if (t.lockWords > 0) { t.lockWords--; if (!t.lockWords) t.flood = false; } });
-  for (const k of Object.keys(B.sleep)) { if (--B.sleep[k].words <= 0) { delete B.sleep[k]; log(`${HEROES[k].name} se zbudi.`); } }
+  for (const k of Object.keys(B.sleep)) { if (--B.sleep[k].words <= 0) { const why = B.sleep[k].why; delete B.sleep[k]; log(`${HEROES[k].name} ${why === 'topot' ? 'se pobere' : 'se zbudi'}.`); } }
+  calmDragonWord();   // Lintvern's burns and scorched letters move on with every word
   B.enemies.forEach(e => { if (e.hp > 0 && e.burnTurns > 0) { e.burnTurns--; damageEnemy(e, e.burnPer, { burn: true, by: e.burnBy }); } });
   const acting = [];
   B.enemies.forEach(e => {
     if (e.hp <= 0) return;
-    if (e.stunWords > 0) { e.stunWords--; return; }
+    if (e.stunWords > 0 && !e.unstoppable) { e.stunWords--; return; }
+    e.stunWords = 0;
     e.charge += e.calmStep;
     if (e.charge >= 0.999) { e.charge = 0; acting.push(e); }
   });
@@ -2147,7 +2335,7 @@ function calmAfterWord() {
 function battleTick(dt) {
   if (B && !B.over && !B.paused && (B.autoT = (B.autoT || 0) + dt) > 0.5) { B.autoT = 0; autoItems('tick'); }
   if (!B || B.over || B.paused) return;
-  B.time += dt;
+  B.time += dt; if (!B.cw) B.meshT = (B.meshT || 0) + dt;   // time on the letter mesh, for the statistics (src/stats.js)
   reviewedTick(dt); if (B.over) return;   // Kurent's dance, Pregon zime, weakened enemies (src/progression.js)
   if (S.mode === 'real') {
     const k = B.cw && B.cw.kind;
@@ -2162,7 +2350,7 @@ function battleTick(dt) {
         } else { e.burn = null; statusChanged = true; }
       }
       if (e.hp <= 0 || f === 0) continue;
-      if (e.stunUntil > B.time) continue;
+      if (e.stunUntil > B.time && !e.unstoppable) continue;
       if (e.stunUntil) { e.stunUntil = 0; statusChanged = true; }
       e.charge += dt / e.speed * f;
       if (e.charge >= 1) { e.charge = 0; enemyAct(e); if (B.over || !S.battle) return; }
@@ -2170,7 +2358,8 @@ function battleTick(dt) {
     // expiries
     let gridChanged = false;
     for (const t of B.grid) if (t.lockUntil && t.lockUntil <= B.time) { t.lockUntil = 0; t.flood = false; gridChanged = true; }
-    for (const k of Object.keys(B.sleep)) if (B.sleep[k].until <= B.time) { delete B.sleep[k]; gridChanged = true; log(`${HEROES[k].name} se zbudi.`); }
+    for (const k of Object.keys(B.sleep)) if (B.sleep[k].until <= B.time) { const why = B.sleep[k].why; delete B.sleep[k]; gridChanged = true; log(`${HEROES[k].name} ${why === 'topot' ? 'se pobere' : 'se zbudi'}.`); }
+    if (realDragonTick(dt)) gridChanged = true; if (B.over) return;
     if (gridChanged) { renderParty(); renderSide(); if (!B.cw) renderPuzzle(); }
     if (statusChanged) renderEnemies();
     if (B.cw && B.cw.timer !== Infinity) {
@@ -2557,7 +2746,7 @@ function cwCheck() {
   if (solvedNow && C.solved.has(C.cur.e)) { cwNext(); return; }
   cwPaint();
 }
-const lvlMult = () => 1 + 0.1 * (S.level - 1);
+const lvlMult = () => 1 + 0.05 * (S.level - 1);   // balance D: ×1,4 at level 9 (was ×1,8, which flattened the late game)
 function cwTarget() { return B.enemies[B.target] && B.enemies[B.target].hp > 0 ? B.enemies[B.target] : B.enemies.find(x => x.hp > 0); }
 const crk = n => n === 1 ? 'črka' : n === 2 ? 'črki' : n <= 4 ? 'črke' : 'črk';
 function cwEntrySolved(e, hidden = 0, aided = false) {
@@ -2607,7 +2796,7 @@ function cwComplete() {
     else if (C.id === 'kres') { alive.forEach(e => { shown = Math.max(shown, damageEnemy(e, power * 0.6)); applyBurn(e, 3); }); }
     else if (C.id === 'mokos') {
       const got = healParty(Math.round(S.maxHp * 0.25), HEAL_CAP); renderPartyHp(); if (got) floatOn(UI.party, `+${got}`, 'heal');
-      B.grid.forEach(x => { x.lockUntil = 0; x.lockWords = 0; x.flood = false; }); B.sleep = {};
+      B.grid.forEach(x => { x.lockUntil = 0; x.lockWords = 0; x.flood = false; x.scorch = false; }); B.sleep = {};
       if (t) shown = damageEnemy(t, power * 0.7);
     } else if (C.id === 'triglav') {
       if (t) shown = damageEnemy(t, power * 1.2);
@@ -2661,6 +2850,7 @@ function checkEnd() {
 function showResult(win) {
   sfx(win ? 'win' : 'lose', { delay: .3 });
   const node = B.node, st = B.stats, R = S.run, D = DIFF(), C = node.challenge; B.won = win;
+  statBattle(win);   // before the fallen rise or leave (src/stats.js; only when the player agreed)
   let gold = 0, loot = null, god = null, left = [];
   if (win && R && node.stop) {
     gold = st.gold;
@@ -2679,10 +2869,13 @@ function showResult(win) {
   const hurt = S.heroes.some(x => !x.down && x.hp < x.maxHp), down = S.heroes.some(x => x.down);
   const lost = !R ? 'Vsi junaki so obležali. Poskusi znova.'
     : C && C.final ? `Vsi junaki so obležali. ${GOD[C.god].name} je ${GOD[C.god].f ? 'močnejša' : 'močnejši'}.`
-    : D.withdraw ? 'Vsi junaki so obležali. Družina se umakne, si oddahne in poskusi znova.' : 'Vsi junaki so obležali. Pot je končana.';
+    : freeRetry(node) === 'ptuj' ? 'Vsi junaki so obležali. Na Ptuju se šele učiš: družina si opomore do polnega zdravja in poskusi znova.'
+    : freeRetry(node) === 'final' ? 'Vsi junaki so obležali. Pred zadnjim bojem dobiš še eno priložnost: družina si opomore do polnega zdravja.'
+    : canWithdraw(node) ? 'Vsi junaki so obležali. Družina se umakne in si opomore do polnega zdravja. To je edina druga priložnost na tej poti.'
+    : D.withdraw ? 'Vsi junaki so obležali že drugič. Pot je končana.' : 'Vsi junaki so obležali. Pot je končana.';
   const ov = h('div', { class: 'overlay' }, h('div', { class: 'dialog' },
     h('h2', {}, win ? 'Zmaga!' : 'Poraz'),
-    h('div', { class: 'muted' }, win ? (C ? `${GOD[C.god].name} je ${GOD[C.god].f ? 'premagana' : 'premagan'}.` : R ? (hurt || down ? 'Sovražniki so premagani. Rane ostanejo: junaki se pozdravijo pri vodnjaku.' : 'Sovražniki so premagani.') : 'Sovražniki so premagani.') : lost),
+    h('div', { class: 'muted' }, win ? (C ? `${GOD[C.god].name} je ${GOD[C.god].f ? 'premagana' : 'premagan'}.` : R ? (hurt || down ? 'Sovražniki so premagani. Rane ostanejo: junaki se pozdravijo pri vodnjaku ali na koncu pokrajine.' : 'Sovražniki so premagani.') : 'Sovražniki so premagani.') : lost),
     left.length ? h('p', { class: 'note' }, leftLine(left)) : null,
     saved ? h('p', { class: 'savednote', role: 'status' }, h('b', {}, 'Shranjeno.'), ' Pot lahko zdaj zapustiš in jo pozneje nadaljuješ od tod.') : null,
     win && B.found ? newWordsRow(B.found, 'mreza') : null,
@@ -2701,7 +2894,7 @@ function showResult(win) {
       !win && (!R || S.testMode) ? h('button', { class: 'btn', onclick: () => {
         ov.remove(); S.heroes = JSON.parse(B.snap); if (R && B.snapBag) { R.bag = JSON.parse(B.snapBag); R.gold = B.snapGold; } go('battle', node); } }, 'Poskusi znova') : null,
       h('button', { class: 'btn primary', onclick: () => { ov.remove(); afterResult(win); } },
-        win ? 'Naprej ' : !R ? 'Nazaj ' : C && C.final ? 'Naprej ' : D.withdraw ? 'Umakni se ' : 'Konec poti ', h('kbd', {}, 'Enter')))));
+        win ? 'Naprej ' : !R ? 'Nazaj ' : C && C.final ? 'Naprej ' : canWithdraw(node) ? 'Umakni se ' : 'Konec poti ', h('kbd', {}, 'Enter')))));
   document.body.append(ov);
   S.screen = 'result'; S.resultEl = ov; S.resultNode = node;
 }
@@ -2720,13 +2913,15 @@ function afterResult(win) {
     if (!R) return go('title');
     // the god's challenge at the end of the journey: the god leaves, the journey is over either way
     if (C && C.final) return go('godword', { god: C.god, won: false, final: true, next: () => { resetRun(); go('title'); }, nextLabel: 'Nova pot ' });
-    if (D.withdraw) return withdraw(node);
-    resetRun(); return go('title');
+    if (canWithdraw(node)) return withdraw(node);
+    statJourney(false); resetRun(); return go('title');
   }
   const last = R && node && node.stop && node.stop.kind === 'boss' && R.ri === WORLD.regions.length - 1;
   const done = () => { S.heroes.forEach(x => x.leveled = false); go(last ? 'ending' : R ? 'travel' : 'title'); };
+  // balance D: with points in the party's pool (a new level brings PTS_PER_LV) Veščine opens right here, after the battle
+  const footer = R && !last ? A => { const t = trainAction(() => go('hero', A)); return (t ? [{ label: t.label, fn: t.fn }] : []).concat([{ label: A.nextLabel, primary: true, fn: () => A.next() }]); } : null;
   const after = () => go('hero', { kind: 'after', ids: HEROES.map(x => x.id), sel: clamp(S.lastHero || 0, 0, HEROES.length - 1), next: done,
-    nextLabel: last ? 'Konec poti ' : R ? 'Na pot ' : 'Nazaj ', info: res.left && res.left.length ? () => leftLine(res.left) : null });
+    nextLabel: last ? 'Konec poti ' : R ? 'Na pot ' : 'Nazaj ', info: res.left && res.left.length ? () => leftLine(res.left) : null, actions: footer });
   if (R && C) {
     // the god speaks first; after the final challenge the journey is over
     const g = res.god || {};
@@ -2735,16 +2930,18 @@ function afterResult(win) {
   }
   after();
 }
-// Lahka: a lost battle is not the end. Everyone gets up with a third of their health; the enemies still
-// block the road (a god's godly version goes back into the shrine).
+// Lahka (Malček): the first lost battle of a journey is not the end. Everyone gets up with full health; the
+// enemies still block the road (a god's godly version goes back into the shrine). The next loss ends the journey.
 function withdraw(node) {
-  const R = S.run, stop = node.stop, C = node.challenge;
-  S.heroes.forEach(x => { x.down = false; x.hp = Math.max(1, Math.round(x.maxHp / 3)); x.leveled = false; });
+  const R = S.run, stop = node.stop, C = node.challenge, free = freeRetry(node);
+  if (free === 'final') R.finalRetry = true; else if (!free) R.rescues = (R.rescues || 0) + 1;   // Ptuj and the final retry cost no rescue
+  S.heroes.forEach(x => { x.down = false; x.hp = x.maxHp; x.leveled = false; });
   const on = { label: 'Naprej ▶', primary: true, fn: () => { R.prompt = null; R.walking = true; renderTravelPanel(); } };
   if (C || !stop) { if (stop) stop.passed = true; R.prompt = { text: C ? `${GOD[C.god].name} se vrne v svetišče. Družina se umakne in nadaljuje pot.` : 'Družina se umakne.', actions: [on], keep: true }; }
   else {
     const names = stop.enemies.map(k => ENEMIES[k].name).join(' in ');
-    R.prompt = { text: `Družina se umakne in si oddahne: junaki vstanejo s tretjino zdravja. Pot še vedno zapira: ${names}.`,
+    const after = free === 'ptuj' ? 'Na Ptuju poraz ne konča poti.' : free === 'final' ? 'To je zadnja priložnost.' : canWithdraw(node) ? '' : 'Drugi poraz konča pot.';
+    R.prompt = { text: `Družina se umakne in si opomore: vsi junaki so spet polno zdravi. ${after} Pot še vedno zapira: ${names}.`.replace('  ', ' '),
       actions: [{ label: 'V boj', primary: true, fn: () => stopBattle(stop) }, ...(S.testMode ? [{ label: 'Preskoči', fn: () => { stop.passed = true; R.prompt = null; R.walking = true; go('travel'); } }] : [])], keep: true };
   }
   go('travel');
@@ -2994,7 +3191,7 @@ function trapShowEnd() {
   const E = S.ev; UI.trapEnd.innerHTML = '';
   if (UI.trapInput) UI.trapInput.blur();
   if (UI.trapKb) { UI.trapKb.remove(); UI.trapKb = null; }
-  UI.trapEnd.append(h('p', {}, `Razbite skale: ${E.broken}/${E.rocks.length} · prejeta škoda: ${E.dmg}.` + (E.gold ? ` +${E.gold} zlatnikov.` : '') + (E.dmg ? ' Rane ostanejo do naslednjega vodnjaka.' : '')),
+  UI.trapEnd.append(h('p', {}, `Razbite skale: ${E.broken}/${E.rocks.length} · prejeta škoda: ${E.dmg}.` + (E.gold ? ` +${E.gold} zlatnikov.` : '') + (E.dmg ? ' Rane ostanejo do vodnjaka ali do konca pokrajine.' : '')),
     E.word && (E.isNew || meaningOf(E.word)) ? h('div', { class: 'newwords' }, meaningChip(E.word, 'plaz')) : null,
     h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')));
 }
@@ -3062,6 +3259,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, stopBattle, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, gainPartyXp, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 

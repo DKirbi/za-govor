@@ -1038,6 +1038,13 @@ body.mobile .crumbs { margin: 0 -10px 6px; padding: max(8px, var(--sat)) 10px 2p
 .subopt { padding: 2px 14px 4px; border: 2px solid var(--gold); border-top: 0; border-radius: 0 0 var(--radius) var(--radius); background: color-mix(in srgb, var(--gold) 5%, var(--bg2)); }
 .subopt[hidden] { display: none; }
 .set-opts { display: grid; gap: 2px; margin-top: 28px; }
+/* Nova pot: the one-time question about battle statistics (src/stats.js) */
+.stat-ask { margin-top: 24px; padding: 14px 16px; border: 1px solid var(--line); border-left: 3px solid var(--gold); border-radius: 8px; background: rgba(255,255,255,.02); }
+.stat-ask h2 { margin: 0 0 6px; font-size: 1rem; }
+.stat-ask p { margin: 0 0 12px; color: var(--dim); font-size: .9rem; line-height: 1.45; }
+.stat-ask .row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-start; }
+.stat-ask .btn { min-height: 44px; }
+.stat-done { margin-top: 24px; }
 .setup .toggle, .settings .toggle { align-items: flex-start; min-height: 44px; margin: 0; padding: 10px 0; color: var(--ink); }
 .setup .toggle input, .settings .toggle input { flex: none; width: 20px; height: 20px; margin: 1px 0 0; }
 .setup .toggle > span, .settings .toggle > span { display: grid; gap: 2px; font-size: 15px; font-weight: 600; }
@@ -1059,6 +1066,7 @@ body.mobile .lv-grid > .choice { grid-template-columns: 64px 1fr; justify-items:
 body.mobile .lv-grid > .choice h3 { margin: 0; align-self: end; }
 body.mobile .lv-grid > .choice p { margin: 2px 0 0; align-self: start; }
 body.mobile .lv-art { grid-row: span 2; width: 64px; height: 64px; --px: 1px; }
+body.mobile .setup .lv-grid > .choice p.lv-stakes { grid-column: 1 / -1; justify-self: stretch; margin-top: 8px; }   /* under both columns, not in the picture's */
 body.mobile .tick { top: 50%; margin-top: -10px; }
 body.mobile .cta-row { margin: 16px -10px 0; padding: 20px 10px calc(12px + env(safe-area-inset-bottom)); }
 body.mobile .btn.cta { flex: 1; min-height: 52px; font-size: 17px; }
@@ -1284,3 +1292,18 @@ body.mobile .muted { font-size: max(13px, 1em); }
 .mchip.has { border-radius: 10px; }
 body.mobile .mchip { min-height: 40px; }
 body.mobile .report .rp-send .btn, body.mobile .report .rp-close { min-height: 44px; }
+
+/* ---------- Balance D (0.13.0): strong enemies, the Lintvern's breath, scorched letters ---------- */
+/* a strong enemy (Silni …): a gold rim of light; it is drawn a little larger (renderEnemies) */
+.foe.spr.strong { filter: drop-shadow(0 0 3px #ffd36b) drop-shadow(0 0 calc(var(--glow, 0) * 9px) rgba(255, 70, 70, calc(var(--glow, 0) * .95))); }
+.tv-foes .foe.spr.strong { filter: drop-shadow(0 0 3px #ffd36b); }
+/* the Lintvern drawing breath: a hot orange glow that grows with the charge, and a slow pulse */
+.foe.spr.charging { filter: drop-shadow(0 0 calc(4px + var(--glow, 0) * 14px) rgba(255, 140, 40, calc(.45 + var(--glow, 0) * .5))); animation: charging 1.1s ease-in-out infinite alternate; }
+@keyframes charging { from { transform: translateY(0) scale(1); } to { transform: translateY(calc(var(--px) * -2)) scale(1.04); } }
+/* scorched letters: charred, with embers; usable, but they burn the hero who uses them */
+.tile.scorch { background: radial-gradient(circle at 50% 120%, rgba(255, 120, 30, .55), transparent 60%), linear-gradient(#3a2018, #251410); border-color: #c8642a; color: #ffd2a8;
+  box-shadow: inset 0 0 8px rgba(255, 110, 30, .55); }
+.tile.scorch::before { content: ''; position: absolute; inset: auto 6px 4px 6px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, transparent, #ff8a3a, transparent); opacity: .8; animation: ember 1.4s ease-in-out infinite alternate; }
+@keyframes ember { from { opacity: .35; } to { opacity: .95; } }
+.train-pool { margin: 0 0 6px; color: var(--gold); }
+@media (prefers-reduced-motion: reduce) { .foe.spr.charging, .tile.scorch::before { animation: none; } }

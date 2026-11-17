@@ -77,6 +77,8 @@ and TestFlight.
 
 Before any store: a privacy policy (required even with no data collection), age-rating
 questionnaires, and Sloleks' CC BY-SA attribution in the credits.
+The game collects data in two ways, both declared in the stores' privacy forms: word reports the
+player sends, and (from v0.13.0) opt-in battle statistics (`src/stats.js`, `docs/progression-design.md` §4b).
 
 ## Sources
 - [Godot 4.7 release overview](https://app.cinevva.com/news/2026-06-19-godot-4-7-released)

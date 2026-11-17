@@ -1,12 +1,13 @@
-# Za govor — journey and progression design (updated 16 Nov 2026, v0.11.0)
+# Za govor — journey and progression design (updated 17 Nov 2026, v0.13.0)
 
 Prototype: https://claude.ai/artifact/NTdMnud7X8Um2p38G1fVnb
 
 This replaces the earlier "three starters and cursed-god bosses" proposal. Everything below is built in the browser prototype unless marked *not built*.
 
 ## Status at a glance
+- **17 Nov — v0.13.0, branch `feat/balance-d` (built, balance version D from the simulations):** the party levels together and shares its skill points; a reviewed hero fires every skill they know up to the number of their letters; enemies grow by region, with a third enemy from Bled and strong enemies from Trnovski gozd; Ptuj is the same tutorial on every Znanje; Knjižni molj steepens towards the castle; Povodni mož and a new Lintvern with three attacks, scorched letters and wyverns; opt-in battle statistics for testers (§4b). Monsters and gods get their own review later; D is the working balance until then.
 - **Decided by the user (11 Nov):** the 2D side-scrolling journey is the point of the game; the levels are places in Slovenia visited one after another, with no level list; the dragon at Ljubljana castle is the final battle; healing happens only at special places such as wells; the player starts with one character; four is the most in a party; only one god per play, and gods are stronger; Erasmus of Lueg (Erazem Predjamski) is a new character and more should be explored; all characters are unlocked; there are items with mythical Slavic names; merchants sell potions, poisons and attack boosts; traps, chests and wells have their own sprites; the web prototype is expanded for fast testing and Godot stays the end goal.
-- **16 Nov, late — v0.11.0, branch `0.11.0-alpha-fixes` (built, after testing #16):** *Težavnost* merged into *Znanje* (§3c); **starter-help words** in the letter mesh (§11.3); a new level heals fully (§4); **chests and wells by chance in every region**, by Znanje (§1).
+- **16 Nov, late — v0.11.0, branch `0.11.0-alpha-fixes` (built, after testing #16):** *Težavnost* merged into *Znanje* (§3c); **starter-help words** in the letter mesh (§11.3); a new level heals fully (§4); **finishing a region heals the party** (§3); **malček: one second chance per journey at full health** (§3c); **chests and wells by chance in every region**, by Znanje (§1).
 - **16 Nov, evening — v0.10.0, PR #16 `0.9.0-alpha-fixes` (built):** the journey saved at checkpoints by Znanje and *Izhod* (§11.11); word input (§11.5); 3-letter words on every tier and no hints on knjižni molj (§11.3); chests and rock slides with region words (§11.6, §11.7, `data/words.json`); *Kaj pomeni?* and chips-only word reports (§11.9); hero-screen footer, puzzle names at stops, the signpost walking on, the ambush announced (§11.8, `zagovor-080-alpha-fixes.md`); credits (`zagovor-store-release.md`).
 - **16 Nov, afternoon (decided; what is still *not built*, section 11):** geographic word seeding; at most one recruitable hero per region; ~~starter-help words by Znanje~~ (built in 0.11.0 on the mesh); the križanka on a letter wheel and the in-game keyboard removed (PC/tablet setting for the classic form); the full rock-slide redesign; post-match screen and folk cards; road encounters played in the scene (§11.10); ~~Znanje scaling monster health~~ (settled in 0.11.0: Težavnost is part of Znanje).
 - **16 Nov, v0.9.0 (built, corrections to "skill expansion and fixes"):** skill 1 known from the start, points learn skills 2 and 3 or raise any skill to **stopnja 3** (stronger, longer effects, one extra effect per stopnja; section 4); a hero with a point to spend glows and a chorus sings; **shrines of challenge**, one god each, three per journey, the god's challenge when the journey ends (section 2a); **Težavnost** with three settings (section 3c); wells no longer raise the fallen; the tap-to-demo on hero screens is no longer announced.
@@ -77,6 +78,7 @@ One road, walked left to right. The party stands still and the world scrolls pas
 - Every hero has their own health bar. **Health does not come back after a battle.**
 - **Wells are the main healing:** drinking restores every hero still standing to full. **Wells no longer raise the fallen (16 Nov).** Every region has a place for a well, kept by chance (§1).
 - **A new level heals the hero fully (16 Nov, v0.11.0)**, besides the extra health it brings.
+- **Finishing a region heals the party (16 Nov, v0.11.0):** when the party walks past the signpost into the next region, every hero still standing gets full health (`restAfterRegion` in `src/journey.js`), with a short message; the signpost says so. The fallen stay down, as at a well.
 - **Heroes' healing is partial:** the skills of Mokoš and Zeleni Jurij (and Mokoš's zagovor) never lift a hero above 70 % of their health.
 - **Healers attack too, weakly at first:** every move of Mokoš and Zeleni Jurij now also hits the target. Their hit starts at roughly half of a fighter's and grows with each level (Mokoš 1.8 → 2.2 → 2.6, Jurij 1.6 → 2.0 → 2.4, against about 3 for the others), so they catch up later while still healing.
 - **Potions and poisons work by themselves; there is no tool belt.** The bag only shows what the party carries.
@@ -94,7 +96,7 @@ One road, walked left to right. The party stands still and the world scrolls pas
 - *Poskusi znova* after a lost battle is only offered in practice battles and the test mode.
 
 ## 3a. Rewards
-- **Experience comes only from beaten enemies (13 Nov):** every defeated enemy drops gold at once (4 + a share of its XP) and gives its full XP to every hero still standing. Words, crosswords, chests, rock slides and darts give no XP.
+- **Experience comes only from beaten enemies (13 Nov; since v0.13.0 it goes to the party, §4b):** every defeated enemy drops gold at once (4 + a share of its XP) and gives its full XP to every hero still standing. Words, crosswords, chests, rock slides and darts give no XP.
 - **Reviewed heroes earn XP from the fight (v0.12.0, first test):** for Ajdovska deklica, Erazem, Kralj Matjaž, Kresnik and Kurent a beaten enemy gives **attacks + damage + the enemy's level**: one XP for every skill they fired at it, one for every point of health they took off it (hits, their burns, counterattacks), plus its level (the region's number, 1–10; 1 in practice battles). Only heroes still standing when it falls get anything, as before. The weights are `XP_RULE` in `src/progression.js` (all 1 for this test). Other heroes keep the enemy's fixed XP. The log and the battle result show the parts (*napadi 2 · škoda 8 · raven 1*).
 - **Chest (one word):** the hidden word, or any real word from all the letters, opens it: 15–25 gold, one item, and a half-full zagovor in the next battle. A real word that leaves letters unused ends the chest with a share of the gold (no item). Running out of time gives nothing. **(v0.10.0: the word comes from the region's list in `data/words.json` and never repeats on one journey; the clue shows by Znanje; ✕ and Pošlji sit next to the word — §11.7.)**
 - **Rock slide (one word):** the rocks whose letters are in the word break (3 gold per rock); the others graze the party for half damage (4 each). A word with every letter breaks the whole slide. If no word is sent, every rock lands with full force (8 each). **(v0.10.0: region rock words, 22 s to fall, the rule stated in the panel; the full redesign — §11.6 — is *not built*.)**
@@ -115,18 +117,21 @@ One road, walked left to right. The party stands still and the world scrolls pas
 | | malček → Lahka | učenjak → Srednja | knjižni molj → Težka |
 | --- | --- | --- | --- |
 | Enemy health (journey only) | ×0.85 | ×1 | ×1.25 |
-| Lost battle | **withdraw:** everyone gets up with a third of their health; the enemies still block the road (a god's godly version goes back into the shrine) | the journey ends | the journey ends |
+| Lost battle | **the first time on a journey — withdraw:** everyone gets up with **full health** (v0.11.0; before, a third); the enemies still block the road (a god's godly version goes back into the shrine). **The second time the journey ends** (`withdraw: 1`, counted in `S.run.rescues`, kept in the save) | the journey ends | the journey ends |
 | A hero down when a battle is won | gets up with a quarter of their health | stays down | **leaves the party** |
+| A hero down when a region ends (v0.13.0) | (already up) | **gets up with half health** (`regionRise`) | stays gone |
+| Ptuj (v0.13.0) | a loss never ends the journey and costs no second chance; the party gets up at full health | the same | the same |
+| The last battle (v0.13.0) | can always be tried once more at full health (`finalRetry`), besides the second chance | — | — |
 
 On knjižni molj only a healer's skill or *Mrtva voda* during the battle (or a beaten god at its end) saves a fallen hero. A journey that ends removes its save (§11.11).
 
 ## 4. Levels, skill points and skills (16 Nov — reviewed-hero testing scope)
 
-- **Levels 1–9** at 0, 60, 140, 240, 360, 500, 660, 840 and 1050 XP. Each level adds 8 % health and 4 % attack, a little extra attack for long words (up to +10 % per letter beyond the fourth at level 9), grants **one skill point**, and **heals the hero fully** (v0.11.0).
-- **Skill trigger remains based on the hero's own letters in the submitted word**, not total word length: one, two or three of that hero's letters selects skill 1, 2 or 3. If the selected skill is not yet known, the strongest known skill below it is used, with +15 % power for every letter beyond the selected skill's threshold. Skill 1 is known from the start.
+- **Levels 1–9.** *Since v0.13.0 the party levels together at 0, 45, 110, 220, 360, 540, 760, 1020 and 1350 XP and each level puts **three points in a shared pool** (§4b).* Each level adds 8 % health and 4 % attack, a little extra attack for long words (up to +10 % per letter beyond the fourth at level 9), and **heals the heroes still standing fully** (v0.11.0). Until v0.12.0 each hero levelled alone at 0, 60, 140, 240, 360, 500, 660, 840 and 1050 XP with one point a level.
+- **Skill trigger remains based on the hero's own letters in the submitted word**, not total word length: one, two or three of that hero's letters selects skill 1, 2 or 3. *Since v0.13.0 a reviewed hero fires every skill they know up to that number, each at its own rank (§4b); the rest of this bullet holds for heroes whose reviews are pending.* If the selected skill is not yet known, the strongest known skill below it is used, with +15 % power for every letter beyond the selected skill's threshold. Skill 1 is known from the start.
 - **Reviewed heroes — character-specific skill progression for testing:** skill 2 and skill 3 are learned in order, one skill point each. Every learned skill can then be upgraded through its documented ranks (rank 1 → 2 → 3), one skill point per rank. The rank values and effects come from that hero's reviewed character specification. **Do not apply the old generic `RANK_POW`, `RANK_DUR` or `SKILL_UPS` bonuses on top of those values** unless a character specification explicitly says so. The reviewed rank 1–3 definitions are the source of truth for what each skill does at each rank.
 - **Heroes whose character reviews are still pending:** they continue to gain levels and receive the normal health and attack increases above. Their existing attacks remain flat for now: no skill-point upgrades, rank scaling, or additional skill effects. Do not redesign or rebalance their existing attacks as part of this testing pass.
-- **Skill-point spending location:** the existing *Veščine* flow at a well, shrine or pedlar remains the intended place to learn and upgrade skills. The skill screen should show which skills are learned and the current rank of each.
+- **Skill-point spending location:** the existing *Veščine* flow at a well, shrine or pedlar remains the intended place to learn and upgrade skills; since v0.13.0 also the hero screen after a battle and the region's end (§4b). The skill screen should show which skills are learned and the current rank of each.
 - **A hero with a point to spend glows:** a ring of light rises from the head (CSS `.hero.spr.glow`), seen in the party on the road, in battle and on the hero screens, and a short synthesised chorus (`chorus()` in `src/game.js`) sings when the point arrives.
 - **Outside a journey** (practice battles, the gallery, the codex), every skill is available at rank 1 for testing, unless the relevant test mode explicitly overrides this.
 - **Built in v0.12.0:** see §4a for the five reviewed heroes' rank values as implemented, the choices made where their specifications are OPEN, and §3a for their XP. Heroes whose reviews are pending were left exactly as they were (they still use the generic stopnje), as decided for this test.
@@ -139,11 +144,20 @@ Built in `src/progression.js` from the reviewed specifications (`docs/characters
 
 | Hero | Skill 1 | Skill 2 | Skill 3 |
 | --- | --- | --- | --- |
-| Kurent | **Ježevka** 4 / 7 / 10; the target's next attack comes 1.5 / 2.5 / 3.5 s later | **Zvonci** (name OPEN): Kurent dances 2 s, out of the letter mesh (still hit); 1 / 2 / 3 enemies hit 3 / 4 / 5 weaker for 2 s | **Pregon zime**: every enemy attacks 3 / 4 / 4 s later; rank 2+: enemies tagged ghost, wind or cold (only Mora for now) take half their attack over 4 s and hit at half for those 4 s; rank 3: their next attack after that is halved too |
+| Kurent (rebalanced) | **Ježevka** 4 / 6 / 8; the target's next attack comes 2 / 3 / 4 s later | **Zvonci** (name OPEN): Kurent dances 2 s, out of the letter mesh (still hit); the bells hit 1 / 2 / 3 enemies for 3 / 4 / 5 and their next blow is 3 / 4 / 5 weaker | **Pregon zime**: every enemy −4 / 6 / 8 and attacks 3 / 4 / 5 s later; rank 2+: enemies tagged ghost, wind or cold (only Mora for now) take half their attack over 4 s and hit at half for those 4 s; rank 3: their next attack after that is halved too |
 | Kralj Matjaž | **Meč** 6 / 12 / 18; ranks 2–3: each hero hit by the next enemy attack takes 3 / 6 less | **Kraljeva vojska**: every hero's next attack +3 / +6 / +10; rank 3: the next two enemy blows −3 on each hero hit | **Prebujenje**: each standing hero +3 / +6 / +6 health, the fallen rise with 15 %, ward 3 / 6 / 6; rank 3: 12 damage to every enemy |
-| Kresnik | **Ognjeni meč** (name OPEN) 8 / 12 / 16, ×1.5 on dragons (Lintvern, Zmajev mladič); burns 2 a second for 3 / 3 / 5 s | **Kresna strela** 12 / 16 / 18, burns 2/s for 3 s; rank 3 jumps to the enemy beside the target for 8 | **Kresna moč** (name OPEN): the next enemy blow that hurts him gives back 25 / 50 / 70 % of it (rounded up, up to full health) and half of that in gold |
+| Kresnik (rebalanced) | **Ognjeni meč** (name OPEN) 5 / 7 / 9, ×1.5 on dragons (Lintvern, Zmajev mladič); burns 2 a second for 2 / 3 / 4 s | **Kresna strela** 10 / 13 / 16, burns 2/s for 3 s; rank 3 jumps to the enemy beside the target for 6 | **Kresna moč** (name OPEN): a flame on every enemy 5 / 7 / 9; the next 1 / 2 / 3 enemy blows that hurt him give back 25 / 50 / 70 % (rounded up, up to full health) and half of that in gold |
 | Erazem | **Zamah z mečem** 7 / 11 / 15 (TEST) | **Češnje** 5 / 7 / 9 (TEST, one target); the heroes beside him +1 / +2 / +3 (TEST), not Erazem | **Skrivni rov**: the next attack that reaches him misses; rank 2 counterattack 1.5× Zamah z mečem, rank 3 the hero beside him evades too and the counter is 1.75× |
 | Ajdovska deklica | **Metanje skal** 6 at one enemy; ranks 2 / 3: 5 / 8 at every enemy (TEST) | **Varstvo popotnikov**: the next 1 / 2 / 3 enemy attacks on the others land on her, halved (rounded up) | **Okamnitev**: 1 / 2 / 2 enemies skip their next 1 / 1 / 2 attacks; burns and poison go on |
+
+**Rebalance of Kurent and Kresnik (16 Nov, from the simulations).** With the reviewed values Kresnik's skill 1 dealt about 15 / 21 / 28 per four-letter word (Matjaž 8 / 15 / 22, Erazem 9 / 13 / 19) and carried a fresh party; Kurent's delays stacked into a near stun-lock; and skills 2 and 3 of both dealt no damage, so learning them made the hero weaker in battle. Now each skill does at least as much as the one below it at the same rank, and the new values replace the specification's numbers for testing (the character specifications still hold the old ones and need updating if this stays). Measured per four-letter word at level 1 (damage on two enemies / enemy attacks per minute out of 12):
+
+| | Skill 1 (rank 1 / 2 / 3) | Skill 2 | Skill 3 |
+| --- | --- | --- | --- |
+| Kurent before | 5 / 9 / 13, attacks 10 / 9 / 8 | 0, attacks 12 | 0, attacks 5 / 2 / 2 |
+| Kurent now | 5 / 8 / 10, attacks 11 / 10.5 / 10 | 4 / 10 / 12 + next blow weaker | 10 / 15 / 19, attacks 9 / 8 / 8 |
+| Kresnik before | 15 / 21 / 28 | 21 / 26 / 43 | 0 |
+| Kresnik now | 10 / 14 / 19 | 18 / 22 / 39 | 12 / 17 / 23 + wounds given back |
 
 **Health per level:** Ajdovska deklica +10 % of her base a level (TEST; others +8 %: 68 against 62 at level 9). Kurent never less than +1 a level (the normal +8 % already gives him 2–3).
 
@@ -153,13 +167,55 @@ Built in `src/progression.js` from the reviewed specifications (`docs/characters
 - Enemy attacks go through, in order: Skrivni rov, the attacker's weakness (Zvonci, Pregon zime), Matjaž's ward and his army's −3, the party's shield, then Varstvo popotnikov. With none of these in force, the old path is unchanged.
 - Skrivni rov waits for an attack that actually reaches Erazem (or, at rank 3, the hero after him in the party, else the one before); the counter goes to the attacker; either hero evading counts.
 - Varstvo popotnikov uses a charge only when another hero would be hurt; her own share is not halved; she can fall from it.
-- Kresna moč: one charge per use (up to 3), used by the next enemy blow that hurts Kresnik while he stays standing. Burns and poison never trigger it.
-- Zvonci picks the target first, then the hardest hitters. The weakening is taken from each hero the blow hits.
+- Kresna moč: 1 / 2 / 3 charges by rank (a new use replaces what is left), each used by an enemy blow that hurts Kresnik while he stays standing. Burns and poison never trigger it.
+- Zvonci picks the target first, then the hardest hitters. The weakening is used up by that enemy's next blow and is taken from each hero the blow hits.
+- **Kurent's delays do not add up:** until an enemy acts, a new delay only moves its attack by what it adds over the longest one so far. Before, every Ježevka and Pregon zime pushed the attack back again, which nearly stopped enemies (two enemies attacked about 2 times a minute instead of 12 under Pregon zime at one word every 5 s).
 - Reviewed heroes' heals go up to full health; the 70 % cap stays for Mokoš and Zeleni Jurij.
 - In calm mode Kresnik's burn is one tick (2) per word for as many words as seconds; Kurent's delays move the enemy's charge by the same share of its attack cycle.
 - Enemy tags: `zmaj` (Lintvern, Zmajev mladič) and `duh` (Mora). The specification asks not to guess the other wind / cold / ghost enemies, so none are tagged yet.
 
 **Not in this pass:** Ajdovska deklica only at Triglav and Kralj Matjaž only at Peca (recruitment), the final-boss story cards, enemy affinity tags beyond Mora, animations and art.
+
+## 4b. Balance D — the party levels together, enemies follow a curve (17 Nov, v0.13.0)
+The simulations of 16–17 Nov (a Python model of the whole road, ten regions and every Znanje; tables in the project doc *zagovor-balance-simulations*) showed the difficulty upside down: Peca was the hardest place on Malček, while Povodni mož and the Lintvern almost never won. Four versions were compared; **D** is built. It stays the working balance until monsters and gods are reviewed.
+
+**The party levels together.** Every beaten enemy gives **attacks + damage + its level** (the whole party's attacks and damage on it, `foeXp` in `src/progression.js`) to the party's pool, `S.run.pxp`. Levels at 0, 45, 110, 220, 360, 540, 760, 1020 and 1350 XP (`LV_XP`); each level gives every hero the level's health and attack, heals the heroes standing (the fallen stay down) and puts **three points** (`PTS_PER_LV`) in a shared pool, `S.run.pts`, which any hero can spend, including one who hit nothing. A hero who joins arrives at the party's level, knowing skill 1. Points can be spent at wells, shrines and the pedlar as before, **and on the hero screen after every battle** (a *Veščine · N točke* button next to *Na pot*). The road glows while points wait. A save from before 0.13.0 loads with the best hero's XP for the party and every unspent point in the pool.
+
+Ptuj has **four battles, 1, 1, 2 and 2 enemies**, so the party is level 3 with six points before Peca (two heroes can both learn skill 2 and raise one skill). On Malček with steady play a starting hero reaches level 9 at Barje; skills 1–3 at rank 3 cost 8 points, so two heroes are maxed by the castle and four are not.
+
+**Skills fire together (reviewed heroes).** One, two or three of a hero's letters fire every skill they know from 1 up to that number, each at its own rank; the gift of the gods and the length of the word apply to each. Before, only the highest one fired, so learning skill 2 could make a word weaker. Heroes whose reviews are pending still fire one skill.
+
+**The zagovor's level bonus is halved:** ×(1 + 0.05 per level above 1), so ×1.4 at level 9 (was ×1.8). It carried the late game alone.
+
+**Enemies by region** (`data/world.json → balance`; bosses ignore it, `makeEnemy` in `src/game.js`):
+
+| Region | Ptuj | Peca | Triglav | Bled | Trnovski gozd | Piranske soline | Predjamski grad | Ljubljansko barje | Ljubljanica | Ljubljanski grad |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Health × | 1 | 0.95 | 1.2 | 1.45 | 1.75 | 1.8 | 2.3 | 2.7 | 3.0 | 3.0 |
+| Attack × | 1 | 1 | 1.1 | 1.2 | 1.3 | 1.4 | 1.5 | 1.65 | 1.8 | 1.8 |
+
+- **How many:** one enemy against a lone hero, two otherwise, **three from Bled** when the party has three or more heroes. Never two Pesjani in one battle (`single`).
+- **Strong enemies** from Trnovski gozd: about two battles in five have one *Silni / Silna …* enemy with ×1.6 health and ×1.25 attack, a bigger sprite and a mark on the road.
+- **By Znanje:** Malček ×0.85 health, Učenjak ×1, Knjižni molj ×1.25 (as before). **Ptuj is the same tutorial on every Znanje** (Malček's numbers). **Knjižni molj steepens:** up to +15 % health and 10 % quicker attacks by the castle (`steep`, growing region by region).
+- **Povodni mož** (Ljubljanica): 240 health, hits 12, with **two vile** beside him that grow with the region.
+
+**The Lintvern** (Ljubljanski grad, `ENEMIES.lintvern`):
+
+| Attack | What it does |
+| --- | --- |
+| *Kremplji* | a scratch for 11 on one hero |
+| *Topot* | 4 to everyone; 1 hero (2 from three heroes) is knocked out of the letter mesh for 6 s (*omamljen*) |
+| *Ognjeni dih* | at 66 % and 33 % health he **draws breath**: 14 / 8 / 6 s on Malček / Učenjak / Knjižni molj (4 / 3 / 2 words in calm mode), then 1.2 × his attack on every hero and 4 burn on each; **10 letters are scorched** and fade one every 2.5 s (three per word in calm mode); a scorched letter used in a word burns the hero of its colour for 4 more |
+
+- **Nothing stops him:** stuns, sleep and *Okamnitev* do nothing (*neustavljiv*), delays move him half as far, and the breath cannot be interrupted. If the second threshold comes while he is still drawing breath, the second breath follows the first.
+- **Health** 170 / 250 / 313 (Malček / Učenjak / Knjižni molj: `hpBy` 200 / 250 / 250 times the Znanje factor). At half health he enrages and summons wyverns.
+- **Zmajčki (wyverns):** 55 health, hit 6, only Znanje changes them. One per hero beyond the first, at most two, beside him from the start, and the same number again when he enrages.
+
+**Measured (D, 300 journeys each; the targets are the share of journeys won at a word pace):** Učenjak 54 % at a word every 8 s (target about half), Knjižni molj 42 % at 6 s (target 35–45 %), Malček 72 % at 10 s (target about 85 %). What still ends Malček journeys at 10–12 s is the solo battles at Ptuj (a lone Zeleni Jurij deals 2–3 a word) and the Lintvern; the Ptuj rule above came after these runs, so Malček should now do better than measured. The model leaves out potions, relics and gods' gifts, so real win rates on Učenjak and Knjižni molj should be higher.
+
+**Battle statistics for testers (opt-in, `src/stats.js`).** Off until the player agrees, once on *Nova pot* (a card under the options, not a dialog) and any time in *Nastavitve → Pomoč pri uravnoteženju*. Then one row per journey battle and one when a journey ends go to the word-report Google Form with *Opomba* `statistika`: win or loss, region and kind, the enemies (strong ones marked `*`), Znanje, pace, device, version, duration, words, seconds per word on the letter mesh (crosswords and pauses left out), the longest word's length, party level and unspent points, heroes with their skill ranks, health at the start and the end, the fallen, what was left of the enemies and the second chances used. None of the words typed are sent, and the only id is a random one per journey. Rows wait on the device while offline (at most 300); saying no drops them. **This is data collection: declare it in Google Play's Data safety form, Apple's privacy label and the privacy policy** (§11.9, `docs/platform-roadmap.md`).
+
+**Still open:** the review of monsters and gods; Lepa Vida's and Martin Krpan's reviews (on `main` as documents, not in the game); the character specifications still hold the old Kurent and Kresnik numbers (§4a).
 
 ## 5. Roster — all playable
 | | Hero | Health | What they do | Moves (1 → 3 tiles) |
@@ -336,7 +392,7 @@ Replaces the 12 Nov "dictionary slip" data plan (`zagovor-next-dictionary-build.
 **Constraints:**
 - **Glosses are written fresh** — one line, Slovene, reviewed by a native speaker. Sources may be consulted, but definitions are not copied: eSSKJ is CC BY-NC-ND (not for a commercial game); thesaurus synonyms are CC BY-SA (fine with attribution); Pleteršnik is CC BY and suits mythic and archaic words.
 - **Ships bundled, offline** — no lookup at play time (Apple 4.2 review runs offline).
-- **Store declarations:** sending words and regions is still data collection — declare it in Google Play's Data safety form and Apple's privacy label and in the privacy policy.
+- **Store declarations:** sending words and regions is still data collection — declare it in Google Play's Data safety form and Apple's privacy label and in the privacy policy. Since v0.13.0 so are the opt-in battle statistics (§4b): game activity and device type, not linked to a person, sent only with consent.
 - **Why reports seemed not to arrive:** the code counts a request that leaves the device as sent; the prototype runs as a claude.ai artifact, which may not reach other sites, so reports queue on the device. The Android app and a page opened from its own file or site send them.
 
 ### 11.10 Road encounters stay in the scene — *not built* (needs sprites)

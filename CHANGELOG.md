@@ -36,6 +36,40 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
+## 0.13.0 — 17 Nov 2026 · zaprta alfa · balance D: the party levels together, a difficulty curve, a new Lintvern
+Branch `feat/balance-d`, from the balance simulations of 16–17 Nov (version D of four compared). The working
+balance until monsters and gods are reviewed. Saves from 0.12.0 still load. Details: `docs/progression-design.md` §4b.
+- **The party levels together.** Experience from every beaten enemy (all heroes' attacks + damage + its level)
+  goes to the party; each level puts **three skill points in a shared pool** that any hero can spend, and
+  heals the heroes standing. New levels at 45 / 110 / 220 / 360 / 540 / 760 / 1020 / 1350 XP. A hero who
+  joins arrives at the party's level. Points can now also be spent on the hero screen **right after a
+  battle** (*Veščine · N točke*). A saved journey keeps its best hero's XP and pools every unspent point.
+- **Skills fire together** for the five reviewed heroes: two of their letters fire skills 1 and 2, three fire
+  all three, each at its own rank. Learning a skill never makes a word weaker any more.
+- **Ptuj has four battles** (1, 1, 2 and 2 enemies), so the party reaches Peca at level 3 with six points.
+  **Ptuj is the same on every Znanje, and losing there never ends the journey.**
+- **Enemies follow a curve:** more health and attack region by region (Peca a little easier than before,
+  about ×3 health by the castle), **a third enemy from Bled** with three or more heroes, **strong enemies**
+  (*Silni / Silna …*, marked on the road) in about two battles in five from Trnovski gozd, never two
+  Pesjani at once. **Knjižni molj** grows a little stronger and quicker towards the end.
+- **Znanje:** on **Učenjak** the fallen get up with half health when a region ends; on **Malček** the
+  last battle can always be tried once more.
+- **Bosses:** **Povodni mož** 240 health, hits 12, with two vodne vile. **The Lintvern** has three attacks:
+  *Kremplji* (a scratch), *Topot* (hits everyone and knocks heroes out of the letter mesh for 6 s) and
+  *Ognjeni dih* at two thirds and one third of his health: a long breath (shorter on harder Znanje) that
+  nothing can stop, then fire and burns on every hero and **ten scorched letters** that slowly cool and
+  burn whoever uses them. Delays move him half as far; stuns and *Okamnitev* do nothing. **Zmajčki**
+  (wyverns) fight beside him, one per hero beyond the first, and more come when he enrages.
+- **The zagovor's level bonus is halved** (×1.4 at level 9, was ×1.8).
+- **Battle statistics for testers, only with consent:** *Nova pot* asks once, *Nastavitve* has the switch.
+  One row per journey battle (result, region, enemies, Znanje, pace, device, version, words, seconds per
+  word on the mesh, party level, heroes, health) goes to the word-report form. No words and nothing
+  personal; it needs declaring in the stores' privacy forms.
+- Fix: on phones the Znanje cards no longer squeeze what losing means into the picture's column.
+- Includes the Kurent and Kresnik rebalance (merged #19 went in without it) and the 0.11.0 Malček retreat at
+  full health and region-end heal (both were missing from `main`).
+- New test: `tests/balance.test.js`; `tests/progression.test.js` updated for party XP and combo firing.
+
 ## 0.12.0 — 16 Nov 2026 · zaprta alfa · reviewed heroes: own skill ranks and XP from the fight
 Branch `feat/reviewed-hero-progression`. A testing pass for the five heroes with a reviewed character
 specification: **Ajdovska deklica, Erazem Predjamski, Kralj Matjaž, Kresnik and Kurent**. Everyone else is
@@ -50,6 +84,10 @@ unchanged. No new animations or art.
 - **XP from the fight:** a beaten enemy gives these heroes one XP per attack on it, one per point of damage
   dealt to it, plus its level (the region's number). The battle log and the result show the parts.
 - **Health per level:** Ajdovska deklica grows a little more (+10 % a level, a test value); Kurent at least +1.
+- **Kurent and Kresnik rebalanced** after simulating the road: Kresnik's sword hit too hard for a new
+  hero (now 5 / 7 / 9 with a shorter burn), Kurent's delays no longer add up (they nearly froze enemies), and
+  their skills 2 and 3 now deal damage too: *Zvonci* hit and weaken the enemy's next blow, *Pregon zime* hits
+  every enemy, *Kresna moč* is a flame on every enemy before it gives wounds back. Skill 1 at rank 3 is lower.
 - *Veščine* describes every rank of their skills.
 - Values the specifications leave open are placeholders, listed in `docs/progression-design.md` §4a.
 - New test: `tests/progression.test.js` (starts with Kurent against one škrat: 2 attacks + 8 damage + level 1 = 11 XP).
@@ -57,8 +95,8 @@ unchanged. No new animations or art.
 ## 0.11.0 — 16 Nov 2026 · zaprta alfa · one difficulty, starter words, chests and wells by chance
 Branch `0.11.0-alpha-fixes`, after testing 0.10.0 (#16).
 - **Znanje is the one difficulty.** *Težavnost* is no longer a choice of its own on *Nova pot*:
-  Malček plays with the old Lahka rules (a lost battle is not the end, the fallen get up after a
-  win, weaker enemies), Učenjak with Srednja (a lost battle ends the journey), Knjižni molj with
+  Malček plays with the Lahka rules (one second chance per journey, see below; the fallen get up
+  after a win; weaker enemies), Učenjak with Srednja (a lost battle ends the journey), Knjižni molj with
   Težka (stronger enemies; a hero still down after a battle leaves). Each Znanje card says so.
   A saved journey keeps going on its Znanje; the separate setting is forgotten.
 - **Starter words.** While the help lasts, a battle's letter mesh opens with whole words laid in
@@ -66,7 +104,10 @@ Branch `0.11.0-alpha-fixes`, after testing 0.10.0 (#16).
   half of the road, Učenjak three (4, 3, 3) for the first quarter, Knjižni molj two three-letter
   words in the first region only. About half are words of the region in any of their forms. The
   battle log and (on Malček and Učenjak) the coach tip point them out; *Premešaj* lets them go.
-- **A new level heals the hero fully** (and still adds health and a skill point).
+- **A new level heals the hero fully** (and still adds health and a skill point), and **finishing a
+  region heals every hero still standing to full** (the fallen stay down, as at a well).
+- **Malček gets one second chance per journey:** the first lost battle brings the party back with
+  full health (no longer a third), the enemies still waiting; a second lost battle ends the journey.
 - **Chests and wells by chance, in every region.** Every region now has a place for a chest and
   for a well, including new chests at the start of Ljubljanica and Ljubljanski grad. When a
   journey starts, each place stays with a chance set by Znanje (chests 60 / 45 / 30 %, wells

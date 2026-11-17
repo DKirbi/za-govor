@@ -45,6 +45,11 @@ function loadSave() {
   S.know = s.know; S.mode = s.mode; S.suggest = !!s.suggest; S.testMode = !!s.testMode;
   S.run = JSON.parse(JSON.stringify(s.run));
   if (!S.run.wellAt) S.run.wellAt = planWells();   // a save from 0.10.0: wells did not stand by chance yet
+  if (S.run.pxp == null) {   // a save from before 0.13.0: heroes levelled one by one; the party takes the best of them
+    const best = Math.max(0, ...s.heroes.map(st => st.xp || 0));
+    S.run.pxp = best; S.run.plvl = levelFor(best); S.run.pts = s.heroes.reduce((a, st) => a + (st.pts || 0), 0);
+    s.heroes.forEach((st, i) => { st.xp = best; st.lvl = S.run.plvl; st.pts = 0; st.maxHp = heroMaxHp(s.party[i], st.lvl); st.hp = Math.min(st.hp, st.maxHp); });
+  }
   HEROES.length = 0; s.party.forEach(id => HEROES.push(ROSTER[id]));
   S.heroes = s.heroes.map(st => ({ ...st, leveled: false })); S.lastHero = 0; S.meterBonus = 0;
   return true;

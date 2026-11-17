@@ -117,8 +117,10 @@ in each half of the road.
   regions picked at random. Each place favours its own legend (the table above), so the next
   journey meets others. **Only a hero who joins is unlocked** for later journeys; greeting
   one and walking on is not enough, so a full party has to decide whom to leave.
-- **Levels and skills:** experience comes **only from beaten enemies**. Every new level
-  (up to 9) brings more health, **heals the hero fully** and gives one **skill point**; a hero with a point to spend **glows** — a
+- **Levels and skills:** experience comes **only from beaten enemies** and goes to the **whole party**,
+  which levels together (since 0.13.0). Every new level (up to 9) brings more health, **heals the heroes
+  standing** and puts **three skill points in a shared pool** that any hero can spend — at a well, shrine
+  or pedlar, or on the hero screen right after a battle; a hero with a point to spend **glows** — a
   ring of light rises from their head, so it shows in the party — and a short heavenly chorus
   sings when the point arrives. Each hero has three skills: a word with one, two or three of
   their letters (so a longer word) fires skill 1, 2 or 3, if the hero knows it, and otherwise
@@ -127,8 +129,9 @@ in each half of the road.
   power, effects that last 1.5× / 2× as long (stuns, burns, poison, weakening, dodges), and one
   extra effect at each stopnja (a critical hit, healing, hitting every enemy, a shield, a
   stun, fire or weakening). Points are spent in ***Veščine*** at a **well, a shrine or a pedlar**.
-- **Health stays as it is after a battle.** **Wells** heal everyone who is standing, and a new
-  level heals that hero; wells **no longer raise the fallen**. A fallen hero gets up only through
+- **Health stays as it is after a battle.** **Wells** heal everyone who is standing, a new level
+  heals that hero, and **finishing a region heals everyone standing to full**; none of these
+  **raise the fallen**. A fallen hero gets up only through
   a healer's skill (Mokoš, Zeleni Jurij), *Mrtva voda*, a beaten god — or, on *Malček*, by
   themselves after a won battle (see *Pace and knowledge* below). Healers heal only up to 70 % of health, and they attack as well —
   weakly at first, stronger with every level.
@@ -209,12 +212,16 @@ Enemies attack in real time, telegraphed by a glowing wind-up. Their strongest m
 | Mora | 35 | *Uspavanka*: a hero falls asleep, their tiles go grey |
 | Volkodlak | 45 | Grows stronger every time you repeat a word |
 | Vodna vila | 30 | *Poplava*: floods letters so they can't be used |
-| Povodni mož (boss) | 110 | *Vrtinec*: forces a crossword with the mesh closed |
-| Lintvern (boss) | 180 | *Pepel* locks letters; *Ognjeni dih* hits everyone; at half health a forced *Zmajeva uganka* crossword |
+| Povodni mož (boss) | 240 | *Vrtinec*: forces a crossword with the mesh closed; two vodne vile fight beside him |
+| Lintvern (boss) | 170–313 by Znanje | *Kremplji* (a scratch), *Topot* (hits everyone, knocks heroes out of the mesh), *Ognjeni dih* at two thirds and one third of his health: a long breath nothing can stop, then fire on everyone and **scorched letters** that burn whoever uses them; wyverns (*zmajčki*) at his side and more when he enrages at half health |
 
 Four regional enemies reuse these sprites in other colours for now: **Vešča** (puts a hero
 to sleep), **Perkmandeljc** and **Zmajev mladič** (bury letters), **Pesjan** (a heavy hit on
 everyone).
+
+Since 0.13.0 enemies grow region by region (about ×3 health and ×1.8 attack by the castle), a
+third one joins from Bled when three heroes travel together, and from Trnovski gozd some battles
+have a **strong** (*Silni / Silna*) enemy. Details: `docs/progression-design.md` §4b.
 
 ### Crosswords and the zagovor
 - Every letter you play fills the **zagovor meter** (30 letters). When it's full, a
@@ -293,8 +300,10 @@ until 0.11.0; its three settings now come with the three levels, and each card s
 | --- | --- | --- | --- |
 | Who it's for | Learning words | Learning longer and harder words | Seasoned crossword solvers |
 | Enemy health | ×0.85 | ×1 | ×1.25 |
-| A lost battle | The party withdraws: everyone gets up with a third of their health, the enemies still block the road, the journey goes on | The journey ends | The journey ends |
-| A hero who falls | Gets up after a won battle with a quarter of their health | Stays down until a healer, *Mrtva voda* or a beaten god raises them | Leaves the party if still down when the battle ends |
+| A lost battle | The first time on a journey: the party withdraws with **full health**, the enemies still block the road, the journey goes on. **The second time the journey ends.** | The journey ends | The journey ends |
+| A hero who falls | Gets up after a won battle with a quarter of their health | Stays down until a healer, *Mrtva voda* or a beaten god raises them, or the region ends (then half health) | Leaves the party if still down when the battle ends |
+| Ptuj (the first region) | Losing never ends the journey | The same | The same |
+| The dragon | Can always be fought once more | — | Enemies grow a little stronger and quicker towards the end |
 | Shortest word in the mesh | 3 letters | 3 letters | 3 letters |
 | Starter words in the mesh | Four (5, 4, 4, 3 letters), first half of the road | Three (4, 3, 3), first quarter | Two of 3 letters, first region only |
 | Mesh tips | Word proposals, 3 hints per battle, word count, coaching tips | 1 hint per battle, word count, coaching tips | None (no *Namig* at all) |
