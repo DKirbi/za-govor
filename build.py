@@ -50,11 +50,15 @@ def manifest_layers(man, season=None):
     asset-library format layersBackToFront: [{id, export, dimensions.export, alpha (text), tileable.horizontal}]."""
     if man.get('layers'): return sorted(man['layers'], key=lambda L: L['order'])
     out = []
-    for i, L in enumerate(man.get('layersBackToFront') or []):
-        if season and L.get('season') not in (season, 'shared'): continue
+    rows = man.get('layersBackToFront') or []
+    # a layer's depth is where its id first appears in the manifest: a shared layer (the bridge) keeps the depth of
+    # the sunset block, so winter draws it after the wall, not behind the sky
+    depth = {}
+    for i, L in enumerate(rows): depth.setdefault(L['id'], i)
+    for L in sorted((L for L in rows if not season or L.get('season') in (season, 'shared')), key=lambda L: depth[L['id']]):
         w, h = (L.get('dimensions') or {}).get('export') or L.get('exportSize') or (None, None)
         a = L.get('alpha')
-        out.append({'id': L['id'], 'order': i + 1, 'file': L.get('export') or L.get('file', ''), 'width': w, 'height': h,
+        out.append({'id': L['id'], 'order': depth[L['id']] + 1, 'file': L.get('export') or L.get('file', ''), 'width': w, 'height': h,
                     'alpha': a if isinstance(a, bool) else not str(a).lower().startswith('opaque'),
                     'tileX': bool((L.get('tileable') or {}).get('horizontal')) if isinstance(L.get('tileable'), dict) else bool(L.get('tileable')), 'role': L.get('role', 'background'), 'x': (L.get('offset') or [0, 0])[0], 'y': (L.get('offset') or [0, 0])[1]})
     return out
@@ -69,7 +73,12 @@ def background_packs():
     canvas the scene is fitted to) and per layer x, y and scale, in canvas pixels."""
     cfg = json.loads(read('data/backgrounds.json'))
     packs, notes = {}, []
+    jobs = []
     for pid, pc in cfg.get('packs', {}).items():
+        jobs.append((pid, pc, None))
+        if pc.get('lowFidelity'): jobs.append((pid + '~low', pc, pc['lowFidelity']))   # the Nizka copy: same layers, half-size files
+    for pid, pc, low in jobs:
+        mapf = (lambda f: low['to'] + f[len(low['from']):] if f.startswith(low['from']) else f) if low else (lambda f: f)
         mrel = pc['manifest']
         if not (root / mrel).is_file():
             notes.append(f'background pack {pid}: not delivered yet ({mrel} missing), variant A only'); continue
@@ -77,7 +86,7 @@ def background_packs():
         if man.get('status') == 'superseded':
             notes.append(f'background pack {pid}: {mrel} is superseded, left out'); continue
         mls = manifest_layers(man, pc.get('season'))
-        missing = [L.get('file') or '?' for L in mls if not (root / (L.get('file') or '')).is_file()]
+        missing = [mapf(L.get('file') or '?') for L in mls if not (root / mapf(L.get('file') or '')).is_file()]
         if not mls or missing:
             notes.append(f'background pack {pid}: {len(missing)} of {len(mls)} layer files not committed, left out'); continue
         cv, view = man.get('canvas') or {}, pc.get('view') or {}
@@ -87,9 +96,14 @@ def background_packs():
         assert len({L['order'] for L in mls}) == len(mls), f'{mrel}: layer orders must be unique'
         tune, layers, size = pc.get('layers', {}), [], 0
         for depth, L in enumerate(mls):
-            raw = (root / L['file']).read_bytes()
-            w, h, alpha = png_info(raw, L['file'])
-            assert (w, h) == (L['width'], L['height']), f"{L['file']} is {w}×{h}, {mrel} says {L['width']}×{L['height']}"
+            fp = mapf(L['file'])
+            raw = (root / fp).read_bytes()
+            w, h, alpha = png_info(raw, fp)
+            if low:   # the Nizka file is half size, rounded up
+                assert (w, h) == ((L['width'] + 1) // 2, (L['height'] + 1) // 2), f"{fp} is {w}×{h}, half of {L['width']}×{L['height']} rounded up"
+            else:
+                assert (w, h) == (L['width'], L['height']), f"{L['file']} is {w}×{h}, {mrel} says {L['width']}×{L['height']}"
+            w, h = L['width'], L['height']   # drawn at the manifest size, whatever the file's resolution
             assert not L.get('alpha') or alpha, f"{L['file']}: {mrel} says it is transparent, the PNG has no alpha"
             t = tune.get(L['id'])
             if t is None:

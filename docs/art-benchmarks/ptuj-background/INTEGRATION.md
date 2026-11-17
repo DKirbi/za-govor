@@ -31,3 +31,15 @@ Cloud drift uses the existing renderer's tiled-layer movement and respects reduc
 - These are proposed art and scene placements. Check the front-layer overlap against actual hero/enemy sprites before approving it.
 - The winter scene remains a preview. Kurent's association is the Game Director's direction; future winter assignment stays open.
 - No test assignment has been enabled. Preview links do not change player assignment.
+
+## Kakovost slik (Visoka / Nizka)
+
+- *Nastavitve → Razvoj → Kakovost slik* chooses the Ptuj layers' resolution. *Visoka* is the delivered file
+  (default); *Nizka* loads `art/exports/environments/ptuj-low/`, the same art at half size, rounded up.
+  The choice is stored in `zg-fidelity`.
+- `data/backgrounds.json` links each Ptuj pack to its low copies with `lowFidelity`. `build.py` builds a
+  `<pack>~low` pack from those files and draws every layer at its manifest size, so placement is the same.
+- Regenerate the copies after any change to the high files with `python3 tools/art_ptuj_lowfi.py`. Check them with
+  `--check`.
+- Martin Krpan's pictures are not part of this setting yet. Which of his pictures has a higher and a lower
+  version is still open.

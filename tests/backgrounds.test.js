@@ -128,11 +128,15 @@ run(async () => {
   const peca = await sceneInfo();
   check(!peca.pbg && peca.layers.length === 0 && /data:image\/png/.test(peca.bgimg), 'Peca keeps its own picture with a Ptuj preview on', peca.cls);
 
-  // the gallery shows B and C next to the pictures of A
+  // the gallery shows B, C and the winter companion D next to the pictures of A
   await ev(() => window.__ZG.go('gallery')); await sleep(400);
   const gal = await ev(() => [...document.querySelectorAll('.gbg figure')].filter(f => f.querySelector('.gpbg')).map(f => ({ cap: f.textContent, layers: f.querySelectorAll('.pbg-l').length, h: f.querySelector('.gpbg').clientHeight })));
-  check(gal.length === 2 && gal[0].cap === 'Ptuj — sončni zahod nad Dravo — različica B (v pregledu)' && gal[0].layers === 8 && gal[1].cap === 'Ptuj — večer ob Dravi — različica C (v pregledu)' && gal[1].layers === 10 && gal.every(g => g.h > 0),
-    'Liki in karte → Ozadja shows B and C, both "v pregledu" until approved', JSON.stringify(gal));
+  check(gal.length === 3 && gal[0].cap === 'Ptuj — sončni zahod nad Dravo — različica B (v pregledu)' && gal[0].layers === 12 && gal[1].cap === 'Ptuj — večer ob Dravi — različica C (v pregledu)' && gal[1].layers === 10
+    && gal[2].cap === 'Ptuj — zimski večer ob Dravi — različica D (v pregledu)' && gal[2].layers === 12 && gal.every(g => g.h > 0),
+    'Liki in karte → Ozadja shows B, C and D, each "v pregledu" until approved', JSON.stringify(gal));
+  // the winter companion D stands in the same depth order as B: the shared bridge after the riverbank wall, never behind the sky
+  const orderD = await ev(() => window.__ZG.BGX.packs['ptuj-zima'].layers.map(l => l.id).join());
+  check(orderD === ORDER_B, 'variant D (winter) draws its layers in the sunset order, the bridge after the wall and in front of the river', orderD);
 
   // ---------------------------------------------------------------- live: one variant per install, kept; C never drawn
   const draw = await ev(() => { const Z = window.__ZG, T = Z.BGX.tests.ptuj, share = T.share; Z.setBgForce(null); T.live = true;
@@ -149,6 +153,21 @@ run(async () => {
   check(draw.again === 'B' && draw.tags === 'ozadje-ptuj=B', 'the same install keeps its variant when the share changes; the statistics say B, not a preview');
   check(draw.gone === 'A' && draw.keptAfter === '{"ptuj":"B"}' && draw.back === 'B', 'a build without a variant\'s pack shows A but keeps the assignment for when it is back');
   check(draw.seen.A > 140 && draw.seen.B > 140 && draw.seen.C === 0, 'the 50/50 share splits installs between A and B; C (share 0) is never drawn', JSON.stringify(draw.seen));
+
+  // ---------------------------------------------------------------- Nastavitve → Razvoj → Kakovost slik: high and low
+  const fid = await ev(() => { const Z = window.__ZG, H = Z.BGX.packs.ptuj, L = Z.BGX.packs['ptuj~low'], ZL = Z.BGX.packs['ptuj-zima~low'];
+    const bytes = P => P.layers.reduce((n, l) => n + l.src.length, 0);
+    const same = L && H.layers.every((l, i) => { const m = L.layers[i]; return m && m.id === l.id && m.w === l.w && m.h === l.h && m.x === l.x && m.y === l.y && m.scale === l.scale; });
+    return { same: !!same, winterLow: !!ZL, ratio: L ? +(bytes(L) / bytes(H)).toFixed(2) : null }; });
+  check(fid.same && fid.winterLow && fid.ratio < 0.5, 'the low copies of B and D keep every layer, its place and its drawn size; the files are about a quarter', JSON.stringify(fid));
+  const pick = await ev(() => { const Z = window.__ZG, at = () => { const e = document.querySelector('.scene [data-layer="town"]'); return e ? e.style.backgroundImage.length : 0; };
+    localStorage.removeItem('zg-fidelity'); Z.setBgForce('B'); Z.S.testMode = true; Z.S.mode = 'calm';
+    Z.newRun('krpan'); Z.joinHero('kurent'); Z.joinHero('matjaz'); Z.go('travel'); const dflt = at();
+    localStorage.setItem('zg-fidelity', 'low'); Z.go('travel'); const low = at();
+    Z.go('settings'); const radios = Object.fromEntries([...document.querySelectorAll('input.set-fid')].map(r => [r.value, r.checked]));
+    localStorage.removeItem('zg-fidelity'); return { dflt, low, radios }; });
+  check(pick.low > 0 && pick.low < pick.dflt * 0.5 && pick.radios.high === false && pick.radios.low === true,
+    'Nizka draws the half-size files, the default is the full files, and Nastavitve → Razvoj shows the stored choice', JSON.stringify(pick));
 
   check(errors.length === 0, 'no page or console errors', errors.join(' | '));
   return ctx;

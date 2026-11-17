@@ -12,7 +12,16 @@ const BGX = (() => { try { const v = JSON.parse($('#bgdata').textContent); retur
 const AB_KEY = 'zg-ab';
 const AB = (() => { try { const v = JSON.parse(localStorage.getItem(AB_KEY) || '{}'); return v && typeof v === 'object' && !Array.isArray(v) ? v : {}; } catch (e) { return {}; } })();
 let bgForce = (() => { try { const v = (new URLSearchParams(location.search).get('ozadje') || '').toUpperCase(); return /^[A-Z]$/.test(v) ? v : null; } catch (e) { return null; } })();
-const bgPack = (key, v) => { const t = BGX.tests[key], id = t && t.variants && t.variants[v]; return id ? BGX.packs[id] || null : null; };
+// Nastavitve → Razvoj → Kakovost slik: 'high' (the full files, the default) or 'low' (the half-size copies of the
+// Ptuj layers, packs `<id>~low` in data/backgrounds.json). The same stored choice drives Martin Krpan's pictures.
+const FID_KEY = 'zg-fidelity';
+const fidelity = () => { try { return localStorage.getItem(FID_KEY) === 'low' ? 'low' : 'high'; } catch (e) { return 'high'; } };
+const setFidelity = v => { try { localStorage.setItem(FID_KEY, v === 'low' ? 'low' : 'high'); } catch (e) { /* no storage */ } };
+const bgPack = (key, v) => {
+  const t = BGX.tests[key], id = t && t.variants && t.variants[v];
+  if (!id) return null;
+  return (fidelity() === 'low' && BGX.packs[id + '~low']) || BGX.packs[id] || null;
+};
 const bgReady = (key, v) => v === 'A' || !!bgPack(key, v);
 const bgForced = key => !!(bgForce && BGX.tests[key] && bgReady(key, bgForce));
 function bgDraw(share, vs) {

@@ -21,6 +21,7 @@
   "packs": {
     "ptuj": {
       "manifest": "art/manifests/ptuj.json",
+      "lowFidelity": {"from": "art/exports/environments/ptuj/", "to": "art/exports/environments/ptuj-low/"},
       "name": "Ptuj — sončni zahod nad Dravo",
       "hideRoad": true,
       "viewNote": "Combined PR 32/33 integration, using 1672×560 view. Ground is aligned at 58% for the battle layout; original review-canvas crop offsets are translated to scene coordinates.",
@@ -44,7 +45,7 @@
         },
         "castle-hill": {
           "x": 560,
-          "y": -210,
+          "y": 0,
           "scale": 0.6,
           "pan": 0.7
         },
@@ -134,6 +135,7 @@
     },
     "ptuj-zima": {
       "manifest": "art/manifests/ptuj.json",
+      "lowFidelity": {"from": "art/exports/environments/ptuj/", "to": "art/exports/environments/ptuj-low/"},
       "name": "Ptuj — zimski večer ob Dravi",
       "season": "winter",
       "hideRoad": true,
@@ -158,7 +160,7 @@
         },
         "castle-hill": {
           "x": 560,
-          "y": -205,
+          "y": 0,
           "scale": 0.6,
           "pan": 0.7
         },
