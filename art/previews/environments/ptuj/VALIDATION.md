@@ -1,30 +1,40 @@
-# Ptuj parallax pack Ã¢â‚¬â€ validation report
+# Ptuj parallax pack — review report
 
-**Status:** Review candidate; not approved and not runtime integrated.
+**Status:** PROPOSED; awaiting Game Director review. No runtime integration is included.
 
-## Checks performed
+## Included variants
 
-- All eight source layer PNGs and eight candidate export PNGs open successfully.
-- The seven scene layers share a 1672 Ãƒâ€” 941 canvas. The road is a separate 2172 Ãƒâ€” 724 repeating tile.
-- PNG alpha is genuine: the scene cutout layers and road include transparent pixels; sky is opaque. Seven exports preserve source alpha exactly. The road tile uses binary alpha after its edge cleanup.
-- The road tile was built from the generated left half mirrored across the right half. The left and right edge columns match exactly on all 724 rows. A three-copy preview was visually inspected and showed no visible seam.
-- The assembled preview was made from the individual export files in back-to-front order. It applies proposed offsets for the distant hills and castle hill, as documented in the manifest.
-- No hero-zone overlay, Martin Krpan spirits, or high foreground occlusion were added.
+- **Sunset:** retains the warm palette and original road.
+- **Winter:** adds snow to roofs, tree crowns, the riverbank wall coping, and foreground road. The Drava remains open water.
+- **Shared bridge and riverbank wall:** the wall defines the city's far bank, runs behind the river edge, and meets the left end of the stylized bridge. This is based on the supplied visual reference; it is not a verified historical reconstruction.
+
+The Game Director identifies the winter background as the setting where Kurent is recruitable. Other winter-scene assignments remain OPEN.
+
+## File checks
+
+- Source and export PNGs were opened and inspected. Transparent exports use binary alpha and are cropped to opaque bounds; the manifest records their offsets.
+- Winter town and reflection source canvases now match the 1672 × 941 review canvas. The one-pixel transparent extension does not alter their painted content.
+- Both road exports mirror one half across the other, so their left and right edge columns match. Three-copy road previews were visually checked for seams.
+- Sunset and winter previews include the new wall and show it joining the bridge. The wall layers sit between the town/river and the foreground bridge.
+- The road ground lines in the preview match the manifest: sunset y=761, winter y=750.
+
+## Runtime and integration limits
+
+- The inspected GitHub main branch does not contain a background renderer, parallax loader, configuration, or asset tests. The 1672 × 941 canvas is a review canvas, not a confirmed runtime size.
+- The referenced 1672 × 560 view and data/backgrounds.json are on the separate open PR 32 branch, not main.
+- PR 32's build helper reads dimensions.export and tileable.horizontal from layersBackToFront entries, then uses data/backgrounds.json for scene placement. PR 33's descriptive manifest uses exportSize, a boolean tileable, and offset. It therefore needs a metadata and placement adapter before that build can consume this pack. The build helper checks PNG dimensions and is expected to stop on a missing size declaration; it does not silently accept those missing dimensions.
+- The new wall and winter layers are not added to PR 32's data/backgrounds.json or runtime scene layout. This remains OPEN for game integration; the winter background is not assigned to an A/B test here.
+- The ground line remains OPEN. On the 941 px review canvas the road starts at y=761 (sunset) and y=750 (winter), while the A/B prototype's actor feet are placed substantially higher. The wall fixes the city's visible riverbank, but does not solve the battle-layout ground placement. The two road lines also differ by 11 px.
+- Ptuj Castle's hilltop relationship to the old town is supported by [Visit Ptuj](https://visitptuj.eu/en/see-do/culture-heritage/sightseeing/ptuj-castle/). The skyline, wall, and multi-arch bridge are stylized scene art; the bridge is not a depiction of the present-day Puh bridge, and the wall is not asserted as a verified historical structure.
 
 ## Review files
 
-- Assembled environment: `assembled.jpg`
-- Three-copy road seam check: `road-repeat-3x.jpg`
-- Eight individual layers: `art/source/environments/ptuj/`
-- Machine-readable manifest: `art/manifests/ptuj.json`
+- Sunset preview: `assembled.jpg`
+- Winter preview: `winter-assembled.jpg`
+- Sunset road repeat preview: `road-repeat-3x.jpg`
+- Winter road repeat preview: `winter-road-repeat-3x.jpg`
+- Source layers: `art/source/environments/ptuj/`
+- Cropped exports: `art/exports/environments/ptuj/`
+- Manifest: `art/manifests/ptuj.json`
 
-## Open questions and limitations
-
-1. The 1672 Ãƒâ€” 941 canvas is not a confirmed runtime size. The inspected repository has no implemented background renderer, loader, configuration, or parallax tests. The 1920 Ãƒâ€” 1080 label in the reference graphic is unverified against game code.
-2. The preview's hill offsets and castle-hill scale/placement are proposals; confirm them against the battle layout and hero scale before integration.
-3. The supplied brief identifies a conflict between the summer sunset/arched bridge in the reference and earlier winter/Pust context plus an explicit bridge exclusion. The inspected current repo files do not resolve it. No bridge is included pending a decision.
-4. Ptuj Castle's hilltop relationship to the town is grounded in official local tourism and museum references, but the generated town skyline and viewpoint are stylized and need visual review.
-5. Cloud drift, water movement, reflections, and speed ratios are not implemented. Motion remains qualitative only; no numeric speeds are prescribed.
-6. The generated overlays retain partial alpha. The road alone was cleaned to binary alpha to make a crisp, repeatable edge. Review the edge finish and the road's mirrored pattern.
-
-No repository test suite was run because no background renderer or asset validation tests exist in the inspected code. This report records file-level image, transparency, alignment, and road-edge checks only.
+No game tests were run. The art pack remains unintegrated and the relevant renderer is only on the separate PR 32 branch.

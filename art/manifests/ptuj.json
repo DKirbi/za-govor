@@ -1,42 +1,566 @@
 {
-  "pack": "Ptuj Sunset Parallax Background",
-  "version": "0.1.0",
+  "pack": "Ptuj Parallax Background",
+  "version": "0.3.0",
   "status": "review",
-  "approval": "OPEN Ã¢â‚¬â€ Game Director review required",
+  "approval": "OPEN — Game Director review required",
   "canvas": {
     "width": 1672,
     "height": 941,
     "aspectRatio": "16:9",
-    "basis": "Common generated source-layer canvas dimensions; proposed review canvas only. No current game renderer, loader, or configuration establishes runtime dimensions.",
+    "basis": "Common generated source canvas and review composition only.",
     "runtimeDimensions": null
   },
-  "colorDirection": "Modernized SNES/GBA-inspired pixel art; sunset palette based on the supplied reference.",
+  "artDirection": "Modernized SNES/GBA-inspired pixel art, following the supplied Ptuj sunset reference.",
+  "variants": {
+    "sunset": {
+      "status": "PROPOSED",
+      "context": "Alternate warm-season look, retained alongside the original winter look.",
+      "preview": "art/previews/environments/ptuj/assembled.jpg",
+      "road": "art/exports/environments/ptuj/road-tile.png"
+    },
+    "winter": {
+      "status": "PROPOSED",
+      "context": "The Game Director identifies this as the Ptuj background used where Kurent is recruitable. Other future winter-scene assignments remain OPEN.",
+      "preview": "art/previews/environments/ptuj/winter-assembled.jpg",
+      "road": "art/exports/environments/ptuj/winter/road-tile.png"
+    }
+  },
   "layersBackToFront": [
-    { "id": "sky", "depthRole": "far background", "source": "art/source/environments/ptuj/sky.png", "export": "art/exports/environments/ptuj/sky.png", "dimensions": { "source": [1672, 941], "export": [1672, 941] }, "colorMode": { "source": "RGB", "export": "RGB" }, "alpha": "opaque", "tileable": { "horizontal": false, "vertical": false }, "animation": "static", "parallax": "static far plane" },
-    { "id": "clouds", "depthRole": "high atmospheric overlay", "source": "art/source/environments/ptuj/clouds.png", "export": "art/exports/environments/ptuj/clouds.png", "dimensions": { "source": [1672, 941], "export": [1672, 941] }, "colorMode": { "source": "RGBA", "export": "RGBA" }, "alpha": "genuine transparency with partial edge alpha", "tileable": { "horizontal": false, "vertical": false }, "animation": "one still image; no loop animation supplied", "parallax": "slow atmospheric drift proposed; no numeric speed assigned" },
-    { "id": "distant-hills", "depthRole": "distant landscape", "source": "art/source/environments/ptuj/distant-hills.png", "export": "art/exports/environments/ptuj/distant-hills.png", "dimensions": { "source": [1672, 941], "export": [1672, 941] }, "colorMode": { "source": "RGBA", "export": "RGBA" }, "alpha": "genuine transparency with partial edge alpha", "tileable": { "horizontal": false, "vertical": false }, "animation": "static", "parallax": "slow; preview content offset y=-270 px, proposed only" },
-    { "id": "castle-hill", "depthRole": "middle-distance landmark", "source": "art/source/environments/ptuj/castle-hill.png", "export": "art/exports/environments/ptuj/castle-hill.png", "dimensions": { "source": [1672, 941], "export": [1672, 941] }, "colorMode": { "source": "RGBA", "export": "RGBA" }, "alpha": "genuine transparency with partial edge alpha", "tileable": { "horizontal": false, "vertical": false }, "animation": "static", "parallax": "slower than town, faster than distant hills; preview position x=560 y=110, size=1003x565 px, proposed only" },
-    { "id": "town", "depthRole": "town at the Drava riverbank", "source": "art/source/environments/ptuj/town.png", "export": "art/exports/environments/ptuj/town.png", "dimensions": { "source": [1672, 941], "export": [1672, 941] }, "colorMode": { "source": "RGBA", "export": "RGBA" }, "alpha": "genuine transparency with partial edge alpha", "tileable": { "horizontal": false, "vertical": false }, "animation": "static", "parallax": "medium; no numeric speed assigned" },
-    { "id": "drava-water", "depthRole": "foreground river plane", "source": "art/source/environments/ptuj/drava-water.png", "export": "art/exports/environments/ptuj/drava-water.png", "dimensions": { "source": [1672, 941], "export": [1672, 941] }, "colorMode": { "source": "RGBA", "export": "RGBA" }, "alpha": "genuine transparency above water with partial edge alpha", "tileable": { "horizontal": false, "vertical": false }, "animation": "single still texture; no loop animation supplied", "parallax": "medium-fast foreground plane; no numeric speed assigned" },
-    { "id": "reflections", "depthRole": "surface light overlay", "source": "art/source/environments/ptuj/reflections.png", "export": "art/exports/environments/ptuj/reflections.png", "dimensions": { "source": [1672, 941], "export": [1672, 941] }, "colorMode": { "source": "RGBA", "export": "RGBA" }, "alpha": "genuine transparency with partial edge alpha", "tileable": { "horizontal": false, "vertical": false }, "animation": "one still frame; shimmer loop not supplied", "parallax": "moves with water; no numeric speed assigned" },
-    { "id": "road-tile", "depthRole": "nearest foreground movement cue", "source": "art/source/environments/ptuj/road-tile.png", "export": "art/exports/environments/ptuj/road-tile.png", "originalGeneratedSource": "art/source/environments/ptuj/road-tile-generated.png", "dimensions": { "source": [2172, 724], "export": [2172, 724] }, "colorMode": { "source": "RGBA", "export": "RGBA" }, "alpha": "transparent above road; binary alpha after cleanup", "tileable": { "horizontal": true, "vertical": false, "method": "left half mirrored horizontally; left/right edge columns match on all rows" }, "animation": "static art; movement comes from runtime scrolling", "parallax": "strongest movement cue; fastest qualitative plane, no numeric speed assigned" }
+    {
+      "id": "sky",
+      "season": "sunset",
+      "source": "art/source/environments/ptuj/sky.png",
+      "export": "art/exports/environments/ptuj/sky.png",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "exportSize": [
+        1672,
+        941
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "alpha": "opaque",
+      "tileable": false,
+      "animation": "static"
+    },
+    {
+      "id": "clouds",
+      "season": "sunset",
+      "source": "art/source/environments/ptuj/clouds.png",
+      "export": "art/exports/environments/ptuj/clouds.png",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "exportSize": [
+        1672,
+        324
+      ],
+      "offset": [
+        0,
+        79
+      ],
+      "alpha": "binary",
+      "tileable": true,
+      "animation": "separate transparent cloud art; horizontal drift supported",
+      "repeatPeriodPx": 1672
+    },
+    {
+      "id": "distant-hills",
+      "season": "sunset",
+      "source": "art/source/environments/ptuj/distant-hills.png",
+      "export": "art/exports/environments/ptuj/distant-hills.png",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "exportSize": [
+        1672,
+        152
+      ],
+      "offset": [
+        0,
+        789
+      ],
+      "alpha": "binary; source retains original alpha",
+      "tileable": false,
+      "previewOffsetY": -270
+    },
+    {
+      "id": "castle-hill",
+      "season": "sunset",
+      "source": "art/source/environments/ptuj/castle-hill.png",
+      "export": "art/exports/environments/ptuj/castle-hill.png",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "exportSize": [
+        1579,
+        320
+      ],
+      "offset": [
+        49,
+        348
+      ],
+      "alpha": "binary; source retains original alpha",
+      "tileable": false,
+      "previewTransform": {
+        "x": 589,
+        "y": 319,
+        "width": 947,
+        "height": 192
+      }
+    },
+    {
+      "id": "town",
+      "season": "sunset",
+      "source": "art/source/environments/ptuj/town.png",
+      "export": "art/exports/environments/ptuj/town.png",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "exportSize": [
+        1576,
+        266
+      ],
+      "offset": [
+        48,
+        335
+      ],
+      "alpha": "binary; source retains original alpha",
+      "tileable": false
+    },
+    {
+      "id": "riverbank-trees",
+      "season": "sunset",
+      "source": "art/source/environments/ptuj/riverbank-trees.png",
+      "export": "art/exports/environments/ptuj/riverbank-trees.png",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "exportSize": [
+        1637,
+        166
+      ],
+      "offset": [
+        16,
+        437
+      ],
+      "alpha": "binary",
+      "tileable": false,
+      "depthRole": "outer riverbank vegetation",
+      "description": "Sparse seasonal trees on the outer bank, behind the retaining wall."
+    },
+    {
+      "id": "drava-water",
+      "season": "sunset",
+      "source": "art/source/environments/ptuj/drava-water.png",
+      "export": "art/exports/environments/ptuj/drava-water.png",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "exportSize": [
+        1672,
+        361
+      ],
+      "offset": [
+        0,
+        580
+      ],
+      "alpha": "binary; source retains original alpha",
+      "tileable": false,
+      "animation": "static texture; runtime animation not supplied"
+    },
+    {
+      "id": "riverbank-wall",
+      "season": "sunset",
+      "source": "art/source/environments/ptuj/riverbank-wall.png",
+      "export": "art/exports/environments/ptuj/riverbank-wall.png",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "exportSize": [
+        1658,
+        45
+      ],
+      "offset": [
+        7,
+        577
+      ],
+      "alpha": "binary; source retains original alpha",
+      "tileable": false,
+      "depthRole": "riverbank retaining wall, between city and river",
+      "description": "Stylized stone embankment; artwork interpretation based on the supplied visual reference, not a verified historical feature."
+    },
+    {
+      "id": "bridge",
+      "season": "shared",
+      "source": "art/source/environments/ptuj/bridge.png",
+      "export": "art/exports/environments/ptuj/bridge.png",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "exportSize": [
+        538,
+        73
+      ],
+      "offset": [
+        0,
+        544
+      ],
+      "alpha": "binary; source retains original alpha",
+      "tileable": false,
+      "note": "Stylized multi-arch scene bridge, added at the far left per Game Director direction. It is not intended as a depiction of the present-day Puh bridge."
+    },
+    {
+      "id": "reflections",
+      "season": "sunset",
+      "source": "art/source/environments/ptuj/reflections.png",
+      "export": "art/exports/environments/ptuj/reflections.png",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "exportSize": [
+        1588,
+        160
+      ],
+      "offset": [
+        40,
+        669
+      ],
+      "alpha": "binary; source retains original alpha",
+      "tileable": false,
+      "animation": "static frame; shimmer loop not supplied"
+    },
+    {
+      "id": "road-tile",
+      "season": "sunset",
+      "source": "art/source/environments/ptuj/road-tile.png",
+      "originalGeneratedSource": "art/source/environments/ptuj/road-tile-generated.png",
+      "export": "art/exports/environments/ptuj/road-tile.png",
+      "sourceSize": [
+        2172,
+        724
+      ],
+      "exportSize": [
+        2172,
+        180
+      ],
+      "offset": [
+        0,
+        761
+      ],
+      "groundY": 761,
+      "alpha": "binary",
+      "tileable": true,
+      "repeatPeriodPx": 2172,
+      "method": "Cleaned road source with horizontally mirrored half; edge columns match."
+    },
+    {
+      "id": "foreground",
+      "season": "sunset",
+      "source": "art/source/environments/ptuj/foreground.png",
+      "export": "art/exports/environments/ptuj/foreground.png",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "exportSize": [
+        1638,
+        87
+      ],
+      "offset": [
+        16,
+        825
+      ],
+      "alpha": "binary",
+      "tileable": false,
+      "role": "foreground",
+      "depthRole": "front road occlusion",
+      "description": "Sparse rocks, small bushes and grass; designed to overlap only the lower legs/feet of actors."
+    },
+    {
+      "id": "sky",
+      "season": "winter",
+      "source": "art/source/environments/ptuj/winter/sky.png",
+      "export": "art/exports/environments/ptuj/winter/sky.png",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "exportSize": [
+        1672,
+        941
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "alpha": "opaque",
+      "tileable": false,
+      "animation": "static"
+    },
+    {
+      "id": "clouds",
+      "season": "winter",
+      "source": "art/source/environments/ptuj/winter/clouds.png",
+      "export": "art/exports/environments/ptuj/winter/clouds.png",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "exportSize": [
+        1672,
+        332
+      ],
+      "offset": [
+        0,
+        76
+      ],
+      "alpha": "binary",
+      "tileable": true,
+      "repeatPeriodPx": 1672,
+      "animation": "separate transparent cloud art; horizontal drift supported"
+    },
+    {
+      "id": "distant-hills",
+      "season": "winter",
+      "source": "art/source/environments/ptuj/winter/distant-hills.png",
+      "export": "art/exports/environments/ptuj/winter/distant-hills.png",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "exportSize": [
+        1672,
+        158
+      ],
+      "offset": [
+        0,
+        783
+      ],
+      "alpha": "binary; source retains original alpha",
+      "tileable": false,
+      "previewOffsetY": -270
+    },
+    {
+      "id": "castle-hill",
+      "season": "winter",
+      "source": "art/source/environments/ptuj/winter/castle-hill.png",
+      "export": "art/exports/environments/ptuj/winter/castle-hill.png",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "exportSize": [
+        1578,
+        329
+      ],
+      "offset": [
+        49,
+        341
+      ],
+      "alpha": "binary; source retains original alpha",
+      "tileable": false
+    },
+    {
+      "id": "town",
+      "season": "winter",
+      "source": "art/source/environments/ptuj/winter/town.png",
+      "export": "art/exports/environments/ptuj/winter/town.png",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "exportSize": [
+        1574,
+        269
+      ],
+      "offset": [
+        48,
+        333
+      ],
+      "alpha": "binary; source retains original alpha",
+      "tileable": false,
+      "description": "Snow on rooftops and tree crowns."
+    },
+    {
+      "id": "riverbank-trees",
+      "season": "winter",
+      "source": "art/source/environments/ptuj/winter/riverbank-trees.png",
+      "export": "art/exports/environments/ptuj/winter/riverbank-trees.png",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "exportSize": [
+        1590,
+        142
+      ],
+      "offset": [
+        30,
+        436
+      ],
+      "alpha": "binary",
+      "tileable": false,
+      "depthRole": "outer riverbank vegetation",
+      "description": "Sparse seasonal trees on the outer bank, behind the retaining wall."
+    },
+    {
+      "id": "drava-water",
+      "season": "winter",
+      "source": "art/source/environments/ptuj/winter/drava-water.png",
+      "export": "art/exports/environments/ptuj/winter/drava-water.png",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "exportSize": [
+        1672,
+        365
+      ],
+      "offset": [
+        0,
+        576
+      ],
+      "alpha": "binary; source retains original alpha",
+      "tileable": false,
+      "description": "Open winter water; freezing is not implied."
+    },
+    {
+      "id": "riverbank-wall",
+      "season": "winter",
+      "source": "art/source/environments/ptuj/winter/riverbank-wall.png",
+      "export": "art/exports/environments/ptuj/winter/riverbank-wall.png",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "exportSize": [
+        1653,
+        52
+      ],
+      "offset": [
+        7,
+        572
+      ],
+      "alpha": "binary; source retains original alpha",
+      "tileable": false,
+      "depthRole": "riverbank retaining wall, between city and river",
+      "description": "Snow on wall coping; stylized art interpretation."
+    },
+    {
+      "id": "reflections",
+      "season": "winter",
+      "source": "art/source/environments/ptuj/winter/reflections.png",
+      "export": "art/exports/environments/ptuj/winter/reflections.png",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "exportSize": [
+        1534,
+        178
+      ],
+      "offset": [
+        73,
+        666
+      ],
+      "alpha": "binary; source retains original alpha",
+      "tileable": false
+    },
+    {
+      "id": "road-tile",
+      "season": "winter",
+      "source": "art/source/environments/ptuj/winter/road-tile.png",
+      "export": "art/exports/environments/ptuj/winter/road-tile.png",
+      "sourceSize": [
+        2172,
+        724
+      ],
+      "exportSize": [
+        2172,
+        191
+      ],
+      "offset": [
+        0,
+        750
+      ],
+      "groundY": 750,
+      "alpha": "binary; source retains original alpha",
+      "tileable": true,
+      "repeatPeriodPx": 2172,
+      "method": "Snow-covered road source with horizontally mirrored half; edge columns match."
+    },
+    {
+      "id": "foreground",
+      "season": "winter",
+      "source": "art/source/environments/ptuj/winter/foreground.png",
+      "export": "art/exports/environments/ptuj/winter/foreground.png",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "exportSize": [
+        1654,
+        102
+      ],
+      "offset": [
+        8,
+        814
+      ],
+      "alpha": "binary",
+      "tileable": false,
+      "role": "foreground",
+      "depthRole": "front road occlusion",
+      "description": "Sparse rocks, small bushes and grass; designed to overlap only the lower legs/feet of actors."
+    }
   ],
   "exportProcessing": [
-    "Seven scene-layer exports are byte-for-byte copies of their generated source PNGs; no resizing, palette conversion, or alpha modification was applied.",
-    "The road export was made from the generated road source by thresholding alpha below 240 to transparent, setting retained pixels opaque, and mirroring the left half across the right half to create an exactly matching repeat edge. The unmodified generated input is retained alongside the eight canonical layer files.",
-    "The assembled preview applies proposed offsets to the distant hills and castle hill; those are not approved runtime coordinates."
+    "Source PNGs are retained at generated canvas size. Transparent exports are thresholded to binary alpha and cropped to their opaque bounds; manifest offsets restore source-canvas placement.",
+    "The original generated road input is retained. Road exports use a mirrored half for matching horizontal tile edges.",
+    "Preview transforms and layer placements are review compositions only, not approved runtime coordinates.",
+    "Version 0.2.1: every offset is now a canvas coordinate. In 0.2.0 the road offsets were relative to the 724 px road source, which sits at the bottom of the 941 px canvas (941 - 724 = 217 px). The road offsets were shifted by that amount and are now canvas values. groundY is the canvas row of the road's first solid pixel row, and offset y equals groundY for both road layers.",
+    "Version 0.2.2 adds a continuous far-bank wall in both seasons; the shared bridge overlays its left end so the bridge joins the riverbank. The winter wall adds snow to the top coping.",
+    "Winter town and reflections source canvases were extended by one fully transparent pixel to align to 1672 × 941; the painted content and cropped exports are unchanged.",
+    "Version 0.3.0 separates clouds onto transparent horizontally tileable layers so the renderer can drift them independently.",
+    "Version 0.3.0 adds sparse outer-bank trees and matching foreground rocks, bushes and grasses for sunset and winter. Foreground placement is intentionally low to preserve actor readability."
   ],
-  "preview": "art/previews/environments/ptuj/assembled.jpg",
-  "validationReport": "art/previews/environments/ptuj/VALIDATION.md",
+  "previews": {
+    "sunset": "art/previews/environments/ptuj/assembled.jpg",
+    "winter": "art/previews/environments/ptuj/winter-assembled.jpg",
+    "winterRoadRepeat": "art/previews/environments/ptuj/winter-road-repeat-3x.jpg",
+    "validation": "art/previews/environments/ptuj/VALIDATION.md"
+  },
   "knownLimitations": [
-    "No background renderer, parallax loader, configuration, or asset tests exist in the inspected repository. Runtime dimensions, scaling, draw order, and alpha handling remain unverified.",
-    "The 1672x941 scene canvas is the common generated source size, not a confirmed game viewport. The 1920x1080 label in the supplied reference graphic is not confirmed by game code.",
-    "The preview hill offsets and castle-hill transform are proposals and need review against the actual battle layout and hero scale.",
-    "The town skyline is stylized; its exact architectural details and viewpoint have not been verified against a surveyed location reference.",
-    "The supplied brief flags a summer sunset and arched bridge in the reference as conflicting with earlier winter/Pust notes and an explicit bridge exclusion. The current repository files inspected do not resolve the conflict. The sunset palette is followed and no bridge is included pending direction."
+    "Current inspected GitHub main does not contain a background renderer, parallax loader, background configuration, or asset tests. Runtime dimensions, scaling, draw order, and alpha handling are unconfirmed.",
+    "The referenced 1672 × 560 view and data/backgrounds.json are present in the separate open PR 32 branch, not in main. Its scene layout is not runtime-confirmed until that PR is reviewed and merged.",
+    "The town skyline and the stylized multi-arch bridge are game-art interpretations; the exact viewpoint and bridge history are not verified as documentary depictions.",
+    "The Game Director identifies the winter variant with Kurent recruitment. Future seasonal assignments remain OPEN.",
+    "OPEN composition: the sunset ground line is at canvas y 761 (81% of 941) and the winter ground line at y 750 (80%). In the A/B prototype, enemies stand at about 62-70% of scene height and heroes at about 75-87%, so a party placed on these ground lines appears to stand on the river. The horizon or the battle layout must change before approval.",
+    "The sunset and winter ground lines differ by 11 px (761 vs 750). If both seasons share one actor placement, the feet line will shift when the variant changes. Align the two roads, or record a per-season ground line that the renderer uses.",
+    "The far-bank wall gives the city a visible shore and joins the bridge. The game composition's actor ground line remains OPEN: roads are at y 761 (sunset) and y 750 (winter) on this review canvas.",
+    "Foreground and outer-bank placement are proposed runtime values; confirm actor overlap in-game before approval."
   ],
   "research": [
-    { "claim": "Ptuj Castle stands on Castle Hill overlooking the old town.", "source": "https://visitptuj.eu/en/see-do/culture-heritage/sightseeing/ptuj-castle/" },
-    { "claim": "Ptuj Castle hosts the Ptuj-OrmoÃ…Â¾ Regional Museum on the castle hill.", "source": "https://pmpo.si/en/ptuj-castle/?lang=en" }
+    {
+      "claim": "Ptuj Castle stands on Castle Hill overlooking the old town.",
+      "source": "https://visitptuj.eu/en/see-do/culture-heritage/sightseeing/ptuj-castle/"
+    },
+    {
+      "claim": "The current Puh bridge in Ptuj is a contemporary structure; the multi-arch bridge in this pack is stylized scene art, not a claim about that bridge.",
+      "source": "https://www.ponting.si/en/projects/puh-s-bridge-over-drava-in-ptuj-37.html"
+    }
   ]
 }

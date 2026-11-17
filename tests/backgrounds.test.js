@@ -1,11 +1,11 @@
 // Background A/B tests (src/backgrounds.js, data/backgrounds.json): variant A is the background in use and stays
 // exactly as it was. Variant B is the Codex pack (art/manifests/ptuj.json, #33): eight layers on a 16:9 canvas,
-// placed for the game's scene by data/backgrounds.json. Variant C is Claude's pack (art/manifests/ptuj-vecer.json,
+// with outer-bank trees, wall, bridge and front occlusion, placed for the game's scene by data/backgrounds.json. Variant D is the snowy companion preview. Variant C is Claude's pack (art/manifests/ptuj-vecer.json,
 // tools/art_ptuj_parallax.py): ten pixel-art layers with tiling parallax, a preview only (share 0).
 const { openGame, runner, sleep } = require('./harness');
 const { check, run } = runner('Background variants (A/B tests)');
 
-const ORDER_B = 'sky,clouds,distant-hills,castle-hill,town,drava-water,reflections,road-tile';
+const ORDER_B = 'sky,clouds,distant-hills,castle-hill,town,riverbank-trees,drava-water,riverbank-wall,bridge,reflections,road-tile,foreground';
 const ORDER_C = 'sky,clouds,distant-hills,castle-hill,town,drava-water,reflections,sun-glint,road-tile,foreground';
 const mod = (x, tw) => ((x % tw) + tw) % tw - tw;
 
@@ -38,8 +38,8 @@ run(async () => {
   const built = await ev(() => { const Z = window.__ZG, B = Z.BGX.packs.ptuj, C = Z.BGX.packs['ptuj-vecer']; localStorage.removeItem('zg-ab');
     const sum = P => P && { ids: P.layers.map(l => l.id).join(), canvas: P.canvas, status: P.status, name: P.name, tiles: P.layers.filter(l => l.tileX).map(l => l.id).join(), front: P.layers.filter(l => l.front).map(l => l.id).join() };
     return { B: sum(B), C: sum(C), road: B && B.layers.find(l => l.id === 'road-tile'), castle: B && B.layers.find(l => l.id === 'castle-hill'), test: Z.BGX.tests.ptuj, v: Z.bgVariant('ptuj'), tags: Z.bgStatTags(), ab: localStorage.getItem('zg-ab') }; });
-  check(built.B && built.B.ids === ORDER_B && built.B.canvas.w === 1672 && built.B.canvas.h === 560 && built.B.tiles === 'road-tile' && built.B.name === 'Ptuj — sončni zahod nad Dravo',
-    'variant B is the Codex pack: eight layers back to front, fitted through a 1672×560 view, only the road tiles', JSON.stringify(built.B));
+  check(built.B && built.B.ids === ORDER_B && built.B.canvas.w === 1672 && built.B.canvas.h === 560 && built.B.tiles === 'clouds,road-tile' && built.B.name === 'Ptuj — sončni zahod nad Dravo',
+    'variant B is the combined seasonal pack: twelve sunset layers back to front, fitted through a 1672×560 view, clouds and road tile horizontally', JSON.stringify(built.B));
   check(built.road.scale === 1.3 && built.road.w === 2172 && built.castle.scale === 0.6 && built.castle.x === 560, 'the road is enlarged 1.3× and the castle hill keeps Codex\'s 0.6 scale, as data/backgrounds.json places them', JSON.stringify({ road: [built.road.w, built.road.scale, built.road.y], castle: [built.castle.x, built.castle.y, built.castle.scale] }));
   check(built.C && built.C.ids === ORDER_C && built.C.canvas.w === 640 && built.C.front === 'foreground', 'variant C is Claude\'s pack: ten layers on 640×165, the foreground in front', JSON.stringify(built.C));
   check(built.test.share.C === 0 && built.test.live === false && built.v === 'A' && built.ab === null && built.tags.join() === 'ozadje-ptuj=A',
@@ -67,7 +67,7 @@ run(async () => {
   const r1 = await at(1200), p1 = await layerPos('ptuj');
   const s = Math.max(p1.H / 560, p1.W / 1672), c0 = (p1.W - 1672 * s) / 2, rw = Math.round(2172 * 1.3 * s);
   check(Math.abs(p1.pos['road-tile'].x - Math.round(mod(c0 - 1200 * (r1.mobile ? .62 : 1), rw))) <= 1, 'the road scrolls with the walk on its enlarged tile', JSON.stringify(p1.pos['road-tile']));
-  check(p1.pos.town.x === p1.pos['drava-water'].x && p1.pos.town.x === p1.pos.reflections.x && p1.pos.town.y === p1.pos['drava-water'].y, 'the town, the river and its reflections stay together');
+  check(p1.pos.town.x === p1.pos['drava-water'].x && p1.pos.town.x === p1.pos.reflections.x && p1.pos.town.y < p1.pos['drava-water'].y && p1.pos['riverbank-wall'].y < p1.pos['drava-water'].y, 'the town, the river and its reflections stay together');
   check(Object.values(p1.pos).every(p => p.smooth), 'the large Codex pictures are shrunk smoothly, not aliased as pixel art', JSON.stringify(Object.fromEntries(Object.entries(p1.pos).map(([k, v]) => [k, v.smooth]))));
   await shot('bg-01-ptuj-road-B');
 

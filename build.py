@@ -44,18 +44,19 @@ def png_info(raw, rel):
     return w, h, alpha
 
 
-def manifest_layers(man):
+def manifest_layers(man, season=None):
     """The layers of a pack manifest, back to front, in one shape. Two formats are read:
     layers: [{id, order, file, width, height, x, y, alpha, tileX, role}] (tools/art_ptuj_parallax.py), and the
     asset-library format layersBackToFront: [{id, export, dimensions.export, alpha (text), tileable.horizontal}]."""
     if man.get('layers'): return sorted(man['layers'], key=lambda L: L['order'])
     out = []
     for i, L in enumerate(man.get('layersBackToFront') or []):
-        w, h = (L.get('dimensions') or {}).get('export') or (None, None)
+        if season and L.get('season') not in (season, 'shared'): continue
+        w, h = (L.get('dimensions') or {}).get('export') or L.get('exportSize') or (None, None)
         a = L.get('alpha')
         out.append({'id': L['id'], 'order': i + 1, 'file': L.get('export') or L.get('file', ''), 'width': w, 'height': h,
                     'alpha': a if isinstance(a, bool) else not str(a).lower().startswith('opaque'),
-                    'tileX': bool((L.get('tileable') or {}).get('horizontal')), 'role': L.get('role', 'background')})
+                    'tileX': bool((L.get('tileable') or {}).get('horizontal')) if isinstance(L.get('tileable'), dict) else bool(L.get('tileable')), 'role': L.get('role', 'background'), 'x': (L.get('offset') or [0, 0])[0], 'y': (L.get('offset') or [0, 0])[1]})
     return out
 
 
@@ -75,7 +76,7 @@ def background_packs():
         man = json.loads(read(mrel))
         if man.get('status') == 'superseded':
             notes.append(f'background pack {pid}: {mrel} is superseded, left out'); continue
-        mls = manifest_layers(man)
+        mls = manifest_layers(man, pc.get('season'))
         missing = [L.get('file') or '?' for L in mls if not (root / (L.get('file') or '')).is_file()]
         if not mls or missing:
             notes.append(f'background pack {pid}: {len(missing)} of {len(mls)} layer files not committed, left out'); continue
