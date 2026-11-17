@@ -1,0 +1,42 @@
+{
+  "pack": "Ptuj Sunset Parallax Background",
+  "version": "0.1.0",
+  "status": "review",
+  "approval": "OPEN Ã¢â‚¬â€ Game Director review required",
+  "canvas": {
+    "width": 1672,
+    "height": 941,
+    "aspectRatio": "16:9",
+    "basis": "Common generated source-layer canvas dimensions; proposed review canvas only. No current game renderer, loader, or configuration establishes runtime dimensions.",
+    "runtimeDimensions": null
+  },
+  "colorDirection": "Modernized SNES/GBA-inspired pixel art; sunset palette based on the supplied reference.",
+  "layersBackToFront": [
+    { "id": "sky", "depthRole": "far background", "source": "art/source/environments/ptuj/sky.png", "export": "art/exports/environments/ptuj/sky.png", "dimensions": { "source": [1672, 941], "export": [1672, 941] }, "colorMode": { "source": "RGB", "export": "RGB" }, "alpha": "opaque", "tileable": { "horizontal": false, "vertical": false }, "animation": "static", "parallax": "static far plane" },
+    { "id": "clouds", "depthRole": "high atmospheric overlay", "source": "art/source/environments/ptuj/clouds.png", "export": "art/exports/environments/ptuj/clouds.png", "dimensions": { "source": [1672, 941], "export": [1672, 941] }, "colorMode": { "source": "RGBA", "export": "RGBA" }, "alpha": "genuine transparency with partial edge alpha", "tileable": { "horizontal": false, "vertical": false }, "animation": "one still image; no loop animation supplied", "parallax": "slow atmospheric drift proposed; no numeric speed assigned" },
+    { "id": "distant-hills", "depthRole": "distant landscape", "source": "art/source/environments/ptuj/distant-hills.png", "export": "art/exports/environments/ptuj/distant-hills.png", "dimensions": { "source": [1672, 941], "export": [1672, 941] }, "colorMode": { "source": "RGBA", "export": "RGBA" }, "alpha": "genuine transparency with partial edge alpha", "tileable": { "horizontal": false, "vertical": false }, "animation": "static", "parallax": "slow; preview content offset y=-270 px, proposed only" },
+    { "id": "castle-hill", "depthRole": "middle-distance landmark", "source": "art/source/environments/ptuj/castle-hill.png", "export": "art/exports/environments/ptuj/castle-hill.png", "dimensions": { "source": [1672, 941], "export": [1672, 941] }, "colorMode": { "source": "RGBA", "export": "RGBA" }, "alpha": "genuine transparency with partial edge alpha", "tileable": { "horizontal": false, "vertical": false }, "animation": "static", "parallax": "slower than town, faster than distant hills; preview position x=560 y=110, size=1003x565 px, proposed only" },
+    { "id": "town", "depthRole": "town at the Drava riverbank", "source": "art/source/environments/ptuj/town.png", "export": "art/exports/environments/ptuj/town.png", "dimensions": { "source": [1672, 941], "export": [1672, 941] }, "colorMode": { "source": "RGBA", "export": "RGBA" }, "alpha": "genuine transparency with partial edge alpha", "tileable": { "horizontal": false, "vertical": false }, "animation": "static", "parallax": "medium; no numeric speed assigned" },
+    { "id": "drava-water", "depthRole": "foreground river plane", "source": "art/source/environments/ptuj/drava-water.png", "export": "art/exports/environments/ptuj/drava-water.png", "dimensions": { "source": [1672, 941], "export": [1672, 941] }, "colorMode": { "source": "RGBA", "export": "RGBA" }, "alpha": "genuine transparency above water with partial edge alpha", "tileable": { "horizontal": false, "vertical": false }, "animation": "single still texture; no loop animation supplied", "parallax": "medium-fast foreground plane; no numeric speed assigned" },
+    { "id": "reflections", "depthRole": "surface light overlay", "source": "art/source/environments/ptuj/reflections.png", "export": "art/exports/environments/ptuj/reflections.png", "dimensions": { "source": [1672, 941], "export": [1672, 941] }, "colorMode": { "source": "RGBA", "export": "RGBA" }, "alpha": "genuine transparency with partial edge alpha", "tileable": { "horizontal": false, "vertical": false }, "animation": "one still frame; shimmer loop not supplied", "parallax": "moves with water; no numeric speed assigned" },
+    { "id": "road-tile", "depthRole": "nearest foreground movement cue", "source": "art/source/environments/ptuj/road-tile.png", "export": "art/exports/environments/ptuj/road-tile.png", "originalGeneratedSource": "art/source/environments/ptuj/road-tile-generated.png", "dimensions": { "source": [2172, 724], "export": [2172, 724] }, "colorMode": { "source": "RGBA", "export": "RGBA" }, "alpha": "transparent above road; binary alpha after cleanup", "tileable": { "horizontal": true, "vertical": false, "method": "left half mirrored horizontally; left/right edge columns match on all rows" }, "animation": "static art; movement comes from runtime scrolling", "parallax": "strongest movement cue; fastest qualitative plane, no numeric speed assigned" }
+  ],
+  "exportProcessing": [
+    "Seven scene-layer exports are byte-for-byte copies of their generated source PNGs; no resizing, palette conversion, or alpha modification was applied.",
+    "The road export was made from the generated road source by thresholding alpha below 240 to transparent, setting retained pixels opaque, and mirroring the left half across the right half to create an exactly matching repeat edge. The unmodified generated input is retained alongside the eight canonical layer files.",
+    "The assembled preview applies proposed offsets to the distant hills and castle hill; those are not approved runtime coordinates."
+  ],
+  "preview": "art/previews/environments/ptuj/assembled.jpg",
+  "validationReport": "art/previews/environments/ptuj/VALIDATION.md",
+  "knownLimitations": [
+    "No background renderer, parallax loader, configuration, or asset tests exist in the inspected repository. Runtime dimensions, scaling, draw order, and alpha handling remain unverified.",
+    "The 1672x941 scene canvas is the common generated source size, not a confirmed game viewport. The 1920x1080 label in the supplied reference graphic is not confirmed by game code.",
+    "The preview hill offsets and castle-hill transform are proposals and need review against the actual battle layout and hero scale.",
+    "The town skyline is stylized; its exact architectural details and viewpoint have not been verified against a surveyed location reference.",
+    "The supplied brief flags a summer sunset and arched bridge in the reference as conflicting with earlier winter/Pust notes and an explicit bridge exclusion. The current repository files inspected do not resolve the conflict. The sunset palette is followed and no bridge is included pending direction."
+  ],
+  "research": [
+    { "claim": "Ptuj Castle stands on Castle Hill overlooking the old town.", "source": "https://visitptuj.eu/en/see-do/culture-heritage/sightseeing/ptuj-castle/" },
+    { "claim": "Ptuj Castle hosts the Ptuj-OrmoÃ…Â¾ Regional Museum on the castle hill.", "source": "https://pmpo.si/en/ptuj-castle/?lang=en" }
+  ]
+}
