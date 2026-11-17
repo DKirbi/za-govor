@@ -36,6 +36,13 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
+## 0.14.0 — 17 Nov 2026 · zaprta alfa · Znanje cards fold their details
+- **Nova pot:** each Znanje card shows its figure, name and one line. What losing and a fallen hero
+  mean is folded behind **Podrobnosti** beside the *Znanje* heading; it opens all three cards at once
+  (they can be compared and the row keeps one height) and picks none. *Skrij podrobnosti* folds them
+  again. The toggle sits outside the cards, so it never changes the chosen Znanje.
+- `tests/menu.test.js`: folded by default, one toggle opens all three, Enter on it stays on Nova pot.
+
 ## 0.13.0 — 17 Nov 2026 · zaprta alfa · balance D: the party levels together, a difficulty curve, a new Lintvern
 Branch `feat/balance-d`, from the balance simulations of 16–17 Nov (version D of four compared). The working
 balance until monsters and gods are reviewed. Saves from 0.12.0 still load. Details: `docs/progression-design.md` §4b.
