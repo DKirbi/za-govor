@@ -1,0 +1,129 @@
+{
+  "pack": "Martin Krpan gameplay sprites and separate mare-lifting folk-art concept",
+  "version": "0.1.0",
+  "status": "review",
+  "approval": "OPEN — Game Director review required",
+  "canvas": {
+    "frameWidth": 48,
+    "frameHeight": 48,
+    "facing": "right",
+    "groundBaselineY": 47,
+    "format": "PNG RGBA, transparent background, binary alpha"
+  },
+  "gameConvention": {
+    "inspected": "main/src/game.js: SPR_SIZE.krpan = 48; current sprite is a 96×48 strip containing two 48×48 frames.",
+    "proposedRuntimeSprite": "art/exports/characters/martin-krpan/martin-krpan-v2.png",
+    "integrationStatus": "Artwork only. Existing inline SPRITES.krpan is not replaced and no gameplay code or mechanics are changed."
+  },
+  "artDirection": "Modernized SNES/GBA-inspired pixel art, broad readable silhouette, wide hat, prominent moustache, cream shirt, red vest and sash, salt sack, dark trousers and boots, restrained warm palette and dark outline.",
+  "processing": {
+    "sourceAtlases": "Six generated 2×2 pose atlases at 1263×1246. Each frame source cell is 631×623; the unused final source row/column is omitted.",
+    "exports": "Each cell is cropped separately, downsampled to 48×48 using nearest-neighbor, aligned so the lowest opaque pixel is row 47, alpha thresholded at 128 to preserve hard transparent edges, and quantized to the same 27-color palette.",
+    "preview": "The labeled preview is for review only. It is not a production sprite sheet and is not read by the game."
+  },
+  "sequences": [
+    {
+      "id": "idle",
+      "label": "Idle breathing / weight shift",
+      "sourceAtlas": "art/source/characters/martin-krpan/atlases/idle-4f.png",
+      "framesBackToFront": [
+        "art/exports/characters/martin-krpan/animations/idle/frame-01.png",
+        "art/exports/characters/martin-krpan/animations/idle/frame-02.png",
+        "art/exports/characters/martin-krpan/animations/idle/frame-03.png",
+        "art/exports/characters/martin-krpan/animations/idle/frame-04.png"
+      ]
+    },
+    {
+      "id": "cudgel-strike",
+      "label": "Weighty limewood cudgel strike; action description only, not assigned to a progression skill name.",
+      "sourceAtlas": "art/source/characters/martin-krpan/atlases/cudgel-strike-4f.png",
+      "framesBackToFront": [
+        "art/exports/characters/martin-krpan/animations/cudgel-strike/frame-01.png",
+        "art/exports/characters/martin-krpan/animations/cudgel-strike/frame-02.png",
+        "art/exports/characters/martin-krpan/animations/cudgel-strike/frame-03.png",
+        "art/exports/characters/martin-krpan/animations/cudgel-strike/frame-04.png"
+      ]
+    },
+    {
+      "id": "kmecka-moc-r1-double-punch",
+      "label": "Two separate bare-handed punches; no weapon attack.",
+      "sourceAtlas": "art/source/characters/martin-krpan/atlases/double-punch-4f.png",
+      "framesBackToFront": [
+        "art/exports/characters/martin-krpan/animations/double-punch/frame-01.png",
+        "art/exports/characters/martin-krpan/animations/double-punch/frame-02.png",
+        "art/exports/characters/martin-krpan/animations/double-punch/frame-03.png",
+        "art/exports/characters/martin-krpan/animations/double-punch/frame-04.png"
+      ]
+    },
+    {
+      "id": "kmecka-moc-r2-salt-sacks",
+      "label": "Mare presents two sacks; Krpan takes and throws them. The mare remains calm and is not an attacker.",
+      "sourceAtlas": "art/source/characters/martin-krpan/atlases/salt-sacks-4f.png",
+      "framesBackToFront": [
+        "art/exports/characters/martin-krpan/animations/salt-sacks/frame-01.png",
+        "art/exports/characters/martin-krpan/animations/salt-sacks/frame-02.png",
+        "art/exports/characters/martin-krpan/animations/salt-sacks/frame-03.png",
+        "art/exports/characters/martin-krpan/animations/salt-sacks/frame-04.png"
+      ]
+    },
+    {
+      "id": "kmecka-moc-r3-boulder",
+      "label": "Krpan braces, lifts, winds up and throws one boulder. No target count or damage is specified by these images.",
+      "sourceAtlas": "art/source/characters/martin-krpan/atlases/boulder-throw-4f.png",
+      "framesBackToFront": [
+        "art/exports/characters/martin-krpan/animations/boulder-throw/frame-01.png",
+        "art/exports/characters/martin-krpan/animations/boulder-throw/frame-02.png",
+        "art/exports/characters/martin-krpan/animations/boulder-throw/frame-03.png",
+        "art/exports/characters/martin-krpan/animations/boulder-throw/frame-04.png"
+      ]
+    },
+    {
+      "id": "mesarica-slash",
+      "label": "Draw, precise single slash, restrained bleed cue, recovery. Asset name does not resolve the current skill-name conflict.",
+      "sourceAtlas": "art/source/characters/martin-krpan/atlases/mesarica-slash-4f.png",
+      "framesBackToFront": [
+        "art/exports/characters/martin-krpan/animations/mesarica-slash/frame-01.png",
+        "art/exports/characters/martin-krpan/animations/mesarica-slash/frame-02.png",
+        "art/exports/characters/martin-krpan/animations/mesarica-slash/frame-03.png",
+        "art/exports/characters/martin-krpan/animations/mesarica-slash/frame-04.png"
+      ]
+    }
+  ],
+  "runtimeSheet": {
+    "path": "art/exports/characters/martin-krpan/martin-krpan-v2.png",
+    "dimensions": [96, 48],
+    "frameOrder": ["idle/frame-01.png", "cudgel-strike/frame-03.png"],
+    "note": "Maintains the existing idle | attack two-frame layout for implementation review."
+  },
+  "folkArt": {
+    "source": "art/source/characters/martin-krpan/folk-art/mare-lift.png",
+    "export": "art/exports/characters/martin-krpan/folk-art/mare-lift.png",
+    "sourceDimensions": [1145, 1374],
+    "type": "separate narrative illustration; not a gameplay sprite and not the final Brdavs story card",
+    "status": "PROPOSED artistic interpretation",
+    "literaryNote": "Levstik's text describes Krpan carrying the mare and its load aside for the carriage. The overhead lift shown here is an artistic interpretation, not a literal staging specified by the passage."
+  },
+  "preview": "art/previews/characters/martin-krpan/martin-krpan-sprite-preview.png",
+  "openDecisions": [
+    "Character specification names Lipov kij, Kmečka moč and Mesarica; current progression design and code use Zamah, Kobilica and Lipov kij. These frames are named by visible action only; skill-to-asset mapping remains OPEN.",
+    "Animation timing and final runtime integration remain OPEN for implementation review.",
+    "The mare-lifting folk-art illustration's exact placement remains OPEN.",
+    "The final Brdavs story card is a separate confirmed subject and is not part of this asset pack."
+  ],
+  "sources": [
+    {
+      "claim": "Primary literary source for Krpan, his mare and the carriage episode.",
+      "url": "https://sl.wikisource.org/wiki/Martin_Krpan_z_Vrha",
+      "note": "The passage says Krpan carried the mare with its load to the side of the road; the overhead illustration is labeled as interpretation."
+    },
+    {
+      "claim": "Project-approved character identity and game-art interpretation boundaries.",
+      "path": "docs/characters/martin-krpan/character.md"
+    },
+    {
+      "claim": "Current progression naming conflict.",
+      "path": "docs/progression-design.md"
+    }
+  ],
+  "reviewStatus": "PROPOSED — Game Director review required; assets are not approved or integrated."
+}
