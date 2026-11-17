@@ -1,30 +1,38 @@
-# Ptuj parallax pack Ã¢â‚¬â€ validation report
+# Ptuj parallax pack — review report
 
-**Status:** Review candidate; not approved and not runtime integrated.
+**Status:** PROPOSED; awaiting Game Director review. No runtime integration is included.
 
-## Checks performed
+## Included variants
 
-- All eight source layer PNGs and eight candidate export PNGs open successfully.
-- The seven scene layers share a 1672 Ãƒâ€” 941 canvas. The road is a separate 2172 Ãƒâ€” 724 repeating tile.
-- PNG alpha is genuine: the scene cutout layers and road include transparent pixels; sky is opaque. Seven exports preserve source alpha exactly. The road tile uses binary alpha after its edge cleanup.
-- The road tile was built from the generated left half mirrored across the right half. The left and right edge columns match exactly on all 724 rows. A three-copy preview was visually inspected and showed no visible seam.
-- The assembled preview was made from the individual export files in back-to-front order. It applies proposed offsets for the distant hills and castle hill, as documented in the manifest.
-- No hero-zone overlay, Martin Krpan spirits, or high foreground occlusion were added.
+- **Sunset:** retains the original warm palette and road.
+- **Winter:** adds snow to roofs, tree crowns, and the foreground road. The Drava remains open water; no frozen-river claim is implied.
+- **Shared bridge:** a multi-arch bridge appears at the far left, per the Game Director's direction. It is stylized game art, not a documentary depiction of the present-day Puh bridge.
+
+The Game Director identifies the winter background as the setting where Kurent is recruitable. Other winter-scene assignments remain OPEN for future direction.
+
+## File checks
+
+- Source and export PNGs were opened and inspected. Source layers retain their full generated canvases; transparent exports are cropped to opaque bounds and carry binary alpha. The opaque sky layers remain full-canvas.
+- Both road exports use a horizontally mirrored half, so the first and last columns match. A three-copy winter-road preview was visually inspected; no edge seam is apparent.
+- Sunset and winter previews were assembled from the exported layers. Their transforms and placements are review proposals, not runtime coordinates.
+- The manifest records each cropped export's source-canvas offset and dimensions.
+- Text in the JSON manifest and this report is UTF-8.
+
+## Runtime and geography limits
+
+- The inspected GitHub `main` branch at the time of review did not contain a background renderer, parallax loader, background configuration, or asset tests. Runtime dimensions, scaling, draw order, and alpha handling remain unconfirmed.
+- Feedback mentioned a 1672 × 560 runtime view and `data/backgrounds.json`; neither was present in the inspected `main` branch. The 1672 × 941 value is the generated source/review canvas only.
+- Official local tourism information places Ptuj Castle on Castle Hill above the old town. The generated skyline and viewpoint are stylized and are not a surveyed view.
+- Ptuj's current Puh bridge is a contemporary structure. The multi-arch bridge in this pack is a visual interpretation, not a claim that it depicts the current Puh bridge.
+- Clouds, water, and reflections are still frames. Movement and animation are not implemented, and no numeric parallax speeds are approved.
 
 ## Review files
 
-- Assembled environment: `assembled.jpg`
-- Three-copy road seam check: `road-repeat-3x.jpg`
-- Eight individual layers: `art/source/environments/ptuj/`
+- Sunset preview: `assembled.jpg`
+- Winter preview: `winter-assembled.jpg`
+- Winter road repeat check: `winter-road-repeat-3x.jpg`
+- Source layers: `art/source/environments/ptuj/`
+- Cropped exports: `art/exports/environments/ptuj/`
 - Machine-readable manifest: `art/manifests/ptuj.json`
 
-## Open questions and limitations
-
-1. The 1672 Ãƒâ€” 941 canvas is not a confirmed runtime size. The inspected repository has no implemented background renderer, loader, configuration, or parallax tests. The 1920 Ãƒâ€” 1080 label in the reference graphic is unverified against game code.
-2. The preview's hill offsets and castle-hill scale/placement are proposals; confirm them against the battle layout and hero scale before integration.
-3. The supplied brief identifies a conflict between the summer sunset/arched bridge in the reference and earlier winter/Pust context plus an explicit bridge exclusion. The inspected current repo files do not resolve it. No bridge is included pending a decision.
-4. Ptuj Castle's hilltop relationship to the town is grounded in official local tourism and museum references, but the generated town skyline and viewpoint are stylized and need visual review.
-5. Cloud drift, water movement, reflections, and speed ratios are not implemented. Motion remains qualitative only; no numeric speeds are prescribed.
-6. The generated overlays retain partial alpha. The road alone was cleaned to binary alpha to make a crisp, repeatable edge. Review the edge finish and the road's mirrored pattern.
-
-No repository test suite was run because no background renderer or asset validation tests exist in the inspected code. This report records file-level image, transparency, alignment, and road-edge checks only.
+No game tests were run because this asset pack is not connected to a renderer or asset test suite in the inspected repository.
