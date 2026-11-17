@@ -544,14 +544,10 @@
     "validation": "art/previews/environments/ptuj/VALIDATION.md"
   },
   "knownLimitations": [
-    "Current inspected GitHub main does not contain a background renderer, parallax loader, background configuration, or asset tests. Runtime dimensions, scaling, draw order, and alpha handling are unconfirmed.",
-    "The referenced 1672 × 560 view and data/backgrounds.json are present in the separate open PR 32 branch, not in main. Its scene layout is not runtime-confirmed until that PR is reviewed and merged.",
-    "The town skyline and the stylized multi-arch bridge are game-art interpretations; the exact viewpoint and bridge history are not verified as documentary depictions.",
-    "The Game Director identifies the winter variant with Kurent recruitment. Future seasonal assignments remain OPEN.",
-    "OPEN composition: the sunset ground line is at canvas y 761 (81% of 941) and the winter ground line at y 750 (80%). In the A/B prototype, enemies stand at about 62-70% of scene height and heroes at about 75-87%, so a party placed on these ground lines appears to stand on the river. The horizon or the battle layout must change before approval.",
-    "The sunset and winter ground lines differ by 11 px (761 vs 750). If both seasons share one actor placement, the feet line will shift when the variant changes. Align the two roads, or record a per-season ground line that the renderer uses.",
-    "The far-bank wall gives the city a visible shore and joins the bridge. The game composition's actor ground line remains OPEN: roads are at y 761 (sunset) and y 750 (winter) on this review canvas.",
-    "Foreground and outer-bank placement are proposed runtime values; confirm actor overlap in-game before approval."
+    "The bridge, town skyline, retaining wall and outer-bank trees are stylized game-art interpretations, not documentary depictions of verified historical structures or a specific viewpoint.",
+    "Winter is retained as a companion preview for the Kurent recruitment scene; future seasonal assignments remain OPEN.",
+    "Both scene configs place the road at y=325 on the 1672 × 560 game view. Winter actor alignment and the proposed foreground overlap still need in-game visual review.",
+    "Foreground and outer-bank placement are proposed runtime values; confirm they preserve actor readability before approval."
   ],
   "research": [
     {
