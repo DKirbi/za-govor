@@ -1284,3 +1284,18 @@ body.mobile .muted { font-size: max(13px, 1em); }
 .mchip.has { border-radius: 10px; }
 body.mobile .mchip { min-height: 40px; }
 body.mobile .report .rp-send .btn, body.mobile .report .rp-close { min-height: 44px; }
+
+/* ---------- Balance D (0.13.0): strong enemies, the Lintvern's breath, scorched letters ---------- */
+/* a strong enemy (Silni …): a gold rim of light; it is drawn a little larger (renderEnemies) */
+.foe.spr.strong { filter: drop-shadow(0 0 3px #ffd36b) drop-shadow(0 0 calc(var(--glow, 0) * 9px) rgba(255, 70, 70, calc(var(--glow, 0) * .95))); }
+.tv-foes .foe.spr.strong { filter: drop-shadow(0 0 3px #ffd36b); }
+/* the Lintvern drawing breath: a hot orange glow that grows with the charge, and a slow pulse */
+.foe.spr.charging { filter: drop-shadow(0 0 calc(4px + var(--glow, 0) * 14px) rgba(255, 140, 40, calc(.45 + var(--glow, 0) * .5))); animation: charging 1.1s ease-in-out infinite alternate; }
+@keyframes charging { from { transform: translateY(0) scale(1); } to { transform: translateY(calc(var(--px) * -2)) scale(1.04); } }
+/* scorched letters: charred, with embers; usable, but they burn the hero who uses them */
+.tile.scorch { background: radial-gradient(circle at 50% 120%, rgba(255, 120, 30, .55), transparent 60%), linear-gradient(#3a2018, #251410); border-color: #c8642a; color: #ffd2a8;
+  box-shadow: inset 0 0 8px rgba(255, 110, 30, .55); }
+.tile.scorch::before { content: ''; position: absolute; inset: auto 6px 4px 6px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, transparent, #ff8a3a, transparent); opacity: .8; animation: ember 1.4s ease-in-out infinite alternate; }
+@keyframes ember { from { opacity: .35; } to { opacity: .95; } }
+.train-pool { margin: 0 0 6px; color: var(--gold); }
+@media (prefers-reduced-motion: reduce) { .foe.spr.charging, .tile.scorch::before { animation: none; } }

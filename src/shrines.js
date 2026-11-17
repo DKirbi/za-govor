@@ -146,7 +146,7 @@ function giftStrike(id, p) {
   else if (id === 'dazbog') { B.double = Math.max(B.double, 2); card.value = 'naslednja beseda ×2'; }
   else if (id === 'stribog') {
     let d = 0; alive.forEach(e => { d = Math.max(d, damageEnemy(e, 1.2 * p)); });
-    B.grid.forEach(t => { t.lockUntil = 0; t.lockWords = 0; t.flood = false; }); B.sleep = {}; renderPuzzle(); renderParty();
+    B.grid.forEach(t => { t.lockUntil = 0; t.lockWords = 0; t.flood = false; t.scorch = false; }); B.sleep = {}; renderPuzzle(); renderParty();
     card.value = `−${d} vsem`; card.extra = 'mreža je čista'; }
   else if (id === 'veles') { alive.forEach(e => applyBurn(e, p, 'zastrupljen')); card.value = 'strup vsem'; }
   spawnCard(leadEl(), card); log(`Dar: ${G.name} — ${G.gift}.`);
@@ -212,8 +212,8 @@ function renderGodWord(arg) {
   arg = arg || S.godArg; S.godArg = arg;
   const id = arg.god, G = GOD[id], ch = CHARS.find(c => c.id === id);
   const notes = arg.won ? [
-    arg.own ? `${HEROES[partyGod()] ? HEROES[partyGod()].name : G.name} dobi točko veščine.` : null,
-    `Vsak junak: +${GOD_XP} XP.`,
+    arg.own ? `Družina dobi točko veščine (${HEROES[partyGod()] ? HEROES[partyGod()].name : G.name} ti jo podari).` : null,
+    `Družina: +${GOD_XP} XP.`,
     arg.raised && arg.raised.length ? `${G.name} dvigne padle: ${arg.raised.join(', ')}.` : null,
     arg.fresh ? `${G.name} je ${G.f ? 'odklenjena' : 'odklenjen'}: na naslednji poti ${G.f ? 'jo' : 'ga'} lahko izbereš.` : null,
     arg.final ? `${G.f ? 'Njen' : 'Njegov'} dar te spremlja vso naslednjo pot: ko beseda nosi tri črke iste barve, ${G.gift}.` : null].filter(Boolean)
@@ -234,7 +234,7 @@ function challengeWon(node) {
   // the beaten god raises the fallen, then everyone gets a big chunk of experience
   S.heroes.forEach((st, k) => { if (st.down) { st.down = false; st.hp = Math.max(1, Math.round(st.maxHp * 0.5)); raised.push(HEROES[k].name); } });
   gainXp(GOD_XP, null, true);
-  if (C.own) { const pg = partyGod(); if (pg >= 0) { S.heroes[pg].pts++; chorus(); } }
+  if (C.own) { const pg = partyGod(); if (pg >= 0 && S.run) { S.run.pts = poolPts() + 1; chorus(); } }   // a point for the shared pool
   const fresh = unlock(C.god);
   if (C.final) keepNextGift(C.god);
   return { raised, fresh };

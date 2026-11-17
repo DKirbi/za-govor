@@ -78,7 +78,7 @@ function applyItem(id, arg) {
   if (id === 'perunova-medica') { B.boost = 3; return 'Perunova medica: prve tri besede udarijo močneje.'; }
   if (id === 'triglavov-napoj') { if (B.meter >= METER_MAX) return null; B.meter = METER_MAX; return 'Triglavov napoj: zagovor je poln.'; }
   if (id === 'vesnin-venec') { B.shield = Math.min(30, B.shield + 15); return 'Vesnin venec: ščit družine +15.'; }
-  if (id === 'rusalkina-solza') { B.grid.forEach(x => { x.lockUntil = 0; x.lockWords = 0; x.flood = false; }); B.sleep = {}; return 'Rusalkina solza: črke so čiste, junaki budni.'; }
+  if (id === 'rusalkina-solza') { B.grid.forEach(x => { x.lockUntil = 0; x.lockWords = 0; x.flood = false; x.scorch = false; }); B.sleep = {}; return 'Rusalkina solza: črke so čiste, junaki budni.'; }
   if (id === 'velesov-strup') { if (!arg) return null; applyBurn(arg, 2.8, 'zastrupljen', true); return `Velesov strup: ${arg.name} je zastrupljen.`; }
   if (id === 'volcja-jagoda') { if (!arg) return null; arg.atk = Math.max(1, Math.round(arg.atk * 0.7)); return `Volčja jagoda: ${arg.name} napada šibkeje.`; }
   if (id === 'morin-prah') { if (!foes.length) return null; foes.forEach(e => { if (S.mode === 'real') e.stunUntil = Math.max(e.stunUntil, B.time + 8); else e.stunWords = Math.max(e.stunWords, 2); }); return 'Morin prah: sovražniki zaspijo.'; }
@@ -217,36 +217,93 @@ function planWells(know) { return planStops('well', know); }
 function newRun(starterId) {
   S.run = { ri: 0, x: 0, endX: 0, stops: [], gold: S.testMode ? 200 : 20, relics: [], bag: {}, rozaUsed: false, jurijUsed: false,
     battles: 0, words: 0, firstBattle: true, met: [starterId], walking: false, prompt: null, starter: starterId, heroAt: null,
-    shrines: null, prayer: null, challenged: false, gifts: [] };
+    shrines: null, prayer: null, challenged: false, gifts: [], pxp: 0, plvl: 1, pts: 0 };   // the party's XP, level and shared skill points
   S.run.heroAt = planHeroes(); S.run.shrines = planShrines(starterId); S.run.chestAt = planChests(); S.run.wellAt = planWells();
   const g = takeNextGift(); if (g) S.run.gifts.push(g);   // the gift of a god beaten at the end of the last journey
   setParty([starterId]); S.meterBonus = 0;
   enterRegion(0);
 }
-function enemyGroup(reg, ri, kind) {
+// ------------------------------------------------------------ who blocks the road (balance D, data/world.json → balance)
+const BAL = WORLD.balance || {};
+const regionIndex = id => Math.max(0, WORLD.regions.findIndex(r => r.id === id));
+// how much the enemies of region ri have grown (bosses and the dragon's wyverns ignore it: makeEnemy)
+const regionScale = ri => ({ hp: (BAL.hp || [])[ri] || 1 + 0.1 * ri, atk: (BAL.atk || [])[ri] || 1 + 0.06 * ri });
+// how many enemies a battle has: the region's fixed sizes (Ptuj: 1, 1, 2, 2), else one against a lone hero, two
+// otherwise, and three from Bled on once the party has three or more heroes (an ambush never has fewer than two)
+function groupSize(reg, ri, kind, nth) {
+  if (reg.sizes && reg.sizes[nth] != null) return reg.sizes[nth];
+  const n = HEROES.length;
+  if (n <= 1 && kind !== 'elite') return 1;
+  return n >= 3 && BAL.thirdFrom && ri >= regionIndex(BAL.thirdFrom) ? 3 : 2;
+}
+// at most one of the `single` enemies (the Pesjan) in one battle
+function rollFoe(pool, have) {
+  const one = BAL.single || [], left = pool.filter(k => !(one.includes(k) && have.includes(k)));
+  return pick(left.length ? left : pool);
+}
+// the Lintvern's wyverns: one per hero beyond the first, at most `max`, on both sides of him
+const addsFor = reg => reg.adds ? Math.min(reg.adds.max || 2, Math.max(0, HEROES.length - 1)) : 0;
+function bossGroup(reg) {
+  const n = addsFor(reg); if (!n) return reg.boss.slice();
+  const left = Math.ceil(n / 2), add = reg.adds.key;
+  return Array(left).fill(add).concat(reg.boss, Array(n - left).fill(add));
+}
+function enemyGroup(reg, ri, kind, nth = 0) {
   const R = S.run;
-  if (kind === 'boss') return reg.boss.slice();
+  if (kind === 'boss') return bossGroup(reg);
   if (R.firstBattle && ri === 0 && !R.stops.length) return [reg.pool[0]];          // the very first fight is one škrat
-  const n = HEROES.length <= 1 && kind !== 'elite' ? 1 : 2;
-  return Array.from({ length: n }, () => pick(reg.pool));
+  const out = [], n = groupSize(reg, ri, kind, nth);
+  while (out.length < n) out.push(rollFoe(reg.pool, out));
+  return out;
+}
+// from Trnovski gozd on, some battles have one strong enemy (index into stop.enemies, or -1)
+function rollStrong(ri, n) {
+  const st = BAL.strong; if (!st || ri < regionIndex(st.from) || Math.random() >= st.chance) return -1;
+  return rnd(n);
+}
+// a hero joined or left: the battles still ahead in this region get as many enemies as the party now asks for
+function fitGroups() {
+  const R = S.run; if (!R || !R.stops) return;
+  const reg = WORLD.regions[R.ri];
+  R.stops.forEach(stop => {
+    if (stop.done || !stop.enemies) return;
+    if (stop.kind === 'boss') { stop.enemies = bossGroup(reg); return; }
+    if (reg.sizes && reg.sizes[stop.nth] != null) return;
+    if (R.firstBattle && R.ri === 0 && stop === R.stops[0]) return;
+    const n = groupSize(reg, R.ri, stop.kind, stop.nth);
+    while (stop.enemies.length > n) stop.enemies.pop();
+    while (stop.enemies.length < n) stop.enemies.push(rollFoe(reg.pool, stop.enemies));
+    if (stop.strong >= n) stop.strong = rnd(n);
+  });
 }
 // Finishing a region heals the party: every hero still standing gets full health (16 Nov 2026). The fallen
 // stay down, as at a well: raising them takes a healer, Mrtva voda or a beaten god. Returns the health restored.
 function restAfterRegion() {
   let got = 0;
   S.heroes.forEach(st => { if (st.down) return; got += st.maxHp - st.hp; st.hp = st.maxHp; });
+  // Učenjak (balance D): the fallen get up with half their health when the region is behind them
+  const rise = DIFF().regionRise;
+  if (rise) S.heroes.forEach(st => { if (!st.down) return; st.down = false; st.hp = Math.max(1, Math.round(st.maxHp * rise)); got += st.hp; });
   return got;
 }
 function enterRegion(i) {
   const R = S.run, reg = WORLD.regions[i], gap = WORLD.stopGap;
-  if (i > 0 && i !== R.ri) { const got = restAfterRegion(); if (got) toast(`${WORLD.regions[R.ri].name} je za vami: junaki so spet polno zdravi (+${got} zdravja).`); }
+  if (i > 0 && i !== R.ri) {
+    const down = S.heroes.filter(x => x.down).length, got = restAfterRegion(), up = down - S.heroes.filter(x => x.down).length;
+    if (got) toast(`${WORLD.regions[R.ri].name} je za vami: junaki so spet polno zdravi (+${got} zdravja).` + (up ? ' Padli so vstali s polovico zdravja.' : ''));
+  }
   R.ri = i; R.x = 0; R.stops = []; R.prompt = null; R.walking = false;
   // a hero stop, a shrine, a chest and a well only stay in the regions picked for this journey
   const kinds = reg.stops.filter(kind => (kind !== 'hero' || !R.heroAt || R.heroAt.includes(i)) && (kind !== 'god' || (R.shrines && R.shrines[i]))
     && (kind !== 'chest' || !R.chestAt || R.chestAt.includes(i)) && (kind !== 'well' || !R.wellAt || R.wellAt.includes(i)));
+  let nth = 0;   // battles of this region so far (for its fixed sizes)
   kinds.forEach((kind, n) => {
     const stop = { kind, x: (n + 1) * gap, done: false, passed: false };
-    if (kind === 'battle' || kind === 'elite' || kind === 'boss') stop.enemies = enemyGroup(reg, i, kind);
+    if (kind === 'battle' || kind === 'elite' || kind === 'boss') {
+      if (kind !== 'boss') stop.nth = nth++;
+      stop.enemies = enemyGroup(reg, i, kind, stop.nth);
+      stop.strong = kind === 'boss' ? -1 : rollStrong(i, stop.enemies.length);
+    }
     else if (kind === 'hero') {
       stop.hero = pickHero(reg.id);
       if (stop.hero) R.met.push(stop.hero); else stop.kind = 'well';
@@ -277,7 +334,7 @@ function renderTravel() {
     if (stop.enemies) {
       if (stop.done) return;
       body = h('div', { class: 'tv-foes' }, stop.enemies.map((k, n) => { const e = ENEMIES[k], art = e.art || k;
-        return h('div', { class: 'actor foe spr' + (e.boss ? ' boss' : ''), style: { '--art': SPR_SIZE[art] } }, h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[art]})`, filter: e.tint || '', 'animation-delay': (-n * 400) + 'ms' } })); }));
+        return h('div', { class: 'actor foe spr' + (e.boss ? ' boss' : '') + (n === stop.strong ? ' strong' : ''), style: { '--art': Math.round(SPR_SIZE[art] * (e.scale || 1)) } }, h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[art]})`, filter: e.tint || '', 'animation-delay': (-n * 400) + 'ms' } })); }));
       cap = stop.kind === 'boss' ? 'Šef' : stop.kind === 'elite' ? 'Zaseda' : 'Sovražniki';
     } else if (stop.kind === 'chest') { body = objEl('skrinja', stop.done ? 1 : 0); cap = stop.done ? '' : 'Skrinja'; }
     else if (stop.kind === 'trap') { if (stop.done) return; body = objEl('plaz'); cap = 'Plaz'; }
@@ -291,7 +348,7 @@ function renderTravel() {
   });
   const sign = h('div', { class: 'tv-obj' }, R.ri < WORLD.regions.length - 1 ? h('span', { class: 'cap' }, WORLD.regions[R.ri + 1].name) : null, objEl('kazipot'));
   if (R.ri < WORLD.regions.length - 1) { T.layer.append(sign); T.objs.push({ x: R.endX, el: sign }); }
-  HEROES.forEach((hr, k) => { const st = S.heroes[k]; T.party.append(spriteEl(hr.id, hr.c, st.down ? 'down' : st.pts > 0 ? 'glow' : '')); });
+  HEROES.forEach((hr, k) => { const st = S.heroes[k]; T.party.append(spriteEl(hr.id, hr.c, st.down ? 'down' : canGrow(st) ? 'glow' : '')); });
 
   SCR.append(h('div', { class: 'travelwrap' },
     h('div', { class: 'bhead' },
@@ -411,7 +468,7 @@ function stopBattle(stop) {
   const R = S.run, reg = WORLD.regions[R.ri], names = stop.enemies.map(k => ENEMIES[k].name).join(', ');
   const boss = stop.kind === 'boss';
   go('battle', { id: reg.id, bg: reg.bg, title: reg.name, sub: (boss ? 'Šef · ' : 'Bitka · ') + names, stop,
-    battle: { enemies: stop.enemies, scale: boss ? null : { hp: 1 + 0.1 * R.ri, atk: 1 + 0.06 * R.ri }, finishers: shuffle(Object.keys(FINISHER_FX)).slice(0, 2), meterStart: 0,
+    battle: { enemies: stop.enemies, strong: stop.strong != null ? stop.strong : -1, scale: regionScale(R.ri), finishers: shuffle(Object.keys(FINISHER_FX)).slice(0, 2), meterStart: 0,
       ambush: stop.kind === 'elite' ? 'zaseda' : null, tips: R.firstBattle ? NODES[0].battle.tips : [] } });
 }
 function meetHero(stop, ids) {

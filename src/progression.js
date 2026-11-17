@@ -13,8 +13,8 @@
 // - Kurent and Kresnik were rebalanced on 16 Nov from the simulations (`REBALANCE`): their old values carried a fresh
 //   party (Kresnik) or nearly stopped enemies (Kurent's delays stacked), while their skills 2 and 3 dealt no damage, so
 //   learning them made the hero weaker. Now a skill does at least as much as the one below it at the same rank.
-// - Experience: these heroes earn XP from the fight itself — their attacks on an enemy, the damage they dealt to it
-//   and its level — when it is beaten (XP_RULE). Others still get the enemy's fixed XP.
+// - Experience: every hero's attacks on an enemy and the damage dealt to it, plus its level, when it is beaten
+//   (XP_RULE); on a journey it goes to the party's pool (balance D, src/game.js gainPartyXp).
 const REVIEWED = ['ajda', 'erazem', 'matjaz', 'kresnik', 'kurent'];
 const isReviewed = id => REVIEWED.includes(id);
 
@@ -58,40 +58,33 @@ const BURN_DPS = 2;   // Kresnik's burn: 2 damage a second (one word per tick in
 // (hits, burns, counterattacks). Only heroes still standing when the enemy falls get anything, as before.
 const XP_RULE = { attack: 1, damage: 1, level: 1 };
 const foeLevel = e => e.lvl || 1;   // the region's number on the journey (makeEnemy), 1 in practice battles
+// Since balance D (0.13.0) every hero's attacks and damage count, and on a journey the sum goes to the party's pool.
 function tallyOf(e, k) {
-  const hr = HEROES[k]; if (!e || !hr || !isReviewed(hr.id)) return null;
+  const hr = HEROES[k]; if (!e || !hr) return null;
   e.tally = e.tally || {}; return e.tally[hr.id] || (e.tally[hr.id] = { a: 0, d: 0 });
 }
 function noteAttack(e, k) { const t = tallyOf(e, k); if (t) t.a++; }
 function noteDamage(e, k, d) { const t = tallyOf(e, k); if (t) t.d += d; }
+// one hero's share (k), or with k == null the whole party's: attacks + damage on this enemy + its level
 function foeXp(e, k) {
-  const t = (e.tally && e.tally[HEROES[k].id]) || { a: 0, d: 0 }, lv = foeLevel(e);
-  return { n: Math.round(XP_RULE.attack * t.a + XP_RULE.damage * t.d + XP_RULE.level * lv), a: t.a, d: t.d, lv };
+  const ts = k == null ? Object.values(e.tally || {}) : [(e.tally && e.tally[HEROES[k].id]) || { a: 0, d: 0 }];
+  const a = ts.reduce((s, t) => s + t.a, 0), d = ts.reduce((s, t) => s + t.d, 0), lv = foeLevel(e);
+  return { n: Math.round(XP_RULE.attack * a + XP_RULE.damage * d + XP_RULE.level * lv), a, d, lv };
 }
 const xpParts = x => `napadi ${x.a} · škoda ${x.d} · raven ${x.lv}`;
 // an enemy is beaten: hand out its experience and say who got what (the log line after »Škrat je premagan: «)
 function awardFoeXp(e) {
-  const who = living();
-  if (!who.some(k => isReviewed(HEROES[k].id))) { gainXp(e.xp, null, true); return `vsak junak +${e.xp} XP`; }
-  const said = []; let old = false;
-  B.xpBy = B.xpBy || {}; B.xpWhy = B.xpWhy || {};
-  who.forEach(k => {
-    const id = HEROES[k].id;
-    if (!isReviewed(id)) { old = true; gainXp(e.xp, k, false, true); B.xpBy[id] = (B.xpBy[id] || 0) + e.xp; said.push(`${HEROES[k].name} +${e.xp} XP`); return; }
-    const x = foeXp(e, k), w = B.xpWhy[id] || (B.xpWhy[id] = { n: 0, a: 0, d: 0, lv: 0 });
-    gainXp(x.n, k, false, true); B.xpBy[id] = (B.xpBy[id] || 0) + x.n;
-    w.n += x.n; w.a += x.a; w.d += x.d; w.lv += x.lv;
-    said.push(`${HEROES[k].name} +${x.n} XP (${xpParts(x)})`);
-  });
-  if (old) B.stats.xp += e.xp;
-  return said.join(', ');
+  if (!S.run) { gainXp(e.xp, null, true); return `vsak junak +${e.xp} XP`; }   // practice battles: as before
+  const x = foeXp(e), w = B.xpWhy.party || (B.xpWhy.party = { n: 0, a: 0, d: 0, lv: 0 });
+  w.n += x.n; w.a += x.a; w.d += x.d; w.lv += x.lv;
+  gainXp(x.n);
+  return `družina +${x.n} XP (${xpParts(x)})`;
 }
-// the result of a battle with a reviewed hero in the party: one row of experience per hero, with its parts
+// the result of a journey battle: the party's experience with what it was made of
 function xpRows() {
-  if (!B || !HEROES.some(x => isReviewed(x.id))) return null;
-  const by = B.xpBy || {}, why = B.xpWhy || {};
-  return HEROES.map(x => [h('div', {}, `Izkušnje · ${x.name}`),
-    h('div', {}, `${by[x.id] || 0} XP`, why[x.id] ? h('small', { class: 'xpwhy' }, ` (${xpParts(why[x.id])})`) : null)]);
+  const w = B && B.xpWhy && B.xpWhy.party;
+  if (!S.run || !w) return null;
+  return [h('div', {}, 'Izkušnje družine'), h('div', {}, `${w.n} XP`, h('small', { class: 'xpwhy' }, ` (${xpParts(w)})`))];
 }
 
 // ------------------------------------------------------------ helpers
@@ -106,6 +99,7 @@ const isDragon = e => hasTag(e, ['zmaj', 'kaca']);
 // (enemyAct resets e.dlAmt). Kurent slows an enemy down; he cannot hold it still.
 function delayFoe(e, sec) {
   if (!e || e.hp <= 0) return;
+  if (e.unstoppable) sec *= 0.5;   // Lintvern: delays on him are halved
   const add = Math.max(0, sec - (e.dlAmt || 0)); e.charge -= add / e.speed; e.dlAmt = Math.max(e.dlAmt || 0, sec);
 }
 // the target first, then the enemies that hit hardest
@@ -214,7 +208,7 @@ function reviewedAct(a, target, card) {
       say.push(n > 1 ? `prestreže ${n} ${nForm(n, ATTACKS_ACC)}` : 'prestreže naslednji napad'); break; }
     case 'ajda3': {
       const foes = pickFoes(target, v3(R.foes, r)), n = v3(R.rounds, r);
-      foes.forEach(e => { e.stone = Math.max(e.stone || 0, n); });
+      foes.forEach(e => { if (e.unstoppable) { floatOn(e.el, 'neustavljiv', 'info'); return; } e.stone = Math.max(e.stone || 0, n); });   // Lintvern cannot be stopped
       say.push(foes.length > 1 ? `okamni ${foes.length} ${nForm(foes.length, FOES_N)}` : 'okamni cilj'); card.extra = n > 1 ? `izpusti ${n} ${nForm(n, ATTACKS_ACC)}` : 'izpusti en napad';
       break; }
   }

@@ -1,0 +1,133 @@
+// Balance D (0.13.0, 17 Nov 2026): the party levels together with a shared pool of skill points; enemies grow by
+// region, a third joins from Bled, strong enemies from Trnovski gozd, at most one Pesjan; Ptuj is the same on every
+// Znanje; Knjižni molj steepens; Povodni mož and the new Lintvern (Kremplji, Topot, Ognjeni dih with scorched
+// letters, wyverns, nothing stops him, delays halved); the zagovor's level bonus is halved.
+// Numbers: data/world.json → balance, ENEMIES in src/game.js, docs/progression-design.md §4b.
+const { openGame, runner, sleep } = require('./harness');
+const { check, run } = runner('Balance D: party levels, enemy curve, bosses and the new Lintvern');
+
+const ev = (page, fn, ...args) => page.evaluate(fn, ...args);
+// a journey on this Znanje with this party, standing in region ri (calm mode: enemies wait for words)
+const journey = (page, know, party, ri = 0) => ev(page, (know, party, ri) => {
+  const Z = window.__ZG; if (Z.B) Z.B.over = true;
+  document.querySelectorAll('.overlay').forEach(o => o.remove());
+  Z.S.know = know; Z.S.testMode = true; Z.S.mode = 'calm'; Z.newRun(party[0]); party.slice(1).forEach(id => Z.joinHero(id));
+  if (ri) Z.enterRegion(ri);
+  return Z.S.run.stops.map(s => ({ kind: s.kind, n: s.enemies ? s.enemies.length : 0, enemies: s.enemies || null, strong: s.strong }));
+}, know, party, ri);
+
+run(async () => {
+  const ctx = await openGame();
+  const { page, errors, shot } = ctx;
+
+  // ---- the party levels together; three shared points a level
+  const lv = await ev(page, () => { const Z = window.__ZG; return { xp: Z.LV_XP.join(), pts: Z.PTS_PER_LV }; });
+  check(lv.xp === '0,45,110,220,360,540,760,1020,1350' && lv.pts === 3, 'levels at 45 / 110 / 220 / 360 / 540 / 760 / 1020 / 1350 XP, three points each', JSON.stringify(lv));
+  await journey(page, 'malcek', ['krpan', 'kurent']);
+  const up = await ev(page, () => { const Z = window.__ZG, R = Z.S.run, H = Z.S.heroes; H[0].hp = 5; H[1].down = true; H[1].hp = 0;
+    Z.gainPartyXp(112); const out = { plvl: R.plvl, pts: R.pts, lvls: H.map(h => h.lvl), xp: H.map(h => h.xp), hp0: [H[0].hp, H[0].maxHp], down: [H[1].down, H[1].hp, H[1].maxHp] };
+    Z.joinHero('erazem'); out.joiner = { lvl: H[2].lvl, xp: H[2].xp, sk: H[2].sk.join() }; out.pts2 = R.pts; return out; });
+  check(up.plvl === 3 && up.pts === 6 && up.lvls.every(l => l === 3) && up.xp.every(x => x === 112), '112 XP lift the whole party to level 3 and put six points in the shared pool', JSON.stringify(up));
+  check(up.hp0[0] === up.hp0[1] && up.down[0] && up.down[1] === 0 && up.down[2] > 30, 'a new level heals the heroes standing; a fallen hero stays down (with the new maximum)', JSON.stringify(up));
+  check(up.joiner.lvl === 3 && up.joiner.xp === 112 && up.joiner.sk === '1,0,0' && up.pts2 === 6, 'a hero who joins arrives at the party\'s level, knowing skill 1; the pool pays for the rest', JSON.stringify(up.joiner));
+  const spend = await ev(page, () => { const Z = window.__ZG; return [Z.spendPoint(2, 2), Z.spendPoint(0, 1), Z.spendPoint(1, 2), Z.S.run.pts, Z.S.heroes.map(h => h.sk.join()).join(' | ')]; });
+  check(spend.slice(0, 4).join() === 'true,true,true,3', 'any hero can spend the party\'s points', JSON.stringify(spend));
+
+  // ---- enemies by region: Ptuj 1, 1, 2, 2; a third from Bled with three heroes; at most one Pesjan
+  const ptuj = await journey(page, 'malcek', ['krpan']);
+  check(ptuj.filter(s => s.kind === 'battle').map(s => s.n).join() === '1,1,2,2', 'Ptuj: four battles of 1, 1, 2 and 2 enemies', JSON.stringify(ptuj.map(s => s.kind + s.n)));
+  const sizes = await ev(page, () => { const Z = window.__ZG, reg = Z.WORLD.regions, out = {};
+    Z.setParty(['krpan']); out.solo = Z.groupSize(reg[3], 3, 'battle', 0);
+    Z.setParty(['krpan', 'kurent']); out.two = Z.groupSize(reg[3], 3, 'battle', 0); out.ambushSolo = Z.groupSize(reg[6], 6, 'elite', 0);
+    Z.setParty(['krpan', 'kurent', 'matjaz']); out.peca3 = Z.groupSize(reg[1], 1, 'battle', 0); out.bled3 = Z.groupSize(reg[3], 3, 'battle', 0);
+    return out; });
+  check(sizes.solo === 1 && sizes.two === 2 && sizes.peca3 === 2 && sizes.bled3 === 3, 'one enemy against a lone hero, two otherwise, three from Bled once the party has three heroes', JSON.stringify(sizes));
+  const pesjan = await ev(page, () => { const Z = window.__ZG; Z.newRun('krpan'); Z.joinHero('kurent'); Z.joinHero('matjaz'); Z.joinHero('ajda'); let worst = 0;
+    for (let i = 0; i < 300; i++) { const g = Z.enemyGroup(Z.WORLD.regions[5], 5, 'battle', 0); worst = Math.max(worst, g.filter(k => k === 'pesjan').length); } return worst; });
+  check(pesjan === 1, 'never two Pesjani in one battle', String(pesjan));
+
+  // ---- strong enemies from Trnovski gozd, about two battles in five
+  const strong = await ev(page, () => { const Z = window.__ZG; let n = 0, early = 0;
+    for (let i = 0; i < 1000; i++) { if (Z.rollStrong(4, 2) >= 0) n++; if (Z.rollStrong(3, 2) >= 0) early++; }
+    Z.S.know = 'ucenjak'; Z.S.run.ri = 4; const plain = Z.makeEnemy('volkodlak', 0, Z.regionScale(4)), st = Z.makeEnemy('volkodlak', 0, Z.regionScale(4), true);
+    return { share: n / 1000, early, plain: [plain.name, plain.maxHp, plain.atk], st: [st.name, st.maxHp, st.atk, st.strong] }; });
+  check(strong.early === 0 && strong.share > 0.33 && strong.share < 0.47, 'from Trnovski gozd on about 40 % of battles have a strong enemy (none before)', JSON.stringify(strong));
+  check(strong.st[0] === 'Silni volkodlak' && strong.st[1] === Math.round(45 * 1.75 * 1.6) && strong.st[2] === Math.round(6 * 1.3 * 1.25) && strong.st[3], 'a strong enemy: Silni …, ×1,6 health and ×1,25 attack', JSON.stringify(strong));
+
+  // ---- region curve, Ptuj the same on every Znanje, Knjižni molj steepens
+  const curve = await ev(page, () => { const Z = window.__ZG, R = Z.S.run, out = {};
+    const at = (know, ri, key) => { Z.S.know = know; R.ri = ri; const e = Z.makeEnemy(key, 0, Z.regionScale(ri)); return [e.maxHp, e.atk, +e.speed.toFixed(2)]; };
+    out.ptuj = ['malcek', 'ucenjak', 'molj'].map(k => at(k, 0, 'skrat')[0]);
+    out.peca = at('ucenjak', 1, 'pesjan'); out.barje = at('ucenjak', 7, 'volkodlak');
+    out.moljBarje = at('molj', 7, 'volkodlak'); out.ucBarje = at('ucenjak', 7, 'volkodlak');
+    return out; });
+  check(curve.ptuj.every(x => x === curve.ptuj[0]), 'Ptuj, the tutorial, has the same enemies on every Znanje', JSON.stringify(curve.ptuj));
+  check(curve.peca[0] === Math.round(52 * 0.95) && curve.peca[1] === 7 && curve.barje[0] === Math.round(45 * 2.7) && curve.barje[1] === Math.round(6 * 1.65), 'enemies grow by region: Peca ×0,95, Barje ×2,7 health and ×1,65 attack', JSON.stringify(curve));
+  const steepHp = Math.round(45 * 2.7 * 1.25 * (1 + 0.15 * 7 / 9)), steepSpd = +(11 * (1 - 0.10 * 7 / 9)).toFixed(2);
+  check(curve.moljBarje[0] === steepHp && curve.moljBarje[2] === steepSpd && curve.ucBarje[2] === 11, 'Knjižni molj steepens: by Barje more health and quicker attacks; Učenjak does not', JSON.stringify({ molj: curve.moljBarje, want: [steepHp, steepSpd], ucenjak: curve.ucBarje }));
+
+  // ---- the bosses: Povodni mož with two vile; the Lintvern's health by Znanje and his wyverns by party size
+  const boss = await ev(page, () => { const Z = window.__ZG, R = Z.S.run, out = {};
+    Z.S.know = 'ucenjak'; R.ri = 8; out.povodni = Z.makeEnemy('povodni', 0, Z.regionScale(8)); out.povodni = [out.povodni.maxHp, out.povodni.atk];
+    out.vila = Z.makeEnemy('vila', 0, Z.regionScale(8)).maxHp; out.reka = Z.WORLD.regions[8].boss.join();
+    R.ri = 9; out.dragon = ['malcek', 'ucenjak', 'molj'].map(k => { Z.S.know = k; return Z.makeEnemy('lintvern', 0, Z.regionScale(9)).maxHp; });
+    out.wyvern = Z.makeEnemy('zmajcek', 0, Z.regionScale(9)).maxHp;
+    const reg = Z.WORLD.regions[9]; out.adds = [['krpan'], ['krpan', 'kurent'], ['krpan', 'kurent', 'ajda'], ['krpan', 'kurent', 'ajda', 'erazem']].map(p => { Z.setParty(p); return Z.bossGroup(reg).join(' '); });
+    return out; });
+  check(boss.povodni.join() === '240,12' && boss.reka === 'vila,povodni,vila' && boss.vila === Math.round(30 * 3), 'Povodni mož: 240 health, hits 12, two vile beside him that grow with the region', JSON.stringify(boss));
+  check(boss.dragon.join() === [170, 250, 313].join() && boss.wyvern === Math.round(55 * 1.25 * 1.15), 'Lintvern: 170 / 250 / 313 health on Malček / Učenjak / Knjižni molj; wyverns do not grow by region (only by Znanje)', JSON.stringify(boss));
+  check(boss.adds.join(' | ') === 'lintvern | zmajcek lintvern | zmajcek lintvern zmajcek | zmajcek lintvern zmajcek', 'one wyvern per hero beyond the first, at most two', boss.adds.join(' | '));
+
+  // ---- the Lintvern in battle (Učenjak, four heroes, the castle)
+  await journey(page, 'ucenjak', ['krpan', 'kurent', 'ajda', 'erazem'], 9);
+  const fight = await ev(page, () => { const Z = window.__ZG, stop = Z.S.run.stops.find(s => s.kind === 'boss'); Z.stopBattle(stop);
+    const B = Z.B; B.enemies.forEach(e => { e.charge = -99; }); return { foes: B.enemies.map(e => e.key).join(), n: B.enemies.length }; });
+  check(fight.foes === 'zmajcek,lintvern,zmajcek', 'four heroes meet the Lintvern with two wyverns', fight.foes);
+  const charge = await ev(page, () => { const Z = window.__ZG, B = Z.B, e = B.enemies[1]; Z.damageEnemy(e, Math.ceil(e.maxHp * 0.36));
+    const out = { charging: !!e.charging, speed: e.speed, calmStep: e.calmStep }; Z.damageEnemy(e, Math.ceil(e.maxHp * 0.32)); out.queued = e.breathQ; out.p2 = e.phase2on; out.n = B.enemies.length; return out; });
+  check(charge.charging && charge.speed === 8 && Math.abs(charge.calmStep - 1 / 3) < 1e-9, 'below 66 % he draws breath: 8 s on Učenjak (3 words in calm mode)', JSON.stringify(charge));
+  check(charge.queued === 1 && charge.p2 && charge.n === 5, 'below 33 % the next breath waits for the first; at half health he enrages and two more wyverns fly in', JSON.stringify(charge));
+  const stopIt = await ev(page, () => { const Z = window.__ZG, e = Z.B.enemies[1], c0 = e.charge; e.stone = 2; Z.delayFoe(e, 4); return { moved: +(c0 - e.charge).toFixed(4), want: +(2 / e.speed).toFixed(4), stone: e.stone }; });
+  check(stopIt.moved === stopIt.want, 'delays on the Lintvern are halved (4 s moves him 2 s)', JSON.stringify(stopIt));
+  const breath = await ev(page, () => { const Z = window.__ZG, B = Z.B, e = B.enemies[1], hp = Z.S.heroes.map(h => h.hp);
+    B.grid.forEach(t => { t.scorch = false; t.lockWords = 0; }); Z.breathe(e);
+    return { charging: !!e.charging, again: e.breathQ, hit: Z.S.heroes.map((h, k) => hp[k] - h.hp), burn: { ...B.heroBurn }, scorched: B.grid.filter(t => t.scorch).length }; });
+  check(breath.hit.every(d => d > 0) && Object.values(breath.burn).filter(n => n >= 4).length === 4 && breath.scorched === 10, 'Ognjeni dih hits and burns every hero and scorches ten letters', JSON.stringify(breath));
+  check(breath.charging && breath.again === 0, 'the waiting breath starts charging right after', JSON.stringify(breath));
+  const scorch = await ev(page, () => { const Z = window.__ZG, B = Z.B, i = B.grid.findIndex(t => t.scorch); B.grid[i].owner = 1; B.heroBurn = {};
+    Z.scorchedUsed([i]); const used = { ...B.heroBurn }; const lit = B.grid.filter(t => t.scorch).length, hp = Z.S.heroes[1].hp;
+    Z.calmDragonWord(); return { used, faded: lit - B.grid.filter(t => t.scorch).length, burnt: hp - Z.S.heroes[1].hp }; });
+  check(scorch.used[1] === 4 && Object.keys(scorch.used).length === 1, 'a scorched letter in a word burns the hero of its colour (+4)', JSON.stringify(scorch));
+  check(scorch.faded === 3 && scorch.burnt === 2, 'in calm mode, after a word, burns take two and three scorched letters fade', JSON.stringify(scorch));
+  await ev(page, () => { const Z = window.__ZG; Z.go('battle', Z.B.node); });
+  await sleep(300); await shot('balance-01-castle');
+
+  // ---- the zagovor's level bonus is halved: ×1,4 at level 9
+  const zag = await ev(page, () => { const Z = window.__ZG; Z.S.heroes.forEach(h => { h.lvl = 9; h.down = false; }); return Z.lvlMult(); });
+  check(Math.abs(zag - 1.4) < 1e-9, 'the zagovor\'s level bonus is ×1,4 at level 9 (was ×1,8)', String(zag));
+
+  // ---- after a battle with points in the pool, Veščine is offered right there
+  await journey(page, 'malcek', ['krpan', 'kurent'], 1);
+  await ev(page, () => { const Z = window.__ZG, stop = Z.S.run.stops.find(s => s.kind === 'battle'); Z.stopBattle(stop); Z.B.enemies.forEach(e => { e.hp = 1; e.charge = -99; }); Z.S.run.pts = 3; });
+  await ev(page, () => { const Z = window.__ZG, B = Z.B, w = [...Z.allWords().keys()].find(x => x.length >= 4); Z.closeTut(); B.path = Z.findPath(w); B.typed = w; document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true })); });
+  await sleep(500);
+  await ev(page, () => { const Z = window.__ZG, B = Z.B; if (B.enemies.some(e => e.hp > 0)) { B.enemies.forEach(e => Z.damageEnemy(e, 999)); } });
+  for (let i = 0; i < 6 && (await ev(page, () => window.__ZG.S.screen)) !== 'hero'; i++) { await page.keyboard.press('Enter'); await sleep(500); }
+  const foot = await ev(page, () => [...document.querySelectorAll('.hm-foot .btn')].map(b => b.textContent.trim()));
+  check(foot.length === 2 && /^Veščine · 3 točke/.test(foot[0]) && /Na pot/.test(foot[1]), 'after a battle with points in the pool the hero screen offers Veščine', JSON.stringify(foot));
+  await shot('balance-02-after');
+
+  // ---- a save from before 0.13.0 (heroes levelled one by one) loads into the party's pool
+  await ev(page, () => { const Z = window.__ZG; Z.writeSave(); const s = JSON.parse(localStorage.getItem('zg-save'));
+    delete s.run.pxp; delete s.run.plvl; delete s.run.pts; s.heroes[0].xp = 150; s.heroes[0].pts = 1; s.heroes[1].xp = 60; s.heroes[1].pts = 2; s.heroes.forEach(h => { h.lvl = 2; });
+    localStorage.setItem('zg-save', JSON.stringify(s)); });
+  await page.reload(); await sleep(1500);
+  const loaded = await ev(page, () => { const Z = window.__ZG, ok = !!Z.SAVED && Z.loadSave(), R = Z.S.run;
+    return { ok, pxp: R && R.pxp, plvl: R && R.plvl, pts: R && R.pts, lvls: Z.S.heroes.map(h => h.lvl), xp: Z.S.heroes.map(h => h.xp) }; });
+  check(loaded.ok && loaded.pxp === 150 && loaded.plvl === 3 && loaded.pts === 3 && loaded.lvls.every(l => l === 3) && loaded.xp.every(x => x === 150),
+    'an older save loads into the party: the best hero\'s XP, its level for everyone, the unspent points pooled', JSON.stringify(loaded));
+  await ev(page, () => { localStorage.removeItem('zg-save'); });
+
+  check(!errors.length, 'no page errors', errors.join(' | '));
+  return ctx;
+});

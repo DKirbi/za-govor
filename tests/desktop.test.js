@@ -105,14 +105,23 @@ run(async () => {
   await shot('desktop-03-finisher');
   check(await solveCrossword(page), 'finisher crossword can be solved by typing');
 
-  // Battle 4 (Ljubljanski grad): Lintvern's letter lock, then phase 2 forced crossword
+  // Battle 4 (Ljubljanski grad): the Lintvern of balance D — Topot knocks a hero out of the mesh; at 66 % he draws
+  // breath (a stun does not stop him) and Ognjeni dih burns the heroes and scorches letters; phase 2 forces a crossword
   await page.evaluate(() => window.__ZG.go('battle', window.__ZG.NODES[5])); await sleep(600);
-  await page.evaluate(() => { const e = window.__ZG.B.enemies[0]; e.step = 1; e.charge = 0.99; }); await sleep(500);
-  check(await page.evaluate(() => { const B = window.__ZG.B; return B.grid.some(t => t.lockUntil > B.time || t.lockWords > 0); }),
-    'Lintvern locks letters in the mesh');
-  await page.evaluate(() => { const e = window.__ZG.B.enemies[0]; e.hp = Math.round(e.maxHp * 0.53); e.phase2on = false; });
+  await page.evaluate(() => { const e = window.__ZG.B.enemies[0]; e.step = 2; e.charge = 0.99; }); await sleep(500);
+  check(await page.evaluate(() => Object.values(window.__ZG.B.sleep).some(s => s.why === 'topot')), 'Lintvern\'s Topot knocks a hero out of the letter mesh');
+  await page.evaluate(() => { const B = window.__ZG.B, e = B.enemies[0]; B.sleep = {}; e.hp = Math.round(e.maxHp * 0.67); e.charge = -5; });
+  await playWord(page); await sleep(500);
+  const charging = await page.evaluate(() => { const B = window.__ZG.B, e = B.enemies[0]; const out = { charging: !!e.charging, speed: e.speed, status: (e.el && e.el.textContent) || '' };
+    e.stunUntil = B.time + 30; e.charge = 0.99; return out; });
+  check(charging.charging && charging.speed > 5 && /zajema sapo/.test(charging.status), 'below 66 % the Lintvern draws breath, slowly and visibly', JSON.stringify(charging));
+  await sleep(600);
+  const breath = await page.evaluate(() => { const B = window.__ZG.B, e = B.enemies[0]; return { charging: !!e.charging, scorched: B.grid.filter(t => t.scorch).length, burning: Object.values(B.heroBurn).some(n => n > 0), tiles: document.querySelectorAll('.mesh .tile.scorch').length }; });
+  check(!breath.charging && breath.scorched >= 8 && breath.tiles === breath.scorched && breath.burning, 'Ognjeni dih comes even through a stun: the heroes burn and letters are scorched', JSON.stringify(breath));
+  await shot('desktop-04b-scorch');
+  await page.evaluate(() => { const e = window.__ZG.B.enemies[0]; e.stunUntil = 0; e.hp = Math.round(e.maxHp * 0.53); e.phase2on = false; e.charge = -5; });
   await playWord(page); await sleep(600);
-  await page.evaluate(() => { const e = window.__ZG.B.enemies[0]; e.step = 0; e.charge = 0.99; }); await sleep(600);
+  await page.evaluate(() => { const e = window.__ZG.B.enemies[0]; e.step = 3; e.charge = 0.99; }); await sleep(600);
   check((await state(page)).cw === 'lock', 'phase 2 forces a crossword with the mesh closed');
   await shot('desktop-04-forced-crossword');
   check(await solveCrossword(page), 'forced crossword can be solved');
