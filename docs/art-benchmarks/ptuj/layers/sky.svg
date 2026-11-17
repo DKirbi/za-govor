@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" shape-rendering="crispEdges">
+<defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#302e68"/><stop offset=".42" stop-color="#765080"/><stop offset=".72" stop-color="#e67c72"/><stop offset="1" stop-color="#f6b66f"/></linearGradient></defs>
+<rect width="640" height="360" fill="url(#sky)"/>
+<path fill="#f3a06d" d="M0 178h640v12H0zM0 202h640v5H0zM0 222h640v3H0z"/>
+<path fill="#f7c77d" d="M0 244h640v3H0zM0 253h640v2H0z"/>
+<circle cx="486" cy="181" r="27" fill="#ffe4a0"/><circle cx="486" cy="181" r="34" fill="#ffcf86" opacity=".18"/>
+<path fill="#f7b978" d="M0 165h60v4H0zM80 151h95v3H80zM215 169h74v3h-74zM370 143h68v3h-68zM525 154h115v3H525z"/>
+</svg>
