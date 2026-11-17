@@ -72,6 +72,22 @@ run(async () => {
   check(nr.blocks.join() === 'Tempo,Znanje', 'Nova pot asks for Tempo and Znanje only: Težavnost is part of Znanje', nr.blocks.join());
   check(nr.stakes.length === 3 && /^Prvi poraz ni konec poti.*Drugi poraz konča pot/.test(nr.stakes[0]) && /^Poraz konča pot/.test(nr.stakes[1]) && /zapusti družino\.$/.test(nr.stakes[2]),
     'each knowledge level says what a lost battle and a fallen hero mean (Lahka, Srednja, Težka)', JSON.stringify(nr.stakes));
+  // what losing means is folded under one Podrobnosti toggle (17 Nov): it opens all three cards and picks none
+  const fold = () => page.evaluate(() => { const b = document.querySelector('.set-head .lv-more'), ps = [...document.querySelectorAll('.lv-grid .lv-stakes')];
+    return { label: b.textContent.trim(), exp: b.getAttribute('aria-expanded'), ctl: b.getAttribute('aria-controls'), shown: ps.map(p => p.getBoundingClientRect().height > 0),
+      inLabel: !!b.closest('label'), know: window.__ZG.S.setup.know, screen: window.__ZG.S.screen,
+      heights: [...document.querySelectorAll('.lv-grid > .choice')].map(c => Math.round(c.getBoundingClientRect().height)) }; });
+  const f0 = await fold();
+  check(f0.label === 'Podrobnosti' && f0.exp === 'false' && f0.shown.every(x => !x) && !f0.inLabel && f0.ctl === 'lv-more-malcek lv-more-ucenjak lv-more-molj',
+    'the Znanje cards are short: what losing means is folded behind Podrobnosti beside the heading', JSON.stringify(f0));
+  await page.click('.set-head .lv-more'); await sleep(150);
+  const f1 = await fold();
+  check(f1.label === 'Skrij podrobnosti' && f1.exp === 'true' && f1.shown.every(Boolean) && f1.know === 'malcek' && new Set(f1.heights).size === 1,
+    'Podrobnosti opens all three cards at once (one row height), without picking a Znanje', JSON.stringify(f1));
+  await shot('menu-02b-newrun-details');
+  await page.focus('.set-head .lv-more'); await page.keyboard.press('Enter'); await sleep(150);
+  const f2 = await fold();
+  check(f2.exp === 'false' && f2.shown.every(x => !x) && f2.screen === 'newrun', 'Enter on the toggle folds them again and does not leave for the hero choice', JSON.stringify(f2));
   check(nr.gap >= 48 && nr.line === 'solid', 'Tempo and Znanje are clearly apart, with a line between them', nr.gap + ' px');
   check(nr.sub.shown && /Predlogi besed med igro/.test(nr.sub.text) && nr.sub.under && nr.sub.checked, 'Predlogi besed sits right under Malček, on by default', JSON.stringify(nr.sub));
   check(nr.tut, 'Pokaži razlage ugank is on by default');

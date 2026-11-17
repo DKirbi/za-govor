@@ -294,7 +294,8 @@ after you play words (they strike every few moves).
 
 **Knowledge** (*Znanje*), chosen below the pace, each with its own pixel figure, is **the one
 difficulty**: it sets the puzzle help and what losing means. (*Težavnost* was a choice of its own
-until 0.11.0; its three settings now come with the three levels, and each card says what they mean.)
+until 0.11.0; its three settings now come with the three levels. Since 0.14.0 each card shows one line, and
+*Podrobnosti* beside the heading opens what losing and a fallen hero mean on all three cards at once.)
 
 | | Malček (baby) | Učenjak (scholar) | Knjižni molj (book worm) |
 | --- | --- | --- | --- |
