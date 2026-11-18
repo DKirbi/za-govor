@@ -34,12 +34,12 @@ Cloud drift uses the existing renderer's tiled-layer movement and respects reduc
 
 ## Kakovost slik (Visoka / Nizka)
 
-- *Nastavitve → Razvoj → Kakovost slik* chooses the Ptuj layers' resolution. *Visoka* is the delivered file
-  (default); *Nizka* loads `art/exports/environments/ptuj-low/`, the same art at half size, rounded up.
-  The choice is stored in `zg-fidelity`.
-- `data/backgrounds.json` links each Ptuj pack to its low copies with `lowFidelity`. `build.py` builds a
-  `<pack>~low` pack from those files and draws every layer at its manifest size, so placement is the same.
-- Regenerate the copies after any change to the high files with `python3 tools/art_ptuj_lowfi.py`. Check them with
-  `--check`.
+- *Nastavitve → Razvoj → Kakovost slik* chooses which Ptuj picture the travel and battle scenes show, stored in
+  `zg-fidelity`. *Samodejno* (the default) leaves the choice to the A/B test. *Visoka* shows the Codex sunset pack
+  (B) where the test would show A. *Nizka* shows the picture already in the game (A, `BG.ptuj` in
+  `src/art-extra.js`, 384×120) where the test would show B.
+- Winter (D, `ptuj-zima`) has no low picture yet, so it stays on its Codex pack under both settings. Only
+  `?ozadje=D` shows it until the Game Director assigns it.
+- The Codex pack's low copies were removed: they were half-size Codex layers, not the lower tier.
 - Martin Krpan's pictures are not part of this setting yet. Which of his pictures has a higher and a lower
   version is still open.

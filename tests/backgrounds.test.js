@@ -154,20 +154,25 @@ run(async () => {
   check(draw.gone === 'A' && draw.keptAfter === '{"ptuj":"B"}' && draw.back === 'B', 'a build without a variant\'s pack shows A but keeps the assignment for when it is back');
   check(draw.seen.A > 140 && draw.seen.B > 140 && draw.seen.C === 0, 'the 50/50 share splits installs between A and B; C (share 0) is never drawn', JSON.stringify(draw.seen));
 
-  // ---------------------------------------------------------------- Nastavitve → Razvoj → Kakovost slik: high and low
-  const fid = await ev(() => { const Z = window.__ZG, H = Z.BGX.packs.ptuj, L = Z.BGX.packs['ptuj~low'], ZL = Z.BGX.packs['ptuj-zima~low'];
-    const bytes = P => P.layers.reduce((n, l) => n + l.src.length, 0);
-    const same = L && H.layers.every((l, i) => { const m = L.layers[i]; return m && m.id === l.id && m.w === l.w && m.h === l.h && m.x === l.x && m.y === l.y && m.scale === l.scale; });
-    return { same: !!same, winterLow: !!ZL, ratio: L ? +(bytes(L) / bytes(H)).toFixed(2) : null }; });
-  check(fid.same && fid.winterLow && fid.ratio < 0.5, 'the low copies of B and D keep every layer, its place and its drawn size; the files are about a quarter', JSON.stringify(fid));
-  const pick = await ev(() => { const Z = window.__ZG, at = () => { const e = document.querySelector('.scene [data-layer="town"]'); return e ? e.style.backgroundImage.length : 0; };
-    localStorage.removeItem('zg-fidelity'); Z.setBgForce('B'); Z.S.testMode = true; Z.S.mode = 'calm';
-    Z.newRun('krpan'); Z.joinHero('kurent'); Z.joinHero('matjaz'); Z.go('travel'); const dflt = at();
-    localStorage.setItem('zg-fidelity', 'low'); Z.go('travel'); const low = at();
-    Z.go('settings'); const radios = Object.fromEntries([...document.querySelectorAll('input.set-fid')].map(r => [r.value, r.checked]));
-    localStorage.removeItem('zg-fidelity'); return { dflt, low, radios }; });
-  check(pick.low > 0 && pick.low < pick.dflt * 0.5 && pick.radios.high === false && pick.radios.low === true,
-    'Nizka draws the half-size files, the default is the full files, and Nastavitve → Razvoj shows the stored choice', JSON.stringify(pick));
+  // ---------------------------------------------------------------- Nastavitve → Razvoj → Kakovost slik: auto, high, low
+  const fidVar = await ev(() => { const Z = window.__ZG, T = Z.BGX.tests.ptuj, live = T.live; T.live = false;
+    const pick = (f, forced) => { if (f) localStorage.setItem('zg-fidelity', f); else localStorage.removeItem('zg-fidelity'); Z.setBgForce(forced || null); return Z.bgVariant('ptuj'); };
+    const out = { auto: pick(null, null), autoB: pick(null, 'B'), high: pick('high', null), highA: pick('high', 'A'),
+      lowB: pick('low', 'B'), lowD: pick('low', 'D'), highD: pick('high', 'D') };
+    T.live = live; Z.setBgForce(null); localStorage.removeItem('zg-fidelity'); return out; });
+  check(fidVar.auto === 'A' && fidVar.autoB === 'B' && fidVar.high === 'B' && fidVar.highA === 'B' && fidVar.lowB === 'A' && fidVar.lowD === 'D' && fidVar.highD === 'D',
+    'Samodejno keeps the test\'s choice; Visoka shows the sunset pack (B) and Nizka the picture in the game (A); winter (D) stays D', JSON.stringify(fidVar));
+  const scene = await ev(() => { const Z = window.__ZG, layered = () => !!document.querySelector('.scene [data-layer="town"]'), out = {};
+    const radios = () => Object.fromEntries([...document.querySelectorAll('input.set-fid')].map(r => [r.value, r.checked]));
+    Z.S.testMode = true; Z.S.mode = 'calm';
+    const run = (f, forced) => { if (f) localStorage.setItem('zg-fidelity', f); else localStorage.removeItem('zg-fidelity'); Z.setBgForce(forced || null);
+      Z.newRun('krpan'); Z.joinHero('kurent'); Z.joinHero('matjaz'); Z.go('travel'); return layered(); };
+    out.auto = run(null, null); out.high = run('high', null); out.lowB = run('low', 'B'); out.lowD = run('low', 'D');
+    localStorage.removeItem('zg-fidelity'); Z.setBgForce(null); Z.go('settings'); out.radiosAuto = radios();
+    localStorage.setItem('zg-fidelity', 'low'); Z.go('settings'); out.radiosLow = radios();
+    localStorage.removeItem('zg-fidelity'); return out; });
+  check(!scene.auto && scene.high && !scene.lowB && scene.lowD && scene.radiosAuto.auto === true && scene.radiosLow.low === true && scene.radiosLow.auto === false,
+    'the travel scene: Visoka draws the layered pack, Nizka the picture in the game, winter stays layered; Nastavitve shows the stored choice', JSON.stringify(scene));
 
   check(errors.length === 0, 'no page or console errors', errors.join(' | '));
   return ctx;

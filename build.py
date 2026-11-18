@@ -73,12 +73,7 @@ def background_packs():
     canvas the scene is fitted to) and per layer x, y and scale, in canvas pixels."""
     cfg = json.loads(read('data/backgrounds.json'))
     packs, notes = {}, []
-    jobs = []
     for pid, pc in cfg.get('packs', {}).items():
-        jobs.append((pid, pc, None))
-        if pc.get('lowFidelity'): jobs.append((pid + '~low', pc, pc['lowFidelity']))   # the Nizka copy: same layers, half-size files
-    for pid, pc, low in jobs:
-        mapf = (lambda f: low['to'] + f[len(low['from']):] if f.startswith(low['from']) else f) if low else (lambda f: f)
         mrel = pc['manifest']
         if not (root / mrel).is_file():
             notes.append(f'background pack {pid}: not delivered yet ({mrel} missing), variant A only'); continue
@@ -86,7 +81,7 @@ def background_packs():
         if man.get('status') == 'superseded':
             notes.append(f'background pack {pid}: {mrel} is superseded, left out'); continue
         mls = manifest_layers(man, pc.get('season'))
-        missing = [mapf(L.get('file') or '?') for L in mls if not (root / mapf(L.get('file') or '')).is_file()]
+        missing = [L.get('file') or '?' for L in mls if not (root / (L.get('file') or '')).is_file()]
         if not mls or missing:
             notes.append(f'background pack {pid}: {len(missing)} of {len(mls)} layer files not committed, left out'); continue
         cv, view = man.get('canvas') or {}, pc.get('view') or {}
@@ -96,13 +91,10 @@ def background_packs():
         assert len({L['order'] for L in mls}) == len(mls), f'{mrel}: layer orders must be unique'
         tune, layers, size = pc.get('layers', {}), [], 0
         for depth, L in enumerate(mls):
-            fp = mapf(L['file'])
+            fp = L['file']
             raw = (root / fp).read_bytes()
             w, h, alpha = png_info(raw, fp)
-            if low:   # the Nizka file is half size, rounded up
-                assert (w, h) == ((L['width'] + 1) // 2, (L['height'] + 1) // 2), f"{fp} is {w}×{h}, half of {L['width']}×{L['height']} rounded up"
-            else:
-                assert (w, h) == (L['width'], L['height']), f"{L['file']} is {w}×{h}, {mrel} says {L['width']}×{L['height']}"
+            assert (w, h) == (L['width'], L['height']), f"{L['file']} is {w}×{h}, {mrel} says {L['width']}×{L['height']}"
             w, h = L['width'], L['height']   # drawn at the manifest size, whatever the file's resolution
             assert not L.get('alpha') or alpha, f"{L['file']}: {mrel} says it is transparent, the PNG has no alpha"
             t = tune.get(L['id'])

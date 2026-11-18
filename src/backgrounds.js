@@ -12,18 +12,22 @@ const BGX = (() => { try { const v = JSON.parse($('#bgdata').textContent); retur
 const AB_KEY = 'zg-ab';
 const AB = (() => { try { const v = JSON.parse(localStorage.getItem(AB_KEY) || '{}'); return v && typeof v === 'object' && !Array.isArray(v) ? v : {}; } catch (e) { return {}; } })();
 let bgForce = (() => { try { const v = (new URLSearchParams(location.search).get('ozadje') || '').toUpperCase(); return /^[A-Z]$/.test(v) ? v : null; } catch (e) { return null; } })();
-// Nastavitve → Razvoj → Kakovost slik: 'high' (the full files, the default) or 'low' (the half-size copies of the
-// Ptuj layers, packs `<id>~low` in data/backgrounds.json). The same stored choice drives Martin Krpan's pictures.
+// Nastavitve → Razvoj → Kakovost slik: 'auto' (the default) leaves the choice to the A/B test, as before. 'high' shows the
+// Codex parallax pack of the sunset (B) where the test would show A. 'low' shows the picture already in the game (A)
+// where the test would show the sunset (B). Winter (D) has no low picture yet, so it stays high. Martin Krpan is not part yet.
 const FID_KEY = 'zg-fidelity';
-const fidelity = () => { try { return localStorage.getItem(FID_KEY) === 'low' ? 'low' : 'high'; } catch (e) { return 'high'; } };
-const setFidelity = v => { try { localStorage.setItem(FID_KEY, v === 'low' ? 'low' : 'high'); } catch (e) { /* no storage */ } };
-const bgPack = (key, v) => {
-  const t = BGX.tests[key], id = t && t.variants && t.variants[v];
-  if (!id) return null;
-  return (fidelity() === 'low' && BGX.packs[id + '~low']) || BGX.packs[id] || null;
-};
+const fidelity = () => { try { const v = localStorage.getItem(FID_KEY); return v === 'high' || v === 'low' ? v : 'auto'; } catch (e) { return 'auto'; } };
+const setFidelity = v => { try { if (v === 'high' || v === 'low') localStorage.setItem(FID_KEY, v); else localStorage.removeItem(FID_KEY); } catch (e) { /* no storage */ } };
+const bgPack = (key, v) => { const t = BGX.tests[key], id = t && t.variants && t.variants[v]; return id ? BGX.packs[id] || null : null; };
 const bgReady = (key, v) => v === 'A' || !!bgPack(key, v);
 const bgForced = key => !!(bgForce && BGX.tests[key] && bgReady(key, bgForce));
+// The variant the fidelity choice shows in place of v (the test's or the address's). Winter (D) and the preview C stay as chosen.
+const fidVariant = (key, v) => {
+  const f = fidelity();
+  if (f === 'low' && v === 'B') return 'A';
+  if (f === 'high' && v === 'A' && bgReady(key, 'B')) return 'B';
+  return v;
+};
 function bgDraw(share, vs) {
   const w = vs.map(v => Math.max(0, +((share || {})[v]) || 0)), sum = w.reduce((a, b) => a + b, 0);
   if (!sum) return vs[rnd(vs.length)];
@@ -31,7 +35,7 @@ function bgDraw(share, vs) {
   for (let i = 0; i < vs.length; i++) { r -= w[i]; if (r < 0) return vs[i]; }
   return vs[vs.length - 1];
 }
-function bgVariant(key) {
+function bgTestVariant(key) {
   const t = BGX.tests[key];
   if (!t) return 'A';
   if (bgForced(key)) return bgForce;
@@ -41,6 +45,7 @@ function bgVariant(key) {
   if (!vs.includes(AB[key])) { AB[key] = bgDraw(t.share, vs); try { localStorage.setItem(AB_KEY, JSON.stringify(AB)); } catch (e) { /* no storage: drawn again next visit */ } }
   return AB[key];
 }
+const bgVariant = key => fidVariant(key, bgTestVariant(key));
 // for src/stats.js: ozadje-ptuj=B, or B(predogled) when the address chose it
 const bgStatTags = () => Object.keys(BGX.tests).map(k => `ozadje-${k}=${bgVariant(k)}${bgForced(k) ? '(predogled)' : ''}`);
 

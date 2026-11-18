@@ -71,10 +71,12 @@ Branch `feat/ptuj-bg-ab`, with the Codex art pack (#33). Details: `docs/art-benc
 - **Fix:** the winter pack drew the bridge behind the sky, because the shared bridge came first in the manifest.
   `build.py` now orders every layer by where its id first appears in the manifest.
 - **Fix:** castle hill in both packs was placed above the 560 px view and failed the build. Its y is now 0.
-- **Nastavitve → Razvoj → Kakovost slik:** *Visoka* (the full files, the default) or *Nizka* (half-size copies
-  of the Ptuj layers, about a quarter of the data, drawn at the same size and place). Stored in
-  `zg-fidelity`. Martin Krpan's pictures are not yet part of the setting.
-  `tools/art_ptuj_lowfi.py` writes the copies (`--check` verifies them).
+- **Nastavitve → Razvoj → Kakovost slik:** *Samodejno* (the default: the A/B test chooses, as before), *Visoka*
+  (the Codex sunset pack, where the test would show A) or *Nizka* (the picture already in the game, variant A,
+  where the test would show the sunset pack). Winter has no low picture yet, so it stays on its Codex pack.
+  Stored in `zg-fidelity`. Martin Krpan's pictures are not yet part of the setting.
+- **Size:** the half-size copies of the Codex layers are removed, with `tools/art_ptuj_lowfi.py`. They were not
+  the low tier. The single-file build is 18 MB, down from 21.8 MB.
 
 ## 0.14.0 — 17 Nov 2026 · zaprta alfa · Znanje cards fold their details
 - **Nova pot:** each Znanje card shows its figure, name and one line. What losing and a fallen hero
