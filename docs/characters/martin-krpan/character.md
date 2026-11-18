@@ -111,7 +111,9 @@ For the Martin Krpan sprite pack in PR #34, the following poses are approved:
 - **Victory:** four frames: settle into a planted stance, raise a bare fist, hold briefly, then return to stance. Krpan is unarmed throughout this gesture.
 - **Downed:** one static kneeling pose with one knee down, the other boot planted and his head bowed. Keep the salt sack on his back and rest the cudgel tip-down beside him.
 
-These three Martin Krpan states establish a **proposed benchmark** for a future roster-wide sprite convention. They do not approve or define assets for any other character. Runtime animation integration remains open; the current renderer only exposes the existing idle/attack strip and down-state filter.
+These three Martin Krpan states establish a **proposed benchmark** for a future roster-wide sprite convention (`docs/art-benchmarks/hero-sprites/README.md`). They do not approve or define assets for any other character.
+
+**IMPLEMENTED (PR #34, *Kakovost slik = Visoka*):** running loops while the party walks; victory plays once when the last enemy falls; the kneel is held, greyed, while Krpan is down. The skill animations follow §5 above (Lipov kij, Kmečka moč ranks 1–3, Mesarica). The mapping lives in `data/hero-art.json`.
 
 ### Folk-art illustration — Krpan lifts his mare
 

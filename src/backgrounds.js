@@ -22,21 +22,27 @@ const setFidelity = v => { try { if (v === 'high' || v === 'low') localStorage.s
 const bgPack = (key, v) => { const t = BGX.tests[key], id = t && t.variants && t.variants[v]; return id ? BGX.packs[id] || null : null; };
 const bgReady = (key, v) => v === 'A' || !!bgPack(key, v);
 const bgForced = key => !!(bgForce && BGX.tests[key] && bgReady(key, bgForce));
-// ---------------------------------------------------------------- Martin Krpan in Visoka (Codex's pack, art/manifests/martin-krpan.json)
-// BGX.heroes.krpan (build.py): `strip` is the 96×48 idle | attack picture, which replaces SPRITES.krpan so every card, portrait
-// and the codex shows him; `sheet` holds the frames, one row a sequence (tools/art_krpan_sheet.py), which the battle, the road
-// and the hero screens play (game.css .spr.hi). The skills follow the revised specification (docs/characters/martin-krpan):
-// skill 1 Lipov kij, skill 2 Kmečka moč with rank 1, 2, 3 = two punches, salt sacks, boulder, skill 3 Mesarica.
-// Running and victory frames are not delivered yet: the road and the victory use a hop in place (game.css hop).
-const HERO_SEQ = { krpan: { idle: 'idle', 1: ['cudgel-strike'], 2: ['kmecka-moc-r1-double-punch', 'kmecka-moc-r2-salt-sacks', 'kmecka-moc-r3-boulder'], 3: ['mesarica-slash'] } };
+// ---------------------------------------------------------------- hero sprites in Visoka (data/hero-art.json; Martin Krpan first)
+// BGX.heroes[id] (build.py): `strip` is the idle | attack picture, which replaces SPRITES[id] so every card, portrait and the
+// codex shows the hero; `sheet` holds the frames, one row a sequence (tools/art_hero_pack.py), which the battle, the road and
+// the hero screens play (game.css .spr.hi). `states` names the idle, run, win and down sequences, `skills` the sequence per
+// skill (1–3) and rank (1–3). For Krpan (docs/characters/martin-krpan): Lipov kij; Kmečka moč rank 1, 2, 3 = two punches,
+// salt sacks, boulder; Mesarica; running on the road, the bare-fist salute when the last enemy falls, the kneel when down.
 const heroHi = id => fidelity() === 'high' && !!BGX.heroes[id];
 const HERO_LOW = {};   // the sprites already in the game, to go back to
 function applyHeroFidelity() { Object.keys(BGX.heroes).forEach(id => { if (!(id in HERO_LOW)) HERO_LOW[id] = SPRITES[id]; SPRITES[id] = heroHi(id) ? BGX.heroes[id].strip : HERO_LOW[id]; }); }
+// the sheet row of a named sequence, or null
+const heroRow = (id, name) => { const H = BGX.heroes[id], s = H && name && H.seqs[name]; return s ? s.row : null; };
 // the sheet row for skill `tier` at `rank` (1–3), or null when the hero has no frames for it
 function heroSeqRow(id, tier, rank) {
-  const H = BGX.heroes[id], list = HERO_SEQ[id] && HERO_SEQ[id][tier];
-  const s = H && list && H.seqs[list[Math.min(list.length, Math.max(1, +rank || 1)) - 1]];
-  return s ? s.row : null;
+  const H = BGX.heroes[id], list = H && H.skills && H.skills[tier];
+  return list && list.length ? heroRow(id, list[Math.min(list.length, Math.max(1, +rank || 1)) - 1]) : null;
+}
+// the rows spriteEl puts on a hero: --ri idle, --rr running, --rw victory, --rd down (a missing state falls back in game.css)
+function heroStateRows(id) {
+  const st = (BGX.heroes[id] && BGX.heroes[id].states) || {}, out = {};
+  [['--ri', 'idle'], ['--rr', 'run'], ['--rw', 'win'], ['--rd', 'down']].forEach(([v, k]) => { const r = heroRow(id, st[k]); if (r !== null) out[v] = r; });
+  return out;
 }
 // The variant the fidelity choice shows in place of v (the test's or the address's). Winter (D) and the preview C stay as chosen.
 const fidVariant = (key, v) => {

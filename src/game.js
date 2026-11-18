@@ -717,20 +717,22 @@ function setSound(on) {
 }
 let SEL_N = 0, CARD_Z = 10;
 function spriteEl(id, c, cls = '') {
-  // Visoka (src/backgrounds.js): a hero with frames plays them from the sheet (game.css .spr.hi); the others use their strip
-  const hi = heroHi(id), H = hi && BGX.heroes[id];
-  return h('div', { class: 'actor hero spr ' + (hi ? 'hi ' : '') + cls, 'data-hero': id, style: hi ? { '--c': c, '--art': SPR_SIZE[id], '--cols': H.cols, '--rows': H.rows, '--r': H.seqs.idle.row } : { '--c': c, '--art': SPR_SIZE[id] } },
+  // Visoka (src/backgrounds.js): a hero with frames plays them from the sheet (game.css .spr.hi); the others use their strip.
+  // The sheet's rows for idle, running, victory and down go on the element; hi-run, hi-win, hi-down say which it has.
+  const hi = heroHi(id), H = hi && BGX.heroes[id], rows = hi ? heroStateRows(id) : null;
+  const has = rows ? [['--rr', 'hi-run'], ['--rw', 'hi-win'], ['--rd', 'hi-down']].filter(([v]) => v in rows).map(([, k]) => k).join(' ') : '';
+  return h('div', { class: 'actor hero spr ' + (hi ? `hi ${has} ` : '') + cls, 'data-hero': id, style: hi ? { '--c': c, '--art': SPR_SIZE[id], '--cols': H.cols, '--rows': H.rows, ...rows } : { '--c': c, '--art': SPR_SIZE[id] } },
     h('i', { class: 'sp', style: { 'background-image': `url(${hi ? H.sheet : SPRITES[id]})`, 'animation-delay': (-rnd(12) / 10) + 's' } }));
 }
 function replay(el, ...cls) { el.classList.remove(...cls); void el.offsetWidth; el.classList.add(...cls); }
 function attackAnim(el, tier, sceneEl, rank) {
   if (!el || !el.classList.contains('spr')) return;
-  // a hero with frames (Visoka): the sequence of this skill and rank, four frames in 0,72 s, instead of the lunge
-  const row = el.classList.contains('hi') ? heroSeqRow(el.dataset.hero, tier, rank) : null, idle = row !== null && BGX.heroes[el.dataset.hero].seqs.idle.row;
+  // a hero with frames (Visoka): the sequence of this skill and rank, four frames in 0,72 s, instead of the lunge (--ra, game.css)
+  const row = el.classList.contains('hi') ? heroSeqRow(el.dataset.hero, tier, rank) : null;
   // spriteEl gives the layer a random negative delay so the idles are out of step; a sequence must start at its first frame
-  if (row !== null) { el.style.setProperty('--r', row); const sp = el.querySelector('.sp'); if (sp) sp.style.animationDelay = '0s'; }
+  if (row !== null) { el.style.setProperty('--ra', row); const sp = el.querySelector('.sp'); if (sp) sp.style.animationDelay = '0s'; }
   replay(el, ...(tier === 3 ? ['atk', 'atk3'] : ['atk'])); if (tier !== 3) el.classList.remove('atk3');
-  clearTimeout(el._atk); el._atk = setTimeout(() => { el.classList.remove('atk', 'atk3'); if (row !== null) el.style.setProperty('--r', idle); }, row !== null ? 740 : tier === 3 ? 650 : 430);
+  clearTimeout(el._atk); el._atk = setTimeout(() => el.classList.remove('atk', 'atk3'), row !== null ? 740 : tier === 3 ? 650 : 430);
   if (tier === 3 && sceneEl) { replay(sceneEl, 'flash'); clearTimeout(sceneEl._fl); sceneEl._fl = setTimeout(() => sceneEl.classList.remove('flash'), 420); }
 }
 
@@ -2853,7 +2855,12 @@ function checkEnd() {
   if (!B || B.over || S.screen !== 'battle') return;
   const b = B;   // timers must act on this battle only, even if the player has moved on
   if (!living().length) { B.over = true; later(() => { if (B === b) showResult(false); }, 700); }
-  else if (B.enemies.every(e => e.hp <= 0)) { B.over = true; if (B.cw) closeCrossword(); later(() => { if (B === b) showResult(true); }, 900); }
+  else if (B.enemies.every(e => e.hp <= 0)) { B.over = true; if (B.cw) closeCrossword(); cheerParty(); later(() => { if (B === b) showResult(true); }, 900); }
+}
+// the last enemy is down: a hero with a victory sequence (Visoka, game.css .spr.hi.cheer) plays it once before the result
+function cheerParty() {
+  (UI.heroEls || []).forEach((el, k) => { if (!el || !el.classList.contains('hi-win') || (S.heroes[k] && S.heroes[k].down)) return;
+    clearTimeout(el._atk); el.classList.remove('atk', 'atk3'); const sp = el.querySelector('.sp'); if (sp) sp.style.animationDelay = '0s'; replay(el, 'cheer'); });
 }
 function showResult(win) {
   sfx(win ? 'win' : 'lose', { delay: .3 });
@@ -3267,6 +3274,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, gainPartyXp, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, cheerParty, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, gainPartyXp, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 

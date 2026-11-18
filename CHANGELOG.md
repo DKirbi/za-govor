@@ -79,11 +79,24 @@ Branch `feat/ptuj-bg-ab`, with the Codex art pack (#33). Details: `docs/art-benc
   the low tier. The single-file build is 18 MB, down from 21.8 MB.
 
 - **Martin Krpan follows *Kakovost slik* too** (Codex pack `codex/martin-krpan-sprite-assets`, merged into this branch).
-  - *Visoka* draws his Codex sprites; *Samodejno* and *Nizka* keep the sprite already in the game. A new
-    `tools/art_krpan_sheet.py` packs the frames into one 192 × 288 sheet (`martin-krpan-sheet.png/.json`), which
-    `build.py` embeds.
-  - The sheet has idle, Lipov kij, Kmečka moč R1 / R2 / R3 and Mesarica, and each attack plays its own row. The
-    pack has no running or victory frames yet: both show a slight jump in place until Codex adds them.
+  - *Visoka* draws his Codex sprites; *Samodejno* and *Nizka* keep the sprite already in the game.
+  - Every state has its own row in one 192 × 432 sheet (`martin-krpan-sheet.png/.json`, embedded by `build.py`):
+    idle, Lipov kij, Kmečka moč R1 / R2 / R3, Mesarica, and the approved running, victory and downed poses.
+  - **Running** loops while the party walks the road. **Victory** (a raised bare fist) plays once when the last
+    enemy falls, before *Zmaga!*. **Downed** holds the kneel, greyed like every fallen hero, in battle, on the road
+    and on his hero screen. Reduced motion shows each state's first frame.
+  - **Fix:** the first export of running, victory and downed fitted every frame to 44 px on its own. Krpan grew
+    by about a quarter when he ran or cheered, the run lost its bob, and the kneel stood taller than idle. They are
+    re-exported from the same atlases at the pack's scale. The poses are unchanged.
+- **Hero sprites are data, ready for the rest of the roster:** `data/hero-art.json` names each hero's pack and
+  which sequence the game plays for idle, running, victory, down and each skill rank. `tools/art_hero_pack.py`
+  exports frames from the source atlases, packs the sheet, writes the review previews and validates a pack
+  (`--check`). It replaces `tools/art_krpan_sheet.py` and Codex's two Krpan exporters (`.ps1` and `.py`). The
+  convention for the next heroes is `docs/art-benchmarks/hero-sprites/README.md`; for the next regions,
+  `docs/art-benchmarks/region-backgrounds/README.md`.
+- **Removed as redundant** (17.5 MB): byte-identical copies (`previews/…/ptuj/assembled.*` = `sunset-assembled.*`;
+  the mare-lift export = its source), the PNG twins of the JPG previews, two old previews in
+  `art/source/environments/ptuj/`, the three Krpan-only tools and `docs/collaboration/GITHUB_WRITE_PERMISSION_TEST.md`.
 - **Krpan's skills are now the reviewed ones** (a reviewed hero, like Kurent or Kresnik; `src/progression.js`),
   replacing Zamah, Kobilica and Lipov kij:
   - **Lipov kij** 10 / 16 / 20.

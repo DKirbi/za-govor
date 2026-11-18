@@ -15,6 +15,8 @@ This directory is the canonical home for original visual assets created for **Za
 - `exports/` — game-ready exports, optimized only where needed for runtime.
 - `manifests/` — per-asset-pack metadata, layer order, dimensions, transparency, intended use and approval state.
 
+Benchmarks for the next packs: `docs/art-benchmarks/hero-sprites/README.md` (hero sprites, with `tools/art_hero_pack.py`) and `docs/art-benchmarks/region-backgrounds/README.md` (region backgrounds).
+
 Keep each asset pack in its own named subdirectory (for example `source/environments/ptuj/` and `exports/environments/ptuj/`). Do not flatten unrelated art packs into one directory.
 
 ## Binary asset commits (Git Data API)

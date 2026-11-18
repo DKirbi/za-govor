@@ -15,7 +15,7 @@
     "sunset": {
       "status": "PROPOSED",
       "context": "Alternate warm-season look, retained alongside the original winter look.",
-      "preview": "art/previews/environments/ptuj/assembled.jpg",
+      "preview": "art/previews/environments/ptuj/sunset-assembled.jpg",
       "road": "art/exports/environments/ptuj/road-tile.png"
     },
     "winter": {
@@ -538,7 +538,7 @@
     "Version 0.3.0 adds sparse outer-bank trees and matching foreground rocks, bushes and grasses for sunset and winter. Foreground placement is intentionally low to preserve actor readability."
   ],
   "previews": {
-    "sunset": "art/previews/environments/ptuj/assembled.jpg",
+    "sunset": "art/previews/environments/ptuj/sunset-assembled.jpg",
     "winter": "art/previews/environments/ptuj/winter-assembled.jpg",
     "winterRoadRepeat": "art/previews/environments/ptuj/winter-road-repeat-3x.jpg",
     "validation": "art/previews/environments/ptuj/VALIDATION.md"

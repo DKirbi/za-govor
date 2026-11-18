@@ -1,7 +1,7 @@
 {
  "frame": 48,
  "cols": 4,
- "rows": 6,
+ "rows": 9,
  "seqs": {
   "idle": {
    "row": 0,
@@ -26,6 +26,18 @@
   "mesarica-slash": {
    "row": 5,
    "frames": 4
+  },
+  "running": {
+   "row": 6,
+   "frames": 4
+  },
+  "victory": {
+   "row": 7,
+   "frames": 4
+  },
+  "downed": {
+   "row": 8,
+   "frames": 1
   }
  }
 }

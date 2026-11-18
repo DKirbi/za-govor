@@ -186,17 +186,48 @@ run(async () => {
     const H = Z.BGX.heroes.krpan; out.rows = H ? Object.fromEntries(Object.entries(H.seqs).map(([n, q]) => [n, q.row])) : null;
     localStorage.removeItem('zg-fidelity'); return out; });
   check(!kp.auto.hi && kp.high.hi && !kp.low.hi && kp.high.bg > kp.low.bg, 'Martin Krpan: Samodejno and Nizka keep the sprite already in the game, Visoka uses Codex\'s sheet', JSON.stringify({ ...kp, rows: undefined }));
-  check(kp.rows && Object.keys(kp.rows).join() === 'idle,cudgel-strike,kmecka-moc-r1-double-punch,kmecka-moc-r2-salt-sacks,kmecka-moc-r3-boulder,mesarica-slash'
-    || (kp.rows && ['idle', 'cudgel-strike', 'kmecka-moc-r1-double-punch', 'kmecka-moc-r2-salt-sacks', 'kmecka-moc-r3-boulder', 'mesarica-slash'].every(n => n in kp.rows)),
-    'the Krpan sheet holds idle, Lipov kij, the three Kmečka moč ranks and Mesarica', JSON.stringify(kp.rows));
+  check(kp.rows && ['idle', 'cudgel-strike', 'kmecka-moc-r1-double-punch', 'kmecka-moc-r2-salt-sacks', 'kmecka-moc-r3-boulder', 'mesarica-slash', 'running', 'victory', 'downed'].every(n => n in kp.rows),
+    'the Krpan sheet holds idle, Lipov kij, the three Kmečka moč ranks, Mesarica, running, victory and downed', JSON.stringify(kp.rows));
   const seq = await ev(async () => { const Z = window.__ZG; localStorage.setItem('zg-fidelity', 'high');
     Z.S.testMode = true; Z.S.mode = 'calm'; Z.newRun('krpan'); Z.joinHero('kurent'); Z.go('travel');
     const spr = document.querySelector('.party .spr.hi'), rows = Z.BGX.heroes.krpan.seqs, out = {};
     if (!spr) { localStorage.removeItem('zg-fidelity'); return null; }
     for (const [t, r, n] of [[1, 1, 'cudgel-strike'], [2, 1, 'kmecka-moc-r1-double-punch'], [2, 2, 'kmecka-moc-r2-salt-sacks'], [2, 3, 'kmecka-moc-r3-boulder'], [3, 1, 'mesarica-slash'], [3, 3, 'mesarica-slash']]) {
-      Z.attackAnim(spr, t, document.querySelector('.scene'), r); out[`${t}/${r}`] = [spr.style.getPropertyValue('--r').trim(), String(rows[n].row)]; }
+      Z.attackAnim(spr, t, document.querySelector('.scene'), r); out[`${t}/${r}`] = [getComputedStyle(spr).getPropertyValue('--r').trim(), String(rows[n].row)]; }
     localStorage.removeItem('zg-fidelity'); return out; });
   check(seq && Object.values(seq).every(([got, want]) => got === want), 'Krpan\'s skills use their own rows: Lipov kij, Kmečka moč R1 / R2 / R3, Mesarica (any rank)', JSON.stringify(seq));
+
+  // ---------------------------------------------------------------- Krpan's running, victory and downed states (data/hero-art.json)
+  const st = await ev(async () => { const Z = window.__ZG, wait = ms => new Promise(r => setTimeout(r, ms)), out = {};
+    localStorage.setItem('zg-fidelity', 'high'); Z.S.testMode = true; Z.S.mode = 'calm';
+    const rows = Z.BGX.heroes.krpan.seqs, row = el => getComputedStyle(el).getPropertyValue('--r').trim();
+    const look = el => { const sp = el.querySelector('.sp'), cs = getComputedStyle(sp); return { row: row(el), anim: cs.animationName, transform: cs.transform, filter: cs.filter }; };
+    out.want = { idle: String(rows.idle.row), run: String(rows.running.row), win: String(rows.victory.row), down: String(rows.downed.row) };
+    // the road: idle while standing, running while the party walks; Kurent (no pack) is untouched
+    Z.newRun('krpan'); Z.joinHero('kurent'); Z.go('travel'); await wait(60);
+    const k = () => document.querySelector('.party .spr.hi[data-hero="krpan"]'), ku = () => document.querySelector('.party .spr[data-hero="kurent"]');
+    out.cls = k() ? k().className : null; out.kurentHi = ku() ? ku().classList.contains('hi') : null;
+    out.stand = look(k()); Z.travelAct('go'); await wait(80); out.walk = look(k()); out.walking = document.querySelector('.scene').classList.contains('walking'); Z.travelAct('go');
+    // down on the road, walking: the kneel wins over running, upright and greyed
+    Z.S.heroes[0].down = true; Z.go('travel'); Z.travelAct('go'); await wait(80); out.downWalk = look(k()); Z.travelAct('go'); Z.S.heroes[0].down = false;
+    // battle: the last enemy falls, the living Krpan plays victory once
+    Z.go('travel'); const stop = Z.S.run.stops.find(s => s.kind === 'battle'); Z.stopBattle(stop); await wait(150);
+    const be = () => Z.HEROES.map((h, i) => [h.id, i]).find(([id]) => id === 'krpan')[1];
+    out.battleIdle = row(document.querySelectorAll('.party .spr')[be()]);
+    // the real path: the enemies fall, checkEnd runs 650 ms later, the salute plays, Zmaga! opens 900 ms after that
+    Z.B.enemies.forEach(e => { if (e.hp > 0) Z.damageEnemy(e, 9999); }); await wait(760);
+    const bk = document.querySelectorAll('.party .spr')[be()];
+    out.cheer = { has: bk.classList.contains('cheer'), ...look(bk) };
+    await wait(1000); const h2 = document.querySelector('.overlay h2'); out.resultShown = !!(h2 && h2.textContent === 'Zmaga!');
+    localStorage.removeItem('zg-fidelity'); return out; });
+  check(st && /\bhi-run\b/.test(st.cls) && /\bhi-win\b/.test(st.cls) && /\bhi-down\b/.test(st.cls) && st.kurentHi === false,
+    'Krpan in Visoka carries his running, victory and down rows; a hero without a pack keeps the old sprite', JSON.stringify(st && { cls: st.cls, kurentHi: st.kurentHi }));
+  check(st && st.stand.row === st.want.idle && st.walking && st.walk.row === st.want.run && st.walk.anim === 'hiplay',
+    'on the road he stands in idle and runs his own four-frame loop while the party walks', JSON.stringify(st && { stand: st.stand, walk: st.walk, want: st.want }));
+  check(st && st.downWalk.row === st.want.down && st.downWalk.anim === 'none' && st.downWalk.transform === 'none' && /grayscale/.test(st.downWalk.filter),
+    'down, he holds the kneel even while the party walks: upright (not turned on his side), greyed, still', JSON.stringify(st && st.downWalk));
+  check(st && st.battleIdle === st.want.idle && st.cheer.has && st.cheer.row === st.want.win && st.cheer.anim === 'hiplay' && st.resultShown,
+    'when the last enemy falls he plays the victory salute, then Zmaga! opens', JSON.stringify(st && { battleIdle: st.battleIdle, cheer: st.cheer, resultShown: st.resultShown }));
 
   check(errors.length === 0, 'no page or console errors', errors.join(' | '));
   return ctx;
