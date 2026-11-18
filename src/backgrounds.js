@@ -8,19 +8,36 @@
 //   a test with "live": true: one variant per install, drawn by "share" and kept in localStorage zg-ab
 //   otherwise: A
 // The variant goes into the tester statistics (src/stats.js), so the rows of A and B can be compared.
-const BGX = (() => { try { const v = JSON.parse($('#bgdata').textContent); return { tests: v.tests || {}, packs: v.packs || {} }; } catch (e) { return { tests: {}, packs: {} }; } })();
+const BGX = (() => { try { const v = JSON.parse($('#bgdata').textContent); return { tests: v.tests || {}, packs: v.packs || {}, heroes: v.heroes || {} }; } catch (e) { return { tests: {}, packs: {}, heroes: {} }; } })();
 const AB_KEY = 'zg-ab';
 const AB = (() => { try { const v = JSON.parse(localStorage.getItem(AB_KEY) || '{}'); return v && typeof v === 'object' && !Array.isArray(v) ? v : {}; } catch (e) { return {}; } })();
 let bgForce = (() => { try { const v = (new URLSearchParams(location.search).get('ozadje') || '').toUpperCase(); return /^[A-Z]$/.test(v) ? v : null; } catch (e) { return null; } })();
 // Nastavitve → Razvoj → Kakovost slik: 'auto' (the default) leaves the choice to the A/B test, as before. 'high' shows the
 // Codex parallax pack of the sunset (B) where the test would show A. 'low' shows the picture already in the game (A)
-// where the test would show the sunset (B). Winter (D) has no low picture yet, so it stays high. Martin Krpan is not part yet.
+// where the test would show the sunset (B). Winter (D) has no low picture yet, so it stays high. Martin Krpan follows the
+// same choice, but only 'high' changes him (see below); 'auto' and 'low' keep the sprite already in the game.
 const FID_KEY = 'zg-fidelity';
 const fidelity = () => { try { const v = localStorage.getItem(FID_KEY); return v === 'high' || v === 'low' ? v : 'auto'; } catch (e) { return 'auto'; } };
-const setFidelity = v => { try { if (v === 'high' || v === 'low') localStorage.setItem(FID_KEY, v); else localStorage.removeItem(FID_KEY); } catch (e) { /* no storage */ } };
+const setFidelity = v => { try { if (v === 'high' || v === 'low') localStorage.setItem(FID_KEY, v); else localStorage.removeItem(FID_KEY); } catch (e) { /* no storage */ } applyHeroFidelity(); };
 const bgPack = (key, v) => { const t = BGX.tests[key], id = t && t.variants && t.variants[v]; return id ? BGX.packs[id] || null : null; };
 const bgReady = (key, v) => v === 'A' || !!bgPack(key, v);
 const bgForced = key => !!(bgForce && BGX.tests[key] && bgReady(key, bgForce));
+// ---------------------------------------------------------------- Martin Krpan in Visoka (Codex's pack, art/manifests/martin-krpan.json)
+// BGX.heroes.krpan (build.py): `strip` is the 96×48 idle | attack picture, which replaces SPRITES.krpan so every card, portrait
+// and the codex shows him; `sheet` holds the frames, one row a sequence (tools/art_krpan_sheet.py), which the battle, the road
+// and the hero screens play (game.css .spr.hi). The skills follow the revised specification (docs/characters/martin-krpan):
+// skill 1 Lipov kij, skill 2 Kmečka moč with rank 1, 2, 3 = two punches, salt sacks, boulder, skill 3 Mesarica.
+// Running and victory frames are not delivered yet: the road and the victory use a hop in place (game.css hop).
+const HERO_SEQ = { krpan: { idle: 'idle', 1: ['cudgel-strike'], 2: ['kmecka-moc-r1-double-punch', 'kmecka-moc-r2-salt-sacks', 'kmecka-moc-r3-boulder'], 3: ['mesarica-slash'] } };
+const heroHi = id => fidelity() === 'high' && !!BGX.heroes[id];
+const HERO_LOW = {};   // the sprites already in the game, to go back to
+function applyHeroFidelity() { Object.keys(BGX.heroes).forEach(id => { if (!(id in HERO_LOW)) HERO_LOW[id] = SPRITES[id]; SPRITES[id] = heroHi(id) ? BGX.heroes[id].strip : HERO_LOW[id]; }); }
+// the sheet row for skill `tier` at `rank` (1–3), or null when the hero has no frames for it
+function heroSeqRow(id, tier, rank) {
+  const H = BGX.heroes[id], list = HERO_SEQ[id] && HERO_SEQ[id][tier];
+  const s = H && list && H.seqs[list[Math.min(list.length, Math.max(1, +rank || 1)) - 1]];
+  return s ? s.row : null;
+}
 // The variant the fidelity choice shows in place of v (the test's or the address's). Winter (D) and the preview C stay as chosen.
 const fidVariant = (key, v) => {
   const f = fidelity();
@@ -49,6 +66,7 @@ const bgVariant = key => fidVariant(key, bgTestVariant(key));
 // for src/stats.js: ozadje-ptuj=B, or B(predogled) when the address chose it
 const bgStatTags = () => Object.keys(BGX.tests).map(k => `ozadje-${k}=${bgVariant(k)}${bgForced(k) ? '(predogled)' : ''}`);
 
+applyHeroFidelity();
 const bgMotion = () => !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 // The pack's layers in a scene (travel, battle, gallery), or null for variant A, whose scene keeps its one background.
 // Layers behind the actors go first, under the same dimming variant A gets in that scene; a foreground layer goes

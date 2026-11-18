@@ -174,6 +174,30 @@ run(async () => {
   check(!scene.auto && scene.high && !scene.lowB && scene.lowD && scene.radiosAuto.auto === true && scene.radiosLow.low === true && scene.radiosLow.auto === false,
     'the travel scene: Visoka draws the layered pack, Nizka the picture in the game, winter stays layered; Nastavitve shows the stored choice', JSON.stringify(scene));
 
+  // ---------------------------------------------------------------- Martin Krpan follows the same setting (Codex's pack = Visoka; the sprite in the game = Samodejno and Nizka)
+  const kp = await ev(async () => { const Z = window.__ZG, out = {}, wait = ms => new Promise(r => setTimeout(r, ms));
+    Z.S.testMode = true; Z.S.mode = 'calm';
+    const look = async f => { if (f) localStorage.setItem('zg-fidelity', f); else localStorage.removeItem('zg-fidelity');
+      Z.go('settings'); const r = document.querySelector(`input.set-fid[value="${f || 'auto'}"]`); r.checked = true; r.dispatchEvent(new Event('change', { bubbles: true })); await wait(50);
+      Z.newRun('krpan'); Z.joinHero('kurent'); Z.go('travel'); await wait(80);
+      const el = document.querySelector('.party .spr[data-hero="krpan"], .party .spr.hi'); const k = [...document.querySelectorAll('.party .spr')][0];
+      return { hi: !!(k && k.classList.contains('hi')), bg: k ? (k.querySelector('.sp').style.backgroundImage || '').length : 0 }; };
+    out.auto = await look(null); out.high = await look('high'); out.low = await look('low');
+    const H = Z.BGX.heroes.krpan; out.rows = H ? Object.fromEntries(Object.entries(H.seqs).map(([n, q]) => [n, q.row])) : null;
+    localStorage.removeItem('zg-fidelity'); return out; });
+  check(!kp.auto.hi && kp.high.hi && !kp.low.hi && kp.high.bg > kp.low.bg, 'Martin Krpan: Samodejno and Nizka keep the sprite already in the game, Visoka uses Codex\'s sheet', JSON.stringify({ ...kp, rows: undefined }));
+  check(kp.rows && Object.keys(kp.rows).join() === 'idle,cudgel-strike,kmecka-moc-r1-double-punch,kmecka-moc-r2-salt-sacks,kmecka-moc-r3-boulder,mesarica-slash'
+    || (kp.rows && ['idle', 'cudgel-strike', 'kmecka-moc-r1-double-punch', 'kmecka-moc-r2-salt-sacks', 'kmecka-moc-r3-boulder', 'mesarica-slash'].every(n => n in kp.rows)),
+    'the Krpan sheet holds idle, Lipov kij, the three Kmečka moč ranks and Mesarica', JSON.stringify(kp.rows));
+  const seq = await ev(async () => { const Z = window.__ZG; localStorage.setItem('zg-fidelity', 'high');
+    Z.S.testMode = true; Z.S.mode = 'calm'; Z.newRun('krpan'); Z.joinHero('kurent'); Z.go('travel');
+    const spr = document.querySelector('.party .spr.hi'), rows = Z.BGX.heroes.krpan.seqs, out = {};
+    if (!spr) { localStorage.removeItem('zg-fidelity'); return null; }
+    for (const [t, r, n] of [[1, 1, 'cudgel-strike'], [2, 1, 'kmecka-moc-r1-double-punch'], [2, 2, 'kmecka-moc-r2-salt-sacks'], [2, 3, 'kmecka-moc-r3-boulder'], [3, 1, 'mesarica-slash'], [3, 3, 'mesarica-slash']]) {
+      Z.attackAnim(spr, t, document.querySelector('.scene'), r); out[`${t}/${r}`] = [spr.style.getPropertyValue('--r').trim(), String(rows[n].row)]; }
+    localStorage.removeItem('zg-fidelity'); return out; });
+  check(seq && Object.values(seq).every(([got, want]) => got === want), 'Krpan\'s skills use their own rows: Lipov kij, Kmečka moč R1 / R2 / R3, Mesarica (any rank)', JSON.stringify(seq));
+
   check(errors.length === 0, 'no page or console errors', errors.join(' | '));
   return ctx;
 });

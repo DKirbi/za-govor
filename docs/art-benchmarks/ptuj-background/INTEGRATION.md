@@ -41,5 +41,6 @@ Cloud drift uses the existing renderer's tiled-layer movement and respects reduc
 - Winter (D, `ptuj-zima`) has no low picture yet, so it stays on its Codex pack under both settings. Only
   `?ozadje=D` shows it until the Game Director assigns it.
 - The Codex pack's low copies were removed: they were half-size Codex layers, not the lower tier.
-- Martin Krpan's pictures are not part of this setting yet. Which of his pictures has a higher and a lower
-  version is still open.
+- Martin Krpan's sprites follow this setting since 18 Nov: *Visoka* uses Codex's sheet
+  (`art/exports/characters/martin-krpan/martin-krpan-sheet.png`, built by `tools/art_krpan_sheet.py`), *Samodejno*
+  and *Nizka* the sprite already in the game. The sheet has no running or victory frames, so both show a small hop in place.

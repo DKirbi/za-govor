@@ -602,7 +602,7 @@ const CHARS = [
     note: 'Rogovi, medvedji kožuh, palica s kačo in zelene oči. Perunov večni nasprotnik, zato je zemeljski in temen, kjer je Perun nebesen in svetel. Najmočnejši med vsemi: večja postava, najtrši udarci. Zaigraš ga lahko šele po koncu zgodbe.' },
 ];
 CHARS.push(
-  { id: 'krpan', name: 'Martin Krpan', c: '#c59a62', sub: 'silak z Vrha · močan, počasen udar', moves: ['Zamah', 'Kobilica', 'Lipov kij'], words: ['SOL', 'KOBILA', 'BRDAVS'], vals: ['−7', '−18', '−38'], extra: 'omami šefa',
+  { id: 'krpan', name: 'Martin Krpan', c: '#c59a62', sub: 'silak z Vrha · močan, počasen udar', moves: ['Lipov kij', 'Kmečka moč', 'Mesarica'], words: ['SOL', 'KOBILA', 'BRDAVS'], vals: ['−10', '−8 · dvakrat', '−10 · krvavi 2 s'], extra: 'rana krvavi',
     note: 'Širok klobuk, brki, telovnik, na hrbtu vreča soli, v roki lipov kij. Na srednji karti dvigne kobilico s ceste, na največji premaga Brdavsa.' },
   { id: 'jurij', name: 'Zeleni Jurij', c: '#4fae5a', sub: 'znanilec pomladi · zdravi malo in pogosto', moves: ['Popek', 'Brstenje', 'Jurjevo'], words: ['LIST', 'BREZA', 'POMLAD'], vals: ['+4 zdravja', '+10 zdravja', '+22 zdravja'], extra: 'odklene vse črke',
     note: 'Od glave do kolen oblečen v brezovo zelenje s cvetjem, v roki brezova veja. Na največji karti prijezdi na belem konju.' },
@@ -717,13 +717,20 @@ function setSound(on) {
 }
 let SEL_N = 0, CARD_Z = 10;
 function spriteEl(id, c, cls = '') {
-  return h('div', { class: 'actor hero spr ' + cls, style: { '--c': c, '--art': SPR_SIZE[id] } }, h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[id]})`, 'animation-delay': (-rnd(12) / 10) + 's' } }));
+  // Visoka (src/backgrounds.js): a hero with frames plays them from the sheet (game.css .spr.hi); the others use their strip
+  const hi = heroHi(id), H = hi && BGX.heroes[id];
+  return h('div', { class: 'actor hero spr ' + (hi ? 'hi ' : '') + cls, 'data-hero': id, style: hi ? { '--c': c, '--art': SPR_SIZE[id], '--cols': H.cols, '--rows': H.rows, '--r': H.seqs.idle.row } : { '--c': c, '--art': SPR_SIZE[id] } },
+    h('i', { class: 'sp', style: { 'background-image': `url(${hi ? H.sheet : SPRITES[id]})`, 'animation-delay': (-rnd(12) / 10) + 's' } }));
 }
 function replay(el, ...cls) { el.classList.remove(...cls); void el.offsetWidth; el.classList.add(...cls); }
-function attackAnim(el, tier, sceneEl) {
+function attackAnim(el, tier, sceneEl, rank) {
   if (!el || !el.classList.contains('spr')) return;
+  // a hero with frames (Visoka): the sequence of this skill and rank, four frames in 0,72 s, instead of the lunge
+  const row = el.classList.contains('hi') ? heroSeqRow(el.dataset.hero, tier, rank) : null, idle = row !== null && BGX.heroes[el.dataset.hero].seqs.idle.row;
+  // spriteEl gives the layer a random negative delay so the idles are out of step; a sequence must start at its first frame
+  if (row !== null) { el.style.setProperty('--r', row); const sp = el.querySelector('.sp'); if (sp) sp.style.animationDelay = '0s'; }
   replay(el, ...(tier === 3 ? ['atk', 'atk3'] : ['atk'])); if (tier !== 3) el.classList.remove('atk3');
-  clearTimeout(el._atk); el._atk = setTimeout(() => el.classList.remove('atk', 'atk3'), tier === 3 ? 650 : 430);
+  clearTimeout(el._atk); el._atk = setTimeout(() => { el.classList.remove('atk', 'atk3'); if (row !== null) el.style.setProperty('--r', idle); }, row !== null ? 740 : tier === 3 ? 650 : 430);
   if (tier === 3 && sceneEl) { replay(sceneEl, 'flash'); clearTimeout(sceneEl._fl); sceneEl._fl = setTimeout(() => sceneEl.classList.remove('flash'), 420); }
 }
 
@@ -736,7 +743,7 @@ const KIT = {
   veles:   { ini: 'Ve', kit: 'venom', role: 'strup, zadene vse', domain: ['rog', 'medved', 'kača', 'korenina', 'živina', 'volna', 'čreda', 'zaklad', 'tema', 'pesem'] },
   dazbog:  { ini: 'Da', kit: 'light', role: 'luč: naslednja beseda močnejša', domain: ['dan', 'zarja', 'sonce', 'jutro', 'voz', 'žarek', 'svetloba', 'zlato', 'nebo', 'dar'] },
   stribog: { ini: 'St', kit: 'wind', role: 'zadene vse', domain: ['veter', 'burja', 'vihar', 'sapa', 'piš', 'zrak', 'oblak', 'jadro', 'krilo', 'pero'] },
-  krpan:   { ini: 'Kp', kit: 'heavy', role: 'težek udar', domain: ['sol', 'kobila', 'kij', 'lipa', 'cesar', 'voz', 'mesar', 'tovor', 'cesta', 'pismo'] },
+  krpan:   { ini: 'Kp', kit: 'reviewed', role: 'težek udar', domain: ['sol', 'kobila', 'kij', 'lipa', 'cesar', 'voz', 'mesar', 'tovor', 'cesta', 'pismo'] },
   jurij:   { ini: 'Ju', kit: 'bloom', role: 'zdravi malo + šibek udar', domain: ['list', 'breza', 'pomlad', 'trava', 'cvet', 'veja', 'zelenje', 'konj', 'rosa', 'popek'] },
   kurent:  { ini: 'Ku', kit: 'reviewed', role: 'zamik in hrup', domain: ['zvon', 'zvonec', 'maska', 'pust', 'kožuh', 'zima', 'ples', 'krof', 'hrup', 'jež'] },
   matjaz:  { ini: 'Ma', kit: 'reviewed', role: 'ščit in vojska', domain: ['meč', 'krona', 'kralj', 'vojska', 'brada', 'gora', 'miza', 'lipa', 'krokar', 'spanje'] },
@@ -1108,7 +1115,7 @@ function renderHeroMoment(arg) {
   const demo = () => {
     if (hs && hs.down) return;
     const t = knownT[(arg.demo = ((arg.demo || 0) % knownT.length)) ]; arg.demo++;
-    attackAnim(heroEl, t, ctx.scene);
+    attackAnim(heroEl, t, ctx.scene, sst && S.run ? sst.sk[t - 1] : 1);
     spawnCard(heroEl, { tier: t, c: ch.c, name: ch.name, move: ch.moves[t - 1], word: ch.words[t - 1], value: ch.vals[t - 1], extra: t === 3 ? ch.extra : null, art: id }, ctx);
   };
   const spirit = h('div', { class: 'spirit' + (kind === 'freed' ? ' cursed' : '') + (hs && hs.down ? ' down' : '') + (id === 'veles' ? ' grand' : ''), ref: el => ctx.scene = el },
@@ -1938,7 +1945,7 @@ function heroAct(a, w) {
   }
   const hero = HEROES[a.k], el = UI.heroEls[a.k];
   const card = { tier: a.tier, c: hero.c, name: hero.name, move: hero.moves[a.tier - 1], word: UP(w), portrait: hero.ini, stack: a.n, art: hero.id };
-  attackAnim(el, a.tier, UI.scene); S.lastHero = a.k;
+  attackAnim(el, a.tier, UI.scene, a.rank); S.lastHero = a.k;
   // Ajdovska deklica, Erazem, Kralj Matjaž, Kresnik and Kurent: their own kits with ranks 1–3 (src/progression.js)
   if (hero.kit === 'reviewed') { reviewedAct(a, target, card); spawnCard(el, card); renderEnemies(); return; }
   noteAttack(target, a.k);   // the party's XP counts every hero's attacks (src/progression.js)
@@ -3260,6 +3267,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, gainPartyXp, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, gainPartyXp, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 

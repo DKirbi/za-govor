@@ -167,6 +167,31 @@ run(async () => {
     'Veščine lists Metanje skal, Varstvo popotnikov and Okamnitev with their own rank 2 and 3', panel.text.slice(0, 400));
   await shot('progression-03-skills');
 
+  // 10. Martin Krpan (reviewed 18 Nov): Lipov kij 10 / 16 / 20, Kmečka moč 8×2 / 20 / 22 split between two enemies, Mesarica 10 / 14 / 20 + a bleed
+  const kp = async (sk, n, foes = ['skrat']) => { await battle(page, ['krpan'], foes);
+    await ev(page, sk => { const Z = window.__ZG; Z.S.heroes[0].sk = sk; Z.B.enemies.forEach(e => { e.hp = e.maxHp = 999; e.dot = null; }); }, sk);
+    const q = await play(page, 0, n); q.dot = await ev(page, () => window.__ZG.B.enemies.map(e => e.dot || null)); return q; };
+  let q = await kp([1, 0, 0], 1);
+  check(q.dmg[0] === 10, 'Krpan: Lipov kij rank 1 hits for 10', JSON.stringify(q));
+  q = await kp([3, 0, 0], 1);
+  check(q.dmg[0] === 20, 'Krpan: Lipov kij rank 3 hits for 20', JSON.stringify(q));
+  q = await kp([1, 1, 0], 2);
+  check(q.dmg[0] === 10 + 16, 'Krpan: Kmečka moč rank 1 is two punches of 8 on top of Lipov kij (26)', JSON.stringify(q));
+  q = await kp([1, 2, 0], 2);
+  check(q.dmg[0] === 10 + 20, 'Krpan: Kmečka moč rank 2 (the salt sacks) hits one enemy for 20', JSON.stringify(q));
+  q = await kp([1, 3, 0], 2, ['skrat', 'skrat']);
+  check(q.dmg[0] === 10 + 11 && q.dmg[1] === 11, 'Krpan: Kmečka moč rank 3 (the boulder) splits 22 between two enemies, 11 each', JSON.stringify(q));
+  q = await kp([1, 3, 0], 2);
+  check(q.dmg[0] === 10 + 22, 'Krpan: the boulder against one enemy deals all 22', JSON.stringify(q));
+  q = await kp([1, 1, 1], 3);
+  check(q.dmg[0] === 10 + 16 + 10 && q.dot[0] === 'krvavi', 'Krpan: Mesarica rank 1 hits for 10 and leaves a bleed (all three skills: 36)', JSON.stringify(q));
+  q = await kp([1, 1, 3], 3);
+  check(q.dmg[0] === 10 + 16 + 20, 'Krpan: Mesarica rank 3 hits for 20', JSON.stringify(q));
+  const bleed = await ev(page, async () => { const Z = window.__ZG, e = Z.B.enemies[0]; const t0 = e.burnTurns, b = e.burn; await new Promise(r => setTimeout(r, 2300)); return { t0, b, hp: e.hp }; });
+  check(bleed.t0 === 4 && bleed.hp === 999 - 46, 'Krpan: Mesarica rank 3 bleeds for 4 s (calm mode ticks per word, as Kresnik\'s fire does; nothing extra on the clock)', JSON.stringify(bleed));
+  const kt = await ev(page, () => { const Z = window.__ZG; Z.S.heroes[0].pts = 1; Z.go('train', { back: () => Z.go('title') }); return (document.querySelector('.train .skills') || {}).textContent || ''; });
+  check(/Lipov kij/.test(kt) && /Kmečka moč/.test(kt) && /Mesarica/.test(kt) && !/Kobilica|Zamah\b/.test(kt.replace(/Zamah z/g, '')) || /Dva zaporedna udarca/.test(kt), 'Veščine shows Krpan\'s new skills with their own rank text', kt.slice(0, 400));
+
   check(!errors.length, 'no page errors', errors.join(' | '));
   return ctx;
 });

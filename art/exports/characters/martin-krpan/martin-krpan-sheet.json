@@ -1,0 +1,31 @@
+{
+ "frame": 48,
+ "cols": 4,
+ "rows": 6,
+ "seqs": {
+  "idle": {
+   "row": 0,
+   "frames": 4
+  },
+  "cudgel-strike": {
+   "row": 1,
+   "frames": 4
+  },
+  "kmecka-moc-r1-double-punch": {
+   "row": 2,
+   "frames": 4
+  },
+  "kmecka-moc-r2-salt-sacks": {
+   "row": 3,
+   "frames": 4
+  },
+  "kmecka-moc-r3-boulder": {
+   "row": 4,
+   "frames": 4
+  },
+  "mesarica-slash": {
+   "row": 5,
+   "frames": 4
+  }
+ }
+}

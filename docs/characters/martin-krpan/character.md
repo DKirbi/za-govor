@@ -1,6 +1,6 @@
 # Martin Krpan
 
-> **Status:** Character identity, role, three-skill structure and final story-card subject CONFIRMED. Skill 1 rank values and Mesarica rank values CONFIRMED. Kmečka moč rank values and some targeting details OPEN. Artwork production can proceed from the visual direction below.
+> **Status:** Character identity, role, three-skill structure and final story-card subject CONFIRMED. Skill 1 rank values and Mesarica rank values CONFIRMED. Kmečka moč rank values CONFIRMED by the Game Director on 18 Nov 2026; a few targeting details stay OPEN. Artwork production can proceed from the visual direction below.
 > **Character type:** Slovenian literary hero / literary-folklore figure
 > **Current role:** Starting hero; heavy physical attacker
 > **Current prototype reference:** `src/game.js`, `docs/progression-design.md`
@@ -50,15 +50,15 @@ Kmečka moč represents Krpan's exceptional physical strength. Its three ranks u
 Krpan delivers two consecutive punches.
 
 - Each punch is a separate hit and resolves separately.
-- Exact damage per hit and total damage are **OPEN**.
-- Exact target handling is **OPEN**.
+- **CONFIRMED (Game Director, 18 Nov 2026):** 8 damage per punch, 16 in total.
+- Target handling is **OPEN**. The game aims both punches at the one targeted enemy (implementation reading).
 
 #### Rank 2 — Vreči soli
 
 Krpan's mare appears beside him carrying two enormous sacks of salt. Krpan takes the sacks and hurls them at his opponents.
 
 - The two sacks are the visual focus of the attack.
-- Exact damage, target count and whether the sacks resolve as separate hits or one combined attack are **OPEN**.
+- **CONFIRMED (Game Director, 18 Nov 2026):** 20 damage to one target, resolved as one combined attack.
 - The mare helps present the attack but does not kick, charge or attack enemies.
 
 #### Rank 3 — Ogromna skala
@@ -66,9 +66,9 @@ Krpan's mare appears beside him carrying two enormous sacks of salt. Krpan takes
 Krpan lifts and hurls an enormous boulder.
 
 - The boulder can damage up to two enemies.
+- **CONFIRMED (Game Director, 18 Nov 2026):** 22 damage, split between the two enemies it hits (11 each); a single enemy takes all 22. The game takes the targeted enemy and the one beside it (implementation reading; the even split is the reading of "split").
 - Damage is high, immediate, flat direct damage.
 - This is **not** damage over time and does not apply bleed or another lingering damage status.
-- Exact damage and how damage is distributed between the two targets are **OPEN**.
 
 ### Skill 3 — Mesarica
 
@@ -122,9 +122,8 @@ The exact composition and execution will be developed during the full roster art
 
 ## 6. Open decisions
 
-- Kmečka moč R1: damage per punch, total damage and target handling.
-- Kmečka moč R2: damage, target count and whether the two sacks resolve as separate hits or one combined attack.
-- Kmečka moč R3: exact flat damage and damage distribution when two enemies are hit.
+- Kmečka moč R1: which enemy takes the punches (the game uses the one targeted).
+- Kmečka moč R3: which second enemy the boulder hits (the game uses the one beside the target).
 - Exact placement of the separate folk-art illustration of Krpan lifting his mare.
 - Animation timing and implementation details should follow the shared combat rules and be tested without changing the confirmed skill structure.
 

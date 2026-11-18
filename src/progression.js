@@ -1,7 +1,7 @@
 
 // ============================================================ reviewed heroes: own skill kits with ranks 1–3, XP from the fight
-// The testing pass of docs/progression-design.md §4 for the five heroes with a reviewed character specification
-// (docs/characters/<hero>/character.md): Ajdovska deklica, Erazem Predjamski, Kralj Matjaž, Kresnik and Kurent.
+// The testing pass of docs/progression-design.md §4 for the six heroes with a reviewed character specification
+// (docs/characters/<hero>/character.md): Ajdovska deklica, Erazem Predjamski, Kralj Matjaž, Kresnik, Kurent and Martin Krpan.
 // Every other hero, god and enemy keeps the rules it had.
 // - A word still fires skill 1, 2 or 3 by the number of the hero's own letters (firedTier). Skill points learn skills
 //   2 and 3 and raise each learned skill to rank 3 (spendPoint, src/skills.js): eight points, as for everyone.
@@ -15,7 +15,7 @@
 //   learning them made the hero weaker. Now a skill does at least as much as the one below it at the same rank.
 // - Experience: every hero's attacks on an enemy and the damage dealt to it, plus its level, when it is beaten
 //   (XP_RULE); on a journey it goes to the party's pool (balance D, src/game.js gainPartyXp).
-const REVIEWED = ['ajda', 'erazem', 'matjaz', 'kresnik', 'kurent'];
+const REVIEWED = ['ajda', 'erazem', 'matjaz', 'kresnik', 'kurent', 'krpan'];
 const isReviewed = id => REVIEWED.includes(id);
 
 // rank values per skill (index 0 = skill 1); every array is [rank 1, rank 2, rank 3]
@@ -37,6 +37,13 @@ const RK = {
     { name: 'Kresna strela', dmg: [10, 13, 16], chain: [0, 0, 6], burn: [3, 3, 3] },    // rank 3 jumps to the enemy beside the target; REBALANCE (was 12/16/18, chain 8)
     { name: 'Kresna moč', dmg: [5, 7, 9], charges: [1, 2, 3], back: [0.25, 0.5, 0.7], gold: 0.5 },   // name OPEN; a flame on every enemy, then the next
                                                                                          // 1/2/3 blows that hurt him are partly given back; REBALANCE (was no damage, one blow per use)
+  ],
+  krpan: [
+    { name: 'Lipov kij', dmg: [10, 16, 20] },                                            // CONFIRMED (spec §3)
+    // Game Director, 18 Nov: rank 1 two punches of 8, each a hit of its own; rank 2 the sacks, 20 on one target; rank 3 the boulder, 22 split
+    // between up to two enemies (the target and the one beside it; one enemy takes all 22). Targeting of the punches (one enemy) is my reading.
+    { name: 'Kmečka moč', dmg: [8, 20, 22], hits: [2, 1, 1], foes: [1, 1, 2] },
+    { name: 'Mesarica', dmg: [10, 14, 20], bleed: [2, 3, 4] },                           // CONFIRMED (spec §3): bleed BURN_DPS a second for that many seconds
   ],
   erazem: [
     { name: 'Zamah z mečem', dmg: [7, 11, 15] },                                        // TEST damage
@@ -113,9 +120,9 @@ function foeBeside(target) {
 }
 // the heroes beside hero k in the party's order, still standing
 const heroesBeside = k => [k - 1, k + 1].filter(j => j >= 0 && j < HEROES.length && !S.heroes[j].down);
-function fixedBurn(e, sec, k) {   // Kresnik's fire: 2 a second, not scaled by the word
+function fixedBurn(e, sec, k, label = 'gori') {   // Kresnik's fire and Krpan's bleed (label 'krvavi'): 2 a second, not scaled by the word
   if (!e || e.hp <= 0) return;
-  e.dot = 'gori';
+  e.dot = label;
   if (S.mode === 'real') { e.burn = { dps: BURN_DPS, until: B.time + sec + 0.1, by: k }; e.burnAcc = 0; }   // +0.1 s so the last tick lands
   else { e.burnTurns = sec; e.burnPer = BURN_DPS; e.burnBy = k; }
 }
@@ -187,6 +194,14 @@ function reviewedAct(a, target, card) {
       let d = 0; alive().forEach(e => { d = Math.max(d, hit(v3(R.dmg, r), e)); });
       const n = v3(R.charges, r); B.restore[k] = { rank: r, n };
       say.push(`−${d} vsem`, `povrne ${Math.round(v3(R.back, r) * 100)} % ${n > 1 ? `naslednjih ${n} ran` : 'naslednje rane'}`); break; }
+    // Martin Krpan
+    case 'krpan1': say.push(`−${hit(v3(R.dmg, r))}`); break;
+    case 'krpan2': {
+      const n = v3(R.hits, r), foes = [target, v3(R.foes, r) > 1 ? foeBeside(target) : null].filter(e => e && e.hp > 0); let d = 0;
+      foes.forEach(e => { for (let i = 0; i < n; i++) d += hit(v3(R.dmg, r) / foes.length, e); });
+      say.push(`−${d}`, n > 1 ? `${n} udarca po ${v3(R.dmg, r)}` : foes.length > 1 ? `razdeljeno med ${foes.length} ${nForm(foes.length, FOES_N)}` : 'cilj'); break; }
+    case 'krpan3': {
+      const d = hit(v3(R.dmg, r)), s = v3(R.bleed, r); fixedBurn(target, s, k, 'krvavi'); say.push(`−${d}`, `krvavi ${s} s`); break; }
     // Erazem Predjamski
     case 'erazem1': say.push(`−${hit(v3(R.dmg, r))}`); break;
     case 'erazem2': {
@@ -332,6 +347,13 @@ const RANK_TEXT = {
     (R, r) => `Udarec z ognjenim mečem (${v3(R.dmg, r)}, zmaju ${Math.round(v3(R.dmg, r) * R.vsDragon)}); cilj gori ${v3(R.burn, r)} s po ${BURN_DPS}.`,
     (R, r) => `Strela v cilj (${v3(R.dmg, r)}); cilj gori ${v3(R.burn, r)} s po ${BURN_DPS}` + (v3(R.chain, r) ? `; preskoči še na sosednjega sovražnika (${v3(R.chain, r)}), ki tudi gori.` : '.'),
     (R, r) => { const n = v3(R.charges, r); return `Plamen zadene vse sovražnike (${v3(R.dmg, r)}); od ${n > 1 ? `naslednjih ${n} ran` : 'naslednje rane'} si povrne ${Math.round(v3(R.back, r) * 100)} %, družina dobi pol toliko zlatnikov.`; },
+  ],
+  krpan: [
+    (R, r) => `Udarec z lipovim kijem (${v3(R.dmg, r)}).`,
+    (R, r) => r === 1 ? `Dva zaporedna udarca s pestjo, po ${v3(R.dmg, r)}; vsak šteje posebej.`
+      : r === 2 ? `Kobilica prinese dve veliki vreči soli, Krpan ju vrže v cilj (${v3(R.dmg, r)}).`
+      : `Krpan dvigne in vrže ogromno skalo (${v3(R.dmg, r)}); škoda se razdeli med dva sovražnika.`,
+    (R, r) => `Natančen zasek z Mesarico (${v3(R.dmg, r)}); cilj krvavi ${v3(R.bleed, r)} s po ${BURN_DPS}.`,
   ],
   erazem: [
     (R, r) => `Zamah z mečem (${v3(R.dmg, r)}).`,

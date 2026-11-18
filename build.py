@@ -123,7 +123,31 @@ def background_packs():
     return {'tests': cfg.get('tests', {}), 'packs': packs}, notes
 
 
+def hero_sheets():
+    """High-fidelity hero art for Nastavitve → Razvoj → Kakovost slik = Visoka (Martin Krpan, from Codex's pack):
+    `strip` is the 96×48 idle | attack picture every card and portrait uses (SPRITES), `sheet` the frames of tools/art_krpan_sheet.py
+    (one row a sequence, 48×48 a frame) with its index. A missing or stale file leaves the hero out: the current sprite stays."""
+    out, notes = {}, []
+    man_rel, sheet_rel, idx_rel = 'art/manifests/martin-krpan.json', 'art/exports/characters/martin-krpan/martin-krpan-sheet.png', 'art/exports/characters/martin-krpan/martin-krpan-sheet.json'
+    if not all((root / r).is_file() for r in (man_rel, sheet_rel, idx_rel)):
+        return out, ['hero art krpan: pack not committed, the current sprite only']
+    man = json.loads(read(man_rel))
+    strip_rel = man['runtimeSheet']['path']
+    idx = json.loads(read(idx_rel))
+    sheet, strip = (root / sheet_rel).read_bytes(), (root / strip_rel).read_bytes()
+    sw, sh, _ = png_info(sheet, sheet_rel)
+    assert (sw, sh) == (idx['cols'] * idx['frame'], idx['rows'] * idx['frame']), f'{sheet_rel} is {sw}×{sh}, its index says {idx["cols"]}×{idx["rows"]} frames'
+    assert [s['id'] for s in man['sequences']] == list(idx['seqs']), f'{sheet_rel} is out of date: run python3 tools/art_krpan_sheet.py'
+    assert png_info(strip, strip_rel)[:2] == (96, 48), f'{strip_rel} must be 96×48'
+    uri = lambda b: 'data:image/png;base64,' + base64.b64encode(b).decode('ascii')
+    out['krpan'] = {'strip': uri(strip), 'sheet': uri(sheet), 'frame': idx['frame'], 'cols': idx['cols'], 'rows': idx['rows'], 'seqs': idx['seqs'], 'status': man.get('status', 'draft')}
+    notes.append(f"hero art krpan: {len(idx['seqs'])} sequences, {(len(sheet) + len(strip)) // 1024} KB, status {man.get('status', 'draft')}")
+    return out, notes
+
+
 bgdata, bgnotes = background_packs()
+heroes, heronotes = hero_sheets()
+bgdata['heroes'] = heroes; bgnotes += heronotes
 template = read('src/index.src.html')
 data = {'/*__LEX__*/': base64.b64encode((root / 'data/lexicon.bin').read_bytes()).decode('ascii'),
         '/*__CLUES__*/': read('data/clues.json'), '/*__WORLD__*/': read('data/world.json'), '/*__WORDS__*/': read('data/words.json'), '/*__MEANINGS__*/': read('data/meanings.json'),

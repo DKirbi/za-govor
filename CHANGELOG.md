@@ -78,6 +78,22 @@ Branch `feat/ptuj-bg-ab`, with the Codex art pack (#33). Details: `docs/art-benc
 - **Size:** the half-size copies of the Codex layers are removed, with `tools/art_ptuj_lowfi.py`. They were not
   the low tier. The single-file build is 18 MB, down from 21.8 MB.
 
+- **Martin Krpan follows *Kakovost slik* too** (Codex pack `codex/martin-krpan-sprite-assets`, merged into this branch).
+  - *Visoka* draws his Codex sprites; *Samodejno* and *Nizka* keep the sprite already in the game. A new
+    `tools/art_krpan_sheet.py` packs the frames into one 192 × 288 sheet (`martin-krpan-sheet.png/.json`), which
+    `build.py` embeds.
+  - The sheet has idle, Lipov kij, Kmečka moč R1 / R2 / R3 and Mesarica, and each attack plays its own row. The
+    pack has no running or victory frames yet: both show a slight jump in place until Codex adds them.
+- **Krpan's skills are now the reviewed ones** (a reviewed hero, like Kurent or Kresnik; `src/progression.js`),
+  replacing Zamah, Kobilica and Lipov kij:
+  - **Lipov kij** 10 / 16 / 20.
+  - **Kmečka moč** (Game Director, 18 Nov): rank 1 two punches of 8, rank 2 the sacks for 20 at one enemy, rank 3 the
+    boulder for 22 split between up to two enemies.
+  - **Mesarica** 10 / 14 / 20 and a bleed of 2 a second for 2 / 3 / 4 s, as in the specification. A bleed and a burn
+    share the enemy's one damage-over-time slot.
+  - Balance impact is untested: Krpan is the main starting hero and his old attacks (7 / 18 / 38, the last one
+    stunning) are gone.
+
 ## 0.14.0 — 17 Nov 2026 · zaprta alfa · Znanje cards fold their details
 - **Nova pot:** each Znanje card shows its figure, name and one line. What losing and a fallen hero
   mean is folded behind **Podrobnosti** beside the *Znanje* heading; it opens all three cards at once

@@ -227,7 +227,8 @@ run(async () => {
     st.sk[0] = 2; const more = await play();
     Math.random = rnd; return { w, base, more, tags: Z.upTags(0, 1) };
   });
-  check(cmp.more > cmp.base && cmp.tags.length === 1, 'a skill at stopnja 2 hits harder with the same word and gains its first extra effect', JSON.stringify(cmp));
+  // Martin Krpan is a reviewed hero since 18 Nov: his ranks come from RK (Lipov kij 10 / 16 / 20), not from the generic extra-effect tags
+  check(cmp.more > cmp.base && cmp.tags.length === 0, 'a reviewed hero\'s skill at stopnja 2 hits harder with the same word (Lipov kij 16 against 10); no generic extra-effect tag', JSON.stringify(cmp));
   // stopnje: a point raises a known skill up to stopnja 3 and no further
   const ranks = await page.evaluate(() => { const Z = window.__ZG, st = Z.S.heroes[0]; st.sk = [1, 0, 0]; Z.S.run.pts = 5;
     const r = [Z.spendPoint(0, 1), Z.spendPoint(0, 1), Z.spendPoint(0, 1), Z.spendPoint(0, 3), Z.spendPoint(0, 2)]; const out = { r, sk: st.sk.join(), pts: Z.S.run.pts }; st.sk = [1, 1, 1]; Z.S.run.pts = 0; return out; });
