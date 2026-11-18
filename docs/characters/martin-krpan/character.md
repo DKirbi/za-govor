@@ -103,6 +103,16 @@ Single-target only. Bleed is a separate damage-over-time status, not part of the
 
 Keep animations economical and readable at the existing gameplay sprite scale. Prefer a few strong key poses and clear impact frames over complex multi-part animation.
 
+### Approved travel, victory and downed states
+
+For the Martin Krpan sprite pack in PR #34, the following poses are approved:
+
+- **Running:** a four-frame right-facing loop in this order: left-foot contact, compression, right-foot contact, opposite compression. Keep the salt sack secured and the cudgel in his existing hand.
+- **Victory:** four frames: settle into a planted stance, raise a bare fist, hold briefly, then return to stance. Krpan is unarmed throughout this gesture.
+- **Downed:** one static kneeling pose with one knee down, the other boot planted and his head bowed. Keep the salt sack on his back and rest the cudgel tip-down beside him.
+
+These three Martin Krpan states establish a **proposed benchmark** for a future roster-wide sprite convention. They do not approve or define assets for any other character. Runtime animation integration remains open; the current renderer only exposes the existing idle/attack strip and down-state filter.
+
 ### Folk-art illustration — Krpan lifts his mare
 
 Create a separate traditional folk-art illustration showing Krpan lifting his mare above his head. This is a visual representation of his extraordinary strength and a literary episode from Levstik's tale.

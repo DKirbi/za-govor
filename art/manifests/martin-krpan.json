@@ -2,7 +2,7 @@
   "pack": "Martin Krpan gameplay sprites and separate mare-lifting folk-art concept",
   "version": "0.1.0",
   "status": "review",
-  "approval": "OPEN — Game Director review required",
+  "approval": "The original pack review remains open. The running, victory and downed pose sequences below were approved for this PR; this does not approve assets for other characters.",
   "canvas": {
     "frameWidth": 48,
     "frameHeight": 48,
@@ -17,9 +17,13 @@
   },
   "artDirection": "Modernized SNES/GBA-inspired pixel art, broad readable silhouette, wide hat, prominent moustache, cream shirt, red vest and sash, salt sack, dark trousers and boots, restrained warm palette and dark outline.",
   "processing": {
-    "sourceAtlases": "Six generated 2×2 pose atlases at 1263×1246. Each frame source cell is 631×623; the unused final source row/column is omitted.",
-    "exports": "Each cell is cropped separately, downsampled to 48×48 using nearest-neighbor, aligned so the lowest opaque pixel is row 47, alpha thresholded at 128 to preserve hard transparent edges, and quantized to the same 27-color palette.",
-    "preview": "The labeled preview is for review only. It is not a production sprite sheet and is not read by the game."
+    "exportScripts": [
+      "tools/export_martin_krpan_frames.ps1",
+      "tools/export_martin_krpan_states.py"
+    ],
+    "sourceAtlases": "The original six generated 2×2 pose atlases are 1263×1246. New running and victory sources are 2172×724 horizontal four-frame atlases; the new downed source is a single 1312×1199 pose.",
+    "exports": "Each source cell is cropped to its opaque bounds, downsampled with nearest-neighbor to fit within 44×44, centered horizontally and aligned so the lowest opaque pixel is row 47, alpha thresholded at 128, and quantized to the same 27-color palette.",
+    "preview": "The labeled PNG contact sheet and animation-preview.html are review tools only. The HTML preview plays running and victory and holds downed; neither is read by the game."
   },
   "sequences": [
     {
@@ -87,6 +91,45 @@
         "art/exports/characters/martin-krpan/animations/mesarica-slash/frame-03.png",
         "art/exports/characters/martin-krpan/animations/mesarica-slash/frame-04.png"
       ]
+    },
+    {
+      "id": "running",
+      "label": "Approved four-frame right-facing loop: left-foot contact, compression, right-foot contact, opposite compression. Krpan keeps his sack secured and carries the cudgel in its existing hand.",
+      "poseApproval": "Approved for this PR",
+      "playback": "Loop while the party travels toward the next fight.",
+      "sourceAtlas": "art/source/characters/martin-krpan/atlases/running-4f.png",
+      "sourceLayout": { "columns": 4, "rows": 1, "frameOrder": [1, 2, 3, 4] },
+      "framesBackToFront": [
+        "art/exports/characters/martin-krpan/animations/running/frame-01.png",
+        "art/exports/characters/martin-krpan/animations/running/frame-02.png",
+        "art/exports/characters/martin-krpan/animations/running/frame-03.png",
+        "art/exports/characters/martin-krpan/animations/running/frame-04.png"
+      ]
+    },
+    {
+      "id": "victory",
+      "label": "Approved four-frame one-shot: settle into a planted stance, raise a bare fist, hold, return to stance. No weapon or effect.",
+      "poseApproval": "Approved for this PR",
+      "playback": "Play when the party defeats an enemy.",
+      "sourceAtlas": "art/source/characters/martin-krpan/atlases/victory-4f.png",
+      "sourceLayout": { "columns": 4, "rows": 1, "frameOrder": [1, 2, 3, 4] },
+      "framesBackToFront": [
+        "art/exports/characters/martin-krpan/animations/victory/frame-01.png",
+        "art/exports/characters/martin-krpan/animations/victory/frame-02.png",
+        "art/exports/characters/martin-krpan/animations/victory/frame-03.png",
+        "art/exports/characters/martin-krpan/animations/victory/frame-04.png"
+      ]
+    },
+    {
+      "id": "downed",
+      "label": "Approved one-frame static kneel: one knee down, the other boot planted, head bowed, salt sack secured, cudgel resting tip-down beside him.",
+      "poseApproval": "Approved for this PR",
+      "playback": "Hold while Krpan is downed.",
+      "sourceAtlas": "art/source/characters/martin-krpan/atlases/downed.png",
+      "sourceLayout": { "columns": 1, "rows": 1, "frameOrder": [1] },
+      "framesBackToFront": [
+        "art/exports/characters/martin-krpan/animations/downed/frame-01.png"
+      ]
     }
   ],
   "runtimeSheet": {
@@ -104,9 +147,11 @@
     "literaryNote": "Levstik's text describes Krpan carrying the mare and its load aside for the carriage. The overhead lift shown here is an artistic interpretation, not a literal staging specified by the passage."
   },
   "preview": "art/previews/characters/martin-krpan/martin-krpan-sprite-preview.png",
+  "animationPreview": "art/previews/characters/martin-krpan/animation-preview.html",
+  "benchmark": "These three states establish a proposed benchmark for a future roster-wide sprite convention. This PR does not create or imply approval of other characters' assets.",
   "openDecisions": [
     "Character specification names Lipov kij, Kmečka moč and Mesarica; current progression design and code use Zamah, Kobilica and Lipov kij. These frames are named by visible action only; skill-to-asset mapping remains OPEN.",
-    "Animation timing and final runtime integration remain OPEN for implementation review.",
+    "Runtime animation integration remains OPEN because the current renderer exposes only the existing idle/attack strip and down-state filter; this PR adds assets and preview playback without changing game behavior.",
     "The mare-lifting folk-art illustration's exact placement remains OPEN.",
     "The final Brdavs story card is a separate confirmed subject and is not part of this asset pack."
   ],
@@ -125,5 +170,5 @@
       "path": "docs/progression-design.md"
     }
   ],
-  "reviewStatus": "PROPOSED — Game Director review required; assets are not approved or integrated."
+  "reviewStatus": "Original pack review remains open. The three added pose sequences have pose approval and exported production frames; they are not connected to runtime animation logic in this PR. The remaining pack assets retain their prior review status."
 }

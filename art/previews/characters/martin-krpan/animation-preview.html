@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Martin Krpan — approved sprite states</title>
+<style>
+  :root { color-scheme: dark; font: 16px system-ui, sans-serif; background: #191e2a; color: #eee9da; }
+  body { margin: 2rem auto; max-width: 760px; padding: 0 1rem; }
+  h1, h2 { color: #f4cd80; }
+  .controls { display: flex; gap: .6rem; flex-wrap: wrap; }
+  button { color: inherit; background: #393447; border: 1px solid #756a78; border-radius: .35rem; padding: .55rem .85rem; cursor: pointer; }
+  .stage { margin: 1rem 0; min-height: 320px; display: grid; place-items: center; background: repeating-conic-gradient(#202636 0 25%, #1b2230 0 50%) 50% / 32px 32px; border: 1px solid #393447; }
+  .stage img { width: 288px; height: 288px; object-fit: contain; image-rendering: pixelated; }
+  .note { color: #c0aa8e; }
+</style>
+<body>
+  <h1>Martin Krpan — sprite state preview</h1>
+  <p>Approved state poses: running, weapon-free victory salute, and static kneeling when downed.</p>
+  <div class="controls" role="group" aria-label="Choose state">
+    <button data-state="running">Running</button>
+    <button data-state="victory">Victory</button>
+    <button data-state="downed">Downed</button>
+    <button id="toggle">Pause</button>
+  </div>
+  <div class="stage"><img id="sprite" alt="Martin Krpan animation frame"></div>
+  <h2 id="label">Running</h2>
+  <p class="note">Frames are separate 48×48 transparent PNGs. This preview is an asset review tool; it does not change game behavior.</p>
+  <script>
+    const counts = { running: 4, victory: 4, downed: 1 };
+    const sprite = document.querySelector('#sprite');
+    const label = document.querySelector('#label');
+    let state = 'running', frame = 0, playing = true, last = 0;
+    const src = (name, n) => `../../../exports/characters/martin-krpan/animations/${name}/frame-${String(n + 1).padStart(2, '0')}.png`;
+    function show() {
+      sprite.src = src(state, frame);
+      sprite.alt = `Martin Krpan ${state}, frame ${frame + 1} of ${counts[state]}`;
+      label.textContent = `${state[0].toUpperCase()}${state.slice(1)} — frame ${frame + 1}/${counts[state]}`;
+    }
+    document.querySelectorAll('[data-state]').forEach(button => button.addEventListener('click', () => {
+      state = button.dataset.state; frame = 0; last = 0; show();
+    }));
+    document.querySelector('#toggle').addEventListener('click', event => {
+      playing = !playing; event.currentTarget.textContent = playing ? 'Pause' : 'Play'; last = 0;
+    });
+    function tick(now) {
+      if (playing && counts[state] > 1 && now - last >= 150 && (state === 'running' || frame < counts[state] - 1)) {
+        frame = state === 'running' ? (frame + 1) % counts[state] : frame + 1;
+        last = now; show();
+      }
+      requestAnimationFrame(tick);
+    }
+    show(); requestAnimationFrame(tick);
+  </script>
+</body>
+</html>

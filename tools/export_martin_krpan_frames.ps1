@@ -6,12 +6,15 @@ $exportRoot = Join-Path $root 'art/exports/characters/martin-krpan/animations'
 $previewPath = Join-Path $root 'art/previews/characters/martin-krpan/martin-krpan-sprite-preview.png'
 
 $sequences = @(
-    @{ id = 'idle'; atlas = 'atlases/idle-4f.png'; title = 'IDLE - subtle breathing' },
-    @{ id = 'cudgel-strike'; atlas = 'atlases/cudgel-strike-4f.png'; title = 'LIPOV KIJ - cudgel strike' },
-    @{ id = 'double-punch'; atlas = 'atlases/double-punch-4f.png'; title = 'KMECKA MOC R1 - two punches' },
-    @{ id = 'salt-sacks'; atlas = 'atlases/salt-sacks-4f.png'; title = 'KMECKA MOC R2 - salt sacks + mare' },
-    @{ id = 'boulder-throw'; atlas = 'atlases/boulder-throw-4f.png'; title = 'KMECKA MOC R3 - boulder throw' },
-    @{ id = 'mesarica-slash'; atlas = 'atlases/mesarica-slash-4f.png'; title = 'MESARICA - precise slash' }
+    @{ id = 'idle'; atlas = 'atlases/idle-4f.png'; title = 'IDLE - subtle breathing'; columns = 2; rows = 2; frames = 4; fitContent = $false },
+    @{ id = 'cudgel-strike'; atlas = 'atlases/cudgel-strike-4f.png'; title = 'LIPOV KIJ - cudgel strike'; columns = 2; rows = 2; frames = 4; fitContent = $false },
+    @{ id = 'double-punch'; atlas = 'atlases/double-punch-4f.png'; title = 'KMECKA MOC R1 - two punches'; columns = 2; rows = 2; frames = 4; fitContent = $false },
+    @{ id = 'salt-sacks'; atlas = 'atlases/salt-sacks-4f.png'; title = 'KMECKA MOC R2 - salt sacks + mare'; columns = 2; rows = 2; frames = 4; fitContent = $false },
+    @{ id = 'boulder-throw'; atlas = 'atlases/boulder-throw-4f.png'; title = 'KMECKA MOC R3 - boulder throw'; columns = 2; rows = 2; frames = 4; fitContent = $false },
+    @{ id = 'mesarica-slash'; atlas = 'atlases/mesarica-slash-4f.png'; title = 'MESARICA - precise slash'; columns = 2; rows = 2; frames = 4; fitContent = $false },
+    @{ id = 'running'; atlas = 'atlases/running-4f.png'; title = 'RUNNING - four-frame loop'; columns = 4; rows = 1; frames = 4; fitContent = $true },
+    @{ id = 'victory'; atlas = 'atlases/victory-4f.png'; title = 'VICTORY - bare-fist salute'; columns = 4; rows = 1; frames = 4; fitContent = $true },
+    @{ id = 'downed'; atlas = 'atlases/downed.png'; title = 'DOWNED - static kneel'; columns = 1; rows = 1; frames = 1; fitContent = $true }
 )
 
 $paletteHex = @(
@@ -35,10 +38,23 @@ function Get-NearestColor([System.Drawing.Color] $color) {
     return $best
 }
 
-function Export-Frame([System.Drawing.Bitmap] $atlas, [int] $column, [int] $row, [string] $path) {
-    $cellWidth = [int][Math]::Floor($atlas.Width / 2)
-    $cellHeight = [int][Math]::Floor($atlas.Height / 2)
+function Export-Frame([System.Drawing.Bitmap] $atlas, [int] $column, [int] $row, [string] $path, [int] $columns, [int] $rows, [bool] $fitContent) {
+    $cellWidth = [int][Math]::Floor($atlas.Width / $columns)
+    $cellHeight = [int][Math]::Floor($atlas.Height / $rows)
     $source = [System.Drawing.Rectangle]::new($column * $cellWidth, $row * $cellHeight, $cellWidth, $cellHeight)
+    $destination = [System.Drawing.Rectangle]::new(0, 0, 48, 48)
+    if ($fitContent) {
+        $minX = $source.Right; $minY = $source.Bottom; $maxX = -1; $maxY = -1
+        for ($y = $source.Top; $y -lt $source.Bottom; $y++) { for ($x = $source.Left; $x -lt $source.Right; $x++) {
+            if ($atlas.GetPixel($x, $y).A -ge 128) { $minX = [Math]::Min($minX, $x); $minY = [Math]::Min($minY, $y); $maxX = [Math]::Max($maxX, $x); $maxY = [Math]::Max($maxY, $y) }
+        } }
+        if ($maxX -lt $minX -or $maxY -lt $minY) { throw "Empty frame in $path" }
+        $source = [System.Drawing.Rectangle]::new($minX, $minY, $maxX - $minX + 1, $maxY - $minY + 1)
+        $scale = [Math]::Min(44.0 / $source.Width, 44.0 / $source.Height)
+        $destWidth = [Math]::Max(1, [int][Math]::Round($source.Width * $scale))
+        $destHeight = [Math]::Max(1, [int][Math]::Round($source.Height * $scale))
+        $destination = [System.Drawing.Rectangle]::new([int][Math]::Floor((48 - $destWidth) / 2), 48 - $destHeight, $destWidth, $destHeight)
+    }
     $small = [System.Drawing.Bitmap]::new(48, 48, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
     $graphics = [System.Drawing.Graphics]::FromImage($small)
     $graphics.Clear([System.Drawing.Color]::Transparent)
@@ -46,7 +62,7 @@ function Export-Frame([System.Drawing.Bitmap] $atlas, [int] $column, [int] $row,
     $graphics.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::NearestNeighbor
     $graphics.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::Half
     $graphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::None
-    $graphics.DrawImage($atlas, [System.Drawing.Rectangle]::new(0, 0, 48, 48), $source, [System.Drawing.GraphicsUnit]::Pixel)
+    $graphics.DrawImage($atlas, $destination, $source, [System.Drawing.GraphicsUnit]::Pixel)
     $graphics.Dispose()
 
     $maxY = -1
@@ -73,11 +89,11 @@ foreach ($sequence in $sequences) {
     $atlasPath = Join-Path $sourceRoot $sequence.atlas
     $atlas = [System.Drawing.Bitmap]::FromFile($atlasPath)
     try {
-        for ($frame = 0; $frame -lt 4; $frame++) {
-            $column = $frame % 2
-            $row = [int][Math]::Floor($frame / 2)
+        for ($frame = 0; $frame -lt $sequence.frames; $frame++) {
+            $column = $frame % $sequence.columns
+            $row = [int][Math]::Floor($frame / $sequence.columns)
             $framePath = Join-Path (Join-Path $exportRoot $sequence.id) ('frame-{0:D2}.png' -f ($frame + 1))
-            Export-Frame $atlas $column $row $framePath
+            Export-Frame $atlas $column $row $framePath $sequence.columns $sequence.rows $sequence.fitContent
         }
     } finally { $atlas.Dispose() }
 }
@@ -98,7 +114,7 @@ $runtime.Save($runtimePath, [System.Drawing.Imaging.ImageFormat]::Png)
 $idle.Dispose(); $attack.Dispose(); $g.Dispose(); $runtime.Dispose()
 
 # Preview only: scaled frames and labels; never consumed as a production sprite sheet.
-$preview = [System.Drawing.Bitmap]::new(1320, 1620, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+$preview = [System.Drawing.Bitmap]::new(1320, (105 + $sequences.Count * 245), [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
 $pg = [System.Drawing.Graphics]::FromImage($preview)
 $pg.Clear([System.Drawing.Color]::FromArgb(255, 25, 30, 42))
 $titleFont = [System.Drawing.Font]::new('Arial', 26, [System.Drawing.FontStyle]::Bold)
@@ -112,13 +128,13 @@ for ($row = 0; $row -lt $sequences.Count; $row++) {
     $sequence = $sequences[$row]
     $y = 105 + $row * 245
     $pg.DrawString($sequence.title, $labelFont, $gold, 32, $y + 24)
-    for ($frame = 0; $frame -lt 4; $frame++) {
+    for ($frame = 0; $frame -lt $sequence.frames; $frame++) {
         $bmp = [System.Drawing.Bitmap]::FromFile((Join-Path (Join-Path $exportRoot $sequence.id) ('frame-{0:D2}.png' -f ($frame + 1))))
         try { $pg.DrawImage($bmp, 340 + $frame * 220, $y, 192, 192) } finally { $bmp.Dispose() }
         $pg.DrawString(('F{0}' -f ($frame + 1)), $smallFont, $cream, 415 + $frame * 220, $y + 198)
     }
 }
-$pg.DrawString('Skill naming in current progression remains open: Zamah / Kobilica / Lipov kij.', $smallFont, $cream, 32, 1580)
+$pg.DrawString('Running, victory and downed are approved Krpan states; the shared roster convention remains proposed.', $smallFont, $cream, 32, ($preview.Height - 40))
 $preview.Save($previewPath, [System.Drawing.Imaging.ImageFormat]::Png)
 $titleFont.Dispose(); $labelFont.Dispose(); $smallFont.Dispose(); $gold.Dispose(); $cream.Dispose(); $pg.Dispose(); $preview.Dispose()
 
@@ -128,4 +144,4 @@ $folkExport = Join-Path $root 'art/exports/characters/martin-krpan/folk-art/mare
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $folkExport) | Out-Null
 Copy-Item -LiteralPath $folkSource -Destination $folkExport -Force
 
-Write-Output 'Exported 24 separate 48x48 frames, a 96x48 gameplay-convention sheet, and a review preview.'
+Write-Output 'Exported 33 separate 48x48 frames, a 96x48 gameplay-convention sheet, and a review preview.'
