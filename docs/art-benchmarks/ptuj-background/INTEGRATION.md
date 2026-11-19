@@ -31,6 +31,8 @@ Cloud drift uses the existing renderer's tiled-layer movement and respects reduc
 - These are proposed art and scene placements. Check the front-layer overlap against actual hero/enemy sprites before approving it.
 - The winter scene remains a preview. Kurent's association is the Game Director's direction; future winter assignment stays open.
 - No test assignment has been enabled. Preview links do not change player assignment.
+- The road's cobbles read too large next to the heroes. The Game Director chose a smaller size on 19 Nov; the redraw is
+  briefed in `ROAD-COBBLES-BRIEF.md` (size reference `road-cobbles-target.jpg`).
 
 ## Size: WebP for the build
 
