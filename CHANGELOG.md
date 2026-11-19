@@ -77,6 +77,9 @@ Branch `feat/ptuj-bg-ab`, with the Codex art pack (#33). Details: `docs/art-benc
   Stored in `zg-fidelity`. Martin Krpan's pictures are not yet part of the setting.
 - **Size:** the half-size copies of the Codex layers are removed, with `tools/art_ptuj_lowfi.py`. They were not
   the low tier. The single-file build is 18 MB, down from 21.8 MB.
+- **Readable labels in the scene (19 Nov, Game Director):** the HP numbers, rank tags and enemy names under the
+  heroes and enemies have a 1 px dark outline. On snow (winter Ptuj and the picture already in the game) the grey
+  numbers were almost invisible. Only labels on the scene change; the same numbers on dark panels stay as they were.
 - **The Ptuj layers ship as WebP (19 Nov, Game Director):** the single-file build is **4.0 MB, down from 18.5 MB**.
   `tools/art_bg_webp.py` writes a quality-90 WebP of every layer into `webp/` next to its PNG export (11.5 MB of
   PNG becomes 0.9 MB for both seasons). Alpha stays exact, the road tile still joins without a seam, and side by

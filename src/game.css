@@ -663,6 +663,11 @@ body.mobile .wordbar .chips { min-height: 24px; }
 .obj.spr.big { --px: 3px; }
 .mirror { transform: scaleX(-1); }
 .foename { font-size: 11px; color: var(--dim); font-weight: 600; white-space: nowrap; }
+/* HP numbers, rank tags and enemy names sit on the background art itself: a 1 px dark outline keeps them readable on
+   snow, sky and water alike (the same classes on the dark panels outside the scene need none) */
+.scene .hpnum, .scene .foename { --ol: #120f16;
+  text-shadow: 1px 0 var(--ol), -1px 0 var(--ol), 0 1px var(--ol), 0 -1px var(--ol),
+    1px 1px var(--ol), -1px 1px var(--ol), 1px -1px var(--ol), -1px -1px var(--ol), 0 0 3px rgb(0 0 0 / .6); }
 
 .travelwrap { display: grid; gap: 10px; }
 .tv-intro { margin: -4px 0 0; color: var(--dim); font-style: italic; }
