@@ -535,7 +535,8 @@
     "Version 0.2.2 adds a continuous far-bank wall in both seasons; the shared bridge overlays its left end so the bridge joins the riverbank. The winter wall adds snow to the top coping.",
     "Winter town and reflections source canvases were extended by one fully transparent pixel to align to 1672 × 941; the painted content and cropped exports are unchanged.",
     "Version 0.3.0 separates clouds onto transparent horizontally tileable layers so the renderer can drift them independently.",
-    "Version 0.3.0 adds sparse outer-bank trees and matching foreground rocks, bushes and grasses for sunset and winter. Foreground placement is intentionally low to preserve actor readability."
+    "Version 0.3.0 adds sparse outer-bank trees and matching foreground rocks, bushes and grasses for sunset and winter. Foreground placement is intentionally low to preserve actor readability.",
+    "19 Nov 2026 (Game Director, PR #34): the build embeds lossy WebP copies (quality 90) of these PNG exports, written by tools/art_bg_webp.py into webp/ beside them. The PNG exports are unchanged and remain the lossless masters."
   ],
   "previews": {
     "sunset": "art/previews/environments/ptuj/sunset-assembled.jpg",

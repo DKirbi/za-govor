@@ -1,5 +1,6 @@
 {
   "note": "Background A/B tests (src/backgrounds.js). Variant A is always the background in use (BG in src/art-extra.js, from tools/art_extra.py) and is never changed by a test. A pack variant is a layered parallax background whose files and layer order come from its manifest (art/manifests/<pack>.json). build.py builds a pack in only when its manifest and every layer file it lists are committed; without them the variant does not exist and everyone sees A.",
+  "webpNote": "A pack with \"webp\": {\"quality\": q} is built from WebP copies of its PNG layers (tools/art_bg_webp.py, in webp/ next to the exports): the PNGs stay the lossless masters for a PC build. A stale or missing WebP falls back to its PNG with a warning from build.py.",
   "testsNote": "tests.<bg key> (the bg of a region in world.json): variants maps a letter to a pack id; share = how installs are split when live (a variant with 0 is never drawn, it can only be previewed with ?ozadje=<letter>); live: false = nobody is assigned a variant (A for all); live: true = each install gets one variant by share, kept in localStorage zg-ab. Turning live on is the Game Director's call.",
   "tests": {
     "ptuj": {
@@ -21,6 +22,9 @@
   "packs": {
     "ptuj": {
       "manifest": "art/manifests/ptuj.json",
+      "webp": {
+        "quality": 90
+      },
       "name": "Ptuj — sončni zahod nad Dravo",
       "hideRoad": true,
       "viewNote": "Combined PR 32/33 integration, using 1672×560 view. Ground is aligned at 58% for the battle layout; original review-canvas crop offsets are translated to scene coordinates.",
@@ -134,6 +138,9 @@
     },
     "ptuj-zima": {
       "manifest": "art/manifests/ptuj.json",
+      "webp": {
+        "quality": 90
+      },
       "name": "Ptuj — zimski večer ob Dravi",
       "season": "winter",
       "hideRoad": true,

@@ -197,6 +197,18 @@ run(async () => {
     localStorage.removeItem('zg-fidelity'); return out; });
   check(seq && Object.values(seq).every(([got, want]) => got === want), 'Krpan\'s skills use their own rows: Lipov kij, Kmečka moč R1 / R2 / R3, Mesarica (any rank)', JSON.stringify(seq));
 
+  // ---------------------------------------------------------------- the Ptuj packs ship as WebP (tools/art_bg_webp.py) and decode at their size
+  const wp = await ev(async () => { const P = window.__ZG.BGX.packs, out = {};
+    for (const id of ['ptuj', 'ptuj-zima']) {
+      const L = (P[id] && P[id].layers) || [];
+      const sizes = await Promise.all(L.map(l => new Promise(res => { const im = new Image(); im.onload = () => res(im.naturalWidth === l.w && im.naturalHeight === l.h); im.onerror = () => res(false); im.src = l.src; })));
+      out[id] = { n: L.length, webp: L.filter(l => l.src.startsWith('data:image/webp;base64,')).length, decoded: sizes.filter(Boolean).length,
+        kb: Math.round(L.reduce((s, l) => s + l.src.length * 0.75, 0) / 1024) };
+    }
+    return out; });
+  check(['ptuj', 'ptuj-zima'].every(id => wp[id].n > 0 && wp[id].webp === wp[id].n && wp[id].decoded === wp[id].n && wp[id].kb < 700),
+    'every Ptuj layer (sunset and winter) is WebP, decodes, matches its manifest size, and each pack is under 700 KB', JSON.stringify(wp));
+
   // ---------------------------------------------------------------- Krpan's running, victory and downed states (data/hero-art.json)
   const st = await ev(async () => { const Z = window.__ZG, wait = ms => new Promise(r => setTimeout(r, ms)), out = {};
     localStorage.setItem('zg-fidelity', 'high'); Z.S.testMode = true; Z.S.mode = 'calm';

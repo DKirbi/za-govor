@@ -25,7 +25,7 @@ Inputs:  src/index.src.html (template), src/game.css + src/title.css,
            with the layer PNGs it lists (art/exports/...), inlined as base64 — a pack is left out until all are committed
 Output:  dist/index.html — open it in any modern browser, no server needed.
 """
-import base64, json, pathlib, struct, subprocess
+import base64, hashlib, json, pathlib, struct, subprocess
 
 root = pathlib.Path(__file__).parent
 read = lambda rel: (root / rel).read_text(encoding='utf-8')
@@ -42,6 +42,40 @@ def png_info(raw, rel):
         if kind in (b'tRNS', b'IDAT'): alpha = kind == b'tRNS'; break
         i += 12 + n
     return w, h, alpha
+
+
+def webp_info(raw, rel):
+    """Width, height and whether the WebP has alpha (stdlib: the RIFF header). Simple lossy (VP8), lossless (VP8L) or
+    extended (VP8X, which carries the alpha flag), as Pillow writes them for tools/art_bg_webp.py."""
+    assert raw[:4] == b'RIFF' and raw[8:12] == b'WEBP', f'{rel} is not a WebP'
+    kind, data = raw[12:16], raw[20:]
+    if kind == b'VP8X':
+        return 1 + int.from_bytes(data[4:7], 'little'), 1 + int.from_bytes(data[7:10], 'little'), bool(data[0] & 0x10)
+    if kind == b'VP8L':
+        b = int.from_bytes(data[1:5], 'little')
+        return 1 + (b & 0x3FFF), 1 + ((b >> 14) & 0x3FFF), bool((b >> 28) & 1)
+    if kind == b'VP8 ':
+        assert data[3:6] == b'\x9d\x01\x2a', f'{rel}: not a VP8 key frame'
+        w, h = struct.unpack('<HH', data[6:10])
+        return w & 0x3FFF, h & 0x3FFF, False
+    raise AssertionError(f'{rel}: unknown WebP chunk {kind!r}')
+
+
+def layer_picture(png_rel, webp_cfg, notes, pid):
+    """The bytes the build embeds for one layer, their MIME type and (width, height, alpha). A pack with "webp" in
+    data/backgrounds.json uses the WebP copy from tools/art_bg_webp.py while it was made from this very PNG at that
+    quality; otherwise, and for every other pack, the PNG."""
+    png = (root / png_rel).read_bytes()
+    q = (webp_cfg or {}).get('quality')
+    if q:
+        p = pathlib.PurePosixPath(png_rel)
+        wrel, irel = str(p.parent / 'webp' / (p.stem + '.webp')), str(p.parent / 'webp' / 'index.json')
+        e = json.loads(read(irel)).get(p.name) if (root / irel).is_file() else None
+        if e and (root / wrel).is_file() and e.get('quality') == q and e.get('sha1') == hashlib.sha1(png).hexdigest():
+            raw = (root / wrel).read_bytes()
+            return raw, 'image/webp', webp_info(raw, wrel)
+        notes.append(f'background pack {pid}: {wrel} is missing or stale, the PNG is embedded instead — run python3 tools/art_bg_webp.py')
+    return png, 'image/png', png_info(png, png_rel)
 
 
 def manifest_layers(man, season=None):
@@ -92,11 +126,10 @@ def background_packs():
         tune, layers, size = pc.get('layers', {}), [], 0
         for depth, L in enumerate(mls):
             fp = L['file']
-            raw = (root / fp).read_bytes()
-            w, h, alpha = png_info(raw, fp)
-            assert (w, h) == (L['width'], L['height']), f"{L['file']} is {w}×{h}, {mrel} says {L['width']}×{L['height']}"
+            raw, mime, (w, h, alpha) = layer_picture(fp, pc.get('webp'), notes, pid)
+            assert (w, h) == (L['width'], L['height']), f"{L['file']} ({mime}) is {w}×{h}, {mrel} says {L['width']}×{L['height']}"
             w, h = L['width'], L['height']   # drawn at the manifest size, whatever the file's resolution
-            assert not L.get('alpha') or alpha, f"{L['file']}: {mrel} says it is transparent, the PNG has no alpha"
+            assert not L.get('alpha') or alpha, f"{L['file']} ({mime}): {mrel} says it is transparent, the picture has no alpha"
             t = tune.get(L['id'])
             if t is None:
                 t = {'speed': round(depth / max(1, len(mls) - 1), 2)}
@@ -110,11 +143,12 @@ def background_packs():
                 assert 0 <= x and (L.get('tileX') or x + w <= cw) and 0 <= y and y + h <= ch, f"{L['file']} lies outside the {cw}×{ch} canvas"
             layers.append({'id': L['id'], 'w': w, 'h': h, 'x': x, 'y': y, 'scale': k, 'tileX': bool(L.get('tileX')),
                            'front': t.get('front', L.get('role') == 'foreground'), 'speed': t.get('speed', 0), 'drift': t.get('drift', 0), 'pan': t.get('pan', 1),
-                           'src': 'data:image/png;base64,' + base64.b64encode(raw).decode('ascii')})
+                           'src': f'data:{mime};base64,' + base64.b64encode(raw).decode('ascii')})
             size += len(raw)
         packs[pid] = {'name': pc.get('name') or man.get('name') or pid, 'version': man.get('version', ''), 'status': man.get('status', 'draft'),
                       'canvas': {'w': cw, 'h': ch}, 'hideRoad': bool(pc.get('hideRoad')), 'layers': layers}
-        notes.append(f"background pack {pid}: {len(layers)} layers, {cw}×{ch}, {size // 1024} KB, status {packs[pid]['status']}"
+        fmt = ' WebP' if all(L['src'].startswith('data:image/webp') for L in layers) else ''
+        notes.append(f"background pack {pid}: {len(layers)} layers, {cw}×{ch}, {size // 1024} KB{fmt}, status {packs[pid]['status']}"
                      + (' — large for a single-file build' if size > 1536 * 1024 else ''))
     for key, t in cfg.get('tests', {}).items():
         gone = [v for v, p in t.get('variants', {}).items() if p not in packs]

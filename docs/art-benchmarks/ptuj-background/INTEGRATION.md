@@ -32,6 +32,17 @@ Cloud drift uses the existing renderer's tiled-layer movement and respects reduc
 - The winter scene remains a preview. Kurent's association is the Game Director's direction; future winter assignment stays open.
 - No test assignment has been enabled. Preview links do not change player assignment.
 
+## Size: WebP for the build
+
+- The game embeds every picture in one HTML file. Since 19 Nov (Game Director) the Ptuj layers are embedded as
+  quality-90 WebP: 0.44 MB sunset and 0.51 MB winter, against 5.5 and 6.3 MB of PNG. The build is 4.0 MB.
+- `python3 tools/art_bg_webp.py` writes `art/exports/environments/ptuj/webp/` and `…/ptuj/winter/webp/` from the PNG
+  exports, with an index of the PNG each WebP was made from. Rerun it after any change to a PNG export; until then
+  `build.py` embeds the new PNG and warns. `--check` lists stale files.
+- The PNG exports are unchanged and stay the masters: lossless, for a PC build at full quality.
+- Checked: alpha identical to the PNG in every layer; the road tile's wrap edge differs from its PNG by about as
+  much as two neighbouring pixels do (no visible seam); the battle scene on a 412 px phone looks the same.
+
 ## Kakovost slik (Visoka / Nizka)
 
 - *Nastavitve → Razvoj → Kakovost slik* chooses which Ptuj picture the travel and battle scenes show, stored in

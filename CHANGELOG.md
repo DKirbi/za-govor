@@ -77,6 +77,13 @@ Branch `feat/ptuj-bg-ab`, with the Codex art pack (#33). Details: `docs/art-benc
   Stored in `zg-fidelity`. Martin Krpan's pictures are not yet part of the setting.
 - **Size:** the half-size copies of the Codex layers are removed, with `tools/art_ptuj_lowfi.py`. They were not
   the low tier. The single-file build is 18 MB, down from 21.8 MB.
+- **The Ptuj layers ship as WebP (19 Nov, Game Director):** the single-file build is **4.0 MB, down from 18.5 MB**.
+  `tools/art_bg_webp.py` writes a quality-90 WebP of every layer into `webp/` next to its PNG export (11.5 MB of
+  PNG becomes 0.9 MB for both seasons). Alpha stays exact, the road tile still joins without a seam, and side by
+  side on a phone the scenes look the same. The PNG exports stay as the lossless masters for a PC build.
+  - A pack opts in with `"webp": {"quality": 90}` in `data/backgrounds.json`. Each `webp/index.json` records which
+    PNG a WebP was made from; when a PNG changes, `build.py` embeds that PNG instead and says to rerun the tool
+    (`--check` lists stale ones). `build.py` still needs only the Python standard library.
 
 - **Martin Krpan follows *Kakovost slik* too** (Codex pack `codex/martin-krpan-sprite-assets`, merged into this branch).
   - *Visoka* draws his Codex sprites; *Samodejno* and *Nizka* keep the sprite already in the game.

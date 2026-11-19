@@ -57,10 +57,10 @@ every one.
 - `art/source/environments/<pack>/` masters, `art/exports/environments/<pack>/` cropped exports with offsets in the
   manifest, `art/previews/environments/<pack>/` one JPG composite per variant and one JPG road-repeat preview.
   No PNG twin of a JPG preview, no previews in `source/`.
-- **Size is OPEN.** The game is one HTML file with every picture embedded as base64. Ptuj's two PNG packs are 5.5 MB
-  and 6.3 MB of an 18.5 MB build. WebP at quality 90 would make each about 0.45 MB (proposed 18 Nov, awaiting the Game
-  Director). Ten regions at the current PNG size would be too large for the Android build, so settle the format before
-  the next pack is integrated.
+- **The build embeds WebP (decided 19 Nov).** The game is one HTML file with every picture embedded as base64. Deliver
+  lossless PNG exports; `tools/art_bg_webp.py` makes the quality-90 WebP copies the build uses (`"webp": {"quality": 90}`
+  on the pack in `data/backgrounds.json`). A Ptuj pack is about 0.45–0.5 MB that way, so ten regions with a season each
+  stay near 10 MB. Paint for it: large flat gradients and fine dithering cost the most.
 
 ## 5. Manifest and validation
 
@@ -81,7 +81,8 @@ Director turns it on.
 - [ ] The landmark reads at phone size; actors stand clear in their band.
 - [ ] Ground tile has no seam; foreground stays at or below the ankle line.
 - [ ] Only clouds (and, if wanted, water) move; reduced motion is a still picture.
-- [ ] Previews are JPG, labelled as previews; manifest matches the files; `python3 build.py` builds.
+- [ ] Previews are JPG, labelled as previews; manifest matches the files.
+- [ ] `python3 tools/art_bg_webp.py --check` passes and `python3 build.py` reports the pack as WebP.
 
 ## 8. Regions
 
