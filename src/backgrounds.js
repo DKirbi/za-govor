@@ -27,7 +27,7 @@ const bgForced = key => !!(bgForce && BGX.tests[key] && bgReady(key, bgForce));
 // codex shows the hero; `sheet` holds the frames, one row a sequence (tools/art_hero_pack.py), which the battle, the road and
 // the hero screens play (game.css .spr.hi). `states` names the idle, run, win and down sequences, `skills` the sequence per
 // skill (1–3) and rank (1–3). For Krpan (docs/characters/martin-krpan): Lipov kij; Kmečka moč rank 1, 2, 3 = two punches,
-// salt sacks, boulder; Mesarica; running on the road, the bare-fist salute when the last enemy falls, the kneel when down.
+// solo materialization, boulder; Mesarica; running on the road, the bare-fist salute when the last enemy falls, the kneel when down.
 const heroHi = id => fidelity() === 'high' && !!BGX.heroes[id];
 const HERO_LOW = {};   // the sprites already in the game, to go back to
 function applyHeroFidelity() { Object.keys(BGX.heroes).forEach(id => { if (!(id in HERO_LOW)) HERO_LOW[id] = SPRITES[id]; SPRITES[id] = heroHi(id) ? BGX.heroes[id].strip : HERO_LOW[id]; }); }

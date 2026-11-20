@@ -58,3 +58,7 @@ Cloud drift uses the existing renderer's tiled-layer movement and respects reduc
   (`art/exports/characters/martin-krpan/martin-krpan-sheet.png`, built by `tools/art_hero_pack.py` from
   `data/hero-art.json`), *Samodejno* and *Nizka* the sprite already in the game. In *Visoka* he runs on the road,
   salutes when the last enemy falls and kneels when down.
+
+## Smaller cobble comparison assets
+
+The summer and winter `road-cobbles` layers are separate 1672×240, 1:1 review candidates with three-copy seam previews. They are marked `previewOnly` in the manifest and are excluded from the live parallax build until the Game Director compares them with the retained `road-tile`.

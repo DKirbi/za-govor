@@ -13,7 +13,7 @@
 
 The visual identity follows the character document: broad hat, prominent moustache, practical vest, salt sack, limewood cudgel and Mesarica. It avoids generic fantasy armor and changes no damage or combat behavior.
 
-Levstik's primary text describes Krpan carrying his mare and her load aside so the carriage can pass. The overhead mare-lifting pose is an artistic interpretation of the strength episode, not a literal pose specified by the passage. The rank-2 mare-and-salt animation is a gameplay presentation in the character specification; the mare is calm and does not attack.
+Levstik's primary text describes Krpan carrying his mare and her load aside so the carriage can pass. The overhead mare-lifting pose is an artistic interpretation of the strength episode, not a literal pose specified by the passage. The earlier rank-2 mare-and-salt art is retained as historical material. The active Kmečka moč R2 sequence is the director-confirmed solo materialization and contains no horse.
 
 The character document names the skills Lipov kij, Kmečka moč and Mesarica, and the game uses them since PR #34. Each sequence matches the animation the specification describes for a skill and rank; `data/hero-art.json` records the mapping.
 
@@ -36,7 +36,7 @@ These three approved Martin Krpan states establish a **proposed** benchmark for 
 
 ## Review checklist
 
-- Check readability at native 48×48 size, especially the two distinct punches and the mare/sack silhouettes.
+- Check readability at native 48×48 size, especially the two distinct punches and the rank-2 materialization at the shared spirit scale.
 - Review pixel readability and the in-game timing (running 0.5 s a loop, victory 0.8 s once, skills 0.72 s). Pose choices are approved.
 - The kneel at the pack scale stands about as tall as idle, because the source pose is hunched under the sack. If he should read lower, that is a change to `downed.png`, not to the export.
 - Decide whether the overhead mare-lifting folk-art interpretation fits the collection and where it belongs.

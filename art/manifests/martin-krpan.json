@@ -2,7 +2,7 @@
   "pack": "Martin Krpan gameplay sprites and separate mare-lifting folk-art concept",
   "version": "0.1.0",
   "status": "review",
-  "approval": "The original pack review remains open. The running, victory and downed pose sequences below were approved for this PR; this does not approve assets for other characters.",
+  "approval": "The original pack review remains open. The running, victory and downed pose sequences below were approved for this PR; this does not approve assets for other characters. The active Kmečka moč R2 animation follows the confirmed director correction: Krpan materializes alone at the existing spirit scale.",
   "canvas": {
     "frameWidth": 48,
     "frameHeight": 48,
@@ -54,12 +54,13 @@
   },
   "processing": {
     "exportScripts": [
-      "tools/art_hero_pack.py"
+      "tools/art_hero_pack.py",
+      "tools/art_krpan_materialize.py"
     ],
-    "sourceAtlases": "The original six generated 2×2 pose atlases are 1263×1246. New running and victory sources are 2172×724 horizontal four-frame atlases; the new downed source is a single 1312×1199 pose.",
-    "exports": "The first six sequences (fit: cell) resample each whole 2×2 atlas cell to 48×48 with nearest-neighbour; they were exported by an earlier PowerShell script (tools/export_martin_krpan_frames.ps1, removed in PR #34; in the branch history) and re-exporting them with tools/art_hero_pack.py changes up to 26 pixels a frame through nearest-colour ties, so the tool leaves committed frames alone unless named with --only. Running, victory and downed (fit: scale) use one scale per sequence, the union of the frames centred, so the run keeps its bob and Krpan keeps his size. Every frame: alpha thresholded at 128, the 27-colour palette in export.palette, lowest opaque pixel on row 47.",
+    "sourceAtlases": "The original six generated 2×2 pose atlases are 1263×1246. New running and victory sources are 2172×724 horizontal four-frame atlases; the new downed source is a single 1312×1199 pose. The corrected rank-2 materialization uses a native 192×48 four-frame atlas derived only from the existing Krpan idle sprite.",
+    "exports": "The first six sequences (fit: cell) resample each whole 2×2 atlas cell to 48×48 with nearest-neighbour; they were exported by an earlier PowerShell script (tools/export_martin_krpan_frames.ps1, removed in PR #34; in the branch history) and re-exporting them with tools/art_hero_pack.py changes up to 26 pixels a frame through nearest-colour ties, so the tool leaves committed frames alone unless named with --only. Running, victory and downed (fit: scale) use one scale per sequence, the union of the frames centred, so the run keeps its bob and Krpan keeps his size. Every frame: alpha thresholded at 128, the 27-colour palette in export.palette, lowest opaque pixel on row 47. The corrected rank-2 sequence reveals the same 48×48 Krpan sprite from the boots upward, adds a restrained warm edge glint, then settles to the unchanged idle frame; no horse or sack source is used.",
     "exportHistory": "PR #34 first exported running, victory and downed by fitting each frame to 44×44 on its own. That made them about 25 % larger than idle and the attacks, erased the run's bob and stood the kneel taller than the standing pose. They were re-exported from the same atlases at the pack's scale (downed at 0.047, below). The poses are unchanged.",
-    "preview": "The PNG contact sheet and animation-preview.html are written by tools/art_hero_pack.py for review only; the game reads martin-krpan-sheet.png."
+    "preview": "The original review previews remain preserved; kmecka-moc-r2-materialize.html and .png show the active corrected sequence."
   },
   "sequences": [
     {
@@ -129,25 +130,28 @@
       ]
     },
     {
-      "id": "kmecka-moc-r2-salt-sacks",
-      "label": "Mare presents two sacks; Krpan takes and throws them. The mare remains calm and is not an attacker.",
-      "sourceAtlas": "art/source/characters/martin-krpan/atlases/salt-sacks-4f.png",
+      "id": "kmecka-moc-r2-materialize",
+      "label": "Krpan materializes alone at the shared 48×48 spirit scale; no horse, sacks or companion.",
+      "poseApproval": "Confirmed director correction",
+      "playback": "Brief upward reveal, warm glint, then settle to Krpan alone.",
+      "sourceAtlas": "art/source/characters/martin-krpan/atlases/kmecka-moc-r2-materialize-4f.png",
       "sourceLayout": {
-        "columns": 2,
-        "rows": 2,
+        "columns": 4,
+        "rows": 1,
         "frameOrder": [
           1,
           2,
           3,
           4
         ],
-        "fit": "cell"
+        "fit": "scale",
+        "scale": 1
       },
       "framesBackToFront": [
-        "art/exports/characters/martin-krpan/animations/salt-sacks/frame-01.png",
-        "art/exports/characters/martin-krpan/animations/salt-sacks/frame-02.png",
-        "art/exports/characters/martin-krpan/animations/salt-sacks/frame-03.png",
-        "art/exports/characters/martin-krpan/animations/salt-sacks/frame-04.png"
+        "art/exports/characters/martin-krpan/animations/kmecka-moc-r2-materialize/frame-01.png",
+        "art/exports/characters/martin-krpan/animations/kmecka-moc-r2-materialize/frame-02.png",
+        "art/exports/characters/martin-krpan/animations/kmecka-moc-r2-materialize/frame-03.png",
+        "art/exports/characters/martin-krpan/animations/kmecka-moc-r2-materialize/frame-04.png"
       ]
     },
     {
@@ -287,8 +291,8 @@
     "literaryNote": "Levstik's text describes Krpan carrying the mare and its load aside for the carriage. The overhead lift shown here is an artistic interpretation, not a literal staging specified by the passage.",
     "exportNote": "No runtime export until its placement is decided (OPEN). The earlier export was a byte-identical copy of the source and was removed in PR #34."
   },
-  "preview": "art/previews/characters/martin-krpan/martin-krpan-sprite-preview.png",
-  "animationPreview": "art/previews/characters/martin-krpan/animation-preview.html",
+  "preview": "art/previews/characters/martin-krpan/kmecka-moc-r2-materialize.png",
+  "animationPreview": "art/previews/characters/martin-krpan/kmecka-moc-r2-materialize.html",
   "benchmark": "These states set the roster convention in docs/art-benchmarks/hero-sprites/README.md. It approves no other character's assets.",
   "openDecisions": [
     "The mare-lifting folk-art illustration's exact placement remains OPEN.",
@@ -296,8 +300,8 @@
     "Whether the kneel should read lower or smaller than the standing pose is an art question for the source pose (downed.png), not the export: at the pack's scale the hunched pose with the sack stands about as tall as idle."
   ],
   "resolvedDecisions": [
-    "Skill-to-asset mapping: the character specification (docs/characters/martin-krpan/character.md §5) describes each skill and rank's animation, and the sequences match it: Lipov kij = cudgel-strike; Kmečka moč rank 1 / 2 / 3 = double punch / salt sacks / boulder; Mesarica = mesarica-slash. The skill names and ranks were confirmed with the values on 18 Nov 2026. Recorded in data/hero-art.json.",
-    "Runtime integration (PR #34): Visoka plays every sequence; see gameConvention.integrationStatus."
+    "Runtime integration (PR #34): Visoka plays every sequence; see gameConvention.integrationStatus.",
+    "Kmečka moč R2 (confirmed correction): Krpan materializes alone at the established 48×48 spirit scale; the mare-and-sacks sequence is retained only as historical art and is not in the runtime sheet."
   ],
   "sources": [
     {
@@ -314,5 +318,15 @@
       "path": "docs/progression-design.md"
     }
   ],
-  "reviewStatus": "Original pack review remains open. Running, victory and downed have pose approval and are integrated for Visoka. The remaining pack assets retain their prior review status."
+  "reviewStatus": "Original pack review remains open. Running, victory and downed have pose approval and are integrated for Visoka. The remaining pack assets retain their prior review status.",
+  "retainedHistoricalAssets": {
+    "note": "The previous mare-and-sacks study is preserved on disk for history, but is not an active sequence, runtime sheet row, or Kmečka moč R2 frame.",
+    "sourceAtlas": "art/source/characters/martin-krpan/atlases/salt-sacks-4f.png",
+    "frames": [
+      "art/exports/characters/martin-krpan/animations/salt-sacks/frame-01.png",
+      "art/exports/characters/martin-krpan/animations/salt-sacks/frame-02.png",
+      "art/exports/characters/martin-krpan/animations/salt-sacks/frame-03.png",
+      "art/exports/characters/martin-krpan/animations/salt-sacks/frame-04.png"
+    ]
+  }
 }

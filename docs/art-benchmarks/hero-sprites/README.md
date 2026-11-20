@@ -70,7 +70,7 @@ alphaThreshold, palette, scale}`, `sequences[] {id, label, sourceAtlas, sourceLa
 `runtimeSheet {path, frameOrder}`, `preview`, `animationPreview`. Also record the approval state, open decisions and
 sources, as in Krpan's.
 
-Name sequences by visible action and skill (`kmecka-moc-r2-salt-sacks`), not by frame numbers or approval state.
+Name sequences by visible action and skill (`kmecka-moc-r2-materialize`), not by frame numbers or approval state.
 
 ## 6. Connect it to the game
 

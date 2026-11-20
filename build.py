@@ -84,7 +84,7 @@ def manifest_layers(man, season=None):
     asset-library format layersBackToFront: [{id, export, dimensions.export, alpha (text), tileable.horizontal}]."""
     if man.get('layers'): return sorted(man['layers'], key=lambda L: L['order'])
     out = []
-    rows = man.get('layersBackToFront') or []
+    rows = [L for L in (man.get('layersBackToFront') or []) if not L.get('previewOnly')]
     # a layer's depth is where its id first appears in the manifest: a shared layer (the bridge) keeps the depth of
     # the sunset block, so winter draws it after the wall, not behind the sky
     depth = {}

@@ -268,6 +268,29 @@
       "method": "Cleaned road source with horizontally mirrored half; edge columns match."
     },
     {
+      "id": "road-cobbles",
+      "season": "sunset",
+      "source": "art/source/environments/ptuj/road-cobbles.png",
+      "export": "art/exports/environments/ptuj/road-cobbles.png",
+      "sourceSize": [
+        1672,
+        240
+      ],
+      "exportSize": [
+        1672,
+        240
+      ],
+      "offset": [
+        0,
+        325
+      ],
+      "alpha": "transparent contact-edge; opaque below curb row",
+      "tileable": true,
+      "repeatPeriodPx": 1672,
+      "previewOnly": true,
+      "note": "Parallel review candidate. The existing road-tile remains the live layer until the director compares both."
+    },
+    {
       "id": "foreground",
       "season": "sunset",
       "source": "art/source/environments/ptuj/foreground.png",
@@ -504,6 +527,29 @@
       "method": "Snow-covered road source with horizontally mirrored half; edge columns match."
     },
     {
+      "id": "road-cobbles",
+      "season": "winter",
+      "source": "art/source/environments/ptuj/winter-road-cobbles.png",
+      "export": "art/exports/environments/ptuj/winter/road-cobbles.png",
+      "sourceSize": [
+        1672,
+        240
+      ],
+      "exportSize": [
+        1672,
+        240
+      ],
+      "offset": [
+        0,
+        325
+      ],
+      "alpha": "transparent contact-edge; opaque below curb row",
+      "tileable": true,
+      "repeatPeriodPx": 1672,
+      "previewOnly": true,
+      "note": "Parallel review candidate. The existing road-tile remains the live layer until the director compares both."
+    },
+    {
       "id": "foreground",
       "season": "winter",
       "source": "art/source/environments/ptuj/winter/foreground.png",
@@ -536,13 +582,16 @@
     "Winter town and reflections source canvases were extended by one fully transparent pixel to align to 1672 × 941; the painted content and cropped exports are unchanged.",
     "Version 0.3.0 separates clouds onto transparent horizontally tileable layers so the renderer can drift them independently.",
     "Version 0.3.0 adds sparse outer-bank trees and matching foreground rocks, bushes and grasses for sunset and winter. Foreground placement is intentionally low to preserve actor readability.",
-    "19 Nov 2026 (Game Director, PR #34): the build embeds lossy WebP copies (quality 90) of these PNG exports, written by tools/art_bg_webp.py into webp/ beside them. The PNG exports are unchanged and remain the lossless masters."
+    "19 Nov 2026 (Game Director, PR #34): the build embeds lossy WebP copies (quality 90) of these PNG exports, written by tools/art_bg_webp.py into webp/ beside them. The PNG exports are unchanged and remain the lossless masters.",
+    "20 Nov 2026: smaller-cobble summer and winter candidates are 1672×240 at 1:1 with a 22 px curb and 9–10 irregular courses. Both remain preview-only layers beside road-tile pending comparison."
   ],
   "previews": {
     "sunset": "art/previews/environments/ptuj/sunset-assembled.jpg",
     "winter": "art/previews/environments/ptuj/winter-assembled.jpg",
     "winterRoadRepeat": "art/previews/environments/ptuj/winter-road-repeat-3x.jpg",
-    "validation": "art/previews/environments/ptuj/VALIDATION.md"
+    "validation": "art/previews/environments/ptuj/VALIDATION.md",
+    "summerRoadCobbles": "art/previews/environments/ptuj/summer-road-cobbles-3x.jpg",
+    "winterRoadCobbles": "art/previews/environments/ptuj/winter-road-cobbles-3x.jpg"
   },
   "knownLimitations": [
     "The bridge, town skyline, retaining wall and outer-bank trees are stylized game-art interpretations, not documentary depictions of verified historical structures or a specific viewpoint.",
