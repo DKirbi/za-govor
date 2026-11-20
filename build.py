@@ -143,6 +143,7 @@ def background_packs():
                 assert 0 <= x and (L.get('tileX') or x + w <= cw) and 0 <= y and y + h <= ch, f"{L['file']} lies outside the {cw}×{ch} canvas"
             layers.append({'id': L['id'], 'w': w, 'h': h, 'x': x, 'y': y, 'scale': k, 'tileX': bool(L.get('tileX')),
                            'front': t.get('front', L.get('role') == 'foreground'), 'speed': t.get('speed', 0), 'drift': t.get('drift', 0), 'pan': t.get('pan', 1),
+                           **{k: t[k] for k in ('stand', 'neck') if k in t},
                            'src': f'data:{mime};base64,' + base64.b64encode(raw).decode('ascii')})
             size += len(raw)
         packs[pid] = {'name': pc.get('name') or man.get('name') or pid, 'version': man.get('version', ''), 'status': man.get('status', 'draft'),

@@ -36,6 +36,29 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
+## 0.16.0 — 20 Nov 2026
+
+Branch `fix/post-34-integration`: the work Codex added at the end of #34, connected and checked.
+
+- **The Ptuj road** (*Visoka*, summer and winter): the original cobbles at half size, on a thinner strip.
+  - Stones are about 38 % of their old size (scale 0.5, as chosen on 19 Nov). Codex's redrawn `road-cobbles` were
+    rejected on 20 Nov and are removed, with their generator and brief.
+  - The road's top follows the characters, on every screen: on the road it reaches up to the heroes' necks, so their
+    heads show against the water (about a third less road than before); in battle it starts just above the enemies'
+    feet (they stand higher than the heroes), a little lower than before.
+  - `tools/art_road_stack.py` makes the taller copy the small road needs from the original tile: more of its own
+    cobble rows, joined along the mortar so no straight seam shows, still seamless sideways. Nothing is redrawn.
+  - The WebP copies follow (`tools/art_bg_webp.py` now skips `previewOnly` layers and removes WebPs nothing draws).
+- **Martin Krpan, Kmečka moč rank 2** (*Visoka*): Krpan throws the salt bags alone, without the mare (Game Director,
+  20 Nov). The kneel when he is down is a little smaller than before (crouched).
+  - **Fix:** both sat 1 px above the ground line every other frame stands on (an off-by-one in
+    `tools/art_krpan_salt_throw.py`). Moved down 1 px; the art is otherwise unchanged.
+  - **Fix:** the full-pack previews (`martin-krpan-sprite-preview.png`, `animation-preview.html`) still showed the
+    mare; the manifest now points to them again, and the rank-2 previews stay as extra review files.
+- **Fix:** `tools/art_hero_pack.py` compared pictures by their alpha channel only (Pillow's `getbbox` on RGBA), so a
+  sheet whose colours changed could pass `--check`. It now compares every pixel.
+- **Fix:** `dist/index.html` on `main` was built before Codex's last commits, so the game showed neither change.
+
 ## 0.15.0 — 17 Nov 2026 · zaprta alfa · Ptuj gets a second background for an A/B test
 Branch `feat/ptuj-bg-ab`, with the Codex art pack (#33). Details: `docs/art-benchmarks/ptuj-background/INTEGRATION.md`.
 - **Variant B is the Codex pack, *Ptuj — sončni zahod nad Dravo*** (`art/manifests/ptuj.json`): sunset sky,

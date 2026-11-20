@@ -24,7 +24,7 @@ What it writes:
 """
 import json, pathlib, sys
 import numpy as np
-from PIL import Image, ImageChops, ImageDraw
+from PIL import Image, ImageDraw
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 REGISTRY = ROOT / 'data/hero-art.json'
@@ -191,13 +191,16 @@ def player_of(man, manifest_rel, ex):
     return PLAYER % {'pack': man['pack'], 'manifest': manifest_rel, 'frame': ex['frame'], 'seqs': json.dumps(seqs, indent=1)}
 
 
+def same_pixels(a, b):
+    """every pixel equal, colour and alpha (ImageChops.difference(...).getbbox() on RGBA looks at alpha only)"""
+    return a.size == b.size and np.array_equal(np.asarray(a.convert('RGBA')), np.asarray(b.convert('RGBA')))
+
+
 def save_if_changed(img, path):
     """write a PNG only when its pixels change, so re-running the tool leaves committed files alone"""
     path = pathlib.Path(path)
-    if path.is_file():
-        old = Image.open(path)
-        if old.size == img.size and old.mode == img.mode and not ImageChops.difference(old.convert('RGBA'), img.convert('RGBA')).getbbox():
-            return
+    if path.is_file() and same_pixels(Image.open(path), img):
+        return
     img.save(path, optimize=True)
 
 
@@ -236,10 +239,10 @@ def validate(manifest_rel):
     png, js = outputs(stem)
     sheet, idx = sheet_of(man, ex)
     if not (png.is_file() and js.is_file()) or json.loads(js.read_text(encoding='utf-8')) != idx \
-            or ImageChops.difference(Image.open(png).convert('RGBA'), sheet).getbbox():
+            or not same_pixels(Image.open(png), sheet):
         bad.append(f'{png.relative_to(ROOT)} is out of date: run python3 tools/art_hero_pack.py {manifest_rel}')
     strip, sp = strip_of(man, ex), ROOT / man['runtimeSheet']['path']
-    if not sp.is_file() or ImageChops.difference(Image.open(sp).convert('RGBA'), strip).getbbox():
+    if not sp.is_file() or not same_pixels(Image.open(sp), strip):
         bad.append(f"{man['runtimeSheet']['path']} is out of date: run python3 tools/art_hero_pack.py {manifest_rel}")
     return bad
 

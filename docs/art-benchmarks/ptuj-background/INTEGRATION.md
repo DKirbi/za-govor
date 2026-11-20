@@ -31,8 +31,7 @@ Cloud drift uses the existing renderer's tiled-layer movement and respects reduc
 - These are proposed art and scene placements. Check the front-layer overlap against actual hero/enemy sprites before approving it.
 - The winter scene remains a preview. Kurent's association is the Game Director's direction; future winter assignment stays open.
 - No test assignment has been enabled. Preview links do not change player assignment.
-- The road's cobbles read too large next to the heroes. The Game Director chose a smaller size on 19 Nov; the redraw is
-  briefed in `ROAD-COBBLES-BRIEF.md` (size reference `road-cobbles-target.jpg`).
+- The road is the original road tile at half size, and its top follows the characters (below).
 
 ## Size: WebP for the build
 
@@ -59,6 +58,19 @@ Cloud drift uses the existing renderer's tiled-layer movement and respects reduc
   `data/hero-art.json`), *Samodejno* and *Nizka* the sprite already in the game. In *Visoka* he runs on the road,
   salutes when the last enemy falls and kneels when down.
 
-## Smaller cobble comparison assets
+## The road: smaller cobbles, a thinner strip
 
-The summer and winter `road-cobbles` layers are separate 1672×240, 1:1 review candidates with three-copy seam previews. They are marked `previewOnly` in the manifest and are excluded from the live parallax build until the Game Director compares them with the retained `road-tile`.
+- **Decisions (Game Director):** 19 Nov, the cobbles are too large next to the heroes; the third mockup (about 0.5)
+  is the size. 20 Nov, Codex's redrawn `road-cobbles` were rejected ("look terrible") and removed: the road is the
+  original `road-tile`, smaller, and the strip is thinner, with the characters' heads against the water.
+- **Size:** `road-tile-tall` at scale 0.5 (stones about 38 % of the old 1.3×). `tools/art_road_stack.py` makes it from
+  `road-tile.png`: the curb and cobbles as drawn, then four more copies of the cobble rows, each shifted sideways and
+  joined along a minimum-error cut through the mortar, so no straight seam runs across. No pixel is new. The original
+  `road-tile` stays as the source (`previewOnly`).
+- **Height:** `"stand": 30, "neck": 0.5` in `data/backgrounds.json`. The road's top is the higher of two lines: 30
+  canvas pixels above the highest feet in the scene, and the heroes' necks (half a hero sprite from its top)
+  (`actorFloor` in `src/backgrounds.js`: heroes, enemies, objects on the road, from their layout boxes so attacks and
+  running do not move it). On the road the strip reaches the heroes' necks, so their heads show against the water;
+  in battle the enemies stand higher (the labels under them), so the road starts just above their feet and they
+  stand on cobbles. Same on every screen. The layer repeats downwards, clipped at its top, so it always reaches
+  the bottom. Without characters (the gallery) it sits at its `y`.

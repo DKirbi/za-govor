@@ -66,7 +66,7 @@ def blit(dst,src,sw,sh,x,y):
             c=src[(yy*sw+xx)*4:(yy*sw+xx+1)*4]
             if c[3]: dst[((y+yy)*FRAME+x+xx)*4:((y+yy)*FRAME+x+xx+1)*4]=c
 def centered(src,w,box,scale):
-    sw,sh,p=crop_resize(src,w,box,scale); out=frame(); blit(out,p,sw,sh,(FRAME-sw)//2,47-sh); return out
+    sw,sh,p=crop_resize(src,w,box,scale); out=frame(); blit(out,p,sw,sh,(FRAME-sw)//2,FRAME-sh); return out   # lowest row on 47, the pack baseline
 
 def rank2_frames():
     w,h,src=read_png(SOURCE)
@@ -80,7 +80,7 @@ def export_downed():
     w,h,src=read_png(DOWNED_SOURCE)
     pts=[(x,y) for y in range(h) for x in range(w) if src[(y*w+x)*4+3]>=128]
     x0=min(x for x,y in pts); x1=max(x for x,y in pts)+1; y0=min(y for x,y in pts); y1=max(y for x,y in pts)+1
-    scale=.040; nw=round((x1-x0)*scale); nh=round((y1-y0)*scale); out=frame(); ox=(FRAME-nw)//2; oy=47-nh
+    scale=.040; nw=round((x1-x0)*scale); nh=round((y1-y0)*scale); out=frame(); ox=(FRAME-nw)//2; oy=FRAME-nh   # lowest row on 47
     for y in range(nh):
         for x in range(nw):
             sx=x0+min(x1-x0-1,int((x+.5)/scale)); sy=y0+min(y1-y0-1,int((y+.5)/scale)); i=(sy*w+sx)*4; c=src[i:i+4]

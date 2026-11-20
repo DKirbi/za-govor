@@ -22,7 +22,7 @@ def layer_files(man, season):
     """the PNG export of every layer the pack draws (the same filter as build.py)"""
     if man.get('layers'):
         return [L['file'] for L in man['layers']]
-    return [L['export'] for L in man.get('layersBackToFront', []) if not season or L.get('season') in (season, 'shared')]
+    return [L['export'] for L in man.get('layersBackToFront', []) if not L.get('previewOnly') and (not season or L.get('season') in (season, 'shared'))]
 
 
 def webp_path(png_rel):
@@ -94,7 +94,20 @@ def main():
             index_path(f).write_text(json.dumps(dict(sorted(idx.items())), indent=1) + '\n', encoding='utf-8')
             made += 1
         webp_total += (ROOT / webp_path(f)).stat().st_size
-    print(f'{made} written, {len(todo) - made} already fresh; {len(todo)} layers: '
+    # WebP copies of layers no pack draws any more (a layer made previewOnly, a removed pack) go, with their index entries
+    pruned = 0
+    for d in {pathlib.PurePosixPath(f).parent for f in todo}:
+        idx_p = ROOT / d / 'webp' / 'index.json'
+        if not idx_p.is_file():
+            continue
+        idx = json.loads(idx_p.read_text(encoding='utf-8'))
+        keep = {n: e for n, e in idx.items() if str(d / n) in todo}
+        for n, e in idx.items():
+            if n not in keep:
+                (ROOT / d / 'webp' / e['webp']).unlink(missing_ok=True); pruned += 1
+        if keep != idx:
+            idx_p.write_text(json.dumps(dict(sorted(keep.items())), indent=1) + '\n', encoding='utf-8')
+    print(f'{made} written, {len(todo) - made} already fresh, {pruned} unused removed; {len(todo)} layers: '
           f'{png_total / 1048576:.2f} MB PNG -> {webp_total / 1048576:.2f} MB WebP')
 
 

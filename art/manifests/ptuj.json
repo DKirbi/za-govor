@@ -265,30 +265,29 @@
       "alpha": "binary",
       "tileable": true,
       "repeatPeriodPx": 2172,
-      "method": "Cleaned road source with horizontally mirrored half; edge columns match."
+      "method": "Cleaned road source with horizontally mirrored half; edge columns match.",
+      "previewOnly": true,
+      "note": "The source of road-tile-tall (tools/art_road_stack.py). previewOnly keeps it out of the build; the game draws the tall copy."
     },
     {
-      "id": "road-cobbles",
+      "id": "road-tile-tall",
       "season": "sunset",
-      "source": "art/source/environments/ptuj/road-cobbles.png",
-      "export": "art/exports/environments/ptuj/road-cobbles.png",
-      "sourceSize": [
-        1672,
-        240
-      ],
+      "derivedFrom": "art/exports/environments/ptuj/road-tile.png",
+      "generatedBy": "tools/art_road_stack.py",
+      "export": "art/exports/environments/ptuj/road-tile-tall.png",
       "exportSize": [
-        1672,
-        240
+        2172,
+        624
       ],
       "offset": [
         0,
-        325
+        0
       ],
-      "alpha": "transparent contact-edge; opaque below curb row",
+      "alpha": "binary",
       "tileable": true,
-      "repeatPeriodPx": 1672,
-      "previewOnly": true,
-      "note": "Parallel review candidate. The existing road-tile remains the live layer until the director compares both."
+      "repeatPeriodPx": 2172,
+      "method": "The road tile with four more copies of its cobble rows stacked underneath, each shifted sideways and joined along a minimum-error cut through the mortar; every pixel comes from road-tile.png. Still repeats sideways.",
+      "note": "Drawn at 0.5 (Game Director, 19-20 Nov: the old cobbles, smaller). Its top follows the characters (stand in data/backgrounds.json), so it reaches the bottom of the scene on any screen."
     },
     {
       "id": "foreground",
@@ -524,30 +523,29 @@
       "alpha": "binary; source retains original alpha",
       "tileable": true,
       "repeatPeriodPx": 2172,
-      "method": "Snow-covered road source with horizontally mirrored half; edge columns match."
+      "method": "Snow-covered road source with horizontally mirrored half; edge columns match.",
+      "previewOnly": true,
+      "note": "The source of road-tile-tall (tools/art_road_stack.py). previewOnly keeps it out of the build; the game draws the tall copy."
     },
     {
-      "id": "road-cobbles",
+      "id": "road-tile-tall",
       "season": "winter",
-      "source": "art/source/environments/ptuj/winter-road-cobbles.png",
-      "export": "art/exports/environments/ptuj/winter/road-cobbles.png",
-      "sourceSize": [
-        1672,
-        240
-      ],
+      "derivedFrom": "art/exports/environments/ptuj/winter/road-tile.png",
+      "generatedBy": "tools/art_road_stack.py",
+      "export": "art/exports/environments/ptuj/winter/road-tile-tall.png",
       "exportSize": [
-        1672,
-        240
+        2172,
+        663
       ],
       "offset": [
         0,
-        325
+        0
       ],
-      "alpha": "transparent contact-edge; opaque below curb row",
+      "alpha": "binary",
       "tileable": true,
-      "repeatPeriodPx": 1672,
-      "previewOnly": true,
-      "note": "Parallel review candidate. The existing road-tile remains the live layer until the director compares both."
+      "repeatPeriodPx": 2172,
+      "method": "The road tile with four more copies of its cobble rows stacked underneath, each shifted sideways and joined along a minimum-error cut through the mortar; every pixel comes from road-tile.png. Still repeats sideways.",
+      "note": "Drawn at 0.5 (Game Director, 19-20 Nov: the old cobbles, smaller). Its top follows the characters (stand in data/backgrounds.json), so it reaches the bottom of the scene on any screen."
     },
     {
       "id": "foreground",
@@ -583,15 +581,14 @@
     "Version 0.3.0 separates clouds onto transparent horizontally tileable layers so the renderer can drift them independently.",
     "Version 0.3.0 adds sparse outer-bank trees and matching foreground rocks, bushes and grasses for sunset and winter. Foreground placement is intentionally low to preserve actor readability.",
     "19 Nov 2026 (Game Director, PR #34): the build embeds lossy WebP copies (quality 90) of these PNG exports, written by tools/art_bg_webp.py into webp/ beside them. The PNG exports are unchanged and remain the lossless masters.",
-    "20 Nov 2026: smaller-cobble summer and winter candidates are 1672×240 at 1:1 with a 22 px curb and 9–10 irregular courses. Both remain preview-only layers beside road-tile pending comparison."
+    "20 Nov 2026: smaller-cobble summer and winter candidates are 1672×240 at 1:1 with a 22 px curb and 9–10 irregular courses. Both remain preview-only layers beside road-tile pending comparison.",
+    "20 Nov 2026 (Game Director, PR #36): Codex's road-cobbles redraw was rejected and removed; the road is road-tile at half size, made taller by tools/art_road_stack.py (road-tile-tall)."
   ],
   "previews": {
     "sunset": "art/previews/environments/ptuj/sunset-assembled.jpg",
     "winter": "art/previews/environments/ptuj/winter-assembled.jpg",
     "winterRoadRepeat": "art/previews/environments/ptuj/winter-road-repeat-3x.jpg",
-    "validation": "art/previews/environments/ptuj/VALIDATION.md",
-    "summerRoadCobbles": "art/previews/environments/ptuj/summer-road-cobbles-3x.jpg",
-    "winterRoadCobbles": "art/previews/environments/ptuj/winter-road-cobbles-3x.jpg"
+    "validation": "art/previews/environments/ptuj/VALIDATION.md"
   },
   "knownLimitations": [
     "The bridge, town skyline, retaining wall and outer-bank trees are stylized game-art interpretations, not documentary depictions of verified historical structures or a specific viewpoint.",

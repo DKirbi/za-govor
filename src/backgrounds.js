@@ -99,9 +99,28 @@ function bgLayers(scene, key, where) {
 // not tile pans once across the region with progress, from the centre towards its right edge × its pan (1 = all the
 // way), so it never shows an edge. camX null = a still scene (battle, gallery). A picture drawn at least at its own
 // size keeps hard pixel edges (pixel art); a larger picture shrunk to the scene is smoothed instead of aliased.
+// Where the ground must reach in a scene, in CSS pixels from its top: `feet`, the highest feet of every hero, enemy
+// and object on the road, and `neck`, the highest hero neck (`neck` of the sprite's height from its top). From layout
+// boxes: offsets ignore the transforms of attacks and running, so the ground does not jump with them. null when
+// nobody stands in the scene (the gallery).
+function actorFloor(sc, neck) {
+  let feet = null, nk = null;
+  sc.querySelectorAll(':scope > .party .spr, :scope > .enemies .spr, :scope > .tv-objs > .tv-obj').forEach(el => {
+    let y = 0, n = el;
+    while (n && n !== sc) { y += n.offsetTop; n = n.offsetParent; }
+    const h = el.offsetHeight;
+    if (n !== sc || !h) return;
+    if (feet === null || y + h < feet) feet = y + h;
+    if (neck != null && el.closest('.party') && (nk === null || y + h * neck < nk)) nk = y + h * neck;
+  });
+  return feet === null ? null : { feet, neck: nk };
+}
+const floorKey = f => f ? `${f.feet}|${f.neck}` : '';
 function bgPlace(M, camX, progress, now) {
   const sc = M.scene, W = sc.clientWidth, H = sc.clientHeight;
   if (!H || !W) return;
+  const G = M.P.layers.find(L => L.stand != null);
+  M.floor = G ? actorFloor(sc, G.neck) : null;
   const P = M.P, s = Math.max(H / P.canvas.h, W / P.canvas.w), cw = P.canvas.w * s, c0 = (W - cw) / 2, oy = H - P.canvas.h * s;
   const t = bgMotion() ? now / 1000 : 0;
   M.size = W + 'x' + H;
@@ -110,8 +129,14 @@ function bgPlace(M, camX, progress, now) {
     let x = camX == null ? c0 : L.tileX ? c0 - camX * L.speed : c0 - Math.max(0, cw - W) / 2 * clamp(progress, 0, 1) * (L.pan == null ? 1 : L.pan);
     x += L.x * s;
     if (L.tileX) { x -= L.drift * s * t; x = ((x % tw) + tw) % tw - tw; }   // the same tile, kept near zero so the numbers stay small
+    // a ground layer with `stand` follows the characters: its top `stand` canvas pixels above the highest feet, or at
+    // the heroes' necks if that is higher, so they walk on it with their heads against what lies behind; it repeats
+    // downwards (clipped above its top) so it reaches the bottom on any screen
+    const F = L.stand != null && M.floor;
+    const y = F ? Math.min(F.feet - L.stand * s, F.neck ?? Infinity) : oy + L.y * s;
     el.style.backgroundSize = `${tw}px ${Math.round(L.h * k * s)}px`;
-    el.style.backgroundPosition = `${Math.round(x)}px ${Math.round(oy + L.y * s)}px`;
+    el.style.backgroundPosition = `${Math.round(x)}px ${Math.round(y)}px`;
+    if (L.stand != null) { el.style.backgroundRepeat = 'repeat'; el.style.clipPath = `inset(${Math.max(0, Math.round(y))}px 0 0 0)`; }
     el.style.imageRendering = k * s >= 1 ? 'pixelated' : 'auto';
   });
 }
@@ -121,7 +146,10 @@ const BG_STILL = new Set();
   BG_STILL.forEach(M => {
     if (!M.scene.isConnected) { BG_STILL.delete(M); return; }
     const drifts = bgMotion() && M.P.layers.some(L => L.tileX && L.drift);
-    if (drifts || M.size !== M.scene.clientWidth + 'x' + M.scene.clientHeight) bgPlace(M, null, 0, now);
+    // placed again when the characters' feet move: they arrive after the layers, and a status line under an enemy lifts it
+    const G = M.P.layers.find(L => L.stand != null);
+    const moved = G && floorKey(actorFloor(M.scene, G.neck)) !== floorKey(M.floor);
+    if (drifts || moved || M.size !== M.scene.clientWidth + 'x' + M.scene.clientHeight) bgPlace(M, null, 0, now);
   });
   requestAnimationFrame(bgFrame);
 })(performance.now());
