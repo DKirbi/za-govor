@@ -38,7 +38,7 @@ These three approved Martin Krpan states establish a **proposed** benchmark for 
 
 - Check readability at native 48×48 size, especially the two distinct punches and the rank-2 salt-bag throw at native 48×48 size.
 - Review pixel readability and the in-game timing (running 0.5 s a loop, victory 0.8 s once, skills 0.72 s). Pose choices are approved.
-- The kneel at the pack scale stands about as tall as idle, because the source pose is hunched under the sack. If he should read lower, that is a change to `downed.png`, not to the export.
+- The kneel is exported at 0.040 (20 Nov), so the crouched pose reads shorter than the standing states, feet on row 47.
 - Decide whether the overhead mare-lifting folk-art interpretation fits the collection and where it belongs.
 - Keep the confirmed Brdavs story card separate from the mare-lifting illustration.
 

@@ -81,7 +81,10 @@ def build(winter):
         widths=period(rr,W,25,45); x=rr.randrange(W)-W
         for bw in widths:
             jy0=y+rr.randint(-5,4); jy1=y+rh-1+rr.randint(-4,5)
-            for dx in (-W,0,W): stone(b,x+dx,x+bw+dx,jy0,jy1,rr,winter)
+            # one set of random colours and snow per stone, shared by its three copies, so a stone cut by the
+            # repeat edge has the same shade on both sides of the join
+            seed=rr.random()
+            for dx in (-W,0,W): stone(b,x+dx,x+bw+dx,jy0,jy1,random.Random(seed),winter)
             x+=bw
         if winter:
             phase=rr.randrange(W)-W
@@ -123,19 +126,23 @@ def main():
         assert len(p)==w*h*4, f"{season}: malformed raster buffer"
         # Only the top contact edge may be transparent; the ground itself stays opaque.
         assert all(p[(y*w+x)*4+3]==255 for y in range(1,h) for x in range(w)), f"{season}: unexpected transparency below curb"
-        # Test both repeat joins against each other, and check there is no uninterrupted mortar band.
-        triple=bytearray().join([p[y*w*4:(y+1)*w*4]*3 for y in range(h)])
-        for y in range(h):
-            a=triple[(y*w*3*4+(w-8)*4):(y*w*3*4+(w+8)*4)]
-            b=triple[(y*w*3*4+(2*w-8)*4):(y*w*3*4+(2*w+8)*4)]
-            assert a==b, f"{season}: repeated seam differs at row {y}"
+        # The repeat join (last column against the first) may change colour no more than neighbouring columns do
+        # on average: a tile compared with copies of itself always matches, so that is not a seam test.
+        def step(x0,x1): return sum(abs(p[(y*w+x0)*4+c]-p[(y*w+x1)*4+c]) for y in range(1,h) for c in range(3))/((h-1)*3)
+        wrap=step(w-1,0); avg=sum(step(x,x+1) for x in range(0,w-1,7))/len(range(0,w-1,7))
+        assert wrap<=1.5*avg, f"{season}: the repeat join changes colour {wrap:.1f} per pixel against {avg:.1f} between neighbours"
+        # Check there is no uninterrupted mortar band.
         for y in range(25,h):
             row=[bytes(p[(y*w+x)*4:(y*w+x)*4+3]) for x in range(w)]
             assert len(set(row))>1, f"{season}: flat horizontal row at y={y}"
         triple=bytearray().join([p[y*w*4:(y+1)*w*4]*3 for y in range(h)]); temp=ROOT/f"art/previews/environments/ptuj/.{season}-road-cobbles-3x.png"
         jpg=ROOT/f"art/previews/environments/ptuj/{season}-road-cobbles-3x.jpg"
         pngwrite(temp,W*3,H,triple)
-        subprocess.run(["sips","-s","format","jpeg","-s","formatOptions","92",str(temp),"--out",str(jpg)],check=True,stdout=subprocess.DEVNULL)
+        try:
+            from PIL import Image
+            Image.open(temp).convert("RGB").save(jpg,quality=92)
+        except ImportError:   # no Pillow: macOS sips
+            subprocess.run(["sips","-s","format","jpeg","-s","formatOptions","92",str(temp),"--out",str(jpg)],check=True,stdout=subprocess.DEVNULL)
         temp.unlink()
-        print(f"{season}: {w}x{h}; periodic layout and three-copy seam preview generated")
+        print(f"{season}: {w}x{h}; join {wrap:.1f} against {avg:.1f} between neighbours; three-copy seam preview generated")
 if __name__=="__main__": main()

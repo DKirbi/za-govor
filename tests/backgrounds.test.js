@@ -5,7 +5,7 @@
 const { openGame, runner, sleep } = require('./harness');
 const { check, run } = runner('Background variants (A/B tests)');
 
-const ORDER_B = 'sky,clouds,distant-hills,castle-hill,town,riverbank-trees,drava-water,riverbank-wall,bridge,reflections,road-tile,foreground';
+const ORDER_B = 'sky,clouds,distant-hills,castle-hill,town,riverbank-trees,drava-water,riverbank-wall,bridge,reflections,road-cobbles,foreground';
 const ORDER_C = 'sky,clouds,distant-hills,castle-hill,town,drava-water,reflections,sun-glint,road-tile,foreground';
 const mod = (x, tw) => ((x % tw) + tw) % tw - tw;
 
@@ -24,7 +24,7 @@ run(async () => {
     return { pos, W: sc.clientWidth, H: sc.clientHeight, canvas: P.canvas, L: Object.fromEntries(P.layers.map(l => [l.id, { w: l.w, h: l.h, x: l.x, y: l.y, scale: l.scale, speed: l.speed, pan: l.pan, tileX: l.tileX }])) }; }, id);
   // every actor's feet against the top of the ground layer's picture (its first solid row, read from the image)
   const feetOnGround = () => ev(async () => {
-    const sc = document.querySelector('.scene'), el = sc.querySelector('[data-layer="road-tile"]'), r = sc.getBoundingClientRect();
+    const sc = document.querySelector('.scene'), el = sc.querySelector('[data-layer="road-cobbles"], [data-layer="road-tile"]'), r = sc.getBoundingClientRect();
     const img = new Image(); img.src = getComputedStyle(el).backgroundImage.slice(5, -2); await img.decode();
     const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; const g = c.getContext('2d'); g.drawImage(img, 0, 0);
     const a = g.getImageData(0, 0, img.width, img.height).data;
@@ -37,10 +37,10 @@ run(async () => {
   // ---------------------------------------------------------------- both packs in the build
   const built = await ev(() => { const Z = window.__ZG, B = Z.BGX.packs.ptuj, C = Z.BGX.packs['ptuj-vecer']; localStorage.removeItem('zg-ab');
     const sum = P => P && { ids: P.layers.map(l => l.id).join(), canvas: P.canvas, status: P.status, name: P.name, tiles: P.layers.filter(l => l.tileX).map(l => l.id).join(), front: P.layers.filter(l => l.front).map(l => l.id).join() };
-    return { B: sum(B), C: sum(C), road: B && B.layers.find(l => l.id === 'road-tile'), castle: B && B.layers.find(l => l.id === 'castle-hill'), test: Z.BGX.tests.ptuj, v: Z.bgVariant('ptuj'), tags: Z.bgStatTags(), ab: localStorage.getItem('zg-ab') }; });
-  check(built.B && built.B.ids === ORDER_B && built.B.canvas.w === 1672 && built.B.canvas.h === 560 && built.B.tiles === 'clouds,road-tile' && built.B.name === 'Ptuj — sončni zahod nad Dravo',
+    return { B: sum(B), C: sum(C), road: B && B.layers.find(l => l.id === 'road-cobbles'), castle: B && B.layers.find(l => l.id === 'castle-hill'), test: Z.BGX.tests.ptuj, v: Z.bgVariant('ptuj'), tags: Z.bgStatTags(), ab: localStorage.getItem('zg-ab') }; });
+  check(built.B && built.B.ids === ORDER_B && built.B.canvas.w === 1672 && built.B.canvas.h === 560 && built.B.tiles === 'clouds,road-cobbles' && built.B.name === 'Ptuj — sončni zahod nad Dravo',
     'variant B is the combined seasonal pack: twelve sunset layers back to front, fitted through a 1672×560 view, clouds and road tile horizontally', JSON.stringify(built.B));
-  check(built.road.scale === 1.3 && built.road.w === 2172 && built.castle.scale === 0.6 && built.castle.x === 560, 'the road is enlarged 1.3× and the castle hill keeps Codex\'s 0.6 scale, as data/backgrounds.json places them', JSON.stringify({ road: [built.road.w, built.road.scale, built.road.y], castle: [built.castle.x, built.castle.y, built.castle.scale] }));
+  check((built.road.scale || 1) === 1 && built.road.w === 1672 && built.road.h === 240 && built.road.y === 325 && built.castle.scale === 0.6 && built.castle.x === 560, 'the small cobbles are drawn 1:1 from the top of the ground band, and the castle hill keeps Codex\'s 0.6 scale, as data/backgrounds.json places them', JSON.stringify({ road: [built.road.w, built.road.scale, built.road.y], castle: [built.castle.x, built.castle.y, built.castle.scale] }));
   check(built.C && built.C.ids === ORDER_C && built.C.canvas.w === 640 && built.C.front === 'foreground', 'variant C is Claude\'s pack: ten layers on 640×165, the foreground in front', JSON.stringify(built.C));
   check(built.test.share.C === 0 && built.test.live === false && built.v === 'A' && built.ab === null && built.tags.join() === 'ozadje-ptuj=A',
     'the test is not live and C has no share: everyone sees A, nobody is assigned, the statistics say ozadje-ptuj=A', JSON.stringify(built.test));
@@ -65,8 +65,8 @@ run(async () => {
   const feetRoadB = await feetOnGround();
   check(feetRoadB.feet.length >= 4 && feetRoadB.feet.every(f => f >= feetRoadB.ground), 'on the road every hero and enemy stands on the Codex cobbles', JSON.stringify(feetRoadB));
   const r1 = await at(1200), p1 = await layerPos('ptuj');
-  const s = Math.max(p1.H / 560, p1.W / 1672), c0 = (p1.W - 1672 * s) / 2, rw = Math.round(2172 * 1.3 * s);
-  check(Math.abs(p1.pos['road-tile'].x - Math.round(mod(c0 - 1200 * (r1.mobile ? .62 : 1), rw))) <= 1, 'the road scrolls with the walk on its enlarged tile', JSON.stringify(p1.pos['road-tile']));
+  const s = Math.max(p1.H / 560, p1.W / 1672), c0 = (p1.W - 1672 * s) / 2, rw = Math.round(1672 * s);
+  check(Math.abs(p1.pos['road-cobbles'].x - Math.round(mod(c0 - 1200 * (r1.mobile ? .62 : 1), rw))) <= 1, 'the road scrolls with the walk on its 1672 px tile', JSON.stringify(p1.pos['road-cobbles']));
   check(p1.pos.town.x === p1.pos['drava-water'].x && p1.pos.town.x === p1.pos.reflections.x && p1.pos.town.y < p1.pos['drava-water'].y && p1.pos['riverbank-wall'].y < p1.pos['drava-water'].y, 'the town, the river and its reflections stay together');
   check(Object.values(p1.pos).every(p => p.smooth), 'the large Codex pictures are shrunk smoothly, not aliased as pixel art', JSON.stringify(Object.fromEntries(Object.entries(p1.pos).map(([k, v]) => [k, v.smooth]))));
   await shot('bg-01-ptuj-road-B');
@@ -82,11 +82,11 @@ run(async () => {
     'the battle shows the view centred; the sky covers the whole width', JSON.stringify({ sky: pb.pos.sky, castle: pb.pos['castle-hill'].x, W: pb.W }));
   // a short window: the scene is wider than the view, so the view covers its width and keeps the ground at the bottom
   const cover = await ev(async () => { const sc = document.querySelector('.scene'); sc.style.height = '200px'; await new Promise(r => setTimeout(r, 120));
-    const sky = sc.querySelector('[data-layer="sky"]'), road = sc.querySelector('[data-layer="road-tile"]');
+    const sky = sc.querySelector('[data-layer="sky"]'), road = sc.querySelector('[data-layer="road-cobbles"]');
     const [sx] = sky.style.backgroundPosition.split(' ').map(parseFloat), [sw] = sky.style.backgroundSize.split(' ').map(parseFloat);
     const [, ry] = road.style.backgroundPosition.split(' ').map(parseFloat), [, rh] = road.style.backgroundSize.split(' ').map(parseFloat);
     const out = { W: sc.clientWidth, H: sc.clientHeight, skyLeft: sx, skyRight: sx + sw, roadBottom: Math.round(ry + rh) }; sc.style.height = ''; await new Promise(r => setTimeout(r, 120)); return out; });
-  check(cover.skyLeft <= 0 && cover.skyRight >= cover.W && Math.abs(cover.roadBottom - cover.H) <= 2, 'in a short, wide scene the view still covers the width and the road stays at the bottom', JSON.stringify(cover));
+  check(cover.skyLeft <= 0 && cover.skyRight >= cover.W && cover.roadBottom >= cover.H - 1 && cover.roadBottom - cover.H <= 6, 'in a short, wide scene the view still covers the width and the road reaches the bottom (its 5 spare pixels run just past it)', JSON.stringify(cover));
   await shot('bg-02-ptuj-battle-B');
 
   // ---------------------------------------------------------------- variant C (preview only): parallax of the pixel-art pack
@@ -186,13 +186,13 @@ run(async () => {
     const H = Z.BGX.heroes.krpan; out.rows = H ? Object.fromEntries(Object.entries(H.seqs).map(([n, q]) => [n, q.row])) : null;
     localStorage.removeItem('zg-fidelity'); return out; });
   check(!kp.auto.hi && kp.high.hi && !kp.low.hi && kp.high.bg > kp.low.bg, 'Martin Krpan: Samodejno and Nizka keep the sprite already in the game, Visoka uses Codex\'s sheet', JSON.stringify({ ...kp, rows: undefined }));
-  check(kp.rows && ['idle', 'cudgel-strike', 'kmecka-moc-r1-double-punch', 'kmecka-moc-r2-salt-sacks', 'kmecka-moc-r3-boulder', 'mesarica-slash', 'running', 'victory', 'downed'].every(n => n in kp.rows),
-    'the Krpan sheet holds idle, Lipov kij, the three Kmečka moč ranks, Mesarica, running, victory and downed', JSON.stringify(kp.rows));
+  check(kp.rows && ['idle', 'cudgel-strike', 'kmecka-moc-r1-double-punch', 'kmecka-moc-r2-salt-bag-throw', 'kmecka-moc-r3-boulder', 'mesarica-slash', 'running', 'victory', 'downed'].every(n => n in kp.rows),
+    'the Krpan sheet holds idle, Lipov kij, the three Kmečka moč ranks (rank 2 the solo salt-bag throw), Mesarica, running, victory and downed', JSON.stringify(kp.rows));
   const seq = await ev(async () => { const Z = window.__ZG; localStorage.setItem('zg-fidelity', 'high');
     Z.S.testMode = true; Z.S.mode = 'calm'; Z.newRun('krpan'); Z.joinHero('kurent'); Z.go('travel');
     const spr = document.querySelector('.party .spr.hi'), rows = Z.BGX.heroes.krpan.seqs, out = {};
     if (!spr) { localStorage.removeItem('zg-fidelity'); return null; }
-    for (const [t, r, n] of [[1, 1, 'cudgel-strike'], [2, 1, 'kmecka-moc-r1-double-punch'], [2, 2, 'kmecka-moc-r2-salt-sacks'], [2, 3, 'kmecka-moc-r3-boulder'], [3, 1, 'mesarica-slash'], [3, 3, 'mesarica-slash']]) {
+    for (const [t, r, n] of [[1, 1, 'cudgel-strike'], [2, 1, 'kmecka-moc-r1-double-punch'], [2, 2, 'kmecka-moc-r2-salt-bag-throw'], [2, 3, 'kmecka-moc-r3-boulder'], [3, 1, 'mesarica-slash'], [3, 3, 'mesarica-slash']]) {
       Z.attackAnim(spr, t, document.querySelector('.scene'), r); out[`${t}/${r}`] = [getComputedStyle(spr).getPropertyValue('--r').trim(), String(rows[n].row)]; }
     localStorage.removeItem('zg-fidelity'); return out; });
   check(seq && Object.values(seq).every(([got, want]) => got === want), 'Krpan\'s skills use their own rows: Lipov kij, Kmečka moč R1 / R2 / R3, Mesarica (any rank)', JSON.stringify(seq));

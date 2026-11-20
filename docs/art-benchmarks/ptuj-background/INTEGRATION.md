@@ -61,4 +61,8 @@ Cloud drift uses the existing renderer's tiled-layer movement and respects reduc
 
 ## Smaller cobble comparison assets
 
-The summer and winter `road-cobbles` layers are separate 1672×240, 1:1 review candidates with three-copy seam previews. They are marked `previewOnly` in the manifest and are excluded from the live parallax build until the Game Director compares them with the retained `road-tile`.
+The summer and winter `road-cobbles` layers (1672×240, drawn 1:1 from y = 325) are the live road since 0.16.0, at the
+size the Game Director chose on 19 Nov (`ROAD-COBBLES-BRIEF.md`). `tools/art_road_cobbles.py` generates them and checks
+the repeat join. The earlier `road-tile` (three rows of large cobbles at 1.3×) is kept as `previewOnly`; to bring it
+back, swap `previewOnly` between the two in `art/manifests/ptuj.json` and give `road-tile` its tuning in
+`data/backgrounds.json` again (y 325, scale 1.3, speed 1), then run `python3 tools/art_bg_webp.py`.

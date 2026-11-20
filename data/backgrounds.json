@@ -82,10 +82,9 @@
           "y": 269,
           "pan": 0.85
         },
-        "road-tile": {
+        "road-cobbles": {
           "x": 0,
           "y": 325,
-          "scale": 1.3,
           "speed": 1
         },
         "foreground": {
@@ -199,10 +198,9 @@
           "y": 266,
           "pan": 0.85
         },
-        "road-tile": {
+        "road-cobbles": {
           "x": 0,
           "y": 325,
-          "scale": 1.3,
           "speed": 1
         },
         "foreground": {

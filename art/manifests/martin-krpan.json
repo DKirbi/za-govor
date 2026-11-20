@@ -152,7 +152,12 @@
         "art/exports/characters/martin-krpan/animations/kmecka-moc-r2-salt-bag-throw/frame-02.png",
         "art/exports/characters/martin-krpan/animations/kmecka-moc-r2-salt-bag-throw/frame-03.png",
         "art/exports/characters/martin-krpan/animations/kmecka-moc-r2-salt-bag-throw/frame-04.png"
-      ]
+      ],
+      "reviewFiles": [
+        "art/previews/characters/martin-krpan/kmecka-moc-r2-salt-bag-throw.png",
+        "art/previews/characters/martin-krpan/kmecka-moc-r2-salt-bag-throw.html"
+      ],
+      "generatedBy": "tools/art_krpan_salt_throw.py (crops of salt-sacks-4f.png without the mare); it also writes the two reviewFiles"
     },
     {
       "id": "kmecka-moc-r3-boulder",
@@ -291,8 +296,8 @@
     "literaryNote": "Levstik's text describes Krpan carrying the mare and its load aside for the carriage. The overhead lift shown here is an artistic interpretation, not a literal staging specified by the passage.",
     "exportNote": "No runtime export until its placement is decided (OPEN). The earlier export was a byte-identical copy of the source and was removed in PR #34."
   },
-  "preview": "art/previews/characters/martin-krpan/kmecka-moc-r2-salt-bag-throw.png",
-  "animationPreview": "art/previews/characters/martin-krpan/kmecka-moc-r2-salt-bag-throw.html",
+  "preview": "art/previews/characters/martin-krpan/martin-krpan-sprite-preview.png",
+  "animationPreview": "art/previews/characters/martin-krpan/animation-preview.html",
   "benchmark": "These states set the roster convention in docs/art-benchmarks/hero-sprites/README.md. It approves no other character's assets.",
   "openDecisions": [
     "The mare-lifting folk-art illustration's exact placement remains OPEN.",
