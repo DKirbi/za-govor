@@ -767,16 +767,17 @@ const ENEMIES = {
   volkodlak: { name: 'Volkodlak', hp: 45, atk: 6, speed: 11, calmStep: 0.25, size: 76, xp: 40, feedsOnRepeat: true,
     pattern: ['attack'], moves: { attack: 'Zobje' } },
   vila: { name: 'Vodna vila', f: true, hp: 30, atk: 4, speed: 9, calmStep: 0.34, size: 64, xp: 30,
-    pattern: ['attack', 'flood'], moves: { attack: 'Val', flood: 'Poplava' } },
-  povodni: { name: 'Povodni mož', hp: 400, atk: 16, speed: 12.5, calmStep: 0.25, size: 100, xp: 90, boss: true, cwlock: 'vrtinec',
+    pattern: ['attack', 'flood'], moves: { attack: 'Val', flood: 'Poplava', heal: 'Zdravilni val' } },
+  povodni: { name: 'Povodni mož', hp: 260, atk: 16, speed: 12.5, calmStep: 0.25, size: 100, xp: 90, boss: true, cwlock: 'vrtinec',
     pattern: ['attack', 'attack', 'cwlock'], moves: { attack: 'Objem vode', cwlock: 'Vrtinec' } },
   // Lintvern (balance D, 17 Nov 2026): three attacks of his own — Kremplji (one hero), Topot (everyone a little, and
   // heroes knocked out of the letter mesh for a while) and his signature, Ognjeni dih: at 66 % and 33 % of his health
   // he draws breath for a long, visible moment (longer on Malček, shorter on Knjižni molj), then burns every hero
   // and scorches letters that fade one by one; a scorched letter used in a word burns that hero again. Nothing
   // stops his attacks (stuns, Okamnitev) and delays on him are halved. At half health he enrages: faster, Zmajeva
-  // uganka, and as many wyverns again as he started with (data/world.json → grad.adds). Health by Znanje (hpBy).
-  lintvern: { name: 'Lintvern', tags: ['zmaj'], hp: 250, hpBy: { lahka: 260, srednja: 250, tezka: 250 }, atk: 11, speed: 11.5, calmStep: 0.25, size: 100, xp: 150, boss: true, cwlock: 'zmaj', unstoppable: true,
+  // uganka, and as many wyverns again as he started with (data/world.json → grad.adds). Health by Znanje (hpBy): the toughest
+  // enemy of the road on every Znanje (Game Director, 20 Nov 2026), above Povodni mož; his wyverns are meant to fall first.
+  lintvern: { name: 'Lintvern', tags: ['zmaj'], hp: 250, hpBy: { lahka: 340, srednja: 320, tezka: 320 }, atk: 11, speed: 11.5, calmStep: 0.25, size: 100, xp: 150, boss: true, cwlock: 'zmaj', unstoppable: true,
     pattern: ['scratch', 'scratch', 'stomp'],
     phase2: { at: 0.5, pattern: ['scratch', 'stomp', 'scratch', 'cwlock'], speed: 10, calmStep: 0.34, summon: true },
     breath: { at: [0.66, 0.33], sec: { lahka: 14, srednja: 8, tezka: 6 }, words: { lahka: 4, srednja: 3, tezka: 2 }, hit: 1.2, burn: 4, scorch: 10, fade: 2.5, fadeWords: 3, use: 4 },
@@ -1236,7 +1237,8 @@ function makeEnemy(key, i, sc, strong) {
   const base = run && t.hpBy ? t.hpBy[LV().diff] || t.hp : t.hp;
   const hp = Math.round(base * (s ? s.hp : 1) * tier * (1 + steep[0] * ri / last) * (el ? el.hp : 1));
   const name = el ? (t.f ? 'Silna ' : 'Silni ') + t.name[0].toLowerCase() + t.name.slice(1) : t.name;
-  return { key, i, ...t, name, strong: !!el, lvl: run ? run.ri + 1 : 1, atk: Math.round(t.atk * (s ? s.atk : 1) * (el ? el.atk : 1)), speed: t.speed * slow, calmStep: t.calmStep / slow,
+  const atk = Math.round(t.atk * (s ? s.atk : 1) * (el ? el.atk : 1));
+  return { key, i, ...t, name, strong: !!el, lvl: run ? run.ri + 1 : 1, atk, atkBase: atk, speed: t.speed * slow, calmStep: t.calmStep / slow,
     pattern: t.pattern.slice(), maxHp: hp, hp, charge: Math.random() * 0.25, step: 0,
     stunUntil: 0, stunWords: 0, burn: null, burnAcc: 0, burnTurns: 0, burnPer: 0, phase2on: false, el: null };
 }
@@ -1253,6 +1255,10 @@ function startBattle(node) {
     stats: { words: 0, longest: '', best: 0, cw: 0, xp: 0, gold: 0 }, lastFinisher: null,
   };
   S.meterBonus = 0;
+  // Povodni mož's vile (Game Director, 20 Nov 2026; data/world.json → reka.escort): beside the boss they hit weaker and
+  // every third move heal him, so the fight asks who to strike first
+  const esc = def.escort;
+  if (esc) B.enemies.forEach(e => { if (e.key !== esc.key) return; e.atk = e.atkBase = Math.max(1, Math.round(e.atk * (esc.atk || 1))); e.pattern = esc.pattern.slice(); e.healOf = esc.of; e.healPart = esc.heal; });
   B.enemies.forEach(e => {
     if (has('stribogova-piscal')) { e.speed *= 1.15; e.calmStep /= 1.15; if (e.phase2) e.phase2 = { ...e.phase2, speed: e.phase2.speed * 1.15 }; }
     if (has('kurentov-zvonec')) e.charge = -0.6;
@@ -1323,7 +1329,7 @@ function renderParty() {
   UI.heroEls = HEROES.map((hr, i) => {
     const st = S.heroes[i], sleeping = !!B.sleep[i] && !st.down;
     const el = spriteEl(hr.id, hr.c, st.down ? 'down' : sleeping ? 'asleep' : '');   // no glow in battle: points wait for a well or a signpost
-    el.title = hr.name; el.append(h('span', { class: 'st' }, st.down ? '' : sleeping ? (B.sleep[i] && B.sleep[i].why === 'topot' ? 'omamljen' : 'spi') : busy(i) ? 'pleše' : ''));
+    el.title = hr.name; el.append(h('span', { class: 'st' }));
     const bar = {};
     UI.party.append(h('div', { class: 'herowrap' + (st.down ? ' isdown' : ''), ref: w => bar.wrap = w }, el,
       h('div', { class: 'hpbar', ref: b => bar.bar = b }, h('i', { ref: f => bar.fill = f })),
@@ -1331,6 +1337,14 @@ function renderParty() {
     UI.heroBars.push(bar); return el;
   });
   renderPartyHp();
+}
+// what shows above a hero: attack and defence icons (src/effects.js), then asleep, knocked out or dancing
+function renderHeroSt() {
+  (UI.heroEls || []).forEach((el, i) => {
+    const st = S.heroes[i], box = el && el.querySelector('.st'); if (!box || !st) return;
+    const sleeping = !!B.sleep[i] && !st.down, text = st.down ? '' : sleeping ? (B.sleep[i].why === 'topot' ? 'omamljen' : 'spi') : busy(i) ? 'pleše' : '';
+    box.innerHTML = ''; box.append(...fxBadges(heroFx(i)), ...(text ? [h('span', {}, text)] : []));
+  });
 }
 function renderPartyHp() {
   (UI.heroBars || []).forEach((bar, i) => {
@@ -1342,6 +1356,7 @@ function renderPartyHp() {
   UI.partyhp.innerHTML = '';
   if (B.shield) UI.partyhp.append(h('span', { class: 'sh' }, `ščit družine ${B.shield}`));
   reviewedPartyNotes().forEach(t => UI.partyhp.append(h('span', { class: 'sh' }, t)));
+  renderHeroSt();
 }
 function renderEnemies() {
   UI.enemies.innerHTML = '';
@@ -1356,7 +1371,8 @@ function renderEnemies() {
     e.el = h('div', { class: 'actor foe spr' + (atk ? (e.atkTier === 3 ? ' atk atk3' : ' atk') : '') + (e.boss ? ' boss' : '') + (e.strong ? ' strong' : '') + (e.charging && e.hp > 0 ? ' charging' : '') + (e.hp <= 0 ? ' dead' : '') + (isT ? ' target' : '') +
         (statuses.includes('omamljen') ? ' stunned' : '') + (e.hp > 0 && performance.now() - (e.hitT || -1e9) < 250 ? ' hit' : ''),
       style: { '--art': Math.round(SPR_SIZE[foeArt(e)] * (e.scale || 1) * (e.strong ? 1.12 : 1)) }, title: e.name, onclick: () => setTarget(i) },
-      h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[foeArt(e)]})`, filter: e.tint || '', 'animation-delay': atk ? (-since) + 'ms' : (-(i * 400)) + 'ms' } }), h('span', { class: 'st' }, statuses.join(' · ')));
+      h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[foeArt(e)]})`, filter: e.tint || '', 'animation-delay': atk ? (-since) + 'ms' : (-(i * 400)) + 'ms' } }),
+      h('span', { class: 'st' }, fxBadges(foeFx(e)), statuses.length ? h('span', {}, statuses.join(' · ')) : null));   // attack up or down: icons (src/effects.js)
     const pips = S.mode === 'calm' && e.hp > 0 ? (() => {
       const steps = Math.round(1 / e.calmStep), on = Math.round(e.charge / e.calmStep);
       return h('div', { class: 'pips', title: 'Napade, ko so vse pike polne' }, Array.from({ length: steps }, (_, k) => h('i', { class: k < on ? 'on' : '' })));
@@ -1461,16 +1477,16 @@ function spawnCard(actorEl, o, ctx = UI) {
     const pic = h('div', { class: 'pic' }); pic.innerHTML = CardArt.svg(o.art, o.tier);
     const cap = h('div', { class: 'cap' }, h('b', {}, o.move));
     if (o.tier > 1 && o.word) cap.append(' ', h('span', { class: 'wd' }, o.word));
-    if (o.value != null) cap.append(' ', h('span', { class: 'vl' }, o.value));
-    if (o.tier === 3 && o.extra) cap.append(h('span', { class: 'ex' }, o.extra));
+    if (o.value != null) cap.append(' ', h('span', { class: 'vl' }, fxText(o.value)));
+    if (o.tier === 3 && o.extra) cap.append(h('span', { class: 'ex' }, fxText(o.extra)));
     card.append(pic, cap);
-  } else if (o.tier === 1) card.append(`${o.name} · ${o.move}`, o.value != null ? ` · ${o.value}` : '');
+  } else if (o.tier === 1) card.append(`${o.name} · ${o.move}`, ...(o.value != null ? [' · ', ...fxText(o.value)] : []));
   else {
     if (o.tier === 3) card.append(h('div', { class: 'pt' }, o.portrait || o.name[0]));
     card.append(h('div', { class: 'mv' }, o.move), h('div', {}, o.name));
     if (o.word) card.append(h('div', { class: 'wd' }, o.word));
-    if (o.value != null) card.append(h('div', { class: 'vl' }, o.value));
-    if (o.extra) card.append(h('div', { style: { 'font-size': '11.5px' } }, o.extra));
+    if (o.value != null) card.append(h('div', { class: 'vl' }, fxText(o.value)));
+    if (o.extra) card.append(h('div', { style: { 'font-size': '11.5px' } }, fxText(o.extra)));
   }
   ctx.cards.append(card);
   // keep the whole card inside the scene: never over the grid, never cut off
@@ -2021,8 +2037,8 @@ function heroAct(a, w) {
     case 'song': {           // Lepa Vida: her song takes the strength out of enemies
       const d = hit(2.4); card.value = `−${d}`;
       const weaken = (e, n) => { e.atk = Math.max(1, e.atk - Math.round(n * dur)); };
-      if (a.tier === 2) { weaken(target, 1); card.extra = 'cilj napada šibkeje'; }
-      if (a.tier === 3) { alive().forEach(e => weaken(e, 2)); card.extra = 'vsi sovražniki napadajo šibkeje'; }
+      if (a.tier === 2) { weaken(target, 1); card.extra = '{atk-} cilj'; }
+      if (a.tier === 3) { alive().forEach(e => weaken(e, 2)); card.extra = '{atk-} vsi sovražniki'; }
       break; }
     default: card.value = `−${hit(3)}`;
   }
@@ -2035,7 +2051,7 @@ function heroAct(a, w) {
       else if (t === 'scit') said.push(`ščit +${shield(1.5)}`);
       else if (t === 'omama' && target.hp > 0) { stun(target, 3, 1); said.push('omama'); }
       else if (t === 'ogenj' && target.hp > 0) { burn(target, 0.6 * p); said.push('gori'); }
-      else if (t === 'slabi' && target.hp > 0) { target.atk = Math.max(1, target.atk - 1); said.push('napad −1'); }
+      else if (t === 'slabi' && target.hp > 0) { target.atk = Math.max(1, target.atk - 1); said.push('{atk-} −1'); }
     });
     if (said.length) card.value = [card.value, ...said].filter(Boolean).join(' · ');
     renderPartyHp();
@@ -2161,6 +2177,16 @@ function enemyAct(e) {
   if (e.stone > 0) { e.stone--; floatOn(e.el, 'okamnel', 'info'); log(`${e.name} je okamnel${e.f ? 'a' : ''} — napad izostane.`); renderEnemies(); return; }
   let act = e.pattern[e.step % e.pattern.length]; e.step++;
   if (act === 'cwlock' && B.cw && B.cw.kind !== 'finisher') act = 'attack';
+  // a vila beside Povodni mož heals him (escort); with him down or unhurt she strikes instead
+  const healed = act === 'heal' ? B.enemies.find(x => x.hp > 0 && x.key === e.healOf && x.hp < x.maxHp) : null;
+  if (act === 'heal' && !healed) act = 'attack';
+  if (healed) {
+    const n = Math.min(healed.maxHp - healed.hp, Math.max(1, Math.round(healed.maxHp * (e.healPart || 0.05)))); healed.hp += n;
+    floatOn(healed.el, `+${n}`, 'heal'); sfx('heal', { vol: .6 });
+    spawnCard(e.el, { tier: 2, foe: true, name: e.name, move: e.moves.heal, value: `${healed.name} +${n}` });
+    log(`${e.name}: ${e.moves.heal} — ${healed.name} +${n} zdravja.`);
+    renderEnemies(); return;
+  }
   const mv = e.moves[act] || e.moves.attack;
   e.atkT = performance.now(); e.atkTier = act === 'attack' ? 1 : 3;
   if (act !== 'attack' && UI.scene) { replay(UI.scene, 'flash'); setTimeout(() => UI.scene && UI.scene.classList.remove('flash'), 420); }

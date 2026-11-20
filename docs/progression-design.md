@@ -258,7 +258,10 @@ Saves from 0.13.0–0.16.0 load: every hero keeps their level (starting it on th
 | Health × (D) | 1 (1) | **0.7** (0.95) | **1.0** (1.2) | **1.6** (1.45) | **1.6** (1.75) | **2.05** (1.8) | **2.4** (2.3) | **3.05** (2.7) | **3.65** (3.0) | **3.65** (3.0) |
 | Attack × (D) | 1 (1) | **0.8** (1) | **0.95** (1.1) | **1.15** (1.2) | **1.2** (1.3) | **1.35** (1.4) | 1.5 (1.5) | **1.75** (1.65) | **2.0** (1.8) | **2.0** (1.8) |
 
-- **Povodni mož** 400 health, hits 16 (D: 240 / 12). **Lintvern** 221 / 250 / 375 by Znanje (D: 170 / 250 / 313): Malček's base is 260 (`hpBy.lahka`), Knjižni molj follows its new factor.
+- **The bosses (Game Director, 20 Nov):** the Lintvern is the toughest enemy on every Znanje, and each boss has helpers that should fall first.
+  - **Povodni mož** 260 health, hits 16 (221 / 260 / 390 by Znanje; D: 240 / 12). **His two vile** (`reka.escort` in `data/world.json`) hit at ×0.75 (6 on Malček instead of 8), and every third move (*Val*, *Poplava*, ***Zdravilni val***) one heals him for 8 % of his health (18 on Malček) while she and he stand; with him unhurt or down she strikes instead.
+  - **Lintvern** 289 / 320 / 480 by Znanje (`hpBy` 340 / 320 / 320 times the Znanje factor; D: 170 / 250 / 313). His wyverns add their own blows (one per hero beyond the first, at most two, and as many again when he enrages): strike them first.
+  - Tried on the way: Povodni mož at 400 / 16 (more health than the Lintvern, dropped); at 220 / 14 with the vile at ×0.6 Ljubljanica became a walkover; the vile's heal at 5 / 8 / 12 % hardly changes the result. Once the bot struck the helpers first, every Znanje got easier (Malček 63 %), so Povodni mož went back up to 260 / 16.
 - **Knjižni molj:** enemy health ×1.5 (D: ×1.25) and steeper towards the castle: up to +35 % health and 18 % quicker attacks (D: +15 % / 10 %).
 - Unchanged from D: a third enemy from Bled with three or more heroes, strong enemies from Trnovski gozd (40 %), at most one Pesjan, Ptuj the same tutorial on every Znanje, Malček's second chance and its retry at the Lintvern, Učenjak's fallen rising at a region's end.
 
@@ -267,18 +270,19 @@ Saves from 0.13.0–0.16.0 load: every hero keeps their level (starting it on th
 - the zagovor is spoken as soon as it is full; a crossword entry takes one pace;
 - chests open 80 % of the time (10 % in part); rock slides and spikes end by chance (most words break 3–4 rocks or close 4–6 slots);
 - the first shrine is prayed at; every hero met joins while there is room; the pedlar sells by a fixed list (Živa voda, Alatir, Perunova sekira …);
-- skill points: the next skill first, then the lowest rank, wherever the game allows.
+- skill points: the next skill first, then the lowest rank, wherever the game allows;
+- in a boss battle it strikes the helpers first (both vile, both wyverns, the wyverns that come when the Lintvern enrages), then the boss (Game Director, 20 Nov); elsewhere the game's own target, the first enemy standing.
 `node tools/sim/run.js tools/sim/plan.json` runs the table below (about 25 minutes on two cores); `--dist` points to another build for comparisons.
 
 **Measured (balance E as built, with support XP; journeys won, ±95 % interval):**
 
 | Znanje | design pace | at the design pace | faster | slower | battle time per journey |
 | --- | --- | --- | --- | --- | --- |
-| Malček | 10 s | **54 % (±6), 300 journeys** — about 4.6 of 10 lost | 85 % at 8 s* | 17 % at 12 s* | 31 min (D: 20) |
-| Učenjak | 8 s | **39 % (±8), 150** | 86 % at 6 s* | 6 % at 10 s* | 22 min |
-| Knjižni molj | 6 s | **27 % (±7), 150** | 68 % at 5 s* | 0 % at 8 s* | 22 min |
+| Malček | 10 s | **55 % (±6), 300 journeys** — about 4.5 of 10 lost | 85 % at 8 s* | 17 % at 12 s* | 29 min (D: 20) |
+| Učenjak | 8 s | **49 % (±8), 150** | 86 % at 6 s* | 6 % at 10 s* | 23 min |
+| Knjižni molj | 6 s | **36 % (±8), 150** | 68 % at 5 s* | 0 % at 8 s* | 23 min |
 
-\* measured just before support XP and the last 7 % of health, which cancel out at the design paces.
+Measured with the bosses as built and the bot striking boss helpers first. \* measured on an earlier build of the same day; the changes since cancel out at the design paces, so the slope should hold.
 
 Where Malček journeys end (of 300; 139 lost): Ptuj 0 · Peca 3 · Triglav 4 · Bled 5 · Trnovski gozd 11 · Piranske soline 24 · Predjamski grad 23 · Ljubljansko barje 27 · Ljubljanica 35 · Ljubljanski grad 7. First-try wins per battle: 96–99 % up to Bled, 91–94 % from Trnovski gozd, 84 % against the Lintvern. Several tuning rounds before this (shown in the project doc *zagovor-balance-simulations*) put the losses at Peca and Triglav; the version built moves them to the second half and the bosses.
 
@@ -290,6 +294,14 @@ Where Malček journeys end (of 300; 139 lost): Ptuj 0 · Peca 3 · Triglav 4 · 
 3. **Support XP — DECIDED and built (Game Director, 20 Nov):** healing and shields count as XP (see the table above). Weakening (Lepa Vida's song, Kurent's bells) and Erazem's dodge still earn nothing; Lepa Vida stays the lowest hero.
 4. **Učenjak and Knjižni molj lose some journeys early** (Peca and Triglav end 15 % of Učenjak journeys): one loss ends them. Their numbers sit below Malček's as they should, but nobody has asked for them; they are a proposal to review.
 5. The model player never uses hints, the word proposals or the planted starter words, and solves every crossword at word pace; real Malček players get more help than the bot, real Knjižni molj players have harder crosswords.
+
+## 4d. Skill texts and effect icons (20 Nov, v0.17.0)
+**Game Director, 20 Nov (from the phone):** the skills had too much text; *s* means nothing, write the time; Kurent's sounded illogical; say the effect once and let stopnji 2 and 3 say only what changes; "−4" alone means nothing in Slovene; show stronger and weaker attack and defence with pictures, in the texts and above the heads for as long as the effect lasts.
+
+- **Texts** (`RANK_TEXT` in `src/progression.js`, `SKILL_TEXT` and `UP_TAG` in `src/skills.js`): stopnja 1 says what the skill does, damage as *Udarec N*, then effects; stopnji 2 and 3 list only the new numbers or the new effect. Time in words with the Slovene forms (*2 sekundi*, *3 sekunde*, *5 sekund*). "Beseda z eno črko te barve" is gone from every skill; one line at the top explains the dots. Kurent: no dance in the text, Zvonci *napadejo cilj / 2 sovražnika / 3 sovražnike*, "naslednji udarec je 3 šibkejši" became the red swords with −3.
+- **Icons** (`src/effects.js`, drawn in code as 16-pixel pixel art): **crossed swords = attack, a shield = defence; green with an arrow up = stronger, red with an arrow down = weaker.** The swords have gold hilts so they read as swords at 16 px. In texts and battle cards they are tokens (`{atk-} −3`).
+- **Above the heads**, for as long as the effect lasts, stacked upwards: enemies with a weaker attack (Kurent's bells until their next blow, Pregon zime's ½, Lepa Vida's song, Volčja jagoda, Oslabitev) or a stronger one (the Volkodlak fed on repeated words); heroes with a stronger next attack (Kraljeva vojska +N, Perunova medica ×1,5, Dažbog ×2, Peter Klepec's growth) or a better defence (Matjaž's shield and army +N, the party's shield, Varstvo popotnikov on the others, Skrivni rov). "šibkejši" under enemies and "ščit N na junaka" / "vojska +N" under the party's health are gone; *varstvo ×N* and *vojska ×N* stay (charges the icons do not show).
+- Not covered: delays (*napade pozneje*), burns, sleep and stone keep their words; no effect lowers a hero's attack or defence yet, but the red shield and red swords for heroes are ready for when one does.
 
 ## 5. Roster — all playable
 | | Hero | Health | What they do | Moves (1 → 3 tiles) |

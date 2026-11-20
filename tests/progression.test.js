@@ -79,6 +79,9 @@ run(async () => {
   // Zvonci: Kurent dances for 2 s (his letters out of the mesh), the bells hit for 3 and the škrat's next blow is 3 weaker
   await ev(page, () => { window.__ZG.S.heroes[0].sk = [1, 1, 1]; window.__ZG.B.enemies[0].hp = window.__ZG.B.enemies[0].maxHp = 999; });
   p = await play(page, 0, 2);
+  // the icon above the škrat (Game Director, 20 Nov): red crossed swords with −3 while its next blow is weaker
+  const badge = await ev(page, () => { const b = document.querySelector('.enemies .actor .st .fxb.down'); return b ? { alt: b.querySelector('img').alt, v: b.textContent } : null; });
+  check(badge && badge.alt === 'šibkejši napad' && badge.v === '−3', 'above the škrat: red crossed swords with −3 until its next blow', JSON.stringify(badge));
   const bells = await ev(page, () => { const Z = window.__ZG, B = Z.B, e = B.enemies[0], st = Z.S.heroes[0], hp0 = st.hp;
     const out = { busy: B.busy[0] > B.time, weak: e.weak && e.weak.by, grey: document.querySelectorAll('.puzzle .tile.sleep').length };
     Z.hurtParty(8, e); out.took = hp0 - st.hp; out.after = e.weak; const h1 = st.hp; Z.hurtParty(8, e); out.next = h1 - st.hp; return out; });
@@ -108,9 +111,11 @@ run(async () => {
   const krpanOwn = (await play(page, 1, 1)).dmg[0];
   p = await play(page, 0, 2);
   const rally = await ev(page, () => ({ rally: { ...window.__ZG.B.rally }, dampen: window.__ZG.B.dampen }));
+  const rallyBadge = await ev(page, () => [...document.querySelectorAll('.party .herowrap .st')].map(st => { const b = st.querySelector('.fxb.up'); return b ? b.textContent : ''; }));
   const krpanRallied = (await play(page, 1, 1)).dmg[0];
   check(p.dmg[0] === 18 && rally.rally[1] === 10 && rally.dampen.by === 3 && rally.dampen.left === 2 && krpanRallied === krpanOwn + 10,
     'two letters: Meč (18) and Kraljeva vojska at rank 3 — every hero\'s next attack +10 (Krpan hits 10 harder), the next two enemy blows −3', JSON.stringify({ krpanOwn, krpanRallied, ...rally, ...p }));
+  check(rallyBadge.length === 2 && rallyBadge.every(t => t === '+10'), 'above every hero: green crossed swords with +10 until their next attack', JSON.stringify(rallyBadge));
   const awake = await ev(page, () => { const Z = window.__ZG, st = Z.S.heroes; st[1].down = true; st[1].hp = 0; st[0].hp = st[0].maxHp - 10; Z.B.ward = 0; Z.B.rally = {}; return st[0].hp; });   // Matjaž's own +10 from Kraljeva vojska would still wait
   p = await play(page, 0, 3);
   const woke = await ev(page, () => { const st = window.__ZG.S.heroes; return { down: st[1].down, hp: st[1].hp, max: st[1].maxHp, m: st[0].hp, ward: window.__ZG.B.ward }; });
@@ -167,8 +172,18 @@ run(async () => {
   // 9. Veščine shows each reviewed skill's own ranks, not the generic stopnje
   const panel = await ev(page, () => { const Z = window.__ZG; Z.S.heroes[0].pts = 1; Z.go('train', { back: () => Z.go('title') });
     return { rows: document.querySelectorAll('.train .sk').length, ups: document.querySelectorAll('.train .sk-ups li').length, text: (document.querySelector('.train .skills') || {}).textContent || '' }; });
-  check(panel.rows === 3 && panel.ups === 6 && /Metanje skal/.test(panel.text) && /Kamni v vse sovražnike \(8\)/.test(panel.text) && !/učinki trajajo/.test(panel.text),
+  check(panel.rows === 3 && panel.ups === 6 && /Metanje skal/.test(panel.text) && /Udarec 8 vsem sovražnikom/.test(panel.text) && !/učinki/.test(panel.text),
     'Veščine lists Metanje skal, Varstvo popotnikov and Okamnitev with their own rank 2 and 3', panel.text.slice(0, 400));
+  // Game Director, 20 Nov: short texts — stopnja 1 says what the skill does, 2 and 3 only what changes; time in words;
+  // attack and defence changes as icons; the dots are explained once, not in every skill
+  const short = await ev(page, () => { const Z = window.__ZG; Z.go('title'); openSkillInfo('kurent', null); const d = document.querySelector('.skilldlg');
+    const out = { text: d.textContent, icons: [...d.querySelectorAll('img.fxi')].map(i => i.alt), legend: !!d.querySelector('.sk-legend'),
+      lines: [...d.querySelectorAll('.sk-ups li')].map(li => li.textContent) };
+    document.querySelectorAll('.overlay').forEach(o => o.remove()); Z.S.bagEl = null; Z.S.overlayKey = null; return out; });
+  check(short.legend && !/Beseda z/.test(short.text) && !/pleše|naslednji udarec/.test(short.text) && /2 sekundi pozneje/.test(short.text) && !/\d s\b/.test(short.text),
+    'Kurent\'s skills: no dance, no "naslednji udarec", seconds in words, the dots explained once', short.text.slice(0, 300));
+  check(short.icons.filter(a => a === 'šibkejši napad').length >= 3 && short.lines[0] === 'Stopnja 2 Udarec 6, 3 sekunde pozneje.',
+    'a weaker enemy attack is shown with the red swords; stopnja 2 lists only the change', JSON.stringify({ icons: short.icons, first: short.lines[0] }));
   await shot('progression-03-skills');
 
   // 10. Martin Krpan (reviewed 18 Nov): Lipov kij 10 / 16 / 20, Kmečka moč 8×2 / 20 / 22 split between two enemies, Mesarica 10 / 14 / 20 + a bleed
@@ -194,7 +209,7 @@ run(async () => {
   const bleed = await ev(page, async () => { const Z = window.__ZG, e = Z.B.enemies[0]; const t0 = e.burnTurns, b = e.burn; await new Promise(r => setTimeout(r, 2300)); return { t0, b, hp: e.hp }; });
   check(bleed.t0 === 4 && bleed.hp === 999 - 46, 'Krpan: Mesarica rank 3 bleeds for 4 s (calm mode ticks per word, as Kresnik\'s fire does; nothing extra on the clock)', JSON.stringify(bleed));
   const kt = await ev(page, () => { const Z = window.__ZG; Z.S.heroes[0].pts = 1; Z.go('train', { back: () => Z.go('title') }); return (document.querySelector('.train .skills') || {}).textContent || ''; });
-  check(/Lipov kij/.test(kt) && /Kmečka moč/.test(kt) && /Mesarica/.test(kt) && !/Kobilica|Zamah\b/.test(kt.replace(/Zamah z/g, '')) || /Dva zaporedna udarca/.test(kt), 'Veščine shows Krpan\'s new skills with their own rank text', kt.slice(0, 400));
+  check(/Lipov kij/.test(kt) && /Kmečka moč/.test(kt) && /Mesarica/.test(kt) && /Dva udarca s pestjo, po 8/.test(kt) && /Vreči soli: udarec 20/.test(kt) && !/Kobilica/.test(kt), 'Veščine shows Krpan\'s new skills with their own rank text', kt.slice(0, 400));
 
   check(!errors.length, 'no page errors', errors.join(' | '));
   return ctx;

@@ -5,6 +5,8 @@
 // pedlar, gods' gifts, withdrawing and the bosses. Only the player is a model:
 //   - a word every `pace` seconds (each gap drawn between 0.6 and 1.4 × pace), chosen from the words the mesh really
 //     holds (allWords), with a preferred length drawn from `lens`, avoiding words whose base form was used;
+//   - in a boss battle the helpers fall first (the vile beside Povodni mož, the Lintvern's wyverns), then the boss
+//     (Game Director, 20 Nov 2026); in other battles the game's own target (the first enemy standing);
 //   - the zagovor is spoken as soon as it is full; a crossword entry takes `cw` × pace seconds;
 //   - chests, rock slides and spikes end by chance (`chest`, `rocks`, `spikes`); the pedlar sells by a fixed list;
 //   - the first shrine is prayed at; every hero who waits on the road joins while there is room;
@@ -69,7 +71,14 @@
   }
 
   // ---------------------------------------------------------------- a battle
+  // boss battles: strike a helper still standing before the boss (o.helpersFirst, default on)
+  function aim(o) {
+    if (o.helpersFirst === false || !B.enemies.some(e => e.boss)) return;
+    const i = B.enemies.findIndex(e => e.hp > 0 && !e.boss), j = B.enemies.findIndex(e => e.hp > 0);
+    const t = i >= 0 ? i : j; if (t >= 0) B.target = t;
+  }
   function playWord(o, used) {
+    aim(o);
     const words = allWords(400); if (!words.size) return false;
     const all = [...words.entries()];
     const fresh = all.filter(([w]) => !used.has(LEMMA.get(w) || w));
@@ -104,9 +113,9 @@
       if (S.screen !== 'battle' || !B) break;
       battleTick(dt);
       if (S.screen !== 'battle' || !B || B.over) continue;
-      if (B.cw) { if (cwT == null) cwT = o.pace * o.cw * rndIn(0.6, 1.4); cwT -= dt; if (cwT <= 0) { solveEntry(); cwT = null; } continue; }
+      if (B.cw) { if (cwT == null) cwT = o.pace * o.cw * rndIn(0.6, 1.4); cwT -= dt; if (cwT <= 0) { aim(o); solveEntry(); cwT = null; } continue; }
       cwT = null;
-      if (B.meter >= METER_MAX) { openFinisher(); continue; }
+      if (B.meter >= METER_MAX) { aim(o); openFinisher(); continue; }
       next -= dt; if (next <= 0) { if (playWord(o, used)) words++; next = o.pace * rndIn(0.6, 1.4); }
     }
     // let the result come (it waits on the game clock)

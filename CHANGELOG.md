@@ -54,10 +54,19 @@ party went up a level nearly every battle); numbers from simulations of the buil
 - **Three battles in every region** from Peca to Ljubljanica (Ptuj keeps four), and **one event per region: a chest or
   a trap, never both** (a chest 60 / 45 / 30 % of the time by Znanje, else a rock slide or spikes; Ptuj's is a chest).
 - **Enemies:** softer at Peca, Triglav and Trnovski gozd, steeper from Bled to the castle (health ×3.65 and attack
-  ×2.0 at the end; D: ×3.0 and ×1.8). Povodni mož 400 health, hits 16 (D: 240 / 12). The Lintvern has 221 health on Malček (D: 170).
+  ×2.0 at the end; D: ×3.0 and ×1.8). The Lintvern is the toughest enemy on every Znanje: 289 / 320 / 480 health by Znanje (D: 170 / 250 / 313).
+- **Povodni mož and his vile** (Game Director): 260 health, hits 16 (221 / 260 / 390 by Znanje), less than the
+  Lintvern. The vile beside him hit at ×0.75 and every third move one heals him for 8 % of his health (*Zdravilni
+  val*), so they should fall first, as the Lintvern's wyverns should.
+- **Skill texts, short** (Game Director, from the phone): stopnja 1 says what a skill does, stopnji 2 and 3 only what
+  changes; time in words (*2 sekundi*, *5 sekund*); the dots are explained once; Kurent's texts rewritten (no dance,
+  no "naslednji udarec").
+- **New: effect icons** (`src/effects.js`): crossed swords for attack, a shield for defence, green with an arrow up
+  for stronger, red with an arrow down for weaker. In skill texts and battle cards, and above the heads of heroes and
+  enemies for as long as the effect lasts.
   Knjižni molj: enemy health ×1.5 (D: ×1.25), up to +35 % health and 18 % quicker attacks by the castle (D: +15 / 10 %).
-- **Measured** (the bot below, journeys won): Malček **54 %** at a word every 10 s (D: 98 %), Učenjak 39 % at 8 s
-  (D: 95 %), Knjižni molj 27 % at 6 s (D: 96 %).
+- **Measured** (the bot below, journeys won): Malček **55 %** at a word every 10 s (D: 98 %), Učenjak 49 % at 8 s
+  (D: 95 %), Knjižni molj 36 % at 6 s (D: 96 %). In boss battles the bot strikes the helpers first.
 - **New: `tools/sim/`**, a balance simulator. A bot plays whole journeys inside `dist/index.html` (headless Chrome)
   on the game's own clock, so every rule runs as built; only the player is a model (pace, word lengths, crosswords,
   chests and traps by chance). `node tools/sim/run.js tools/sim/plan.json`; results go to `tools/sim/out/` (ignored).

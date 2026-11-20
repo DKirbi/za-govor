@@ -10,14 +10,14 @@
 // The six reviewed heroes (src/progression.js) have no SKILL_UPS: each of their ranks is described by RANK_TEXT.
 const SKILL_TEXT = {
   perun: ['Hiter udar strele v cilj.', 'Močnejši udar strele v cilj.', 'Silen udar; strela preskoči na vse sovražnike.'],
-  svarog: ['Udarec s kladivom; družina dobi malo ščita.', 'Močnejši udarec in več ščita.', 'Silen udarec in velik ščit za vso družino.'],
+  svarog: ['Udarec s kladivom; družini {def+} malo ščita.', 'Močnejši udarec, {def+} več ščita.', 'Silen udarec, {def+} velik ščit družini.'],
   mokos: ['Pozdravi družino in šibko udari.', 'Pozdravi več; očisti zaklenjene črke in zbudi speče junake.', 'Pozdravi veliko; enkrat v bitki obudi junaka, ki je obležal.'],
   veles: ['Močan udarec in strup.', 'Še močnejši udarec in strup.', 'Silen udarec; kača ovije in zastrupi vse sovražnike.'],
-  dazbog: ['Udarec s sončnim žarkom.', 'Udarec; naslednja beseda udari ×1,5.', 'Silen udarec; naslednja beseda šteje dvojno.'],
+  dazbog: ['Udarec s sončnim žarkom.', 'Udarec; naslednja beseda {atk+} ×1,5.', 'Silen udarec; naslednja beseda {atk+} ×2.'],
   stribog: ['Sapica zadene vse sovražnike.', 'Burja močneje zadene vse.', 'Vihar silno zadene vse in očisti mrežo črk.'],
   jurij: ['Malo pozdravi in šibko udari.', 'Pozdravi več in odklene zaklenjene črke.', 'Pozdravi veliko; enkrat na poti obudi junaka, ki je obležal.'],
-  klepec: ['Udarec s pastirsko palico.', 'Močnejši udarec z izruvanim drevesom.', 'Silen udarec; vsak Vilin dar ga do konca bitke okrepi.'],
-  vida: ['Udarec s hrepenenjem.', 'Udarec; cilj napada šibkeje.', 'Silen udarec; vsi sovražniki napadajo šibkeje.'],
+  klepec: ['Udarec s pastirsko palico.', 'Močnejši udarec z izruvanim drevesom.', 'Silen udarec; {atk+} +12 % do konca bitke (vsakič znova).'],
+  vida: ['Udarec s hrepenenjem.', 'Udarec; cilju {atk-} −1.', 'Silen udarec; vsem sovražnikom {atk-} −2.'],
 };
 // the extra effect of every skill at stopnja 2 and at stopnja 3
 const SKILL_UPS = {
@@ -33,13 +33,13 @@ const SKILL_UPS = {
 };
 const UP_TAG = {
   moc: ['Moč', '+25 % moči'],
-  krit: ['Kritični udarec', '30 % možnosti, da udari dvojno'],
-  vsi: ['Na vse', 'zadene tudi vse druge sovražnike'],
-  zdravi: ['Zdravljenje', 'ob napadu malo pozdravi družino'],
-  scit: ['Ščit', 'družini doda ščit'],
-  omama: ['Omama', 'cilj za trenutek omami'],
+  krit: ['Kritični udarec', '30 % možnosti za dvojni udarec'],
+  vsi: ['Na vse', 'zadene tudi druge sovražnike'],
+  zdravi: ['Zdravljenje', 'malo pozdravi družino'],
+  scit: ['Ščit', '{def+} družini'],
+  omama: ['Omama', 'cilj za hip omami'],
   ogenj: ['Ogenj', 'cilj zagori'],
-  slabi: ['Oslabitev', 'cilj napada šibkeje'],
+  slabi: ['Oslabitev', 'cilju {atk-} −1'],
 };
 // how many of the hero's letters fire each skill (»beseda z dvema črkama te barve«)
 const LEN_INS = t => ['z eno črko', 'z dvema črkama', 's tremi črkami'][t - 1];
@@ -66,9 +66,11 @@ function skillPanel(id, st, { train = null } = {}) {
   const head = inRun ? h('div', { class: 'sk-sum' },
     h('span', {}, h('b', {}, `Raven ${st.lvl}`), st.lvl < MAX_LV ? ` · do naslednje še ${xpToNext(st)} XP` : ' · najvišja raven'),
     h('span', { class: 'sk-pts' + (heroPts(st) ? ' on' : '') }, `Točke: ${heroPts(st)}`)) : null;
-  // what stopnja 2 and 3 add on top of the skill
-  const rankLine = (r, tag) => `${r === 2 ? '+20 % moči, učinki trajajo 1,5-krat dlje' : '+40 % moči, učinki trajajo 2-krat dlje'}; ${UP_TAG[tag][0].toLowerCase()}: ${UP_TAG[tag][1]}`;
-  return h('div', { class: 'skills' }, head,
+  // what stopnja 2 and 3 add on top of the skill: only the change (Game Director, 20 Nov 2026: short, for a phone)
+  const rankLine = (r, tag) => `moč +${r === 2 ? 20 : 40} %, učinki ${r === 2 ? '1,5' : '2'} × dlje; ${UP_TAG[tag][0].toLowerCase()}: ${UP_TAG[tag][1]}`;
+  // once for all three: what the dots mean (it used to open every skill's text)
+  const legend = h('p', { class: 'sk-legend' }, h('span', { class: 'sk-dots', 'aria-hidden': 'true', style: { '--c': ch.c } }, h('i'), h('i')), ' = koliko črk junakove barve ima beseda');
+  return h('div', { class: 'skills' }, head, legend,
     [1, 2, 3].map(t => {
       const l = lv(t), known = l > 0, tags = rev ? [] : ups[t - 1].split(' ');
       const act = train && inRun ? (canLearn(st, t) ? ['Nauči se', () => train(t)] : canUpgrade(st, t) ? [`Na stopnjo ${l + 1}`, () => train(t)] : null) : null;
@@ -78,9 +80,9 @@ function skillPanel(id, st, { train = null } = {}) {
           h('span', { class: 'sk-dots', title: `beseda ${LEN_INS(t)} te barve`, 'aria-label': `veščina ${t}` }, Array.from({ length: t }, () => h('i'))),
           h('b', {}, ch.moves[t - 1]),
           h('span', { class: 'sk-state' }, known ? [`stopnja ${l}`, rankPips(l)] : 'še ni znana')),
-        h('p', { class: 'sk-text' }, `Beseda ${LEN_INS(t)} te barve. ${rev ? rankText(id, t, 1) : SKILL_TEXT[id][t - 1]}`),
+        h('p', { class: 'sk-text' }, fxText(rev ? rankText(id, t, 1) : SKILL_TEXT[id][t - 1])),
         h('ol', { class: 'sk-ups' }, (rev ? [2, 3] : tags).map((tg, i) => h('li', { class: l >= i + 2 ? 'on' : '' },
-          h('i', { 'aria-hidden': 'true' }), h('b', {}, `Stopnja ${i + 2}`), ' — ', rev ? rankText(id, t, i + 2) : rankLine(i + 2, tg)))),
+          h('i', { 'aria-hidden': 'true' }), h('b', {}, `Stopnja ${i + 2}`), ' ', fxText(rev ? rankText(id, t, i + 2) : rankLine(i + 2, tg))))),
         train && inRun ? h('div', { class: 'sk-act' },
           act ? h('button', { class: 'btn small primary', onclick: act[1] }, act[0], h('span', { class: 'cost' }, '1 točka')) : h('span', { class: 'muted' }, why)) : null);
     }));
@@ -91,7 +93,7 @@ function openSkillInfo(id, st) {
   if (S.bagEl) return;
   const ch = CHARS.find(c => c.id === id);
   const close = () => { ov.remove(); S.bagEl = null; S.overlayKey = null; };
-  const where = st && S.run ? `Vsaka nova raven junaku prinese točko veščine. Porabi jo pri vodnjaku ali na kažipotu na koncu pokrajine.` : 'Prvo veščino zna vsak junak od začetka. Na poti s točkami, ki jih prinašajo nove ravni, odklene drugo in tretjo (za daljše besede z več črkami njegove barve) in vsako dvigne do stopnje 3.';
+  const where = st && S.run ? `Vsaka nova raven junaku prinese točko veščine. Porabi jo pri vodnjaku ali na kažipotu na koncu pokrajine.` : 'Prva veščina je znana od začetka. Točke novih ravni odklenejo drugo in tretjo ter jih dvignejo do stopnje 3.';
   const ov = h('div', { class: 'overlay', onclick: e => { if (e.target === ov) close(); } }, h('div', { class: 'dialog skilldlg', role: 'dialog', 'aria-modal': 'true', 'aria-label': `Veščine: ${ch.name}` },
     h('h2', {}, `Veščine: ${ch.name}`),
     skillPanel(id, st),

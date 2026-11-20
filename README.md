@@ -213,16 +213,20 @@ Enemies attack in real time, telegraphed by a glowing wind-up. Their strongest m
 | Mora | 35 | *Uspavanka*: a hero falls asleep, their tiles go grey |
 | Volkodlak | 45 | Grows stronger every time you repeat a word |
 | Vodna vila | 30 | *Poplava*: floods letters so they can't be used |
-| Povodni mož (boss) | 240 | *Vrtinec*: forces a crossword with the mesh closed; two vodne vile fight beside him |
-| Lintvern (boss) | 170–313 by Znanje | *Kremplji* (a scratch), *Topot* (hits everyone, knocks heroes out of the mesh), *Ognjeni dih* at two thirds and one third of his health: a long breath nothing can stop, then fire on everyone and **scorched letters** that burn whoever uses them; wyverns (*zmajčki*) at his side and more when he enrages at half health |
+| Povodni mož (boss) | 221–390 by Znanje | *Vrtinec*: forces a crossword with the mesh closed; two vodne vile fight beside him, and every third move one heals him (*Zdravilni val*): strike them first |
+| Lintvern (boss) | 289–480 by Znanje, the most of any enemy | *Kremplji* (a scratch), *Topot* (hits everyone, knocks heroes out of the mesh), *Ognjeni dih* at two thirds and one third of his health: a long breath nothing can stop, then fire on everyone and **scorched letters** that burn whoever uses them; wyverns (*zmajčki*) at his side and more when he enrages at half health |
 
 Four regional enemies reuse these sprites in other colours for now: **Vešča** (puts a hero
 to sleep), **Perkmandeljc** and **Zmajev mladič** (bury letters), **Pesjan** (a heavy hit on
 everyone).
 
-Since 0.13.0 enemies grow region by region (about ×3 health and ×1.8 attack by the castle), a
-third one joins from Bled when three heroes travel together, and from Trnovski gozd some battles
-have a **strong** (*Silni / Silna*) enemy. Details: `docs/progression-design.md` §4b.
+Enemies grow region by region (since 0.17.0 softer at first and ×3.65 health and ×2 attack by the
+castle), a third one joins from Bled when three heroes travel together, and from Trnovski gozd some
+battles have a **strong** (*Silni / Silna*) enemy. Details: `docs/progression-design.md` §4c.
+
+**Stronger and weaker** (since 0.17.0): crossed swords stand for attack and a shield for defence,
+green with an arrow up for stronger and red with an arrow down for weaker. They show in the skill
+texts and above the heads of heroes and enemies for as long as the effect lasts.
 
 ### Crosswords and the zagovor
 - Every letter you play fills the **zagovor meter** (30 letters). When it's full, a

@@ -484,7 +484,7 @@ function stopBattle(stop) {
   const boss = stop.kind === 'boss';
   go('battle', { id: reg.id, bg: reg.bg, title: reg.name, sub: (boss ? 'Šef · ' : 'Bitka · ') + names, stop,
     battle: { enemies: stop.enemies, strong: stop.strong != null ? stop.strong : -1, scale: regionScale(R.ri), finishers: shuffle(Object.keys(FINISHER_FX)).slice(0, 2), meterStart: 0,
-      ambush: stop.kind === 'elite' ? 'zaseda' : null, tips: R.firstBattle ? NODES[0].battle.tips : [] } });
+      ambush: stop.kind === 'elite' ? 'zaseda' : null, escort: boss ? reg.escort || null : null, tips: R.firstBattle ? NODES[0].battle.tips : [] } });
 }
 function meetHero(stop, ids) {
   const R = S.run, back = () => go('travel');

@@ -1192,6 +1192,16 @@ body.mobile .skillbtn { min-height: 40px; padding: 6px 12px; }
 .rankpips i { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--c, var(--gold)); }
 .rankpips i.on { background: var(--c, var(--gold)); }
 .sk-text { margin: 4px 0 6px; font-size: 13.5px; line-height: 1.45; }
+.sk-legend { margin: 0; font-size: 12px; color: var(--dim); display: flex; align-items: center; gap: 6px; }
+/* effect icons (src/effects.js): crossed swords = attack, shield = defence; green up = stronger, red down = weaker */
+img.fxi { height: 18px; width: auto; image-rendering: pixelated; vertical-align: -4px; margin: 0 1px; }
+.fxb { display: inline-flex; align-items: center; gap: 1px; font-size: 10.5px; font-weight: 800; line-height: 1;
+  text-shadow: 0 1px 0 #000, 0 -1px 0 #000, 1px 0 0 #000, -1px 0 0 #000; }
+.fxb img.fxi { vertical-align: 0; margin: 0; }
+.fxb.up b { color: #a9f0a1; } .fxb.down b { color: #ffa094; }
+/* above the head: badges and status words stacked upwards, so several never spill into the next actor */
+.actor .st { display: flex; flex-direction: column-reverse; align-items: center; gap: 1px; top: auto; bottom: calc(100% + 2px); }
+body.mobile .fxb { font-size: 9.5px; } body.mobile .fxb img.fxi { height: 15px; }
 .sk-ups { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; font-size: 12.5px; color: var(--faint); }
 .sk-ups li { position: relative; padding-left: 17px; line-height: 1.4; }
 .sk-ups li i { position: absolute; left: 1px; top: .42em; width: 8px; height: 8px; transform: rotate(45deg); border: 1.5px solid var(--faint); }
@@ -1468,7 +1478,7 @@ body.mobile .title-stage + .mainmenu { margin-top: -40px; }
   "chanceNote": "Every region has one event slot (`event` in its stops): a chest or a trap, never both (Game Director, 20 Nov 2026). When a journey starts, each slot becomes a chest with the chance `chest` by Znanje, else a trap: a rock slide or a wall of spikes, half and half (`traps`). Ptuj's is always a chest (`firstChest`). Wells are there by chance (`well`): a journey always keeps at least one well in each half of the road.",
   "chance": { "chest": { "malcek": 0.6, "ucenjak": 0.45, "molj": 0.3 }, "traps": [ "trap", "darts" ], "firstChest": true, "well": { "malcek": 0.75, "ucenjak": 0.55, "molj": 0.4 } },
   "checkpoints": { "malcek": [ "peca", "gozd", "predjama" ], "ucenjak": [ "triglav", "piran" ], "molj": [ "gozd" ] },
-  "balanceNote": "Balance E (20 Nov 2026), from the road simulations of the real game (tools/sim, docs/progression-design.md §4c): softer first regions, a steeper second half, and tougher bosses, so that a Malček player at a word every 10 s loses about half of the journeys. hp / atk: enemy health and attack by region, in travel order (bosses keep their own numbers, and so do the Lintvern's wyverns; the vile beside Povodni mož grow with the region). thirdFrom: from this region on a battle has a third enemy once the party has three or more heroes. single: at most one of these in one battle. strong: from this region on, in this share of battles one enemy is strong (Silni …, Silna …), with more health and harder hits. steep: by Znanje, how much more health and how much faster attacks ordinary enemies have by the last region, growing region by region. A region's `sizes` fixes how many enemies its battles have, in order. Ptuj is the same on every Znanje (Malček's enemy health) and a lost battle there never ends the journey.",
+  "balanceNote": "Balance E (20 Nov 2026), from the road simulations of the real game (tools/sim, docs/progression-design.md §4c): softer first regions, a steeper second half, and tougher bosses, so that a Malček player at a word every 10 s loses about half of the journeys. hp / atk: enemy health and attack by region, in travel order (bosses keep their own numbers, and so do the Lintvern's wyverns; the vile beside Povodni mož grow with the region). thirdFrom: from this region on a battle has a third enemy once the party has three or more heroes. single: at most one of these in one battle. strong: from this region on, in this share of battles one enemy is strong (Silni …, Silna …), with more health and harder hits. steep: by Znanje, how much more health and how much faster attacks ordinary enemies have by the last region, growing region by region. A region's `sizes` fixes how many enemies its battles have, in order. Ptuj is the same on every Znanje (Malček's enemy health) and a lost battle there never ends the journey. escort (Ljubljanica, Game Director 20 Nov 2026): in the boss battle the vile beside Povodni mož hit weaker (atk ×) and every third move (pattern) heal him for `heal` of his health while they and he stand.",
   "balance": { "hp": [ 1, 0.7, 1.0, 1.6, 1.6, 2.05, 2.4, 3.05, 3.65, 3.65 ], "atk": [ 1, 0.8, 0.95, 1.15, 1.2, 1.35, 1.5, 1.75, 2.0, 2.0 ], "thirdFrom": "bled", "single": [ "pesjan" ],
     "strong": { "from": "gozd", "chance": 0.4, "hp": 1.6, "atk": 1.25 }, "steep": { "malcek": [ 0, 0 ], "ucenjak": [ 0, 0 ], "molj": [ 0.35, 0.18 ] } },
   "regions": [
@@ -1480,7 +1490,7 @@ body.mobile .title-stage + .mainmenu { margin-top: -40px; }
     { "id": "piran", "name": "Piranske soline", "bg": "piran", "intro": "Sol, morje in burja. Na obali Lepa Vida pere in gleda čez morje.", "stops": [ "battle", "event", "shop", "hero", "battle", "well", "god", "battle" ], "pool": [ "vila", "pesjan", "mora" ] },
     { "id": "predjama", "name": "Predjamski grad", "bg": "predjama", "intro": "Grad v skalni steni. Erazem ga je branil leto in dan, hrano pa je dobival po skrivnem rovu.", "stops": [ "battle", "event", "hero", "battle", "well", "elite" ], "pool": [ "mladic", "perkmandeljc", "volkodlak" ] },
     { "id": "barje", "name": "Ljubljansko barje", "bg": "barje", "intro": "Megla, kolišča in škrati. Do Ljubljane ni več daleč.", "stops": [ "battle", "event", "hero", "battle", "shop", "well", "god", "battle" ], "pool": [ "skrat", "mora", "volkodlak", "vila" ] },
-    { "id": "reka", "name": "Ljubljanica", "bg": "ljubljanica", "intro": "Reka sedmih imen. Pod Tromostovjem čaka Povodni mož.", "stops": [ "event", "battle", "hero", "battle", "well", "boss" ], "pool": [ "vila", "mora" ], "boss": [ "vila", "povodni", "vila" ] },
+    { "id": "reka", "name": "Ljubljanica", "bg": "ljubljanica", "intro": "Reka sedmih imen. Pod Tromostovjem čaka Povodni mož.", "stops": [ "event", "battle", "hero", "battle", "well", "boss" ], "pool": [ "vila", "mora" ], "boss": [ "vila", "povodni", "vila" ], "escort": { "key": "vila", "of": "povodni", "atk": 0.75, "heal": 0.08, "pattern": [ "attack", "flood", "heal" ] } },
     { "id": "grad", "name": "Ljubljanski grad", "bg": "grad", "intro": "Na grajskem griču gnezdi Lintvern, ljubljanski zmaj. Tu se pot konča.", "stops": [ "event", "shop", "well", "boss" ], "pool": [], "boss": [ "lintvern" ], "adds": { "key": "zmajcek", "max": 2 } }
   ],
   "items": [
@@ -2550,16 +2560,17 @@ const ENEMIES = {
   volkodlak: { name: 'Volkodlak', hp: 45, atk: 6, speed: 11, calmStep: 0.25, size: 76, xp: 40, feedsOnRepeat: true,
     pattern: ['attack'], moves: { attack: 'Zobje' } },
   vila: { name: 'Vodna vila', f: true, hp: 30, atk: 4, speed: 9, calmStep: 0.34, size: 64, xp: 30,
-    pattern: ['attack', 'flood'], moves: { attack: 'Val', flood: 'Poplava' } },
-  povodni: { name: 'Povodni mož', hp: 400, atk: 16, speed: 12.5, calmStep: 0.25, size: 100, xp: 90, boss: true, cwlock: 'vrtinec',
+    pattern: ['attack', 'flood'], moves: { attack: 'Val', flood: 'Poplava', heal: 'Zdravilni val' } },
+  povodni: { name: 'Povodni mož', hp: 260, atk: 16, speed: 12.5, calmStep: 0.25, size: 100, xp: 90, boss: true, cwlock: 'vrtinec',
     pattern: ['attack', 'attack', 'cwlock'], moves: { attack: 'Objem vode', cwlock: 'Vrtinec' } },
   // Lintvern (balance D, 17 Nov 2026): three attacks of his own — Kremplji (one hero), Topot (everyone a little, and
   // heroes knocked out of the letter mesh for a while) and his signature, Ognjeni dih: at 66 % and 33 % of his health
   // he draws breath for a long, visible moment (longer on Malček, shorter on Knjižni molj), then burns every hero
   // and scorches letters that fade one by one; a scorched letter used in a word burns that hero again. Nothing
   // stops his attacks (stuns, Okamnitev) and delays on him are halved. At half health he enrages: faster, Zmajeva
-  // uganka, and as many wyverns again as he started with (data/world.json → grad.adds). Health by Znanje (hpBy).
-  lintvern: { name: 'Lintvern', tags: ['zmaj'], hp: 250, hpBy: { lahka: 260, srednja: 250, tezka: 250 }, atk: 11, speed: 11.5, calmStep: 0.25, size: 100, xp: 150, boss: true, cwlock: 'zmaj', unstoppable: true,
+  // uganka, and as many wyverns again as he started with (data/world.json → grad.adds). Health by Znanje (hpBy): the toughest
+  // enemy of the road on every Znanje (Game Director, 20 Nov 2026), above Povodni mož; his wyverns are meant to fall first.
+  lintvern: { name: 'Lintvern', tags: ['zmaj'], hp: 250, hpBy: { lahka: 340, srednja: 320, tezka: 320 }, atk: 11, speed: 11.5, calmStep: 0.25, size: 100, xp: 150, boss: true, cwlock: 'zmaj', unstoppable: true,
     pattern: ['scratch', 'scratch', 'stomp'],
     phase2: { at: 0.5, pattern: ['scratch', 'stomp', 'scratch', 'cwlock'], speed: 10, calmStep: 0.34, summon: true },
     breath: { at: [0.66, 0.33], sec: { lahka: 14, srednja: 8, tezka: 6 }, words: { lahka: 4, srednja: 3, tezka: 2 }, hit: 1.2, burn: 4, scorch: 10, fade: 2.5, fadeWords: 3, use: 4 },
@@ -3019,7 +3030,8 @@ function makeEnemy(key, i, sc, strong) {
   const base = run && t.hpBy ? t.hpBy[LV().diff] || t.hp : t.hp;
   const hp = Math.round(base * (s ? s.hp : 1) * tier * (1 + steep[0] * ri / last) * (el ? el.hp : 1));
   const name = el ? (t.f ? 'Silna ' : 'Silni ') + t.name[0].toLowerCase() + t.name.slice(1) : t.name;
-  return { key, i, ...t, name, strong: !!el, lvl: run ? run.ri + 1 : 1, atk: Math.round(t.atk * (s ? s.atk : 1) * (el ? el.atk : 1)), speed: t.speed * slow, calmStep: t.calmStep / slow,
+  const atk = Math.round(t.atk * (s ? s.atk : 1) * (el ? el.atk : 1));
+  return { key, i, ...t, name, strong: !!el, lvl: run ? run.ri + 1 : 1, atk, atkBase: atk, speed: t.speed * slow, calmStep: t.calmStep / slow,
     pattern: t.pattern.slice(), maxHp: hp, hp, charge: Math.random() * 0.25, step: 0,
     stunUntil: 0, stunWords: 0, burn: null, burnAcc: 0, burnTurns: 0, burnPer: 0, phase2on: false, el: null };
 }
@@ -3036,6 +3048,10 @@ function startBattle(node) {
     stats: { words: 0, longest: '', best: 0, cw: 0, xp: 0, gold: 0 }, lastFinisher: null,
   };
   S.meterBonus = 0;
+  // Povodni mož's vile (Game Director, 20 Nov 2026; data/world.json → reka.escort): beside the boss they hit weaker and
+  // every third move heal him, so the fight asks who to strike first
+  const esc = def.escort;
+  if (esc) B.enemies.forEach(e => { if (e.key !== esc.key) return; e.atk = e.atkBase = Math.max(1, Math.round(e.atk * (esc.atk || 1))); e.pattern = esc.pattern.slice(); e.healOf = esc.of; e.healPart = esc.heal; });
   B.enemies.forEach(e => {
     if (has('stribogova-piscal')) { e.speed *= 1.15; e.calmStep /= 1.15; if (e.phase2) e.phase2 = { ...e.phase2, speed: e.phase2.speed * 1.15 }; }
     if (has('kurentov-zvonec')) e.charge = -0.6;
@@ -3106,7 +3122,7 @@ function renderParty() {
   UI.heroEls = HEROES.map((hr, i) => {
     const st = S.heroes[i], sleeping = !!B.sleep[i] && !st.down;
     const el = spriteEl(hr.id, hr.c, st.down ? 'down' : sleeping ? 'asleep' : '');   // no glow in battle: points wait for a well or a signpost
-    el.title = hr.name; el.append(h('span', { class: 'st' }, st.down ? '' : sleeping ? (B.sleep[i] && B.sleep[i].why === 'topot' ? 'omamljen' : 'spi') : busy(i) ? 'pleše' : ''));
+    el.title = hr.name; el.append(h('span', { class: 'st' }));
     const bar = {};
     UI.party.append(h('div', { class: 'herowrap' + (st.down ? ' isdown' : ''), ref: w => bar.wrap = w }, el,
       h('div', { class: 'hpbar', ref: b => bar.bar = b }, h('i', { ref: f => bar.fill = f })),
@@ -3114,6 +3130,14 @@ function renderParty() {
     UI.heroBars.push(bar); return el;
   });
   renderPartyHp();
+}
+// what shows above a hero: attack and defence icons (src/effects.js), then asleep, knocked out or dancing
+function renderHeroSt() {
+  (UI.heroEls || []).forEach((el, i) => {
+    const st = S.heroes[i], box = el && el.querySelector('.st'); if (!box || !st) return;
+    const sleeping = !!B.sleep[i] && !st.down, text = st.down ? '' : sleeping ? (B.sleep[i].why === 'topot' ? 'omamljen' : 'spi') : busy(i) ? 'pleše' : '';
+    box.innerHTML = ''; box.append(...fxBadges(heroFx(i)), ...(text ? [h('span', {}, text)] : []));
+  });
 }
 function renderPartyHp() {
   (UI.heroBars || []).forEach((bar, i) => {
@@ -3125,6 +3149,7 @@ function renderPartyHp() {
   UI.partyhp.innerHTML = '';
   if (B.shield) UI.partyhp.append(h('span', { class: 'sh' }, `ščit družine ${B.shield}`));
   reviewedPartyNotes().forEach(t => UI.partyhp.append(h('span', { class: 'sh' }, t)));
+  renderHeroSt();
 }
 function renderEnemies() {
   UI.enemies.innerHTML = '';
@@ -3139,7 +3164,8 @@ function renderEnemies() {
     e.el = h('div', { class: 'actor foe spr' + (atk ? (e.atkTier === 3 ? ' atk atk3' : ' atk') : '') + (e.boss ? ' boss' : '') + (e.strong ? ' strong' : '') + (e.charging && e.hp > 0 ? ' charging' : '') + (e.hp <= 0 ? ' dead' : '') + (isT ? ' target' : '') +
         (statuses.includes('omamljen') ? ' stunned' : '') + (e.hp > 0 && performance.now() - (e.hitT || -1e9) < 250 ? ' hit' : ''),
       style: { '--art': Math.round(SPR_SIZE[foeArt(e)] * (e.scale || 1) * (e.strong ? 1.12 : 1)) }, title: e.name, onclick: () => setTarget(i) },
-      h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[foeArt(e)]})`, filter: e.tint || '', 'animation-delay': atk ? (-since) + 'ms' : (-(i * 400)) + 'ms' } }), h('span', { class: 'st' }, statuses.join(' · ')));
+      h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[foeArt(e)]})`, filter: e.tint || '', 'animation-delay': atk ? (-since) + 'ms' : (-(i * 400)) + 'ms' } }),
+      h('span', { class: 'st' }, fxBadges(foeFx(e)), statuses.length ? h('span', {}, statuses.join(' · ')) : null));   // attack up or down: icons (src/effects.js)
     const pips = S.mode === 'calm' && e.hp > 0 ? (() => {
       const steps = Math.round(1 / e.calmStep), on = Math.round(e.charge / e.calmStep);
       return h('div', { class: 'pips', title: 'Napade, ko so vse pike polne' }, Array.from({ length: steps }, (_, k) => h('i', { class: k < on ? 'on' : '' })));
@@ -3244,16 +3270,16 @@ function spawnCard(actorEl, o, ctx = UI) {
     const pic = h('div', { class: 'pic' }); pic.innerHTML = CardArt.svg(o.art, o.tier);
     const cap = h('div', { class: 'cap' }, h('b', {}, o.move));
     if (o.tier > 1 && o.word) cap.append(' ', h('span', { class: 'wd' }, o.word));
-    if (o.value != null) cap.append(' ', h('span', { class: 'vl' }, o.value));
-    if (o.tier === 3 && o.extra) cap.append(h('span', { class: 'ex' }, o.extra));
+    if (o.value != null) cap.append(' ', h('span', { class: 'vl' }, fxText(o.value)));
+    if (o.tier === 3 && o.extra) cap.append(h('span', { class: 'ex' }, fxText(o.extra)));
     card.append(pic, cap);
-  } else if (o.tier === 1) card.append(`${o.name} · ${o.move}`, o.value != null ? ` · ${o.value}` : '');
+  } else if (o.tier === 1) card.append(`${o.name} · ${o.move}`, ...(o.value != null ? [' · ', ...fxText(o.value)] : []));
   else {
     if (o.tier === 3) card.append(h('div', { class: 'pt' }, o.portrait || o.name[0]));
     card.append(h('div', { class: 'mv' }, o.move), h('div', {}, o.name));
     if (o.word) card.append(h('div', { class: 'wd' }, o.word));
-    if (o.value != null) card.append(h('div', { class: 'vl' }, o.value));
-    if (o.extra) card.append(h('div', { style: { 'font-size': '11.5px' } }, o.extra));
+    if (o.value != null) card.append(h('div', { class: 'vl' }, fxText(o.value)));
+    if (o.extra) card.append(h('div', { style: { 'font-size': '11.5px' } }, fxText(o.extra)));
   }
   ctx.cards.append(card);
   // keep the whole card inside the scene: never over the grid, never cut off
@@ -3804,8 +3830,8 @@ function heroAct(a, w) {
     case 'song': {           // Lepa Vida: her song takes the strength out of enemies
       const d = hit(2.4); card.value = `−${d}`;
       const weaken = (e, n) => { e.atk = Math.max(1, e.atk - Math.round(n * dur)); };
-      if (a.tier === 2) { weaken(target, 1); card.extra = 'cilj napada šibkeje'; }
-      if (a.tier === 3) { alive().forEach(e => weaken(e, 2)); card.extra = 'vsi sovražniki napadajo šibkeje'; }
+      if (a.tier === 2) { weaken(target, 1); card.extra = '{atk-} cilj'; }
+      if (a.tier === 3) { alive().forEach(e => weaken(e, 2)); card.extra = '{atk-} vsi sovražniki'; }
       break; }
     default: card.value = `−${hit(3)}`;
   }
@@ -3818,7 +3844,7 @@ function heroAct(a, w) {
       else if (t === 'scit') said.push(`ščit +${shield(1.5)}`);
       else if (t === 'omama' && target.hp > 0) { stun(target, 3, 1); said.push('omama'); }
       else if (t === 'ogenj' && target.hp > 0) { burn(target, 0.6 * p); said.push('gori'); }
-      else if (t === 'slabi' && target.hp > 0) { target.atk = Math.max(1, target.atk - 1); said.push('napad −1'); }
+      else if (t === 'slabi' && target.hp > 0) { target.atk = Math.max(1, target.atk - 1); said.push('{atk-} −1'); }
     });
     if (said.length) card.value = [card.value, ...said].filter(Boolean).join(' · ');
     renderPartyHp();
@@ -3944,6 +3970,16 @@ function enemyAct(e) {
   if (e.stone > 0) { e.stone--; floatOn(e.el, 'okamnel', 'info'); log(`${e.name} je okamnel${e.f ? 'a' : ''} — napad izostane.`); renderEnemies(); return; }
   let act = e.pattern[e.step % e.pattern.length]; e.step++;
   if (act === 'cwlock' && B.cw && B.cw.kind !== 'finisher') act = 'attack';
+  // a vila beside Povodni mož heals him (escort); with him down or unhurt she strikes instead
+  const healed = act === 'heal' ? B.enemies.find(x => x.hp > 0 && x.key === e.healOf && x.hp < x.maxHp) : null;
+  if (act === 'heal' && !healed) act = 'attack';
+  if (healed) {
+    const n = Math.min(healed.maxHp - healed.hp, Math.max(1, Math.round(healed.maxHp * (e.healPart || 0.05)))); healed.hp += n;
+    floatOn(healed.el, `+${n}`, 'heal'); sfx('heal', { vol: .6 });
+    spawnCard(e.el, { tier: 2, foe: true, name: e.name, move: e.moves.heal, value: `${healed.name} +${n}` });
+    log(`${e.name}: ${e.moves.heal} — ${healed.name} +${n} zdravja.`);
+    renderEnemies(); return;
+  }
   const mv = e.moves[act] || e.moves.attack;
   e.atkT = performance.now(); e.atkTier = act === 'attack' ? 1 : 3;
   if (act !== 'attack' && UI.scene) { replay(UI.scene, 'flash'); setTimeout(() => UI.scene && UI.scene.classList.remove('flash'), 420); }
@@ -5484,7 +5520,7 @@ function stopBattle(stop) {
   const boss = stop.kind === 'boss';
   go('battle', { id: reg.id, bg: reg.bg, title: reg.name, sub: (boss ? 'Šef · ' : 'Bitka · ') + names, stop,
     battle: { enemies: stop.enemies, strong: stop.strong != null ? stop.strong : -1, scale: regionScale(R.ri), finishers: shuffle(Object.keys(FINISHER_FX)).slice(0, 2), meterStart: 0,
-      ambush: stop.kind === 'elite' ? 'zaseda' : null, tips: R.firstBattle ? NODES[0].battle.tips : [] } });
+      ambush: stop.kind === 'elite' ? 'zaseda' : null, escort: boss ? reg.escort || null : null, tips: R.firstBattle ? NODES[0].battle.tips : [] } });
 }
 function meetHero(stop, ids) {
   const R = S.run, back = () => go('travel');
@@ -6912,6 +6948,94 @@ function renderHeroes() {
       h('button', { class: 'btn small', onclick: () => go('gallery') }, 'Vse sličice, karte in ozadja'))));
   focusPage();
 }
+// ============================================================ effect icons: attack and defence, stronger or weaker
+// Game Director, 20 Nov 2026: a "−3" alone means nothing in Slovene, so changes to attack and defence get a picture.
+// Crossed swords = attack, a shield = defence; green with an arrow up = stronger, red with an arrow down = weaker.
+// The icons are 16-pixel-high pixel art drawn here (SVG rects with crisp edges), used
+//   - in skill texts and battle cards, as tokens in the text: {atk+} {atk-} {def+} {def-} (fxText);
+//   - above the heads of heroes and enemies for as long as the effect lasts (heroFx, foeFx → fxBadges).
+const FX_COL = { up: ['#235a2c', '#45b457', '#a9f0a1'], down: ['#6e1813', '#d6443a', '#ffa094'] }, FX_LINE = '#120d16';
+const FX_LABEL = { 'atk+': 'močnejši napad', 'atk-': 'šibkejši napad', 'def+': 'močnejša obramba', 'def-': 'šibkejša obramba' };
+// the pixels of one icon: Map "x,y" → colour (kind 'atk' or 'def', dir 'up' or 'down')
+function fxPixels(kind, dir) {
+  const [dk, md, lt] = FX_COL[dir], px = new Map(), set = (x, y, c) => px.set(`${x + 1},${y + 1}`, c);
+  if (kind === 'atk') {   // two crossed swords, points up: blades in the colour, gold crossguards and grips at the bottom corners
+    const G = ['#8a5a1c', '#e8b74a'];
+    // a long blade from the tip at a top corner, a short crossguard, a grip and a pommel at the opposite bottom corner;
+    // the guard is kept short so it does not line up with the other blade (at 16 px a long one read as an X)
+    const blade = m => { for (let t = 0; t <= 10; t++) { set(m(t), t, lt); if (t) set(m(t), t - 1, md); } };
+    const hilt = m => { [[10, 12], [11, 11], [12, 10], [9, 13], [13, 9]].forEach(([x, y], i) => set(m(x), y, i < 3 ? G[1] : G[0])); set(m(12), 12, G[0]); set(m(13), 13, G[0]); set(m(14), 14, G[1]); };
+    const a = x => x, b = x => 14 - x;
+    blade(a); blade(b); hilt(a); hilt(b);
+  } else {               // a heater shield with a dark middle stripe and a light edge
+    const rows = [[2, 12], [2, 12], [2, 12], [2, 12], [2, 12], [2, 12], [2, 12], [2, 12], [3, 11], [4, 10], [5, 9], [6, 8], [7, 7]];
+    rows.forEach(([x0, x1], i) => { for (let x = x0; x <= x1; x++) set(x, i + 1, md); });
+    for (let x = 3; x <= 11; x++) set(x, 2, lt);
+    for (let y = 2; y <= 8; y++) set(3, y, lt);
+    for (let y = 3; y <= 11; y++) set(7, y, dk);
+  }
+  // the arrow beside it: up for stronger, down for weaker
+  const arrow = ['..x..', '.xxx.', 'xxxxx', '.xxx.', '.xxx.', '.xxx.'];
+  (dir === 'up' ? arrow : arrow.slice().reverse()).forEach((row, i) => [...row].forEach((c, j) => { if (c === 'x') set(16 + j, 5 + i, lt); }));
+  // a dark outline around everything, so the icon reads on sky, snow and water
+  const out = new Map(px);
+  for (const k of px.keys()) { const [x, y] = k.split(',').map(Number);
+    [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(([dx, dy]) => { const n = `${x + dx},${y + dy}`; if (!px.has(n)) out.set(n, FX_LINE); }); }
+  return out;
+}
+const FX_URL = {};
+function fxUrl(tok) {
+  if (FX_URL[tok]) return FX_URL[tok];
+  const px = fxPixels(tok.slice(0, 3), tok.endsWith('+') ? 'up' : 'down');
+  let w = 0, hgt = 0, rects = '';
+  for (const [k, c] of px) { const [x, y] = k.split(',').map(Number); w = Math.max(w, x + 1); hgt = Math.max(hgt, y + 1); rects += `<rect x="${x}" y="${y}" width="1" height="1" fill="${c}"/>`; }
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${hgt}" width="${w}" height="${hgt}" shape-rendering="crispEdges">${rects}</svg>`;
+  return (FX_URL[tok] = 'data:image/svg+xml,' + encodeURIComponent(svg));
+}
+const fxIcon = tok => h('img', { class: 'fxi', src: fxUrl(tok), alt: FX_LABEL[tok], title: FX_LABEL[tok], draggable: 'false' });
+// text with {atk+} {atk-} {def+} {def-} tokens → text and icons (anything else stays text)
+const FX_TOKEN = /\{(atk|def)([+-])\}/g;
+function fxText(str) {
+  if (str == null) return [];
+  const s = String(str), out = []; let last = 0;
+  for (const m of s.matchAll(FX_TOKEN)) { if (m.index > last) out.push(s.slice(last, m.index)); out.push(fxIcon(m[1] + m[2])); last = m.index + m[0].length; }
+  if (last < s.length) out.push(s.slice(last));
+  return out;
+}
+const fxPlain = str => String(str || '').replace(FX_TOKEN, (_, k, d) => FX_LABEL[k + d]);   // for logs and aria
+
+// ------------------------------------------------------------ what is in force on an actor, for the badges above its head
+// an enemy: its attack weakened (Kurent's bells until its next blow, Pregon zime's half, Lepa Vida's song, Volčja
+// jagoda) or grown (the Volkodlak feeding on repeated words), against the attack it came with (atkBase)
+function foeFx(e) {
+  if (!e || e.hp <= 0 || !B) return [];
+  const down = [], out = [];
+  if (e.weak && e.weak.by) down.push(`−${e.weak.by}`);
+  if (e.half > B.time || e.halfNext) down.push('½');
+  const base = e.atkBase != null ? e.atkBase : e.atk;
+  if (e.atk < base) down.push(`−${base - e.atk}`);
+  if (down.length) out.push({ tok: 'atk-', v: down.join(' ') });
+  if (e.atk > base) out.push({ tok: 'atk+', v: `+${e.atk - base}` });
+  return out;
+}
+// a hero: Kraljeva vojska's bonus, Perunova medica and Dažbog's light on the next words, Peter Klepec growing;
+// Matjaž's shield on each hero and his army's resolve, the party's shield, Varstvo popotnikov (on the others),
+// Skrivni rov (on Erazem and, at rank 3, the hero beside him)
+function heroFx(k) {
+  const st = S.heroes[k]; if (!B || !st || st.down) return [];
+  const out = [], up = [];
+  if (B.rally && B.rally[k]) up.push(`+${B.rally[k]}`);
+  if (B.boost > 0) up.push('×1,5');
+  if (B.double > 1) up.push(`×${num(B.double)}`);
+  if (HEROES[k].kit === 'grow' && B.grow) up.push(`+${12 * B.grow} %`);
+  if (up.length) out.push({ tok: 'atk+', v: up.join(' ') });
+  const less = (B.ward || 0) + (B.dampen && B.dampen.left > 0 ? B.dampen.by : 0);
+  const guarded = !!(B.guard && B.guard.left > 0 && B.guard.k !== k && !S.heroes[B.guard.k].down);
+  const dodge = !!(B.rov && (B.rov.k === k || B.rov.ally === k));
+  if (less || B.shield > 0 || guarded || dodge) out.push({ tok: 'def+', v: less ? `+${less}` : '' });
+  return out;
+}
+const fxBadges = list => list.map(b => h('span', { class: 'fxb ' + (b.tok.endsWith('+') ? 'up' : 'down') }, fxIcon(b.tok), b.v ? h('b', {}, b.v) : null));
 
 // ============================================================ reviewed heroes: own skill kits with ranks 1–3, XP from the fight
 // The testing pass of docs/progression-design.md §4 for the six heroes with a reviewed character specification
@@ -7086,12 +7210,12 @@ function reviewedAct(a, target, card) {
   const say = [];
   switch (`${id}${a.tier}`) {
     // Kurent
-    case 'kurent1': { const d = hit(v3(R.dmg, r)), s = v3(R.delay, r); delayFoe(target, s); say.push(`−${d}`, `napad pozneje ${num(s)} s`); break; }
+    case 'kurent1': { const d = hit(v3(R.dmg, r)), s = v3(R.delay, r); delayFoe(target, s); say.push(`−${d}`, `napade ${secs(s)} pozneje`); break; }
     case 'kurent2': {
       B.busy[k] = B.time + R.dance;
       const n = v3(R.weaken, r), foes = pickFoes(target, v3(R.foes, r)); let d = 0;
       foes.forEach(e => { d = Math.max(d, hit(v3(R.dmg, r), e)); if (e.hp > 0) e.weak = { by: n }; });   // until its next blow
-      say.push(`−${d}${foes.length > 1 ? ' vsakemu' : ''}`, `naslednji udarec −${n}`, foes.length > 1 ? `${foes.length} ${nForm(foes.length, FOES_N)}` : 'cilj'); card.extra = `Kurent pleše ${R.dance} s`;
+      say.push(`−${d}${foes.length > 1 ? ' vsakemu' : ''}`, `{atk-} −${n}`, foes.length > 1 ? `${foes.length} ${nForm(foes.length, FOES_N)}` : 'cilj');
       renderParty(); renderPuzzle(); renderSide(); break; }
     case 'kurent3': {
       const s = v3(R.delay, r); let hurt = 0, d = 0;
@@ -7100,14 +7224,14 @@ function reviewedAct(a, target, card) {
         delayFoe(e, s);
         if (r >= 2 && hasTag(e, R.tags)) { hurt++; e.bane = { dps: e.atk * 0.5 / 4, until: B.time + 4, by: k }; e.baneAcc = 0; e.half = B.time + 4; if (r >= 3) e.halfNext = true; }
       });
-      say.push(`−${d} vsem`, `napadejo ${num(s)} s pozneje`); if (hurt) card.extra = hurt > 1 ? 'zima se obrne proti sovražnikom' : 'zima se obrne proti sovražniku';
+      say.push(`−${d} vsem`, `napadejo ${secs(s)} pozneje`); if (hurt) card.extra = hurt > 1 ? 'duhovi {atk-} ½' : 'duh {atk-} ½';
       break; }
     // Kralj Matjaž
-    case 'matjaz1': { const d = hit(v3(R.dmg, r)), w = v3(R.ward, r); say.push(`−${d}`); if (w) { B.ward = Math.max(B.ward || 0, w); B.wardBy = k; say.push(`ščit ${w} na junaka`); } break; }
+    case 'matjaz1': { const d = hit(v3(R.dmg, r)), w = v3(R.ward, r); say.push(`−${d}`); if (w) { B.ward = Math.max(B.ward || 0, w); B.wardBy = k; say.push(`{def+} +${w} vsem`); } break; }
     case 'matjaz2': {
       const b = v3(R.bonus, r); living().forEach(j => { B.rally[j] = Math.max(B.rally[j] || 0, b); });
-      say.push(`naslednji napad +${b}`);
-      if (v3(R.soften, r)) { B.dampen = { by: v3(R.soften, r), left: Math.max((B.dampen && B.dampen.left) || 0, R.hits), k }; say.push(`naslednja ${R.hits} udarca −${B.dampen.by}`); }
+      say.push(`{atk+} +${b} vsem`);
+      if (v3(R.soften, r)) { B.dampen = { by: v3(R.soften, r), left: Math.max((B.dampen && B.dampen.left) || 0, R.hits), k }; say.push(`{def+} +${B.dampen.by} ×${R.hits}`); }
       break; }
     case 'matjaz3': {
       const healN = v3(R.heal, r), w = v3(R.ward, r), raised = [];
@@ -7115,16 +7239,16 @@ function reviewedAct(a, target, card) {
       HEROES.forEach((x, j) => { const st = S.heroes[j]; if (st.down) { st.down = false; st.hp = Math.max(1, Math.round(st.maxHp * R.revive)); healed += st.hp; raised.push(x.name); } else healed += healHero(j, healN); });
       noteSupport(target, k, healed);   // support XP: the health given back, the risen's too
       B.ward = Math.max(B.ward || 0, w); B.wardBy = k;
-      say.push(`+${healN} zdravja`, `ščit ${w} na junaka`);
+      say.push(`+${healN} zdravja`, `{def+} +${w} vsem`);
       if (v3(R.dmg, r)) { let d = 0; alive().forEach(e => { d = Math.max(d, hit(v3(R.dmg, r), e)); }); say.unshift(`−${d} vsem`); }
       if (raised.length) { card.extra = `vstane: ${raised.join(', ')}`; log(`Prebujenje: ${raised.join(', ')} spet ${nForm(raised.length, ['stoji', 'stojita', 'stojijo', 'stojijo'])}.`); sfx('win', { delay: .2, vol: .7 }); renderParty(); renderPuzzle(); renderSide(); }
       break; }
     // Kresnik
     case 'kresnik1': {
       const dragon = isDragon(target), d = hit(v3(R.dmg, r) * (dragon ? R.vsDragon : 1)), s = v3(R.burn, r);
-      fixedBurn(target, s, k); say.push(`−${d}`, `gori ${s} s`); if (dragon) card.extra = 'zmaju ×1,5'; break; }
+      fixedBurn(target, s, k); say.push(`−${d}`, `gori ${secs(s)}`); if (dragon) card.extra = 'zmaju ×1,5'; break; }
     case 'kresnik2': {
-      const d = hit(v3(R.dmg, r)), s = v3(R.burn, r); fixedBurn(target, s, k); say.push(`−${d}`, `gori ${s} s`);
+      const d = hit(v3(R.dmg, r)), s = v3(R.burn, r); fixedBurn(target, s, k); say.push(`−${d}`, `gori ${secs(s)}`);
       const c = v3(R.chain, r), o = c ? foeBeside(target) : null;
       if (o) { const d2 = hit(c, o); fixedBurn(o, s, k); card.extra = `strela preskoči: −${d2}`; }
       break; }
@@ -7139,7 +7263,7 @@ function reviewedAct(a, target, card) {
       foes.forEach(e => { for (let i = 0; i < n; i++) d += hit(v3(R.dmg, r) / foes.length, e); });
       say.push(`−${d}`, n > 1 ? `${n} udarca po ${v3(R.dmg, r)}` : foes.length > 1 ? `razdeljeno med ${foes.length} ${nForm(foes.length, FOES_N)}` : 'cilj'); break; }
     case 'krpan3': {
-      const d = hit(v3(R.dmg, r)), s = v3(R.bleed, r); fixedBurn(target, s, k, 'krvavi'); say.push(`−${d}`, `krvavi ${s} s`); break; }
+      const d = hit(v3(R.dmg, r)), s = v3(R.bleed, r); fixedBurn(target, s, k, 'krvavi'); say.push(`−${d}`, `krvavi ${secs(s)}`); break; }
     // Erazem Predjamski
     case 'erazem1': say.push(`−${hit(v3(R.dmg, r))}`); break;
     case 'erazem2': {
@@ -7261,59 +7385,71 @@ function reviewedTick(dt) {
 // what shows under an enemy besides omamljen and gori
 function reviewedStatuses(e) {
   const s = [];
-  if (e.stone > 0) s.push('okamnel');
-  if (foeSoft(e)) s.push('šibkejši');
+  if (e.stone > 0) s.push('okamnel');   // a weaker attack shows as an icon (src/effects.js foeFx)
   if (e.bane && e.bane.until > B.time) s.push('pregnan');
   return s;
 }
 // what shows under the party's health besides the shield
 function reviewedPartyNotes() {
   const s = [];
-  if (B.ward) s.push(`ščit ${B.ward} na junaka`);
+  // the shields and bonuses themselves show as icons above the heroes (src/effects.js heroFx); here only what they cannot say
   if (B.guard && B.guard.left > 0) s.push(`varstvo ×${B.guard.left}`);
-  if (B.dampen && B.dampen.left > 0) s.push(`vojska: udarci −${B.dampen.by} ×${B.dampen.left}`);
-  if (B.rov) s.push('skrivni rov');
-  const rally = Object.values(B.rally || {}).filter(Boolean); if (rally.length) s.push(`vojska +${Math.max(...rally)}`);
+  if (B.dampen && B.dampen.left > 1) s.push(`vojska ×${B.dampen.left}`);
   return s;
 }
 
 // ------------------------------------------------------------ the Veščine texts, rank by rank (src/skills.js)
-const SEC = n => `${num(n)} s`;
+// Game Director, 20 Nov 2026: short, for a phone. Stopnja 1 says what the skill does (damage and effects only);
+// stopnji 2 and 3 say only what changes. Time in words (2 sekundi, 5 sekund), attack and defence changes as icons
+// ({atk-} = the enemy hits weaker, {def+} = the heroes take less, src/effects.js). "Udarec N" = N damage.
+const secs = n => Number.isInteger(n) ? `${n} ${nForm(n, ['sekundo', 'sekundi', 'sekunde', 'sekund'])}` : `${num(n)} sekunde`;
+const foesAcc = n => `${n} ${nForm(n, ['sovražnika', 'sovražnika', 'sovražnike', 'sovražnikov'])}`;
+const attacksAcc = n => n === 1 ? 'naslednji napad' : `naslednje ${n} ${nForm(n, ATTACKS_ACC)}`.replace('naslednje 2 napada', 'naslednja 2 napada');
 const RANK_TEXT = {
   kurent: [
-    (R, r) => `Udarec z ježevko (${v3(R.dmg, r)}); cilj napade ${SEC(v3(R.delay, r))} pozneje. Zamiki se ne seštevajo.`,
-    (R, r) => { const n = v3(R.foes, r); return `Kurent ${R.dance} s pleše (njegove črke ta čas ne štejejo, rane pa ga dosežejo); zvonci zadenejo ${n > 1 ? `${n} ${nForm(n, ['sovražnika', 'sovražnika', 'sovražnike', 'sovražnikov'])}` : 'cilj'} (${v3(R.dmg, r)}), ${n > 1 ? `njihov` : 'njegov'} naslednji udarec je ${v3(R.weaken, r)} šibkejši.`; },
-    (R, r) => r === 1 ? `Vsi sovražniki −${v3(R.dmg, r)} in napadejo ${SEC(v3(R.delay, r))} pozneje.`
-      : `Vsi sovražniki −${v3(R.dmg, r)} in napadejo ${SEC(v3(R.delay, r))} pozneje; duhovi in bitja vetra in mraza (Mora) si 4 s škodijo s pol svojega napada in ta čas udarijo s pol moči` + (r === 3 ? '; s pol moči udarijo tudi prvič po tem.' : '.'),
+    (R, r) => r === 1 ? `Udarec ${v3(R.dmg, r)}. Cilj napade ${secs(v3(R.delay, r))} pozneje.`
+      : `Udarec ${v3(R.dmg, r)}, ${secs(v3(R.delay, r))} pozneje.`,
+    (R, r) => r === 1 ? `Zvonci napadejo cilj: udarec ${v3(R.dmg, r)}, {atk-} −${v3(R.weaken, r)}.`
+      : `Napadejo ${foesAcc(v3(R.foes, r))}: udarec ${v3(R.dmg, r)}, {atk-} −${v3(R.weaken, r)}.`,
+    (R, r) => r === 1 ? `Vsi sovražniki: udarec ${v3(R.dmg, r)}. Napadejo ${secs(v3(R.delay, r))} pozneje.`
+      : r === 2 ? `Udarec ${v3(R.dmg, r)}, ${secs(v3(R.delay, r))} pozneje. Duhovi in bitja mraza (Mora): {atk-} ½ za 4 sekunde, škodijo si sami.`
+      : `Udarec ${v3(R.dmg, r)}, ${secs(v3(R.delay, r))} pozneje. Duhovi: {atk-} ½ še ob naslednjem napadu.`,
   ],
   matjaz: [
-    (R, r) => `Udarec z mečem (${v3(R.dmg, r)})` + (v3(R.ward, r) ? `; ob naslednjem napadu sovražnika vsak zadeti junak dobi ${v3(R.ward, r)} manj.` : '.'),
-    (R, r) => `Naslednji napad vsakega junaka je močnejši za ${v3(R.bonus, r)}` + (v3(R.soften, r) ? `; naslednja ${R.hits} udarca sovražnikov sta ${v3(R.soften, r)} šibkejša.` : '.'),
-    (R, r) => `Vsi junaki +${v3(R.heal, r)} zdravja, padli vstanejo s ${Math.round(R.revive * 100)} % zdravja, ščit ${v3(R.ward, r)} na junaka za naslednji napad` + (v3(R.dmg, r) ? `; vsi sovražniki −${v3(R.dmg, r)}.` : '.'),
+    (R, r) => r === 1 ? `Udarec ${v3(R.dmg, r)}.` : r === 2 ? `Udarec ${v3(R.dmg, r)}. Vsi junaki: {def+} +${v3(R.ward, r)} ob naslednjem napadu.` : `Udarec ${v3(R.dmg, r)}, {def+} +${v3(R.ward, r)}.`,
+    (R, r) => r === 1 ? `Vsi junaki: {atk+} +${v3(R.bonus, r)} pri naslednjem napadu.`
+      : r === 2 ? `{atk+} +${v3(R.bonus, r)}.` : `{atk+} +${v3(R.bonus, r)}. Vsi junaki: {def+} +${v3(R.soften, r)} ob naslednjih ${R.hits} udarcih.`,
+    (R, r) => r === 1 ? `Vsi junaki +${v3(R.heal, r)} zdravja, padli vstanejo (${Math.round(R.revive * 100)} % zdravja). Vsi: {def+} +${v3(R.ward, r)} ob naslednjem napadu.`
+      : r === 2 ? `+${v3(R.heal, r)} zdravja, {def+} +${v3(R.ward, r)}.` : `Še udarec ${v3(R.dmg, r)} vsem sovražnikom.`,
   ],
   kresnik: [
-    (R, r) => `Udarec z ognjenim mečem (${v3(R.dmg, r)}, zmaju ${Math.round(v3(R.dmg, r) * R.vsDragon)}); cilj gori ${v3(R.burn, r)} s po ${BURN_DPS}.`,
-    (R, r) => `Strela v cilj (${v3(R.dmg, r)}); cilj gori ${v3(R.burn, r)} s po ${BURN_DPS}` + (v3(R.chain, r) ? `; preskoči še na sosednjega sovražnika (${v3(R.chain, r)}), ki tudi gori.` : '.'),
-    (R, r) => { const n = v3(R.charges, r); return `Plamen zadene vse sovražnike (${v3(R.dmg, r)}); od ${n > 1 ? `naslednjih ${n} ran` : 'naslednje rane'} si povrne ${Math.round(v3(R.back, r) * 100)} %, družina dobi pol toliko zlatnikov.`; },
+    (R, r) => r === 1 ? `Udarec ${v3(R.dmg, r)} (zmaju ${Math.round(v3(R.dmg, r) * R.vsDragon)}). Cilj gori ${secs(v3(R.burn, r))}, ${BURN_DPS} na sekundo.`
+      : `Udarec ${v3(R.dmg, r)} (zmaju ${Math.round(v3(R.dmg, r) * R.vsDragon)}), gori ${secs(v3(R.burn, r))}.`,
+    (R, r) => r === 1 ? `Udarec ${v3(R.dmg, r)}. Cilj gori ${secs(v3(R.burn, r))}, ${BURN_DPS} na sekundo.`
+      : r === 2 ? `Udarec ${v3(R.dmg, r)}.` : `Udarec ${v3(R.dmg, r)}; strela preskoči še na sosednjega sovražnika (udarec ${v3(R.chain, r)}, gori).`,
+    (R, r) => r === 1 ? `Vsi sovražniki: udarec ${v3(R.dmg, r)}. Od naslednje rane si povrne ${Math.round(v3(R.back, r) * 100)} % zdravja in pol toliko zlatnikov.`
+      : `Udarec ${v3(R.dmg, r)}; povrne si ${Math.round(v3(R.back, r) * 100)} % od naslednjih ${v3(R.charges, r)} ran.`,
   ],
   krpan: [
-    (R, r) => `Udarec z lipovim kijem (${v3(R.dmg, r)}).`,
-    (R, r) => r === 1 ? `Dva zaporedna udarca s pestjo, po ${v3(R.dmg, r)}; vsak šteje posebej.`
-      : r === 2 ? `Kobilica prinese dve veliki vreči soli, Krpan ju vrže v cilj (${v3(R.dmg, r)}).`
-      : `Krpan dvigne in vrže ogromno skalo (${v3(R.dmg, r)}); škoda se razdeli med dva sovražnika.`,
-    (R, r) => `Natančen zasek z Mesarico (${v3(R.dmg, r)}); cilj krvavi ${v3(R.bleed, r)} s po ${BURN_DPS}.`,
+    (R, r) => `Udarec ${v3(R.dmg, r)}.`,
+    (R, r) => r === 1 ? `Dva udarca s pestjo, po ${v3(R.dmg, r)}.`
+      : r === 2 ? `Vreči soli: udarec ${v3(R.dmg, r)}.` : `Skala: udarec ${v3(R.dmg, r)}, razdeljen med 2 sovražnika.`,
+    (R, r) => r === 1 ? `Udarec ${v3(R.dmg, r)}. Cilj krvavi ${secs(v3(R.bleed, r))}, ${BURN_DPS} na sekundo.`
+      : `Udarec ${v3(R.dmg, r)}, krvavi ${secs(v3(R.bleed, r))}.`,
   ],
   erazem: [
-    (R, r) => `Zamah z mečem (${v3(R.dmg, r)}).`,
-    (R, r) => `Češnje v cilj (${v3(R.dmg, r)}); junaka ob njem dobita +${v3(R.heal, r)} zdravja (on sam ne).`,
-    (R, r) => r === 1 ? 'Naslednji napad nanj zgreši.'
-      : r === 2 ? `Naslednji napad nanj zgreši, Erazem pa udari nazaj (${num(v3(R.counter, r))}-kratni zamah z mečem).`
-      : `Naslednji napad zgreši njega in junaka ob njem; Erazem udari nazaj (${num(v3(R.counter, r))}-kratni zamah z mečem).`,
+    (R, r) => `Udarec ${v3(R.dmg, r)}.`,
+    (R, r) => r === 1 ? `Udarec ${v3(R.dmg, r)}. Junaka ob njem +${v3(R.heal, r)} zdravja.` : `Udarec ${v3(R.dmg, r)}, +${v3(R.heal, r)} zdravja.`,
+    (R, r) => r === 1 ? 'Naslednji napad nanj zgreši ({def+}).'
+      : r === 2 ? `Nato udari nazaj: ${num(v3(R.counter, r))} × zamah z mečem.`
+      : `Izmakne se tudi junak ob njem; nazaj udari ${num(v3(R.counter, r))} ×.`,
   ],
   ajda: [
-    (R, r) => v3(R.all, r) ? `Kamni v vse sovražnike (${v3(R.dmg, r)}).` : `Kamen v cilj (${v3(R.dmg, r)}).`,
-    (R, r) => { const n = v3(R.charges, r); return `${n === 1 ? 'Naslednji napad' : n === 2 ? 'Naslednja 2 napada' : `Naslednje ${n} napade`} na druge junake prestreže sama in dobi le pol škode.`; },
-    (R, r) => { const n = v3(R.foes, r), m = v3(R.rounds, r); return `Okamni ${n > 1 ? `${n} ${nForm(n, FOES_N)}` : 'sovražnika'}, ki ${n > 1 ? nForm(n, ['izpusti', 'izpustita', 'izpustijo', 'izpusti']) : 'izpusti'} ${m > 1 ? `${m} ${nForm(m, ATTACKS_ACC)}` : 'en napad'}. Ogenj in strup delujeta naprej.`; },
+    (R, r) => v3(R.all, r) ? `Udarec ${v3(R.dmg, r)} vsem sovražnikom.` : `Udarec ${v3(R.dmg, r)}.`,
+    (R, r) => r === 1 ? `Naslednji napad na druge junake prestreže sama, s pol škode ({def+} drugim).`
+      : `Prestreže ${attacksAcc(v3(R.charges, r))}.`,
+    (R, r) => r === 1 ? `Okamni cilj: izpusti en napad.`
+      : r === 2 ? `Okamni ${foesAcc(v3(R.foes, r))}.` : `Okamnjeni izpustijo po ${v3(R.rounds, r)} napada.`,
   ],
 };
 const rankText = (id, t, r) => RANK_TEXT[id][t - 1](RK[id][t - 1], r);
@@ -7329,14 +7465,14 @@ const rankText = (id, t, r) => RANK_TEXT[id][t - 1](RK[id][t - 1], r);
 // The six reviewed heroes (src/progression.js) have no SKILL_UPS: each of their ranks is described by RANK_TEXT.
 const SKILL_TEXT = {
   perun: ['Hiter udar strele v cilj.', 'Močnejši udar strele v cilj.', 'Silen udar; strela preskoči na vse sovražnike.'],
-  svarog: ['Udarec s kladivom; družina dobi malo ščita.', 'Močnejši udarec in več ščita.', 'Silen udarec in velik ščit za vso družino.'],
+  svarog: ['Udarec s kladivom; družini {def+} malo ščita.', 'Močnejši udarec, {def+} več ščita.', 'Silen udarec, {def+} velik ščit družini.'],
   mokos: ['Pozdravi družino in šibko udari.', 'Pozdravi več; očisti zaklenjene črke in zbudi speče junake.', 'Pozdravi veliko; enkrat v bitki obudi junaka, ki je obležal.'],
   veles: ['Močan udarec in strup.', 'Še močnejši udarec in strup.', 'Silen udarec; kača ovije in zastrupi vse sovražnike.'],
-  dazbog: ['Udarec s sončnim žarkom.', 'Udarec; naslednja beseda udari ×1,5.', 'Silen udarec; naslednja beseda šteje dvojno.'],
+  dazbog: ['Udarec s sončnim žarkom.', 'Udarec; naslednja beseda {atk+} ×1,5.', 'Silen udarec; naslednja beseda {atk+} ×2.'],
   stribog: ['Sapica zadene vse sovražnike.', 'Burja močneje zadene vse.', 'Vihar silno zadene vse in očisti mrežo črk.'],
   jurij: ['Malo pozdravi in šibko udari.', 'Pozdravi več in odklene zaklenjene črke.', 'Pozdravi veliko; enkrat na poti obudi junaka, ki je obležal.'],
-  klepec: ['Udarec s pastirsko palico.', 'Močnejši udarec z izruvanim drevesom.', 'Silen udarec; vsak Vilin dar ga do konca bitke okrepi.'],
-  vida: ['Udarec s hrepenenjem.', 'Udarec; cilj napada šibkeje.', 'Silen udarec; vsi sovražniki napadajo šibkeje.'],
+  klepec: ['Udarec s pastirsko palico.', 'Močnejši udarec z izruvanim drevesom.', 'Silen udarec; {atk+} +12 % do konca bitke (vsakič znova).'],
+  vida: ['Udarec s hrepenenjem.', 'Udarec; cilju {atk-} −1.', 'Silen udarec; vsem sovražnikom {atk-} −2.'],
 };
 // the extra effect of every skill at stopnja 2 and at stopnja 3
 const SKILL_UPS = {
@@ -7352,13 +7488,13 @@ const SKILL_UPS = {
 };
 const UP_TAG = {
   moc: ['Moč', '+25 % moči'],
-  krit: ['Kritični udarec', '30 % možnosti, da udari dvojno'],
-  vsi: ['Na vse', 'zadene tudi vse druge sovražnike'],
-  zdravi: ['Zdravljenje', 'ob napadu malo pozdravi družino'],
-  scit: ['Ščit', 'družini doda ščit'],
-  omama: ['Omama', 'cilj za trenutek omami'],
+  krit: ['Kritični udarec', '30 % možnosti za dvojni udarec'],
+  vsi: ['Na vse', 'zadene tudi druge sovražnike'],
+  zdravi: ['Zdravljenje', 'malo pozdravi družino'],
+  scit: ['Ščit', '{def+} družini'],
+  omama: ['Omama', 'cilj za hip omami'],
   ogenj: ['Ogenj', 'cilj zagori'],
-  slabi: ['Oslabitev', 'cilj napada šibkeje'],
+  slabi: ['Oslabitev', 'cilju {atk-} −1'],
 };
 // how many of the hero's letters fire each skill (»beseda z dvema črkama te barve«)
 const LEN_INS = t => ['z eno črko', 'z dvema črkama', 's tremi črkami'][t - 1];
@@ -7385,9 +7521,11 @@ function skillPanel(id, st, { train = null } = {}) {
   const head = inRun ? h('div', { class: 'sk-sum' },
     h('span', {}, h('b', {}, `Raven ${st.lvl}`), st.lvl < MAX_LV ? ` · do naslednje še ${xpToNext(st)} XP` : ' · najvišja raven'),
     h('span', { class: 'sk-pts' + (heroPts(st) ? ' on' : '') }, `Točke: ${heroPts(st)}`)) : null;
-  // what stopnja 2 and 3 add on top of the skill
-  const rankLine = (r, tag) => `${r === 2 ? '+20 % moči, učinki trajajo 1,5-krat dlje' : '+40 % moči, učinki trajajo 2-krat dlje'}; ${UP_TAG[tag][0].toLowerCase()}: ${UP_TAG[tag][1]}`;
-  return h('div', { class: 'skills' }, head,
+  // what stopnja 2 and 3 add on top of the skill: only the change (Game Director, 20 Nov 2026: short, for a phone)
+  const rankLine = (r, tag) => `moč +${r === 2 ? 20 : 40} %, učinki ${r === 2 ? '1,5' : '2'} × dlje; ${UP_TAG[tag][0].toLowerCase()}: ${UP_TAG[tag][1]}`;
+  // once for all three: what the dots mean (it used to open every skill's text)
+  const legend = h('p', { class: 'sk-legend' }, h('span', { class: 'sk-dots', 'aria-hidden': 'true', style: { '--c': ch.c } }, h('i'), h('i')), ' = koliko črk junakove barve ima beseda');
+  return h('div', { class: 'skills' }, head, legend,
     [1, 2, 3].map(t => {
       const l = lv(t), known = l > 0, tags = rev ? [] : ups[t - 1].split(' ');
       const act = train && inRun ? (canLearn(st, t) ? ['Nauči se', () => train(t)] : canUpgrade(st, t) ? [`Na stopnjo ${l + 1}`, () => train(t)] : null) : null;
@@ -7397,9 +7535,9 @@ function skillPanel(id, st, { train = null } = {}) {
           h('span', { class: 'sk-dots', title: `beseda ${LEN_INS(t)} te barve`, 'aria-label': `veščina ${t}` }, Array.from({ length: t }, () => h('i'))),
           h('b', {}, ch.moves[t - 1]),
           h('span', { class: 'sk-state' }, known ? [`stopnja ${l}`, rankPips(l)] : 'še ni znana')),
-        h('p', { class: 'sk-text' }, `Beseda ${LEN_INS(t)} te barve. ${rev ? rankText(id, t, 1) : SKILL_TEXT[id][t - 1]}`),
+        h('p', { class: 'sk-text' }, fxText(rev ? rankText(id, t, 1) : SKILL_TEXT[id][t - 1])),
         h('ol', { class: 'sk-ups' }, (rev ? [2, 3] : tags).map((tg, i) => h('li', { class: l >= i + 2 ? 'on' : '' },
-          h('i', { 'aria-hidden': 'true' }), h('b', {}, `Stopnja ${i + 2}`), ' — ', rev ? rankText(id, t, i + 2) : rankLine(i + 2, tg)))),
+          h('i', { 'aria-hidden': 'true' }), h('b', {}, `Stopnja ${i + 2}`), ' ', fxText(rev ? rankText(id, t, i + 2) : rankLine(i + 2, tg))))),
         train && inRun ? h('div', { class: 'sk-act' },
           act ? h('button', { class: 'btn small primary', onclick: act[1] }, act[0], h('span', { class: 'cost' }, '1 točka')) : h('span', { class: 'muted' }, why)) : null);
     }));
@@ -7410,7 +7548,7 @@ function openSkillInfo(id, st) {
   if (S.bagEl) return;
   const ch = CHARS.find(c => c.id === id);
   const close = () => { ov.remove(); S.bagEl = null; S.overlayKey = null; };
-  const where = st && S.run ? `Vsaka nova raven junaku prinese točko veščine. Porabi jo pri vodnjaku ali na kažipotu na koncu pokrajine.` : 'Prvo veščino zna vsak junak od začetka. Na poti s točkami, ki jih prinašajo nove ravni, odklene drugo in tretjo (za daljše besede z več črkami njegove barve) in vsako dvigne do stopnje 3.';
+  const where = st && S.run ? `Vsaka nova raven junaku prinese točko veščine. Porabi jo pri vodnjaku ali na kažipotu na koncu pokrajine.` : 'Prva veščina je znana od začetka. Točke novih ravni odklenejo drugo in tretjo ter jih dvignejo do stopnje 3.';
   const ov = h('div', { class: 'overlay', onclick: e => { if (e.target === ov) close(); } }, h('div', { class: 'dialog skilldlg', role: 'dialog', 'aria-modal': 'true', 'aria-label': `Veščine: ${ch.name}` },
     h('h2', {}, `Veščine: ${ch.name}`),
     skillPanel(id, st),

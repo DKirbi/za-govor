@@ -77,8 +77,19 @@ run(async () => {
     out.wyvern = Z.makeEnemy('zmajcek', 0, Z.regionScale(9)).maxHp;
     const reg = Z.WORLD.regions[9]; out.adds = [['krpan'], ['krpan', 'kurent'], ['krpan', 'kurent', 'ajda'], ['krpan', 'kurent', 'ajda', 'erazem']].map(p => { Z.setParty(p); return Z.bossGroup(reg).join(' '); });
     return out; });
-  check(boss.povodni.join() === '400,16' && boss.reka === 'vila,povodni,vila' && boss.vila === Math.round(30 * 3.65), 'Povodni mož: 400 health, hits 16, two vile beside him that grow with the region', JSON.stringify(boss));
-  check(boss.dragon.join() === [221, 250, 375].join() && boss.wyvern === Math.round(55 * 1.5 * 1.35), 'Lintvern: 221 / 250 / 375 health on Malček / Učenjak / Knjižni molj; wyverns do not grow by region (only by Znanje)', JSON.stringify(boss));
+  check(boss.povodni.join() === '260,16' && boss.reka === 'vila,povodni,vila' && boss.vila === Math.round(30 * 3.65), 'Povodni mož: 260 health (less than the Lintvern on every Znanje), hits 16, two vile beside him that grow with the region', JSON.stringify(boss));
+  // his vile (Game Director, 20 Nov): in the boss battle they hit weaker and every third move heal him; with him unhurt they strike
+  const escort = await ev(page, () => { const Z = window.__ZG; Z.S.know = 'malcek'; Z.S.mode = 'calm'; Z.newRun('krpan'); Z.joinHero('kurent'); Z.enterRegion(8);
+    Z.stopBattle(Z.S.run.stops.find(s => s.kind === 'boss')); const B = Z.B, pov = B.enemies[1], v = B.enemies[0]; B.enemies.forEach(e => { e.charge = -99; });
+    const out = { v: [v.maxHp, v.atk, v.pattern.join()], plain: Z.makeEnemy('vila', 0, Z.regionScale(8)).atk, pov: [pov.maxHp, pov.atk] };
+    pov.hp = pov.maxHp - 30; v.step = 2; enemyAct(v); out.healed = pov.hp - (pov.maxHp - 30);
+    pov.hp = pov.maxHp; v.step = 2; const hp0 = Z.S.partyHp; enemyAct(v); out.struck = hp0 - Z.S.partyHp; out.full = pov.hp === pov.maxHp;
+    pov.hp = 0; v.step = 2; const hp1 = Z.S.partyHp; enemyAct(v); out.struckDead = hp1 - Z.S.partyHp; return out; });
+  check(escort.v[1] === Math.max(1, Math.round(escort.plain * 0.75)) && escort.v[2] === 'attack,flood,heal' && escort.pov[0] === 221 && escort.pov[0] < 289,
+    'beside Povodni mož the vile hit at 0,75 and every third move is Zdravilni val; on Malček he has less health than the Lintvern (289)', JSON.stringify(escort));
+  check(escort.healed === Math.round(escort.pov[0] * 0.08) && escort.struck > 0 && escort.full && escort.struckDead > 0,
+    'Zdravilni val heals him 8 % of his health; unhurt or fallen, the vila strikes instead', JSON.stringify(escort));
+  check(boss.dragon.join() === [289, 320, 480].join() && boss.wyvern === Math.round(55 * 1.5 * 1.35), 'Lintvern: 289 / 320 / 480 health on Malček / Učenjak / Knjižni molj, the most of any enemy; wyverns do not grow by region (only by Znanje)', JSON.stringify(boss));
   check(boss.adds.join(' | ') === 'lintvern | zmajcek lintvern | zmajcek lintvern zmajcek | zmajcek lintvern zmajcek', 'one wyvern per hero beyond the first, at most two', boss.adds.join(' | '));
 
   // ---- the Lintvern in battle (Učenjak, four heroes, the castle)
