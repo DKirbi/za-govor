@@ -1960,7 +1960,7 @@ function heroAct(a, w) {
   noteAttack(target, a.k);   // the party's XP counts every hero's attacks (src/progression.js)
   const others = () => B.enemies.filter(e => e !== target && e.hp > 0), alive = () => B.enemies.filter(e => e.hp > 0);
   const hit = (m, e = target) => damageEnemy(e, m * p + rallyBonus(a.k, e === target), { crit: a.crit, by: a.k });   // + Kraljeva vojska's bonus, once
-  const shield = m => { const sh = Math.round(m * p); B.shield = Math.min(30, B.shield + sh); renderPartyHp(); floatOn(UI.party, `ščit +${sh}`, 'info'); return sh; };
+  const shield = m => { const sh = Math.round(m * p), was = B.shield; B.shield = Math.min(30, B.shield + sh); noteSupport(target, a.k, B.shield - was); renderPartyHp(); floatOn(UI.party, `ščit +${sh}`, 'info'); return sh; };
   // a skill at a higher stopnja lasts longer: stuns, burns, poison, weakening and dodges (×1,5 and ×2)
   const dur = RANK_DUR[a.rank || 1];
   const stun = (e, sec, words) => { if (e.unstoppable) { floatOn(e.el, 'neustavljiv', 'info'); return; } if (S.mode === 'real') e.stunUntil = Math.max(e.stunUntil, B.time + sec * dur); else e.stunWords = Math.max(e.stunWords, Math.round(words * dur)); };
@@ -1974,12 +1974,13 @@ function heroAct(a, w) {
   const heal = m => {
     const amount = Math.round(m * p), got = healParty(amount, HEAL_CAP);
     const over = Math.max(0, Math.min(30 - B.shield, Math.round((amount - got) / 2))); B.shield += over;   // overheal turns into shield (cap 30)
+    noteSupport(target, a.k, got + over);   // support XP: health given back and shield given
     renderPartyHp();
     if (got) floatOn(UI.party, `+${got}`, 'heal');
     if (over) floatOn(UI.party, `ščit +${over}`, 'info');
     card.value = got ? `+${got} zdravja` + (over ? ` · ščit +${over}` : '') : `ščit +${over}`;
   };
-  const revive = () => { const dk = S.heroes.findIndex(x => x.down); if (dk < 0) return false; reviveHero(dk); card.extra = `obudi: ${HEROES[dk].name}`; sfx('win', { delay: .2, vol: .7 }); return true; };
+  const revive = () => { const dk = S.heroes.findIndex(x => x.down); if (dk < 0) return false; reviveHero(dk); noteSupport(target, a.k, S.heroes[dk].hp); card.extra = `obudi: ${HEROES[dk].name}`; sfx('win', { delay: .2, vol: .7 }); return true; };
   switch (hero.kit) {
     case 'burst': {          // Perun: burst, tier 3 chains to everyone
       const d = hit(4);
@@ -2030,7 +2031,7 @@ function heroAct(a, w) {
     const said = a.krit ? ['kritično'] : [];
     a.ups.forEach(t => {
       if (t === 'vsi') { let d = 0; others().forEach(e => { d = Math.max(d, hit(1.2, e)); }); if (d) said.push(`vsem −${d}`); }
-      else if (t === 'zdravi') { const got = healParty(Math.round(1.5 * p), HEAL_CAP); if (got) { floatOn(UI.party, `+${got}`, 'heal'); said.push(`+${got} zdravja`); } }
+      else if (t === 'zdravi') { const got = healParty(Math.round(1.5 * p), HEAL_CAP); noteSupport(target, a.k, got); if (got) { floatOn(UI.party, `+${got}`, 'heal'); said.push(`+${got} zdravja`); } }
       else if (t === 'scit') said.push(`ščit +${shield(1.5)}`);
       else if (t === 'omama' && target.hp > 0) { stun(target, 3, 1); said.push('omama'); }
       else if (t === 'ogenj' && target.hp > 0) { burn(target, 0.6 * p); said.push('gori'); }
@@ -3262,6 +3263,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, cheerParty, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, cheerParty, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, noteSupport, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 

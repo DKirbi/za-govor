@@ -55,7 +55,7 @@ run(async () => {
     Z.S.know = 'ucenjak'; Z.S.run.ri = 4; const plain = Z.makeEnemy('volkodlak', 0, Z.regionScale(4)), st = Z.makeEnemy('volkodlak', 0, Z.regionScale(4), true);
     return { share: n / 1000, early, plain: [plain.name, plain.maxHp, plain.atk], st: [st.name, st.maxHp, st.atk, st.strong] }; });
   check(strong.early === 0 && strong.share > 0.33 && strong.share < 0.47, 'from Trnovski gozd on about 40 % of battles have a strong enemy (none before)', JSON.stringify(strong));
-  check(strong.st[0] === 'Silni volkodlak' && strong.st[1] === Math.round(45 * 1.5 * 1.6) && strong.st[2] === Math.round(6 * 1.2 * 1.25) && strong.st[3], 'a strong enemy: Silni …, ×1,6 health and ×1,25 attack', JSON.stringify(strong));
+  check(strong.st[0] === 'Silni volkodlak' && strong.st[1] === Math.round(45 * 1.6 * 1.6) && strong.st[2] === Math.round(6 * 1.2 * 1.25) && strong.st[3], 'a strong enemy: Silni …, ×1,6 health and ×1,25 attack', JSON.stringify(strong));
 
   // ---- region curve, Ptuj the same on every Znanje, Knjižni molj steepens
   const curve = await ev(page, () => { const Z = window.__ZG, R = Z.S.run, out = {};
@@ -65,8 +65,8 @@ run(async () => {
     out.moljBarje = at('molj', 7, 'volkodlak'); out.ucBarje = at('ucenjak', 7, 'volkodlak');
     return out; });
   check(curve.ptuj.every(x => x === curve.ptuj[0]), 'Ptuj, the tutorial, has the same enemies on every Znanje', JSON.stringify(curve.ptuj));
-  check(curve.peca[0] === Math.round(52 * 0.7) && curve.peca[1] === Math.round(7 * 0.8) && curve.barje[0] === Math.round(45 * 2.85) && curve.barje[1] === Math.round(6 * 1.75), 'enemies grow by region: Peca ×0,7 health and ×0,8 attack, Barje ×2,85 and ×1,75', JSON.stringify(curve));
-  const steepHp = Math.round(45 * 2.85 * 1.5 * (1 + 0.35 * 7 / 9)), steepSpd = +(11 * (1 - 0.18 * 7 / 9)).toFixed(2);
+  check(curve.peca[0] === Math.round(52 * 0.7) && curve.peca[1] === Math.round(7 * 0.8) && curve.barje[0] === Math.round(45 * 3.05) && curve.barje[1] === Math.round(6 * 1.75), 'enemies grow by region: Peca ×0,7 health and ×0,8 attack, Barje ×3,05 and ×1,75', JSON.stringify(curve));
+  const steepHp = Math.round(45 * 3.05 * 1.5 * (1 + 0.35 * 7 / 9)), steepSpd = +(11 * (1 - 0.18 * 7 / 9)).toFixed(2);
   check(curve.moljBarje[0] === steepHp && curve.moljBarje[2] === steepSpd && curve.ucBarje[2] === 11, 'Knjižni molj steepens: by Barje more health and quicker attacks; Učenjak does not', JSON.stringify({ molj: curve.moljBarje, want: [steepHp, steepSpd], ucenjak: curve.ucBarje }));
 
   // ---- the bosses: Povodni mož with two vile; the Lintvern's health by Znanje and his wyverns by party size
@@ -77,7 +77,7 @@ run(async () => {
     out.wyvern = Z.makeEnemy('zmajcek', 0, Z.regionScale(9)).maxHp;
     const reg = Z.WORLD.regions[9]; out.adds = [['krpan'], ['krpan', 'kurent'], ['krpan', 'kurent', 'ajda'], ['krpan', 'kurent', 'ajda', 'erazem']].map(p => { Z.setParty(p); return Z.bossGroup(reg).join(' '); });
     return out; });
-  check(boss.povodni.join() === '400,16' && boss.reka === 'vila,povodni,vila' && boss.vila === Math.round(30 * 3.4), 'Povodni mož: 400 health, hits 16, two vile beside him that grow with the region', JSON.stringify(boss));
+  check(boss.povodni.join() === '400,16' && boss.reka === 'vila,povodni,vila' && boss.vila === Math.round(30 * 3.65), 'Povodni mož: 400 health, hits 16, two vile beside him that grow with the region', JSON.stringify(boss));
   check(boss.dragon.join() === [221, 250, 375].join() && boss.wyvern === Math.round(55 * 1.5 * 1.35), 'Lintvern: 221 / 250 / 375 health on Malček / Učenjak / Knjižni molj; wyverns do not grow by region (only by Znanje)', JSON.stringify(boss));
   check(boss.adds.join(' | ') === 'lintvern | zmajcek lintvern | zmajcek lintvern zmajcek | zmajcek lintvern zmajcek', 'one wyvern per hero beyond the first, at most two', boss.adds.join(' | '));
 

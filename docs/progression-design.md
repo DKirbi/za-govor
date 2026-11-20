@@ -238,7 +238,7 @@ Ptuj has **four battles, 1, 1, 2 and 2 enemies**, so the party is level 3 with s
 
 | | Balance D (0.13.0–0.16.0) | Balance E (0.17.0) |
 | --- | --- | --- |
-| XP | the whole party's attacks + damage + enemy level, into one pool | each hero standing gets **their own** attacks + damage on the beaten enemy + its level (`awardFoeXp`, `src/progression.js`); a fallen hero gets nothing |
+| XP | the whole party's attacks + damage + enemy level, into one pool | each hero standing gets **their own** attacks + damage + **support** on the beaten enemy + its level (`awardFoeXp`, `src/progression.js`); a fallen hero gets nothing. Support (Game Director, 20 Nov): one XP per point healed (raising the fallen too), per point of party shield given, and per point of a blow taken off by Kralj Matjaž's shield and army or by Ajdovska deklica's Varstvo popotnikov (`noteSupport`); weakening and dodges do not count |
 | Levels | one party level at 45 / 110 / 220 / 360 / 540 / 760 / 1020 / 1350 XP | each hero's own at **70 / 180 / 360 / 640 / 1000 / 1500 / 2200 / 3100** XP (`LV_XP`) |
 | Points | 3 a level into a shared pool | **1 a level, the hero's own** (`st.pts`, `PTS_PER_LV`) |
 | Where points are spent | after every battle, wells, shrines, the pedlar | **wells and the signpost** only |
@@ -255,7 +255,7 @@ Saves from 0.13.0–0.16.0 load: every hero keeps their level (starting it on th
 
 | Region | Ptuj | Peca | Triglav | Bled | Trnovski gozd | Piranske soline | Predjamski grad | Ljubljansko barje | Ljubljanica | Ljubljanski grad |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Health × (D) | 1 (1) | **0.7** (0.95) | **1.0** (1.2) | **1.5** (1.45) | **1.5** (1.75) | **1.9** (1.8) | **2.25** (2.3) | **2.85** (2.7) | **3.4** (3.0) | **3.4** (3.0) |
+| Health × (D) | 1 (1) | **0.7** (0.95) | **1.0** (1.2) | **1.6** (1.45) | **1.6** (1.75) | **2.05** (1.8) | **2.4** (2.3) | **3.05** (2.7) | **3.65** (3.0) | **3.65** (3.0) |
 | Attack × (D) | 1 (1) | **0.8** (1) | **0.95** (1.1) | **1.15** (1.2) | **1.2** (1.3) | **1.35** (1.4) | 1.5 (1.5) | **1.75** (1.65) | **2.0** (1.8) | **2.0** (1.8) |
 
 - **Povodni mož** 400 health, hits 16 (D: 240 / 12). **Lintvern** 221 / 250 / 375 by Znanje (D: 170 / 250 / 313): Malček's base is 260 (`hpBy.lahka`), Knjižni molj follows its new factor.
@@ -270,22 +270,24 @@ Saves from 0.13.0–0.16.0 load: every hero keeps their level (starting it on th
 - skill points: the next skill first, then the lowest rank, wherever the game allows.
 `node tools/sim/run.js tools/sim/plan.json` runs the table below (about 25 minutes on two cores); `--dist` points to another build for comparisons.
 
-**Measured (balance E as built; journeys won, ±95 % interval):**
+**Measured (balance E as built, with support XP; journeys won, ±95 % interval):**
 
 | Znanje | design pace | at the design pace | faster | slower | battle time per journey |
 | --- | --- | --- | --- | --- | --- |
-| Malček | 10 s | **54 % (±6), 300 journeys** — about 4.6 of 10 lost | 85 % at 8 s | 17 % at 12 s | 28 min (D: 20) |
-| Učenjak | 8 s | **38 % (±6), 300** | 86 % at 6 s | 6 % at 10 s | 21 min |
-| Knjižni molj | 6 s | **26 % (±5), 300** | 68 % at 5 s | 0 % at 8 s | 21 min |
+| Malček | 10 s | **54 % (±6), 300 journeys** — about 4.6 of 10 lost | 85 % at 8 s* | 17 % at 12 s* | 31 min (D: 20) |
+| Učenjak | 8 s | **39 % (±8), 150** | 86 % at 6 s* | 6 % at 10 s* | 22 min |
+| Knjižni molj | 6 s | **27 % (±7), 150** | 68 % at 5 s* | 0 % at 8 s* | 22 min |
 
-Where Malček journeys end (of 300; 138 lost): Ptuj 0 · Peca 8 · Triglav 9 · Bled 5 · Trnovski gozd 26 · Piranske soline 21 · Predjamski grad 23 · Ljubljansko barje 21 · Ljubljanica 18 · Ljubljanski grad 7. First-try wins per battle: 95–98 % up to Bled, 92–95 % from Trnovski gozd, 80 % against the Lintvern. Several tuning rounds before this (shown in the project doc *zagovor-balance-simulations*) put the losses at Peca and Triglav; the version built moves them to the second half and the bosses.
+\* measured just before support XP and the last 7 % of health, which cancel out at the design paces.
 
-**Levels (Malček, 10 s):** the highest hero reaches about 2.5 at Peca, 4.7 at Trnovski gozd and 7.7 at the castle; the lowest about 5. By hero at Ljubljanica: Martin Krpan 7.6, Kresnik 6.4, Kralj Matjaž 6.1, Ajdovska deklica and Kurent 6.0, Erazem 5.9, Peter Klepec 5.0, Zeleni Jurij and Lepa Vida 4.9. The gap between a party's highest and lowest hero grows to about 2.5 levels: XP follows damage, so heroes who heal or weaken (Jurij, Vida) and late recruits stay behind.
+Where Malček journeys end (of 300; 139 lost): Ptuj 0 · Peca 3 · Triglav 4 · Bled 5 · Trnovski gozd 11 · Piranske soline 24 · Predjamski grad 23 · Ljubljansko barje 27 · Ljubljanica 35 · Ljubljanski grad 7. First-try wins per battle: 96–99 % up to Bled, 91–94 % from Trnovski gozd, 84 % against the Lintvern. Several tuning rounds before this (shown in the project doc *zagovor-balance-simulations*) put the losses at Peca and Triglav; the version built moves them to the second half and the bosses.
+
+**Levels (Malček, 10 s):** the highest hero reaches about 2.6 at Peca, 4.7 at Trnovski gozd and 7.8 at the castle; the lowest about 5.5. By hero at Ljubljanica: Martin Krpan 7.8, Kresnik and Kralj Matjaž 6.4, Erazem, Ajdovska deklica and Kurent 6.2, Zeleni Jurij 5.8, Peter Klepec 5.4, Lepa Vida 5.0. The gap between a party's highest and lowest hero grows to about 2.3 levels (2.5 before support XP; Zeleni Jurij gained most, +0.9 levels). Heroes who only weaken (Lepa Vida) and late recruits still stay behind.
 
 **Findings and open questions (PROPOSED / OPEN — for the Game Director):**
-1. **The starter decides a lot.** On Malček at 10 s: starting with Martin Krpan wins 75 %, Kurent 41 %, Zeleni Jurij 42 % (Učenjak 53 / 34 / 26 %). Krpan's reviewed kit (Lipov kij 10 / 16 / 20) carries a fresh party. A review of the three starters together would even this out better than enemy numbers can.
+1. **The starter decides a lot.** On Malček at 10 s: starting with Martin Krpan wins 74 %, Kurent 46 %, Zeleni Jurij 41 %. Krpan's reviewed kit (Lipov kij 10 / 16 / 20) carries a fresh party. A review of the three starters together would even this out better than enemy numbers can.
 2. **Pace dominates.** From 8 s to 12 s a word Malček goes from 85 % to 17 % won. The target holds for the assumed player only; the testers' statistics (seconds per word, `s/besedo`) should set the design pace of each Znanje.
-3. **Support heroes level slowest** (finding 5 of 17 Nov, now live): healing, shields and weakening earn no XP. Counting healing and shields as XP, or a small catch-up below the party's average, would narrow the gap; both are proposals, nothing is built.
+3. **Support XP — DECIDED and built (Game Director, 20 Nov):** healing and shields count as XP (see the table above). Weakening (Lepa Vida's song, Kurent's bells) and Erazem's dodge still earn nothing; Lepa Vida stays the lowest hero.
 4. **Učenjak and Knjižni molj lose some journeys early** (Peca and Triglav end 15 % of Učenjak journeys): one loss ends them. Their numbers sit below Malček's as they should, but nobody has asked for them; they are a proposal to review.
 5. The model player never uses hints, the word proposals or the planted starter words, and solves every crossword at word pace; real Malček players get more help than the bot, real Knjižni molj players have harder crosswords.
 

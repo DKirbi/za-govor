@@ -116,6 +116,10 @@ run(async () => {
   const woke = await ev(page, () => { const st = window.__ZG.S.heroes; return { down: st[1].down, hp: st[1].hp, max: st[1].maxHp, m: st[0].hp, ward: window.__ZG.B.ward }; });
   check(!woke.down && woke.hp === Math.round(woke.max * 0.15) && woke.m === awake + 6 && woke.ward === 6 && p.dmg[0] === 18 + 12 + 10 && p.dmg[1] === 12,
     'three letters: Meč, Kraljeva vojska and Prebujenje at rank 3 — Krpan rises with 15 %, Matjaž +6, a shield of 6, every enemy −12 (the target also +10 from the army)', JSON.stringify({ ...woke, before: awake, ...p }));
+  // support XP (Game Director, 20 Nov): the 6 his shield took off a blow, Krpan's 15 % and his own 6 healed, counted on the enemy struck at
+  const sup = await ev(page, () => { const t = window.__ZG.B.enemies[0].tally || {}; return { m: (t.matjaz || {}).s, k: (t.krpan || {}).s || 0, parts: window.__ZG.foeXp(window.__ZG.B.enemies[0], 0) }; });
+  check(sup.m === 6 + woke.hp + 6 && sup.k === 0 && sup.parts.n === sup.parts.a + sup.parts.d + sup.parts.s + sup.parts.lv,
+    'healing and shields count as XP: Matjaž\'s shield (6 off a blow), Prebujenje (Krpan\'s 15 % and his own 6) go on the enemy\'s tally for him; Krpan gets none', JSON.stringify({ ...sup, risen: woke.hp }));
 
   // 5. Kresnik: the flaming sword hits a dragon 1,5× (12) and burns 2 a tick; Kresna moč gives back a quarter of the next wound, and half of that in gold
   await battle(page, ['kresnik'], ['mladic']);

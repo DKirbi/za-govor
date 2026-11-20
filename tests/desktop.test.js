@@ -119,7 +119,7 @@ run(async () => {
   const breath = await page.evaluate(() => { const B = window.__ZG.B, e = B.enemies[0]; return { charging: !!e.charging, scorched: B.grid.filter(t => t.scorch).length, burning: Object.values(B.heroBurn).some(n => n > 0), tiles: document.querySelectorAll('.mesh .tile.scorch').length }; });
   check(!breath.charging && breath.scorched >= 8 && breath.tiles === breath.scorched && breath.burning, 'Ognjeni dih comes even through a stun: the heroes burn and letters are scorched', JSON.stringify(breath));
   await shot('desktop-04b-scorch');
-  await page.evaluate(() => { const e = window.__ZG.B.enemies[0]; e.stunUntil = 0; e.hp = Math.round(e.maxHp * 0.53); e.phase2on = false; e.charge = -5; });
+  await page.evaluate(() => { const e = window.__ZG.B.enemies[0]; e.stunUntil = 0; e.hp = Math.floor(e.maxHp * 0.5) + 1; e.phase2on = false; e.charge = -5; e.breathDone = [0.66, 0.33]; });   // any word takes him under half; a strong word must not start the 33 % breath instead (it made this check flaky)
   await playWord(page); await sleep(600);
   await page.evaluate(() => { const e = window.__ZG.B.enemies[0]; e.step = 3; e.charge = 0.99; }); await sleep(600);
   check((await state(page)).cw === 'lock', 'phase 2 forces a crossword with the mesh closed');

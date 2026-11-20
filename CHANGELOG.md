@@ -46,16 +46,18 @@ party went up a level nearly every battle); numbers from simulations of the buil
   + damage on it + its level. Levels at 70 / 180 / 360 / 640 / 1000 / 1500 / 2200 / 3100 XP, **one point of their own**
   a level (balance D: one party level, three shared points). A hero who joins arrives at the level of the party's
   lowest hero, with the points of those levels. The battle log and result say what each hero got.
+  **Healing and shields count as XP** (Game Director): one XP per point a hero heals (raising the fallen too), per
+  point of shield they give, and per point of a blow Kralj Matjaž's shield or Ajdovska deklica's Varstvo takes off.
 - **Skill points are spent only at a well and at the signpost at a region's end**, and only there are the skills shown:
   no Veščine after a battle, at shrines or at the pedlar, no Veščine button on the hero screens during a journey (the
   codex keeps it), and a hero with a point glows only at a well or a signpost.
 - **Three battles in every region** from Peca to Ljubljanica (Ptuj keeps four), and **one event per region: a chest or
   a trap, never both** (a chest 60 / 45 / 30 % of the time by Znanje, else a rock slide or spikes; Ptuj's is a chest).
-- **Enemies:** softer at Peca and Triglav, steeper from Bled to the castle (health ×3.4 and attack ×2.0 at the end;
-  D: ×3.0 and ×1.8). Povodni mož 400 health, hits 16 (D: 240 / 12). The Lintvern has 221 health on Malček (D: 170).
+- **Enemies:** softer at Peca, Triglav and Trnovski gozd, steeper from Bled to the castle (health ×3.65 and attack
+  ×2.0 at the end; D: ×3.0 and ×1.8). Povodni mož 400 health, hits 16 (D: 240 / 12). The Lintvern has 221 health on Malček (D: 170).
   Knjižni molj: enemy health ×1.5 (D: ×1.25), up to +35 % health and 18 % quicker attacks by the castle (D: +15 / 10 %).
-- **Measured** (the bot below, journeys won): Malček **54 %** at a word every 10 s (D: 98 %), Učenjak 38 % at 8 s
-  (D: 95 %), Knjižni molj 26 % at 6 s (D: 96 %).
+- **Measured** (the bot below, journeys won): Malček **54 %** at a word every 10 s (D: 98 %), Učenjak 39 % at 8 s
+  (D: 95 %), Knjižni molj 27 % at 6 s (D: 96 %).
 - **New: `tools/sim/`**, a balance simulator. A bot plays whole journeys inside `dist/index.html` (headless Chrome)
   on the game's own clock, so every rule runs as built; only the player is a model (pace, word lengths, crosswords,
   chests and traps by chance). `node tools/sim/run.js tools/sim/plan.json`; results go to `tools/sim/out/` (ignored).

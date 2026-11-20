@@ -63,31 +63,45 @@ const BURN_DPS = 2;   // Kresnik's burn: 2 damage a second (one word per tick in
 // First test, kept as simple as possible: one XP per attack, one per point of damage, plus the enemy's level.
 // An attack is every skill the hero fires at an enemy (its target), damage is what the hero took off that enemy
 // (hits, burns, counterattacks). Only heroes still standing when the enemy falls get anything, as before.
-const XP_RULE = { attack: 1, damage: 1, level: 1 };
+// Support (Game Director, 20 Nov 2026): one XP per point of health a hero heals (raising the fallen too), per point
+// of shield they give the party, and per point of a blow their protection takes off (Kralj Matjaž's shield on each
+// hero and his army's resolve, Ajdovska deklica's Varstvo popotnikov). It is counted on the enemy that was struck
+// at or that struck, and paid like the rest when that enemy falls; with no enemy left standing, at once.
+const XP_RULE = { attack: 1, damage: 1, support: 1, level: 1 };
 const foeLevel = e => e.lvl || 1;   // the region's number on the journey (makeEnemy), 1 in practice battles
 // Every hero's attacks and damage are counted on the enemy (balance D); since balance E each hero standing when it
 // falls gets their own share (heroes of every kit, not only the reviewed ones).
 function tallyOf(e, k) {
   const hr = HEROES[k]; if (!e || !hr) return null;
-  e.tally = e.tally || {}; return e.tally[hr.id] || (e.tally[hr.id] = { a: 0, d: 0 });
+  e.tally = e.tally || {}; return e.tally[hr.id] || (e.tally[hr.id] = { a: 0, d: 0, s: 0 });
 }
 function noteAttack(e, k) { const t = tallyOf(e, k); if (t) t.a++; }
 function noteDamage(e, k, d) { const t = tallyOf(e, k); if (t) t.d += d; }
-// one hero's share (k), or with k == null the whole party's: attacks + damage on this enemy + its level
-function foeXp(e, k) {
-  const ts = k == null ? Object.values(e.tally || {}) : [(e.tally && e.tally[HEROES[k].id]) || { a: 0, d: 0 }];
-  const a = ts.reduce((s, t) => s + t.a, 0), d = ts.reduce((s, t) => s + t.d, 0), lv = foeLevel(e);
-  return { n: Math.round(XP_RULE.attack * a + XP_RULE.damage * d + XP_RULE.level * lv), a, d, lv };
+// hero k healed, shielded or protected for n: counted on enemy e, or on another one still standing; when none is
+// left (the blow that ended the battle) the hero gets it at once
+function noteSupport(e, k, n) {
+  n = Math.round(n || 0); if (n <= 0 || k == null || k < 0 || !B || !HEROES[k]) return;
+  const f = e && e.hp > 0 ? e : B.enemies.find(x => x.hp > 0);
+  if (f) { const t = tallyOf(f, k); if (t) t.s = (t.s || 0) + n; return; }
+  if (!S.run || S.heroes[k].down) return;
+  const w = B.xpWhy[HEROES[k].id] || (B.xpWhy[HEROES[k].id] = { n: 0, a: 0, d: 0, s: 0, lv: 0 });
+  w.n += n; w.s = (w.s || 0) + n; B.stats.xp += n; addXp(k, n);
 }
-const xpParts = x => `napadi ${x.a} · škoda ${x.d} · raven ${x.lv}`;
+// one hero's share (k), or with k == null the whole party's: attacks + damage + support on this enemy + its level
+function foeXp(e, k) {
+  const ts = k == null ? Object.values(e.tally || {}) : [(e.tally && e.tally[HEROES[k].id]) || { a: 0, d: 0, s: 0 }];
+  const sum = f => ts.reduce((s, t) => s + (t[f] || 0), 0), a = sum('a'), d = sum('d'), sp = sum('s'), lv = foeLevel(e);
+  return { n: Math.round(XP_RULE.attack * a + XP_RULE.damage * d + XP_RULE.support * sp + XP_RULE.level * lv), a, d, s: sp, lv };
+}
+const xpParts = x => `napadi ${x.a} · škoda ${x.d}` + (x.s ? ` · podpora ${x.s}` : '') + ` · raven ${x.lv}`;
 // an enemy is beaten: hand out its experience, hero by hero, and say who got what (the log line after »Škrat je premagan: «)
 function awardFoeXp(e) {
   if (!S.run) { gainXp(e.xp, null, true); return `vsak junak +${e.xp} XP`; }   // practice battles: as before
   const said = [];
   HEROES.forEach((hr, k) => {
     if (S.heroes[k].down) return;   // only heroes still standing when it falls
-    const x = foeXp(e, k), w = B.xpWhy[hr.id] || (B.xpWhy[hr.id] = { n: 0, a: 0, d: 0, lv: 0 });
-    w.n += x.n; w.a += x.a; w.d += x.d; w.lv += x.lv;
+    const x = foeXp(e, k), w = B.xpWhy[hr.id] || (B.xpWhy[hr.id] = { n: 0, a: 0, d: 0, s: 0, lv: 0 });
+    w.n += x.n; w.a += x.a; w.d += x.d; w.s = (w.s || 0) + x.s; w.lv += x.lv;
     if (B) B.stats.xp += x.n;
     addXp(k, x.n); said.push(`${hr.name} +${x.n}`);
   });
@@ -175,16 +189,18 @@ function reviewedAct(a, target, card) {
       say.push(`−${d} vsem`, `napadejo ${num(s)} s pozneje`); if (hurt) card.extra = hurt > 1 ? 'zima se obrne proti sovražnikom' : 'zima se obrne proti sovražniku';
       break; }
     // Kralj Matjaž
-    case 'matjaz1': { const d = hit(v3(R.dmg, r)), w = v3(R.ward, r); say.push(`−${d}`); if (w) { B.ward = Math.max(B.ward || 0, w); say.push(`ščit ${w} na junaka`); } break; }
+    case 'matjaz1': { const d = hit(v3(R.dmg, r)), w = v3(R.ward, r); say.push(`−${d}`); if (w) { B.ward = Math.max(B.ward || 0, w); B.wardBy = k; say.push(`ščit ${w} na junaka`); } break; }
     case 'matjaz2': {
       const b = v3(R.bonus, r); living().forEach(j => { B.rally[j] = Math.max(B.rally[j] || 0, b); });
       say.push(`naslednji napad +${b}`);
-      if (v3(R.soften, r)) { B.dampen = { by: v3(R.soften, r), left: Math.max((B.dampen && B.dampen.left) || 0, R.hits) }; say.push(`naslednja ${R.hits} udarca −${B.dampen.by}`); }
+      if (v3(R.soften, r)) { B.dampen = { by: v3(R.soften, r), left: Math.max((B.dampen && B.dampen.left) || 0, R.hits), k }; say.push(`naslednja ${R.hits} udarca −${B.dampen.by}`); }
       break; }
     case 'matjaz3': {
       const healN = v3(R.heal, r), w = v3(R.ward, r), raised = [];
-      HEROES.forEach((x, j) => { const st = S.heroes[j]; if (st.down) { st.down = false; st.hp = Math.max(1, Math.round(st.maxHp * R.revive)); raised.push(x.name); } else healHero(j, healN); });
-      B.ward = Math.max(B.ward || 0, w);
+      let healed = 0;
+      HEROES.forEach((x, j) => { const st = S.heroes[j]; if (st.down) { st.down = false; st.hp = Math.max(1, Math.round(st.maxHp * R.revive)); healed += st.hp; raised.push(x.name); } else healed += healHero(j, healN); });
+      noteSupport(target, k, healed);   // support XP: the health given back, the risen's too
+      B.ward = Math.max(B.ward || 0, w); B.wardBy = k;
       say.push(`+${healN} zdravja`, `ščit ${w} na junaka`);
       if (v3(R.dmg, r)) { let d = 0; alive().forEach(e => { d = Math.max(d, hit(v3(R.dmg, r), e)); }); say.unshift(`−${d} vsem`); }
       if (raised.length) { card.extra = `vstane: ${raised.join(', ')}`; log(`Prebujenje: ${raised.join(', ')} spet ${nForm(raised.length, ['stoji', 'stojita', 'stojijo', 'stojijo'])}.`); sfx('win', { delay: .2, vol: .7 }); renderParty(); renderPuzzle(); renderSide(); }
@@ -215,6 +231,7 @@ function reviewedAct(a, target, card) {
     case 'erazem2': {
       const d = hit(v3(R.dmg, r)), n = v3(R.heal, r); let got = 0;
       heroesBeside(k).forEach(j => { got += healHero(j, n); });
+      noteSupport(target, k, got);
       say.push(`−${d}`); if (got) say.push(`sosedom +${got}`); renderPartyHp(); break; }
     case 'erazem3': {
       const beside = heroesBeside(k), ally = r >= 3 ? (beside.find(j => j > k) ?? beside[0] ?? -1) : -1;
@@ -270,7 +287,14 @@ function revHits(hits, src) {
   const half = src.halfNext || src.half > B.time, weak = src.weak ? src.weak.by : 0;
   src.weak = null;   // Zvonci: the weakening is used up by this blow
   const ward = B.ward || 0, damp = B.dampen && B.dampen.left > 0 ? B.dampen.by : 0;
-  hits.forEach(x => { if (x[1] > 0) x[1] = Math.max(0, Math.round(x[1] * (half ? 0.5 : 1)) - weak - ward - damp); });
+  let warded = 0, damped = 0;   // what Matjaž's shield and his army's resolve took off (his support XP)
+  hits.forEach(x => {
+    if (x[1] <= 0) return;
+    const base = Math.max(0, Math.round(x[1] * (half ? 0.5 : 1)) - weak), w = Math.min(base, ward), d = Math.min(base - w, damp);
+    warded += w; damped += d; x[1] = base - w - d;
+  });
+  if (warded) noteSupport(src, B.wardBy, warded);
+  if (damped) noteSupport(src, B.dampen.k, damped);
   if (src.halfNext) src.halfNext = false;
   if (ward) { B.ward = 0; floatOn(UI.party, `ščit ${ward} na junaka`, 'info'); }
   if (damp) { B.dampen.left--; if (!B.dampen.left) B.dampen = null; }
@@ -282,6 +306,7 @@ function revHits(hits, src) {
       const total = others.reduce((s, x) => s + x[1], 0), mine = Math.ceil(total * RK.ajda[1].share);
       others.forEach(x => { x[1] = 0; });
       const own = hits.find(([k]) => k === g.k); if (own) own[1] += mine; else hits.push([g.k, mine]);
+      noteSupport(src, g.k, total - mine);   // what she spared the others (her support XP)
       g.left--; if (!g.left) B.guard = null;
       if (UI.heroEls && UI.heroEls[g.k]) floatOn(UI.heroEls[g.k], 'varstvo', 'info');
       log(`${HEROES[g.k].name} prestreže udarec (${total} → ${mine}).`);
@@ -295,6 +320,7 @@ function revWounded(k, real, src) {
   if (!R || !src || real <= 0 || st.down) return;
   const want = Math.ceil(real * v3(RK.kresnik[2].back, R.rank)), got = Math.min(want, st.maxHp - st.hp);
   st.hp += got; if (--R.n <= 0) delete B.restore[k];
+  noteSupport(src, k, got);   // healing himself counts as healing
   const gold = got && S.run ? gainGold(Math.ceil(got * RK.kresnik[2].gold)) : 0;
   if (got) floatOn(UI.heroEls[k], `+${got}`, 'heal');
   if (gold) { B.stats.gold += gold; floatOn(UI.party, `+${gold} zlatnikov`, 'crit'); }
