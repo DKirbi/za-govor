@@ -1,1 +1,147 @@
-IyBNYXJ0aW4gS3JwYW4KCj4gKipTdGF0dXM6KiogQ2hhcmFjdGVyIGlkZW50aXR5LCByb2xlLCB0aHJlZS1za2lsbCBzdHJ1Y3R1cmUgYW5kIGZpbmFsIHN0b3J5LWNhcmQgc3ViamVjdCBDT05GSVJNRUQuIFNraWxsIDEgcmFuayB2YWx1ZXMgYW5kIE1lc2FyaWNhIHJhbmsgdmFsdWVzIENPTkZJUk1FRC4gS21lxI1rYSBtb8SNIHJhbmsgdmFsdWVzIENPTkZJUk1FRCBieSB0aGUgR2FtZSBEaXJlY3RvciBvbiAxOCBOb3YgMjAyNjsgYSBmZXcgdGFyZ2V0aW5nIGRldGFpbHMgc3RheSBPUEVOLiBBcnR3b3JrIHByb2R1Y3Rpb24gY2FuIHByb2NlZWQgZnJvbSB0aGUgdmlzdWFsIGRpcmVjdGlvbiBiZWxvdy4KPiAqKkNoYXJhY3RlciB0eXBlOioqIFNsb3ZlbmlhbiBsaXRlcmFyeSBoZXJvIC8gbGl0ZXJhcnktZm9sa2xvcmUgZmlndXJlCj4gKipDdXJyZW50IHJvbGU6KiogU3RhcnRpbmcgaGVybzsgaGVhdnkgcGh5c2ljYWwgYXR0YWNrZXIKPiAqKkN1cnJlbnQgcHJvdG90eXBlIHJlZmVyZW5jZToqKiBgc3JjL2dhbWUuanNgLCBgZG9jcy9wcm9ncmVzc2lvbi1kZXNpZ24ubWRgCgojIyAxLiBDaGFyYWN0ZXIgaWRlbnRpdHkKCk1hcnRpbiBLcnBhbiBpcyB0aGUgcHJvdGFnb25pc3Qgb2YgRnJhbiBMZXZzdGlrJ3MgKk1hcnRpbiBLcnBhbiB6IFZyaGEqLCBmaXJzdCBwdWJsaXNoZWQgaW4gMTg1OC4gSGUgaXMgYSBjZW50cmFsIGZpZ3VyZSBpbiBTbG92ZW5pYW4gbGl0ZXJhcnkgYW5kIGN1bHR1cmFsIG1lbW9yeSwgYnV0IHNob3VsZCBub3QgYmUgcHJlc2VudGVkIGFzIGEgZG9jdW1lbnRlZCBoaXN0b3JpY2FsIHBlcnNvbiBvciBhcyBhIHN1cGVybmF0dXJhbCBteXRob2xvZ2ljYWwgYmVpbmcuCgoqKkNPTkZJUk1FRCBnYW1lcGxheSByb2xlOioqIEhlYXZ5IHBoeXNpY2FsIGF0dGFja2VyLiBQcmVzZXJ2ZSBoaXMgaWRlbnRpdHkgYXMgYSBwaHlzaWNhbGx5IHBvd2VyZnVsLCBwcmFjdGljYWwgYW5kIHJlc291cmNlZnVsIGZpZ2h0ZXIuIEhpcyBzdHJlbmd0aCBpcyBwYWlyZWQgd2l0aCBpbmdlbnVpdHksIGVzcGVjaWFsbHkgaW4gdGhlIHN0b3J5IG9mIGhpcyBkdWVsIHdpdGggQnJkYXZzLgoKVGhlIFNsb3ZlbmUgbGFuZ3VhZ2UgYW5kIGN1bHR1cmFsIGlkZW50aXR5IGFyZSBpbXBvcnRhbnQgdG8gdGhlIGxpdGVyYXJ5IHdvcmsuIEtycGFuIHNob3VsZCBub3QgYmVjb21lIGEgZ2VuZXJpYyBmYW50YXN5IGJhcmJhcmlhbi4KCiMjIDIuIExpdGVyYXJ5IHNvdXJjZSBhbmQgZGVmaW5pbmcgZXBpc29kZXMKClRoZSBmb2xsb3dpbmcgYXJlIGV2ZW50cyBpbiBMZXZzdGlrJ3MgbGl0ZXJhcnkgdGFsZToKCi0gS3JwYW4gaXMgZXhjZXB0aW9uYWxseSBzdHJvbmcgYW5kIHRyYW5zcG9ydHMgcHJvaGliaXRlZCBFbmdsaXNoIHNhbHQgZnJvbSB0aGUgY29hc3Qgb24gaGlzIG1hcmUuCi0gSGlzIG1hcmUgaXMgc21hbGwgYnV0IGV4Y2VwdGlvbmFsbHkgc3Ryb25nIGFuZCBkZXBlbmRhYmxlLgotIEhlIG1vdmVzIHRoZSBpbXBlcmlhbCBjYXJyaWFnZSBvdXQgb2YgdGhlIHdheSBieSBsaWZ0aW5nIG9yIG1vdmluZyBoaXMgbWFyZS4KLSBIZSBjdXRzIGEgbGluZGVuIHRyZWUgdG8gbWFrZSBhIGxpbWV3b29kIGN1ZGdlbCAoKmxpcG92IGtpaiopLgotIEhlIG1ha2VzIGhpcyB1bnVzdWFsIHN3b3JkLCBNZXNhcmljYSwgaGltc2VsZi4KLSBJbiB0aGUgZHVlbCB3aXRoIEJyZGF2cywgaGUgdXNlcyB0aGUgc29mdG5lc3Mgb2YgdGhlIGxpbWV3b29kIHRvIHRyYXAgQnJkYXZzJ3Mgc3dvcmQgYmVmb3JlIG92ZXJwb3dlcmluZyBoaW0uCi0gUmF0aGVyIHRoYW4gYWNjZXB0IHRoZSBlbXBlcm9yJ3MgZGF1Z2h0ZXIgb3IgcmljaGVzLCBoZSBhc2tzIGZvciBwZXJtaXNzaW9uIHRvIGNvbnRpbnVlIHRyYW5zcG9ydGluZyBzYWx0LgoKVGhlc2UgYXJlIGxpdGVyYXJ5IHNvdXJjZSBkZXRhaWxzLCBub3QgdmVyaWZpZWQgYmlvZ3JhcGh5LiBTY2hvbGFyc2hpcCBkaXNjdXNzZXMgcG9zc2libGUgaGlzdG9yaWNhbCBhbmQgZm9sa2xvcmljIGluc3BpcmF0aW9ucywgYnV0IHRob3NlIGluc3BpcmF0aW9ucyBkbyBub3QgbWFrZSBLcnBhbiBhIGNvbmZpcm1lZCBoaXN0b3JpY2FsIGluZGl2aWR1YWwuCgojIyAzLiBTa2lsbHMgYW5kIGNvbWJhdCBtZWNoYW5pY3MKCiMjIyBTa2lsbCAxIOKAlCBMaXBvdiBraWoKCktycGFuIGF0dGFja3Mgb25lIGVuZW15IHdpdGggaGlzIGxpbWV3b29kIGN1ZGdlbCAoKmxpcG92IGtpaiopLgoKfCBSYW5rIHwgRGlyZWN0IGRhbWFnZSB8CnwtLS18LS0tOnwKfCAxIHwgMTAgfAp8IDIgfCAxNiB8CnwgMyB8IDIwIHwKClNpbmdsZS10YXJnZXQgcGh5c2ljYWwgZGFtYWdlLgoKIyMjIFNraWxsIDIg4oCUIEttZcSNa2EgbW/EjQoKS21lxI1rYSBtb8SNIHJlcHJlc2VudHMgS3JwYW4ncyBleGNlcHRpb25hbCBwaHlzaWNhbCBzdHJlbmd0aC4gSXRzIHRocmVlIHJhbmtzIHVzZSBpbmNyZWFzaW5nbHkgc3BlY3RhY3VsYXIgZGlzcGxheXMgb2Ygc3RyZW5ndGguIAoKIyMjIyBSYW5rIDEg4oCUIER2b2puaSB1ZGFyZWMKCktycGFuIGRlbGl2ZXJzIHR3byBjb25zZWN1dGl2ZSBwdW5jaGVzLgoKLSBFYWNoIHB1bmNoIGlzIGEgc2VwYXJhdGUgaGl0IGFuZCByZXNvbHZlcyBzZXBhcmF0ZWx5LgotICoqQ09ORklSTUVEIChHYW1lIERpcmVjdG9yLCAxOCBOb3YgMjAyNik6KiogOCBkYW1hZ2UgcGVyIHB1bmNoLCAxNiBpbiB0b3RhbC4KLSBUYXJnZXQgaGFuZGxpbmcgaXMgKipPUEVOKiouIFRoZSBnYW1lIGFpbXMgYm90aCBwdW5jaGVzIGF0IHRoZSBvbmUgdGFyZ2V0ZWQgZW5lbXkgKGltcGxlbWVudGF0aW9uIHJlYWRpbmcpLgoKIyMjIyBSYW5rIDIg4oCUIE1hdGVyaWFsaXphY2lqYQoKV2hlbiByYW5rIDIgYWN0aXZhdGVzLCBNYXJ0aW4gS3JwYW4gc3RhcnRzIGFsb25lLCB0aGUgYmFncyBvZiBzYWx0IGFwcGVhciBpbiBoaXMgaGFuZHMsIGFuZCBoZSB0aHJvd3MgdGhlbS4gRG8gbm90IHNob3cgYmFncyBvbiB0aGUgZ3JvdW5kIG9yIGEgaG9yc2UgaW4gdGhlIHNraWxsIGFuaW1hdGlvbi4gS2VlcCBoaXMgZXN0YWJsaXNoZWQgc3RhbmRpbmcgc3Bpcml0IHNjYWxlOyB0aGlzIGFjdGlvbiBkb2VzIG5vdCByZXNpemUgaGlzIG90aGVyIHNwaXJpdCBwb3Nlcy4KCi0gKipDT05GSVJNRUQgKEdhbWUgRGlyZWN0b3IsIDIwIE5vdiAyMDI2KToqKiBLcnBhbiBhcHBlYXJzIGFsb25lOyB0aGUgaG9yc2UgaXMgZXhjbHVkZWQgZnJvbSBldmVyeSByYW5rLTIgZnJhbWUuCi0gKipDT05GSVJNRUQgKEdhbWUgRGlyZWN0b3IsIDE4IE5vdiAyMDI2KToqKiAyMCBkYW1hZ2UgdG8gb25lIHRhcmdldCwgcmVzb2x2ZWQgYXMgb25lIGNvbWJpbmVkIGF0dGFjay4KCiMjIyMgUmFuayAzIOKAlCBPZ3JvbW5hIHNrYWxhCgpLcnBhbiBsaWZ0cyBhbmQgaHVybHMgYW4gZW5vcm1vdXMgYm91bGRlci4KCi0gVGhlIGJvdWxkZXIgY2FuIGRhbWFnZSB1cCB0byB0d28gZW5lbWllcy4KLSAqKkNPTkZJUk1FRCAoR2FtZSBEaXJlY3RvciwgMTggTm92IDIwMjYpOioqIDIyIGRhbWFnZSwgc3BsaXQgYmV0d2VlbiB0aGUgdHdvIGVuZW1pZXMgaXQgaGl0cyAoMTEgZWFjaCk7IGEgc2luZ2xlIGVuZW15IHRha2VzIGFsbCAyMi4gVGhlIGdhbWUgdGFrZXMgdGhlIHRhcmdldGVkIGVuZW15IGFuZCB0aGUgb25lIGJlc2lkZSBpdCAoaW1wbGVtZW50YXRpb24gcmVhZGluZzsgdGhlIGV2ZW4gc3BsaXQgaXMgdGhlIHJlYWRpbmcgb2YgInNwbGl0IikuCi0gRGFtYWdlIGlzIGhpZ2gsIGltbWVkaWF0ZSwgZmxhdCBkaXJlY3QgZGFtYWdlLgotIFRoaXMgaXMgKipub3QqKiBkYW1hZ2Ugb3ZlciB0aW1lIGFuZCBkb2VzIG5vdCBhcHBseSBibGVlZCBvciBhbm90aGVyIGxpbmdlcmluZyBkYW1hZ2Ugc3RhdHVzLgoKIyMjIFNraWxsIDMg4oCUIE1lc2FyaWNhCgpLcnBhbiBkcmF3cyBoaXMgbGVnZW5kYXJ5IHN3b3JkIGFuZCB1c2VzIGEgcHJlY2lzZSBzbGFzaCBhZ2FpbnN0IG9uZSBlbmVteS4gVGhlIGF0dGFjayBhcHBsaWVzIGJsZWVkIGRhbWFnZSBvdmVyIHRpbWUuCgp8IFJhbmsgfCBEaXJlY3QgZGFtYWdlIHwgQmxlZWQgZGFtYWdlIHwgQmxlZWQgZHVyYXRpb24gfCBUb3RhbCBibGVlZCB8CnwtLS18LS0tOnwtLS06fC0tLTp8LS0tOnwKfCAxIHwgMTAgfCAyIHBlciBzZWNvbmQgfCAyIHNlY29uZHMgfCA0IHwKfCAyIHwgMTQgfCAyIHBlciBzZWNvbmQgfCAzIHNlY29uZHMgfCA2IHwKfCAzIHwgMjAgfCAyIHBlciBzZWNvbmQgfCA0IHNlY29uZHMgfCA4IHwKClNpbmdsZS10YXJnZXQgb25seS4gQmxlZWQgaXMgYSBzZXBhcmF0ZSBkYW1hZ2Utb3Zlci10aW1lIHN0YXR1cywgbm90IHBhcnQgb2YgdGhlIGltbWVkaWF0ZSBkaXJlY3Qgc3RyaWtlLiBJdCBmb2xsb3dzIHRoZSBzaGFyZWQgcnVsZSB0aGF0IGRhbWFnZS1vdmVyLXRpbWUgZWZmZWN0cyBhcmUgbm90IHJlZHVjZWQgYnkgYXR0YWNrIGludGVycnVwdGlvbi4KCiMjIDQuIFJlY3J1aXRtZW50IGFuZCBwcm9ncmVzc2lvbgoKLSAqKkNPTkZJUk1FRCAvIElNUExFTUVOVEVEIGluIGN1cnJlbnQgcHJvZ3Jlc3Npb24gZGVzaWduOioqIE1hcnRpbiBLcnBhbiBpcyBvbmUgb2YgdGhlIHRocmVlIGtub3duIHN0YXJ0aW5nIGhlcm9lcyBhbmQgY2FuIGJlIHNlbGVjdGVkIGF0IHRoZSBiZWdpbm5pbmcgb2YgYSBuZXcgam91cm5leS4KLSBQcmVzZXJ2ZSBoaXMgY3VycmVudCBzdGFydGVyIHN0YXR1cyB1bmxlc3MgdGhlIEdhbWUgRGlyZWN0b3IgZXhwbGljaXRseSBjaGFuZ2VzIGl0LgotIEFwcGx5IHRoZSBzaGFyZWQgaGVybyBsZXZlbCBhbmQgc2tpbGwtcG9pbnQgcnVsZXMuIFVzZSB0aGUgY2hhcmFjdGVyLXNwZWNpZmljIHJhbmsgdmFsdWVzIGFib3ZlIHdoZXJlIGNvbmZpcm1lZDsgZG8gbm90IGludmVudCB2YWx1ZXMgZm9yIHRoZSBvcGVuIEttZcSNa2EgbW/EjSByYW5rcy4KCiMjIDUuIFZpc3VhbCBhbmQgbmFycmF0aXZlIGRpcmVjdGlvbgoKIyMjIEdhbWVwbGF5IHNwcml0ZXMgYW5kIHNraWxsIGFuaW1hdGlvbnMKCi0gS2VlcCBLcnBhbidzIHNpbGhvdWV0dGUgZ3JvdW5kZWQgaW4gdGhlIGxpdGVyYXJ5IGNoYXJhY3RlciByYXRoZXIgdGhhbiBnZW5lcmljIGZhbnRhc3kgZXF1aXBtZW50LgotIEV4aXN0aW5nIHByb3RvdHlwZSBjdWVzIGluY2x1ZGUgYSB3aWRlIGhhdCwgbW91c3RhY2hlLCB2ZXN0IGFuZCBhIHNhY2sgb2Ygc2FsdCBjYXJyaWVkIG9uIGhpcyBiYWNrLgotIFRoZSBsaW1ld29vZCBjdWRnZWwgYW5kIE1lc2FyaWNhIGFyZSBkZWZpbmluZyBvYmplY3RzLgotICoqTGlwb3Yga2lqOioqIGEgcmVhZGFibGUsIHdlaWdodHkgY3VkZ2VsIHN3aW5nLgotICoqS21lxI1rYSBtb8SNIFIxOioqIHR3byBjbGVhciBjb25zZWN1dGl2ZSBmaXN0IHN0cmlrZXMuCi0gKipLbWXEjWthIG1vxI0gUjI6KiogS3JwYW4gc3RhcnRzIGFsb25lLCB0aGVuIHRoZSBiYWdzIGFwcGVhciBpbiBoaXMgaGFuZHMgYXMgaGUgcHJlcGFyZXMgdG8gdGhyb3cgdGhlbS4gTm8gYmFncyBsaWUgb24gdGhlIGdyb3VuZCBhbmQgbm8gaG9yc2UgYXBwZWFycy4gSGlzIG9yZGluYXJ5IHNwaXJpdCBwb3NlcyByZXRhaW4gdGhlaXIgZXN0YWJsaXNoZWQgc2NhbGUuCi0gKipLbWXEjWthIG1vxI0gUjM6KiogS3JwYW4gdGhyb3dzIG9uZSBlbm9ybW91cyBib3VsZGVyLiBNYWtlIHRoZSBwb3NzaWJsZSB0d28tdGFyZ2V0IGltcGFjdCBsZWdpYmxlIHdpdGhvdXQgb2JzY3VyaW5nIHRoZSBjb21iYXQgVUkuCi0gKipNZXNhcmljYToqKiBhIHN0cm9uZywgcHJlY2lzZSBzd29yZCBzbGFzaCB3aXRoIGEgY2xlYXIgYmxlZWQtc3RhdHVzIGN1ZS4KCktlZXAgYW5pbWF0aW9ucyBlY29ub21pY2FsIGFuZCByZWFkYWJsZSBhdCB0aGUgZXhpc3RpbmcgZ2FtZXBsYXkgc3ByaXRlIHNjYWxlLiBQcmVmZXIgYSBmZXcgc3Ryb25nIGtleSBwb3NlcyBhbmQgY2xlYXIgaW1wYWN0IGZyYW1lcyBvdmVyIGNvbXBsZXggbXVsdGktcGFydCBhbmltYXRpb24uCgojIyMgQXBwcm92ZWQgdHJhdmVsLCB2aWN0b3J5IGFuZCBkb3duZWQgc3RhdGVzCgpGb3IgdGhlIE1hcnRpbiBLcnBhbiBzcHJpdGUgcGFjayBpbiBQUiAjMzQsIHRoZSBmb2xsb3dpbmcgcG9zZXMgYXJlIGFwcHJvdmVkOgoKLSAqKlJ1bm5pbmc6KiogYSBmb3VyLWZyYW1lIHJpZ2h0LWZhY2luZyBsb29wIGluIHRoaXMgb3JkZXI6IGxlZnQtZm9vdCBjb250YWN0LCBjb21wcmVzc2lvbiwgcmlnaHQtZm9vdCBjb250YWN0LCBvcHBvc2l0ZSBjb21wcmVzc2lvbi4gS2VlcCB0aGUgc2FsdCBzYWNrIHNlY3VyZWQgYW5kIHRoZSBjdWRnZWwgaW4gaGlzIGV4aXN0aW5nIGhhbmQuCi0gKipWaWN0b3J5OioqIGZvdXIgZnJhbWVzOiBzZXR0bGUgaW50byBhIHBsYW50ZWQgc3RhbmNlLCByYWlzZSBhIGJhcmUgZmlzdCwgaG9sZCBicmllZmx5LCB0aGVuIHJldHVybiB0byBzdGFuY2UuIEtycGFuIGlzIHVuYXJtZWQgdGhyb3VnaG91dCB0aGlzIGdlc3R1cmUuCi0gKipEb3duZWQ6Kiogb25lIHN0YXRpYyBjcm91Y2hlZCBrbmVlbGluZyBwb3NlIHdpdGggb25lIGtuZWUgZG93biwgdGhlIG90aGVyIGJvb3QgcGxhbnRlZCBhbmQgaGlzIGhlYWQgYm93ZWQuIEtlZXAgdGhlIHNhbHQgc2FjayBvbiBoaXMgYmFjayBhbmQgcmVzdCB0aGUgY3VkZ2VsIHRpcC1kb3duIGJlc2lkZSBoaW0uIEJlY2F1c2UgaGUgaXMgY3JvdWNoZWQsIHRoaXMgcG9zZSBpcyBzaG9ydGVyIHRoYW4gdGhlIHN0YW5kaW5nIHNwaXJpdCBzcHJpdGVzIHdoaWxlIGtlZXBpbmcgdGhlIHNhbWUgZ3JvdW5kIGJhc2VsaW5lLgoKVGhlc2UgdGhyZWUgTWFydGluIEtycGFuIHN0YXRlcyBlc3RhYmxpc2ggYSAqKnByb3Bvc2VkIGJlbmNobWFyayoqIGZvciBhIGZ1dHVyZSByb3N0ZXItd2lkZSBzcHJpdGUgY29udmVudGlvbi4gVGhleSBkbyBub3QgYXBwcm92ZSBvciBkZWZpbmUgYXNzZXRzIGZvciBhbnkgb3RoZXIgY2hhcmFjdGVyLiBSdW50aW1lIGFuaW1hdGlvbiBpbnRlZ3JhdGlvbiByZW1haW5zIG9wZW47IHRoZSBjdXJyZW50IHJlbmRlcmVyIG9ubHkgZXhwb3NlcyB0aGUgZXhpc3RpbmcgaWRsZS9hdHRhY2sgc3RyaXAgYW5kIGRvd24tc3RhdGUgZmlsdGVyLgoKIyMjIEZvbGstYXJ0IGlsbHVzdHJhdGlvbiDigJQgS3JwYW4gbGlmdHMgaGlzIG1hcmUKCkNyZWF0ZSBhIHNlcGFyYXRlIHRyYWRpdGlvbmFsIGZvbGstYXJ0IGlsbHVzdHJhdGlvbiBzaG93aW5nIEtycGFuIGxpZnRpbmcgaGlzIG1hcmUgYWJvdmUgaGlzIGhlYWQuIFRoaXMgaXMgYSB2aXN1YWwgcmVwcmVzZW50YXRpb24gb2YgaGlzIGV4dHJhb3JkaW5hcnkgc3RyZW5ndGggYW5kIGEgbGl0ZXJhcnkgZXBpc29kZSBmcm9tIExldnN0aWsncyB0YWxlLgoKLSBUaGUgbWFyZS1saWZ0aW5nIHNjZW5lIGJlbG9uZ3MgaW4gZm9say1hcnQgLyBuYXJyYXRpdmUgYXJ0d29yaywgbm90IGluIHRoZSBLbWXEjWthIG1vxI0gY29tYmF0IGFuaW1hdGlvbi4KLSBEbyBub3QgZGVwaWN0IEtycGFuIHRocm93aW5nIHRoZSBtYXJlIGF0IGFuIGVuZW15LgotIEtlZXAgdGhpcyBzZXBhcmF0ZSBmcm9tIHRoZSBhbHJlYWR5IGNvbmZpcm1lZCBmaW5hbCBzdG9yeS1jYXJkIHN1YmplY3QgYmVsb3cuCi0gVGhlIGV4YWN0IHBsYWNlbWVudCBvZiB0aGlzIGlsbHVzdHJhdGlvbiBpbiB0aGUgZ2FtZSdzIGNvbGxlY3Rpb24gb3IgbmFycmF0aXZlIHByZXNlbnRhdGlvbiBpcyAqKk9QRU4qKi4KCiMjIyBGaW5hbCBzdG9yeSBjYXJkIOKAlCBLcnBhbiBkZWZlYXRzIEJyZGF2cwoKKipDT05GSVJNRUQgc3ViamVjdDoqKiBLcnBhbiBjdW5uaW5nbHkgZGVmZWF0cyBCcmRhdnMsIHVzaW5nIGJvdGggdGhlIGxpbWV3b29kIGN1ZGdlbCAoKmxpcG92IGtpaiopIGFuZCBNZXNhcmljYS4gVGhlIHNjZW5lIHNob3VsZCBjb21tdW5pY2F0ZSB0aGF0IGhpcyB2aWN0b3J5IGNvbWVzIGZyb20gc3RyZW5ndGggYW5kIGNsZXZlciB1c2Ugb2YgdGhlIGN1ZGdlbCwgbm90IHNpbXBseSBmcm9tIG92ZXJwb3dlcmluZyBCcmRhdnMgd2l0aCBhIHN3b3JkLgoKKipDT05GSVJNRUQgdW5sb2NrIGNvbmRpdGlvbjoqKiBLcnBhbiBtdXN0IHN1cnZpdmUgdGhlIGZpbmFsIGVuY291bnRlciBhbmQgYmUgaW4gdGhlIGFjdGl2ZSBwYXJ0eSB3aGVuIHRoZSBmaW5hbCBib3NzIGlzIGRlZmVhdGVkLCBmb2xsb3dpbmcgdGhlIHNoYXJlZCBmaW5hbC1pbGx1c3RyYXRpb24gcnVsZS4KClRoZSBleGFjdCBjb21wb3NpdGlvbiBhbmQgZXhlY3V0aW9uIHdpbGwgYmUgZGV2ZWxvcGVkIGR1cmluZyB0aGUgZnVsbCByb3N0ZXIgYXJ0IHJldmlldy4KCiMjIDYuIE9wZW4gZGVjaXNpb25zCgotIEttZcSNa2EgbW/EjSBSMTogd2hpY2ggZW5lbXkgdGFrZXMgdGhlIHB1bmNoZXMgKHRoZSBnYW1lIHVzZXMgdGhlIG9uZSB0YXJnZXRlZCkuCi0gS21lxI1rYSBtb8SNIFIzOiB3aGljaCBzZWNvbmQgZW5lbXkgdGhlIGJvdWxkZXIgaGl0cyAodGhlIGdhbWUgdXNlcyB0aGUgb25lIGJlc2lkZSB0aGUgdGFyZ2V0KS4KLSBFeGFjdCBwbGFjZW1lbnQgb2YgdGhlIHNlcGFyYXRlIGZvbGstYXJ0IGlsbHVzdHJhdGlvbiBvZiBLcnBhbiBsaWZ0aW5nIGhpcyBtYXJlLgotIEFuaW1hdGlvbiB0aW1pbmcgYW5kIGltcGxlbWVudGF0aW9uIGRldGFpbHMgc2hvdWxkIGZvbGxvdyB0aGUgc2hhcmVkIGNvbWJhdCBydWxlcyBhbmQgYmUgdGVzdGVkIHdpdGhvdXQgY2hhbmdpbmcgdGhlIGNvbmZpcm1lZCBza2lsbCBzdHJ1Y3R1cmUuCgojIyA3LiBTb3VyY2VzIGFuZCBpbnRlcnByZXRhdGlvbiBub3RlcwoKLSBGcmFuIExldnN0aWssIFtNYXJ0aW4gS3JwYW4geiBWcmhhXShodHRwczovL3NsLndpa2lzb3VyY2Uub3JnL3dpa2kvTWFydGluX0tycGFuX3pfVnJoYSksIHRoZSBwcmltYXJ5IGxpdGVyYXJ5IHNvdXJjZSBmb3IgdGhlIGNoYXJhY3RlciBhbmQgdGhlIGVwaXNvZGVzIHN1bW1hcmlzZWQgYWJvdmUuCi0gW1Nsb3ZlbnNrYSBiaW9ncmFmaWphIOKAlCBGcmFuIExldnN0aWtdKGh0dHBzOi8vd3d3LnNsb3ZlbnNrYS1iaW9ncmFmaWphLnNpL29zZWJhL3NiaTMyMjQ1NS8pLCBiaW9ncmFwaGljYWwgY29udGV4dCBmb3IgdGhlIGF1dGhvci4KLSBTY2hvbGFyc2hpcCBvbiB0aGUgcG9zc2libGUgaGlzdG9yaWNhbCBhbmQgZm9sa2xvcmljIGluc3BpcmF0aW9ucyBmb3IgdGhlIHRhbGUgc2hvdWxkIGJlIHRyZWF0ZWQgYXMgaW50ZXJwcmV0YXRpb24gYW5kIGNvbnRleHQsIG5vdCBwcm9vZiB0aGF0IE1hcnRpbiBLcnBhbiB3YXMgYSBoaXN0b3JpY2FsIHBlcnNvbi4KCioqSW50ZXJwcmV0YXRpb24gYm91bmRhcnk6KiogVGhlIGN1ZGdlbCwgTWVzYXJpY2EsIG1hcmUsIHNhbHQgdHJhZGUsIGJvdWxkZXItdGhyb3dpbmcgZ2FtZXBsYXkgc2tpbGwgYW5kIEJyZGF2cyBkdWVsIGJlbG9uZyB0byBkaWZmZXJlbnQgbGF5ZXJzOiB0aGUgY3VkZ2VsLCBzd29yZCwgbWFyZSwgc2FsdCB0cmFkZSBhbmQgZHVlbCBhcmUgaW4gTGV2c3RpaydzIGxpdGVyYXJ5IHRhbGU7IHRoZSBzcGVjaWZpYyBza2lsbCByYW5rcywgY29tYmF0IHRhcmdldHMgYW5kIG51bWVyaWNhbCBlZmZlY3RzIGFyZSBnYW1lIGRlc2lnbi4gVGhlIEttZcSNa2EgbW/EjSBib3VsZGVyIHRocm93IGlzIGEgZ2FtZSBpbnRlcnByZXRhdGlvbjsgdGhlIGVhcmxpZXIgbWFyZS1hbmQtc2Fja3MgYXJ0IGlzIHJldGFpbmVkIG9ubHkgYXMgaGlzdG9yaWNhbCBhcnR3b3JrLCBub3QgYXMgdGhlIGFjdGl2ZSByYW5rLTIgYW5pbWF0aW9uLgo=
+# Martin Krpan
+
+> **Status:** Character identity, role, three-skill structure and final story-card subject CONFIRMED. Skill 1 rank values and Mesarica rank values CONFIRMED. Kmečka moč rank values CONFIRMED by the Game Director on 18 Nov 2026; a few targeting details stay OPEN. Artwork production can proceed from the visual direction below.
+> **Character type:** Slovenian literary hero / literary-folklore figure
+> **Current role:** Starting hero; heavy physical attacker
+> **Current prototype reference:** `src/game.js`, `docs/progression-design.md`
+
+## 1. Character identity
+
+Martin Krpan is the protagonist of Fran Levstik's *Martin Krpan z Vrha*, first published in 1858. He is a central figure in Slovenian literary and cultural memory, but should not be presented as a documented historical person or as a supernatural mythological being.
+
+**CONFIRMED gameplay role:** Heavy physical attacker. Preserve his identity as a physically powerful, practical and resourceful fighter. His strength is paired with ingenuity, especially in the story of his duel with Brdavs.
+
+The Slovene language and cultural identity are important to the literary work. Krpan should not become a generic fantasy barbarian.
+
+## 2. Literary source and defining episodes
+
+The following are events in Levstik's literary tale:
+
+- Krpan is exceptionally strong and transports prohibited English salt from the coast on his mare.
+- His mare is small but exceptionally strong and dependable.
+- He moves the imperial carriage out of the way by lifting or moving his mare.
+- He cuts a linden tree to make a limewood cudgel (*lipov kij*).
+- He makes his unusual sword, Mesarica, himself.
+- In the duel with Brdavs, he uses the softness of the limewood to trap Brdavs's sword before overpowering him.
+- Rather than accept the emperor's daughter or riches, he asks for permission to continue transporting salt.
+
+These are literary source details, not verified biography. Scholarship discusses possible historical and folkloric inspirations, but those inspirations do not make Krpan a confirmed historical individual.
+
+## 3. Skills and combat mechanics
+
+### Skill 1 — Lipov kij
+
+Krpan attacks one enemy with his limewood cudgel (*lipov kij*).
+
+| Rank | Direct damage |
+|---|---:|
+| 1 | 10 |
+| 2 | 16 |
+| 3 | 20 |
+
+Single-target physical damage.
+
+### Skill 2 — Kmečka moč
+
+Kmečka moč represents Krpan's exceptional physical strength. Its three ranks use increasingly spectacular displays of strength.
+
+#### Rank 1 — Dvojni udarec
+
+Krpan delivers two consecutive punches.
+
+- Each punch is a separate hit and resolves separately.
+- **CONFIRMED (Game Director, 18 Nov 2026):** 8 damage per punch, 16 in total.
+- Target handling is **OPEN**. The game aims both punches at the one targeted enemy (implementation reading).
+
+#### Rank 2 — Metanje vreč soli
+
+When rank 2 activates, Martin Krpan starts alone, the salt bags appear in his hands, and he throws them. Do not show bags on the ground or a horse in the skill animation. Keep his established standing spirit scale; this action does not resize his other spirit poses.
+
+- **CONFIRMED (Game Director, 20 Nov 2026):** Krpan starts alone; the salt bags appear in his hands and he throws them. No ground bags or horse appear, and his established spirit size is unchanged.
+- **CONFIRMED (Game Director, 18 Nov 2026):** 20 damage to one target, resolved as one combined attack.
+
+#### Rank 3 — Ogromna skala
+
+Krpan lifts and hurls an enormous boulder.
+
+- The boulder can damage up to two enemies.
+- **CONFIRMED (Game Director, 18 Nov 2026):** 22 damage, split between the two enemies it hits (11 each); a single enemy takes all 22. The game takes the targeted enemy and the one beside it (implementation reading; the even split is the reading of "split").
+- Damage is high, immediate, flat direct damage.
+- This is **not** damage over time and does not apply bleed or another lingering damage status.
+
+### Skill 3 — Mesarica
+
+Krpan draws his legendary sword and uses a precise slash against one enemy. The attack applies bleed damage over time.
+
+| Rank | Direct damage | Bleed damage | Bleed duration | Total bleed |
+|---|---:|---:|---:|---:|
+| 1 | 10 | 2 per second | 2 seconds | 4 |
+| 2 | 14 | 2 per second | 3 seconds | 6 |
+| 3 | 20 | 2 per second | 4 seconds | 8 |
+
+Single-target only. Bleed is a separate damage-over-time status, not part of the immediate direct strike. It follows the shared rule that damage-over-time effects are not reduced by attack interruption.
+
+## 4. Recruitment and progression
+
+- **CONFIRMED / IMPLEMENTED in current progression design:** Martin Krpan is one of the three known starting heroes and can be selected at the beginning of a new journey.
+- Preserve his current starter status unless the Game Director explicitly changes it.
+- Apply the shared hero level and skill-point rules. Use the character-specific rank values above where confirmed; do not invent values for the open Kmečka moč ranks.
+
+## 5. Visual and narrative direction
+
+### Gameplay sprites and skill animations
+
+- Keep Krpan's silhouette grounded in the literary character rather than generic fantasy equipment.
+- Existing prototype cues include a wide hat, moustache, vest and a sack of salt carried on his back.
+- The limewood cudgel and Mesarica are defining objects.
+- **Lipov kij:** a readable, weighty cudgel swing.
+- **Kmečka moč R1:** two clear consecutive fist strikes.
+- **Kmečka moč R2:** Krpan starts alone, then the bags appear in his hands as he prepares to throw them. No bags lie on the ground and no horse appears. His ordinary spirit poses retain their established scale.
+- **Kmečka moč R3:** Krpan throws one enormous boulder. Make the possible two-target impact legible without obscuring the combat UI.
+- **Mesarica:** a strong, precise sword slash with a clear bleed-status cue.
+
+Keep animations economical and readable at the existing gameplay sprite scale. Prefer a few strong key poses and clear impact frames over complex multi-part animation.
+
+### Approved travel, victory and downed states
+
+For the Martin Krpan sprite pack in PR #34, the following poses are approved:
+
+- **Running:** a four-frame right-facing loop in this order: left-foot contact, compression, right-foot contact, opposite compression. Keep the salt sack secured and the cudgel in his existing hand.
+- **Victory:** four frames: settle into a planted stance, raise a bare fist, hold briefly, then return to stance. Krpan is unarmed throughout this gesture.
+- **Downed:** one static crouched kneeling pose with one knee down, the other boot planted and his head bowed. Keep the salt sack on his back and rest the cudgel tip-down beside him. Because he is crouched, this pose is shorter than the standing spirit sprites while keeping the same ground baseline.
+
+These three Martin Krpan states establish a **proposed benchmark** for a future roster-wide sprite convention (`docs/art-benchmarks/hero-sprites/README.md`). They do not approve or define assets for any other character.
+
+**IMPLEMENTED (PR #34, *Kakovost slik = Visoka*):** running loops while the party walks; victory plays once when the last enemy falls; the kneel is held, greyed, while Krpan is down. The skill animations follow §5 above (Lipov kij, Kmečka moč ranks 1–3, Mesarica). The mapping lives in `data/hero-art.json`.
+
+### Folk-art illustration — Krpan lifts his mare
+
+Create a separate traditional folk-art illustration showing Krpan lifting his mare above his head. This is a visual representation of his extraordinary strength and a literary episode from Levstik's tale.
+
+- The mare-lifting scene belongs in folk-art / narrative artwork, not in the Kmečka moč combat animation.
+- Do not depict Krpan throwing the mare at an enemy.
+- Keep this separate from the already confirmed final story-card subject below.
+- The exact placement of this illustration in the game's collection or narrative presentation is **OPEN**.
+
+### Final story card — Krpan defeats Brdavs
+
+**CONFIRMED subject:** Krpan cunningly defeats Brdavs, using both the limewood cudgel (*lipov kij*) and Mesarica. The scene should communicate that his victory comes from strength and clever use of the cudgel, not simply from overpowering Brdavs with a sword.
+
+**CONFIRMED unlock condition:** Krpan must survive the final encounter and be in the active party when the final boss is defeated, following the shared final-illustration rule.
+
+The exact composition and execution will be developed during the full roster art review.
+
+## 6. Open decisions
+
+- Kmečka moč R1: which enemy takes the punches (the game uses the one targeted).
+- Kmečka moč R3: which second enemy the boulder hits (the game uses the one beside the target).
+- Exact placement of the separate folk-art illustration of Krpan lifting his mare.
+- Animation timing and implementation details should follow the shared combat rules and be tested without changing the confirmed skill structure.
+
+## 7. Sources and interpretation notes
+
+- Fran Levstik, [Martin Krpan z Vrha](https://sl.wikisource.org/wiki/Martin_Krpan_z_Vrha), the primary literary source for the character and the episodes summarised above.
+- [Slovenska biografija — Fran Levstik](https://www.slovenska-biografija.si/oseba/sbi322455/), biographical context for the author.
+- Scholarship on the possible historical and folkloric inspirations for the tale should be treated as interpretation and context, not proof that Martin Krpan was a historical person.
+
+**Interpretation boundary:** The cudgel, Mesarica, mare, salt trade, boulder-throwing gameplay skill and Brdavs duel belong to different layers: the cudgel, sword, mare, salt trade and duel are in Levstik's literary tale; the specific skill ranks, combat targets and numerical effects are game design. The Kmečka moč boulder throw is a game interpretation; the earlier mare-and-sacks art is retained only as historical artwork, not as the active rank-2 animation.

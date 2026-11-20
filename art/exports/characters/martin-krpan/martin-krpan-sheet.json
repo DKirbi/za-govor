@@ -1,1 +1,43 @@
-ewogImZyYW1lIjogNDgsCiAiY29scyI6IDQsCiAicm93cyI6IDksCiAic2VxcyI6IHsKICAiaWRsZSI6IHsKICAgInJvdyI6IDAsCiAgICJmcmFtZXMiOiA0CiAgfSwKICAiY3VkZ2VsLXN0cmlrZSI6IHsKICAgInJvdyI6IDEsCiAgICJmcmFtZXMiOiA0CiAgfSwKICAia21lY2thLW1vYy1yMS1kb3VibGUtcHVuY2giOiB7CiAgICJyb3ciOiAyLAogICAiZnJhbWVzIjogNAogIH0sCiAgImttZWNrYS1tb2MtcjItc2FsdC1iYWctdGhyb3ciOiB7CiAgICJyb3ciOiAzLAogICAiZnJhbWVzIjogNAogIH0sCiAgImttZWNrYS1tb2MtcjMtYm91bGRlciI6IHsKICAgInJvdyI6IDQsCiAgICJmcmFtZXMiOiA0CiAgfSwKICAibWVzYXJpY2Etc2xhc2giOiB7CiAgICJyb3ciOiA1LAogICAiZnJhbWVzIjogNAogIH0sCiAgInJ1bm5pbmciOiB7CiAgICJyb3ciOiA2LAogICAiZnJhbWVzIjogNAogIH0sCiAgInZpY3RvcnkiOiB7CiAgICJyb3ciOiA3LAogICAiZnJhbWVzIjogNAogIH0sCiAgImRvd25lZCI6IHsKICAgInJvdyI6IDgsCiAgICJmcmFtZXMiOiAxCiAgfQogfQp9Cg==
+{
+ "frame": 48,
+ "cols": 4,
+ "rows": 9,
+ "seqs": {
+  "idle": {
+   "row": 0,
+   "frames": 4
+  },
+  "cudgel-strike": {
+   "row": 1,
+   "frames": 4
+  },
+  "kmecka-moc-r1-double-punch": {
+   "row": 2,
+   "frames": 4
+  },
+  "kmecka-moc-r2-salt-bag-throw": {
+   "row": 3,
+   "frames": 4
+  },
+  "kmecka-moc-r3-boulder": {
+   "row": 4,
+   "frames": 4
+  },
+  "mesarica-slash": {
+   "row": 5,
+   "frames": 4
+  },
+  "running": {
+   "row": 6,
+   "frames": 4
+  },
+  "victory": {
+   "row": 7,
+   "frames": 4
+  },
+  "downed": {
+   "row": 8,
+   "frames": 1
+  }
+ }
+}

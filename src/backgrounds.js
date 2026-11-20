@@ -1,1 +1,140 @@
-Ly8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09IGJhY2tncm91bmQgdmFyaWFudHMgZm9yIEEvQiB0ZXN0cwovLyBkYXRhL2JhY2tncm91bmRzLmpzb24gbmFtZXMgdGhlIHJlZ2lvbiBiYWNrZ3JvdW5kcyBiZWluZyBjb21wYXJlZC4gVmFyaWFudCBBIGlzIGFsd2F5cyB0aGUgYXJ0IGluIHVzZSAoQkcsIGZyb20KLy8gdG9vbHMvYXJ0X2V4dHJhLnB5KSwgZHJhd24gZXhhY3RseSBhcyBiZWZvcmUuIEEgcGFjayB2YXJpYW50IGlzIGEgbGF5ZXJlZCBwYXJhbGxheCBiYWNrZ3JvdW5kOiBpdHMgZmlsZXMsIHNpemVzCi8vIGFuZCBiYWNrLXRvLWZyb250IG9yZGVyIGNvbWUgZnJvbSB0aGUgcGFjaydzIG1hbmlmZXN0IChhcnQvbWFuaWZlc3RzLzxwYWNrPi5qc29uLCBieSB0aGUgYXJ0J3MgYXV0aG9yKSwgYW5kCi8vIGJ1aWxkLnB5IGJ1aWxkcyBpdCBpbiBvbmx5IHdoZW4gZXZlcnkgbGF5ZXIgZmlsZSBpcyBjb21taXR0ZWQuIFVudGlsIHRoZW4gb25seSBBIGV4aXN0cyBhbmQgbm90aGluZyBjaGFuZ2VzLgovLyBXaGljaCB2YXJpYW50IGEgcGxheWVyIHNlZXM6Ci8vICAgP296YWRqZT1BIG9yID9vemFkamU9QiBpbiB0aGUgYWRkcmVzczogdGhhdCBvbmUsIGZvciB0aGlzIHZpc2l0IChhIHByZXZpZXc7IHRoZSBzdGF0aXN0aWNzIG1hcmsgaXQpCi8vICAgYSB0ZXN0IHdpdGggImxpdmUiOiB0cnVlOiBvbmUgdmFyaWFudCBwZXIgaW5zdGFsbCwgZHJhd24gYnkgInNoYXJlIiBhbmQga2VwdCBpbiBsb2NhbFN0b3JhZ2UgemctYWIKLy8gICBvdGhlcndpc2U6IEEKLy8gVGhlIHZhcmlhbnQgZ29lcyBpbnRvIHRoZSB0ZXN0ZXIgc3RhdGlzdGljcyAoc3JjL3N0YXRzLmpzKSwgc28gdGhlIHJvd3Mgb2YgQSBhbmQgQiBjYW4gYmUgY29tcGFyZWQuCmNvbnN0IEJHWCA9ICgoKSA9PiB7IHRyeSB7IGNvbnN0IHYgPSBKU09OLnBhcnNlKCQoJyNiZ2RhdGEnKS50ZXh0Q29udGVudCk7IHJldHVybiB7IHRlc3RzOiB2LnRlc3RzIHx8IHt9LCBwYWNrczogdi5wYWNrcyB8fCB7fSwgaGVyb2VzOiB2Lmhlcm9lcyB8fCB7fSB9OyB9IGNhdGNoIChlKSB7IHJldHVybiB7IHRlc3RzOiB7fSwgcGFja3M6IHt9LCBoZXJvZXM6IHt9IH07IH0gfSkoKTsKY29uc3QgQUJfS0VZID0gJ3pnLWFiJzsKY29uc3QgQUIgPSAoKCkgPT4geyB0cnkgeyBjb25zdCB2ID0gSlNPTi5wYXJzZShsb2NhbFN0b3JhZ2UuZ2V0SXRlbShBQl9LRVkpIHx8ICd7fScpOyByZXR1cm4gdiAmJiB0eXBlb2YgdiA9PT0gJ29iamVjdCcgJiYgIUFycmF5LmlzQXJyYXkodikgPyB2IDoge307IH0gY2F0Y2ggKGUpIHsgcmV0dXJuIHt9OyB9IH0pKCk7CmxldCBiZ0ZvcmNlID0gKCgpID0+IHsgdHJ5IHsgY29uc3QgdiA9IChuZXcgVVJMU2VhcmNoUGFyYW1zKGxvY2F0aW9uLnNlYXJjaCkuZ2V0KCdvemFkamUnKSB8fCAnJykudG9VcHBlckNhc2UoKTsgcmV0dXJuIC9eW0EtWl0kLy50ZXN0KHYpID8gdiA6IG51bGw7IH0gY2F0Y2ggKGUpIHsgcmV0dXJuIG51bGw7IH0gfSkoKTsKLy8gTmFzdGF2aXR2ZSDihpIgUmF6dm9qIOKGkiBLYWtvdm9zdCBzbGlrOiAnYXV0bycgKHRoZSBkZWZhdWx0KSBsZWF2ZXMgdGhlIGNob2ljZSB0byB0aGUgQS9CIHRlc3QsIGFzIGJlZm9yZS4gJ2hpZ2gnIHNob3dzIHRoZQovLyBDb2RleCBwYXJhbGxheCBwYWNrIG9mIHRoZSBzdW5zZXQgKEIpIHdoZXJlIHRoZSB0ZXN0IHdvdWxkIHNob3cgQS4gJ2xvdycgc2hvd3MgdGhlIHBpY3R1cmUgYWxyZWFkeSBpbiB0aGUgZ2FtZSAoQSkKLy8gd2hlcmUgdGhlIHRlc3Qgd291bGQgc2hvdyB0aGUgc3Vuc2V0IChCKS4gV2ludGVyIChEKSBoYXMgbm8gbG93IHBpY3R1cmUgeWV0LCBzbyBpdCBzdGF5cyBoaWdoLiBNYXJ0aW4gS3JwYW4gZm9sbG93cyB0aGUKLy8gc2FtZSBjaG9pY2UsIGJ1dCBvbmx5ICdoaWdoJyBjaGFuZ2VzIGhpbSAoc2VlIGJlbG93KTsgJ2F1dG8nIGFuZCAnbG93JyBrZWVwIHRoZSBzcHJpdGUgYWxyZWFkeSBpbiB0aGUgZ2FtZS4KY29uc3QgRklEX0tFWSA9ICd6Zy1maWRlbGl0eSc7CmNvbnN0IGZpZGVsaXR5ID0gKCkgPT4geyB0cnkgeyBjb25zdCB2ID0gbG9jYWxTdG9yYWdlLmdldEl0ZW0oRklEX0tFWSk7IHJldHVybiB2ID09PSAnaGlnaCcgfHwgdiA9PT0gJ2xvdycgPyB2IDogJ2F1dG8nOyB9IGNhdGNoIChlKSB7IHJldHVybiAnYXV0byc7IH0gfTsKY29uc3Qgc2V0RmlkZWxpdHkgPSB2ID0+IHsgdHJ5IHsgaWYgKHYgPT09ICdoaWdoJyB8fCB2ID09PSAnbG93JykgbG9jYWxTdG9yYWdlLnNldEl0ZW0oRklEX0tFWSwgdik7IGVsc2UgbG9jYWxTdG9yYWdlLnJlbW92ZUl0ZW0oRklEX0tFWSk7IH0gY2F0Y2ggKGUpIHsgLyogbm8gc3RvcmFnZSAqLyB9IGFwcGx5SGVyb0ZpZGVsaXR5KCk7IH07CmNvbnN0IGJnUGFjayA9IChrZXksIHYpID0+IHsgY29uc3QgdCA9IEJHWC50ZXN0c1trZXldLCBpZCA9IHQgJiYgdC52YXJpYW50cyAmJiB0LnZhcmlhbnRzW3ZdOyByZXR1cm4gaWQgPyBCR1gucGFja3NbaWRdIHx8IG51bGwgOiBudWxsOyB9Owpjb25zdCBiZ1JlYWR5ID0gKGtleSwgdikgPT4gdiA9PT0gJ0EnIHx8ICEhYmdQYWNrKGtleSwgdik7CmNvbnN0IGJnRm9yY2VkID0ga2V5ID0+ICEhKGJnRm9yY2UgJiYgQkdYLnRlc3RzW2tleV0gJiYgYmdSZWFkeShrZXksIGJnRm9yY2UpKTsKLy8gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSBNYXJ0aW4gS3JwYW4gaW4gVmlzb2thIChDb2RleCdzIHBhY2ssIGFydC9tYW5pZmVzdHMvbWFydGluLWtycGFuLmpzb24pCi8vIEJHWC5oZXJvZXMua3JwYW4gKGJ1aWxkLnB5KTogYHN0cmlwYCBpcyB0aGUgOTbDlzQ4IGlkbGUgfCBhdHRhY2sgcGljdHVyZSwgd2hpY2ggcmVwbGFjZXMgU1BSSVRFUy5rcnBhbiBzbyBldmVyeSBjYXJkLCBwb3J0cmFpdAovLyBhbmQgdGhlIGNvZGV4IHNob3dzIGhpbTsgYHNoZWV0YCBob2xkcyB0aGUgZnJhbWVzLCBvbmUgcm93IGEgc2VxdWVuY2UgKHRvb2xzL2FydF9rcnBhbl9zaGVldC5weSksIHdoaWNoIHRoZSBiYXR0bGUsIHRoZSByb2FkCi8vIGFuZCB0aGUgaGVybyBzY3JlZW5zIHBsYXkgKGdhbWUuY3NzIC5zcHIuaGkpLiBUaGUgc2tpbGxzIGZvbGxvdyB0aGUgcmV2aXNlZCBzcGVjaWZpY2F0aW9uIChkb2NzL2NoYXJhY3RlcnMvbWFydGluLWtycGFuKToKLy8gc2tpbGwgMSBMaXBvdiBraWosIHNraWxsIDIgS21lxI1rYSBtb8SNIHdpdGggcmFuayAxLCAyLCAzID0gdHdvIHB1bmNoZXMsIHNvbG8gc2FsdC1iYWcgdGhyb3csIGJvdWxkZXIsIHNraWxsIDMgTWVzYXJpY2EuCi8vIFJ1bm5pbmcgYW5kIHZpY3RvcnkgZnJhbWVzIGFyZSBub3QgZGVsaXZlcmVkIHlldDogdGhlIHJvYWQgYW5kIHRoZSB2aWN0b3J5IHVzZSBhIGhvcCBpbiBwbGFjZSAoZ2FtZS5jc3MgaG9wKS4KY29uc3QgSEVST19TRVEgPSB7IGtycGFuOiB7IGlkbGU6ICdpZGxlJywgMTogWydjdWRnZWwtc3RyaWtlJ10sIDI6IFsna21lY2thLW1vYy1yMS1kb3VibGUtcHVuY2gnLCAna21lY2thLW1vYy1yMi1zYWx0LWJhZy10aHJvdycsICdrbWVja2EtbW9jLXIzLWJvdWxkZXInXSwgMzogWydtZXNhcmljYS1zbGFzaCddIH0gfTsKY29uc3QgaGVyb0hpID0gaWQgPT4gZmlkZWxpdHkoKSA9PT0gJ2hpZ2gnICYmICEhQkdYLmhlcm9lc1tpZF07CmNvbnN0IEhFUk9fTE9XID0ge307ICAgLy8gdGhlIHNwcml0ZXMgYWxyZWFkeSBpbiB0aGUgZ2FtZSwgdG8gZ28gYmFjayB0bwpmdW5jdGlvbiBhcHBseUhlcm9GaWRlbGl0eSgpIHsgT2JqZWN0LmtleXMoQkdYLmhlcm9lcykuZm9yRWFjaChpZCA9PiB7IGlmICghKGlkIGluIEhFUk9fTE9XKSkgSEVST19MT1dbaWRdID0gU1BSSVRFU1tpZF07IFNQUklURVNbaWRdID0gaGVyb0hpKGlkKSA/IEJHWC5oZXJvZXNbaWRdLnN0cmlwIDogSEVST19MT1dbaWRdOyB9KTsgfQovLyB0aGUgc2hlZXQgcm93IGZvciBza2lsbCBgdGllcmAgYXQgYHJhbmtgICgx4oCTMyksIG9yIG51bGwgd2hlbiB0aGUgaGVybyBoYXMgbm8gZnJhbWVzIGZvciBpdApmdW5jdGlvbiBoZXJvU2VxUm93KGlkLCB0aWVyLCByYW5rKSB7CiAgY29uc3QgSCA9IEJHWC5oZXJvZXNbaWRdLCBsaXN0ID0gSEVST19TRVFbaWRdICYmIEhFUk9fU0VRW2lkXVt0aWVyXTsKICBjb25zdCBzID0gSCAmJiBsaXN0ICYmIEguc2Vxc1tsaXN0W01hdGgubWluKGxpc3QubGVuZ3RoLCBNYXRoLm1heCgxLCArcmFuayB8fCAxKSkgLSAxXV07CiAgcmV0dXJuIHMgPyBzLnJvdyA6IG51bGw7Cn0KLy8gVGhlIHZhcmlhbnQgdGhlIGZpZGVsaXR5IGNob2ljZSBzaG93cyBpbiBwbGFjZSBvZiB2ICh0aGUgdGVzdCdzIG9yIHRoZSBhZGRyZXNzJ3MpLiBXaW50ZXIgKEQpIGFuZCB0aGUgcHJldmlldyBDIHN0YXkgYXMgY2hvc2VuLgpjb25zdCBmaWRWYXJpYW50ID0gKGtleSwgdikgPT4gewogIGNvbnN0IGYgPSBmaWRlbGl0eSgpOwogIGlmIChmID09PSAnbG93JyAmJiB2ID09PSAnQicpIHJldHVybiAnQSc7CiAgaWYgKGYgPT09ICdoaWdoJyAmJiB2ID09PSAnQScgJiYgYmdSZWFkeShrZXksICdCJykpIHJldHVybiAnQic7CiAgcmV0dXJuIHY7Cn07CmZ1bmN0aW9uIGJnRHJhdyhzaGFyZSwgdnMpIHsKICBjb25zdCB3ID0gdnMubWFwKHYgPT4gTWF0aC5tYXgoMCwgKygoc2hhcmUgfHwge30pW3ZdKSB8fCAwKSksIHN1bSA9IHcucmVkdWNlKChhLCBiKSA9PiBhICsgYiwgMCk7CiAgaWYgKCFzdW0pIHJldHVybiB2c1tybmQodnMubGVuZ3RoKV07CiAgbGV0IHIgPSBNYXRoLnJhbmRvbSgpICogc3VtOwogIGZvciAobGV0IGkgPSAwOyBpIDwgdnMubGVuZ3RoOyBpKyspIHsgciAtPSB3W2ldOyBpZiAociA8IDApIHJldHVybiB2c1tpXTsgfQogIHJldHVybiB2c1t2cy5sZW5ndGggLSAxXTsKfQpmdW5jdGlvbiBiZ1Rlc3RWYXJpYW50KGtleSkgewogIGNvbnN0IHQgPSBCR1gudGVzdHNba2V5XTsKICBpZiAoIXQpIHJldHVybiAnQSc7CiAgaWYgKGJnRm9yY2VkKGtleSkpIHJldHVybiBiZ0ZvcmNlOwogIGlmICghdC5saXZlKSByZXR1cm4gJ0EnOwogIGNvbnN0IHZzID0gWydBJywgLi4uT2JqZWN0LmtleXModC52YXJpYW50cyB8fCB7fSldOwogIGlmICghdnMuZXZlcnkodiA9PiBiZ1JlYWR5KGtleSwgdikpKSByZXR1cm4gJ0EnOyAgIC8vIGEgdmFyaWFudCBtaXNzaW5nIGZyb20gdGhlIGJ1aWxkOiB0aGUgdGVzdCBpcyBub3QgcnVubmluZywgbm9ib2R5IGlzIGFzc2lnbmVkCiAgaWYgKCF2cy5pbmNsdWRlcyhBQltrZXldKSkgeyBBQltrZXldID0gYmdEcmF3KHQuc2hhcmUsIHZzKTsgdHJ5IHsgbG9jYWxTdG9yYWdlLnNldEl0ZW0oQUJfS0VZLCBKU09OLnN0cmluZ2lmeShBQikpOyB9IGNhdGNoIChlKSB7IC8qIG5vIHN0b3JhZ2U6IGRyYXduIGFnYWluIG5leHQgdmlzaXQgKi8gfSB9CiAgcmV0dXJuIEFCW2tleV07Cn0KY29uc3QgYmdWYXJpYW50ID0ga2V5ID0+IGZpZFZhcmlhbnQoa2V5LCBiZ1Rlc3RWYXJpYW50KGtleSkpOwovLyBmb3Igc3JjL3N0YXRzLmpzOiBvemFkamUtcHR1aj1CLCBvciBCKHByZWRvZ2xlZCkgd2hlbiB0aGUgYWRkcmVzcyBjaG9zZSBpdApjb25zdCBiZ1N0YXRUYWdzID0gKCkgPT4gT2JqZWN0LmtleXMoQkdYLnRlc3RzKS5tYXAoayA9PiBgb3phZGplLSR7a309JHtiZ1ZhcmlhbnQoayl9JHtiZ0ZvcmNlZChrKSA/ICcocHJlZG9nbGVkKScgOiAnJ31gKTsKCmFwcGx5SGVyb0ZpZGVsaXR5KCk7CmNvbnN0IGJnTW90aW9uID0gKCkgPT4gISh3aW5kb3cubWF0Y2hNZWRpYSAmJiBtYXRjaE1lZGlhKCcocHJlZmVycy1yZWR1Y2VkLW1vdGlvbjogcmVkdWNlKScpLm1hdGNoZXMpOwovLyBUaGUgcGFjaydzIGxheWVycyBpbiBhIHNjZW5lICh0cmF2ZWwsIGJhdHRsZSwgZ2FsbGVyeSksIG9yIG51bGwgZm9yIHZhcmlhbnQgQSwgd2hvc2Ugc2NlbmUga2VlcHMgaXRzIG9uZSBiYWNrZ3JvdW5kLgovLyBMYXllcnMgYmVoaW5kIHRoZSBhY3RvcnMgZ28gZmlyc3QsIHVuZGVyIHRoZSBzYW1lIGRpbW1pbmcgdmFyaWFudCBBIGdldHMgaW4gdGhhdCBzY2VuZTsgYSBmb3JlZ3JvdW5kIGxheWVyIGdvZXMKLy8gaW4gZnJvbnQgb2YgdGhlIGFjdG9ycyBidXQgdW5kZXIgdGhlIGJhdHRsZSBVSSAoZ2FtZS5jc3M6IC5zY2VuZS5wYmcpLgpmdW5jdGlvbiBiZ0xheWVycyhzY2VuZSwga2V5LCB3aGVyZSkgewogIGNvbnN0IHYgPSBiZ1ZhcmlhbnQoa2V5KSwgUCA9IHYgPT09ICdBJyA/IG51bGwgOiBiZ1BhY2soa2V5LCB2KTsKICBpZiAoIVAgfHwgIXNjZW5lKSByZXR1cm4gbnVsbDsKICBjb25zdCBlbHMgPSBQLmxheWVycy5tYXAoTCA9PiBoKCdpJywgeyBjbGFzczogJ3BiZy1sJyArIChMLnRpbGVYID8gJyB0eCcgOiAnJykgKyAoTC5mcm9udCA/ICcgZnJvbnQnIDogJycpLCAnZGF0YS1sYXllcic6IEwuaWQsICdhcmlhLWhpZGRlbic6ICd0cnVlJywKICAgIHN0eWxlOiB7ICdiYWNrZ3JvdW5kLWltYWdlJzogYHVybCgke0wuc3JjfSlgIH0gfSkpOwogIGNvbnN0IGJhY2sgPSBlbHMuZmlsdGVyKChlbCwgaSkgPT4gIVAubGF5ZXJzW2ldLmZyb250KSwgZnJvbnQgPSBlbHMuZmlsdGVyKChlbCwgaSkgPT4gUC5sYXllcnNbaV0uZnJvbnQpOwogIGNvbnN0IGRpbSA9IHsgYmF0dGxlOiAnbGluZWFyLWdyYWRpZW50KHJnYmEoMTQsMTYsMjYsLjM2KSwgcmdiYSgxNCwxNiwyNiwuMTYpKScsIHRyYXZlbDogJ2xpbmVhci1ncmFkaWVudChyZ2JhKDE0LDE2LDI2LC4yKSwgcmdiYSgxNCwxNiwyNiwuMDUpKScgfVt3aGVyZV07CiAgc2NlbmUuc3R5bGUucmVtb3ZlUHJvcGVydHkoJ2JhY2tncm91bmQtaW1hZ2UnKTsKICBzY2VuZS5jbGFzc0xpc3QuYWRkKCdwYmcnKTsgc2NlbmUuY2xhc3NMaXN0LnRvZ2dsZSgncGJnLW5vcm9hZCcsICEhUC5oaWRlUm9hZCk7CiAgc2NlbmUucHJlcGVuZCguLi5iYWNrLCAuLi4oZGltID8gW2goJ2knLCB7IGNsYXNzOiAncGJnLWRpbScsICdhcmlhLWhpZGRlbic6ICd0cnVlJywgc3R5bGU6IHsgJ2JhY2tncm91bmQtaW1hZ2UnOiBkaW0gfSB9KV0gOiBbXSkpOwogIHNjZW5lLmFwcGVuZCguLi5mcm9udCk7CiAgY29uc3QgTSA9IHsga2V5LCB2LCBQLCBlbHMsIHNjZW5lLCB3aGVyZSwgc2l6ZTogJycgfTsKICBpZiAod2hlcmUgIT09ICd0cmF2ZWwnKSB7IGJnUGxhY2UoTSwgbnVsbCwgMCwgcGVyZm9ybWFuY2Uubm93KCkpOyBCR19TVElMTC5hZGQoTSk7IH0gICAvLyB0aGUgcm9hZCBwbGFjZXMgaXRzIGxheWVycyBpbiBsYXlvdXRUcmF2ZWwKICByZXR1cm4gTTsKfQovLyBXaGVyZSBlYWNoIGxheWVyJ3MgcGljdHVyZSBzaXRzLiBUaGUgcGFjaydzIGNhbnZhcyBpcyBmaXR0ZWQgdG8gdGhlIHNjZW5lOiB0byBpdHMgaGVpZ2h0LCBvciB0byBpdHMgd2lkdGggd2hlbiB0aGUKLy8gc2NlbmUgaXMgd2lkZXIgdGhhbiB0aGUgY2FudmFzIChhIHNob3J0IHdpbmRvdyksIHRoZW4ga2VwdCBvbiB0aGUgc2NlbmUncyBib3R0b20sIHdoZXJlIHRoZSBhY3RvcnMgc3RhbmQuIEV2ZXJ5Ci8vIGxheWVyIGlzIHJlZ2lzdGVyZWQgb24gdGhhdCBjYW52YXMgKHgsIHkgYW5kIGl0cyBvd24gc2NhbGUsIGluIGNhbnZhcyBwaXhlbHMpIGFuZCB0aGUgY2FudmFzIGlzIGNlbnRyZWQsIGFzIGluIGJhdHRsZS4KLy8gY2FtWCA9IGhvdyBmYXIgdGhlIHdhbGsgaGFzIGdvbmUgaW4gQ1NTIHBpeGVscyAodHJhdmVsKTogYSB0aWxpbmcgbGF5ZXIgc2Nyb2xscyBjYW1YIMOXIGl0cyBzcGVlZDsgYSBsYXllciB0aGF0IGRvZXMKLy8gbm90IHRpbGUgcGFucyBvbmNlIGFjcm9zcyB0aGUgcmVnaW9uIHdpdGggcHJvZ3Jlc3MsIGZyb20gdGhlIGNlbnRyZSB0b3dhcmRzIGl0cyByaWdodCBlZGdlIMOXIGl0cyBwYW4gKDEgPSBhbGwgdGhlCi8vIHdheSksIHNvIGl0IG5ldmVyIHNob3dzIGFuIGVkZ2UuIGNhbVggbnVsbCA9IGEgc3RpbGwgc2NlbmUgKGJhdHRsZSwgZ2FsbGVyeSkuIEEgcGljdHVyZSBkcmF3biBhdCBsZWFzdCBhdCBpdHMgb3duCi8vIHNpemUga2VlcHMgaGFyZCBwaXhlbCBlZGdlcyAocGl4ZWwgYXJ0KTsgYSBsYXJnZXIgcGljdHVyZSBzaHJ1bmsgdG8gdGhlIHNjZW5lIGlzIHNtb290aGVkIGluc3RlYWQgb2YgYWxpYXNlZC4KZnVuY3Rpb24gYmdQbGFjZShNLCBjYW1YLCBwcm9ncmVzcywgbm93KSB7CiAgY29uc3Qgc2MgPSBNLnNjZW5lLCBXID0gc2MuY2xpZW50V2lkdGgsIEggPSBzYy5jbGllbnRIZWlnaHQ7CiAgaWYgKCFIIHx8ICFXKSByZXR1cm47CiAgY29uc3QgUCA9IE0uUCwgcyA9IE1hdGgubWF4KEggLyBQLmNhbnZhcy5oLCBXIC8gUC5jYW52YXMudyksIGN3ID0gUC5jYW52YXMudyAqIHMsIGMwID0gKFcgLSBjdykgLyAyLCBveSA9IEggLSBQLmNhbnZhcy5oICogczsKICBjb25zdCB0ID0gYmdNb3Rpb24oKSA/IG5vdyAvIDEwMDAgOiAwOwogIE0uc2l6ZSA9IFcgKyAneCcgKyBIOwogIE0uZWxzLmZvckVhY2goKGVsLCBpKSA9PiB7CiAgICBjb25zdCBMID0gUC5sYXllcnNbaV0sIGsgPSBMLnNjYWxlIHx8IDEsIHR3ID0gTWF0aC5yb3VuZChMLncgKiBrICogcyk7ICAgLy8gdGhlIHRpbGUgYXMgdGhlIGJyb3dzZXIgcmVwZWF0cyBpdAogICAgbGV0IHggPSBjYW1YID09IG51bGwgPyBjMCA6IEwudGlsZVggPyBjMCAtIGNhbVggKiBMLnNwZWVkIDogYzAgLSBNYXRoLm1heCgwLCBjdyAtIFcpIC8gMiAqIGNsYW1wKHByb2dyZXNzLCAwLCAxKSAqIChMLnBhbiA9PSBudWxsID8gMSA6IEwucGFuKTsKICAgIHggKz0gTC54ICogczsKICAgIGlmIChMLnRpbGVYKSB7IHggLT0gTC5kcmlmdCAqIHMgKiB0OyB4ID0gKCh4ICUgdHcpICsgdHcpICUgdHcgLSB0dzsgfSAgIC8vIHRoZSBzYW1lIHRpbGUsIGtlcHQgbmVhciB6ZXJvIHNvIHRoZSBudW1iZXJzIHN0YXkgc21hbGwKICAgIGVsLnN0eWxlLmJhY2tncm91bmRTaXplID0gYCR7dHd9cHggJHtNYXRoLnJvdW5kKEwuaCAqIGsgKiBzKX1weGA7CiAgICBlbC5zdHlsZS5iYWNrZ3JvdW5kUG9zaXRpb24gPSBgJHtNYXRoLnJvdW5kKHgpfXB4ICR7TWF0aC5yb3VuZChveSArIEwueSAqIHMpfXB4YDsKICAgIGVsLnN0eWxlLmltYWdlUmVuZGVyaW5nID0gayAqIHMgPj0gMSA/ICdwaXhlbGF0ZWQnIDogJ2F1dG8nOwogIH0pOwp9Ci8vIHN0aWxsIHNjZW5lcyBhcmUgcGxhY2VkIGFnYWluIHdoZW4gdGhlaXIgc2l6ZSBjaGFuZ2VzIChmaXQgdG8gc2NyZWVuLCByb3RhdGluZyBhIHBob25lKSBhbmQsIHdpdGggZHJpZnRpbmcgbGF5ZXJzLCBldmVyeSBmcmFtZQpjb25zdCBCR19TVElMTCA9IG5ldyBTZXQoKTsKKGZ1bmN0aW9uIGJnRnJhbWUobm93KSB7CiAgQkdfU1RJTEwuZm9yRWFjaChNID0+IHsKICAgIGlmICghTS5zY2VuZS5pc0Nvbm5lY3RlZCkgeyBCR19TVElMTC5kZWxldGUoTSk7IHJldHVybjsgfQogICAgY29uc3QgZHJpZnRzID0gYmdNb3Rpb24oKSAmJiBNLlAubGF5ZXJzLnNvbWUoTCA9PiBMLnRpbGVYICYmIEwuZHJpZnQpOwogICAgaWYgKGRyaWZ0cyB8fCBNLnNpemUgIT09IE0uc2NlbmUuY2xpZW50V2lkdGggKyAneCcgKyBNLnNjZW5lLmNsaWVudEhlaWdodCkgYmdQbGFjZShNLCBudWxsLCAwLCBub3cpOwogIH0pOwogIHJlcXVlc3RBbmltYXRpb25GcmFtZShiZ0ZyYW1lKTsKfSkocGVyZm9ybWFuY2Uubm93KCkpOwovLyBMaWtpIGluIGthcnRlIOKGkiBPemFkamE6IGVhY2ggYnVpbHQgcGFjayB2YXJpYW50IG5leHQgdG8gdGhlIHBpY3R1cmVzIG9mIHZhcmlhbnQgQQpmdW5jdGlvbiBiZ0dhbGxlcnlGaWd1cmVzKCkgewogIGNvbnN0IG91dCA9IFtdOwogIE9iamVjdC5lbnRyaWVzKEJHWC50ZXN0cykuZm9yRWFjaCgoW2tleSwgdF0pID0+IE9iamVjdC5rZXlzKHQudmFyaWFudHMgfHwge30pLmZvckVhY2godiA9PiB7CiAgICBjb25zdCBQID0gYmdQYWNrKGtleSwgdik7IGlmICghUCkgcmV0dXJuOwogICAgY29uc3QgYm94ID0gaCgnZGl2JywgeyBjbGFzczogJ2dwYmcnLCBzdHlsZTogeyAnYXNwZWN0LXJhdGlvJzogYCR7UC5jYW52YXMud30gLyAke1AuY2FudmFzLmh9YCB9IH0pOwogICAgY29uc3QgTSA9IHsga2V5LCB2LCBQLCBlbHM6IFtdLCBzY2VuZTogYm94LCB3aGVyZTogJ2dhbGxlcnknLCBzaXplOiAnJyB9OwogICAgTS5lbHMgPSBQLmxheWVycy5tYXAoTCA9PiBoKCdpJywgeyBjbGFzczogJ3BiZy1sJyArIChMLnRpbGVYID8gJyB0eCcgOiAnJyksICdkYXRhLWxheWVyJzogTC5pZCwgc3R5bGU6IHsgJ2JhY2tncm91bmQtaW1hZ2UnOiBgdXJsKCR7TC5zcmN9KWAgfSB9KSk7CiAgICBib3guYXBwZW5kKC4uLk0uZWxzKTsgQkdfU1RJTEwuYWRkKE0pOwogICAgb3V0LnB1c2goaCgnZmlndXJlJywge30sIGJveCwgYCR7UC5uYW1lfSDigJQgcmF6bGnEjWljYSAke3Z9JHtQLnN0YXR1cyA9PT0gJ2FwcHJvdmVkJyA/ICcnIDogJyAodiBwcmVnbGVkdSknfWApKTsKICB9KSk7CiAgcmV0dXJuIG91dDsKfQo=
+// ============================================================ background variants for A/B tests
+// data/backgrounds.json names the region backgrounds being compared. Variant A is always the art in use (BG, from
+// tools/art_extra.py), drawn exactly as before. A pack variant is a layered parallax background: its files, sizes
+// and back-to-front order come from the pack's manifest (art/manifests/<pack>.json, by the art's author), and
+// build.py builds it in only when every layer file is committed. Until then only A exists and nothing changes.
+// Which variant a player sees:
+//   ?ozadje=A or ?ozadje=B in the address: that one, for this visit (a preview; the statistics mark it)
+//   a test with "live": true: one variant per install, drawn by "share" and kept in localStorage zg-ab
+//   otherwise: A
+// The variant goes into the tester statistics (src/stats.js), so the rows of A and B can be compared.
+const BGX = (() => { try { const v = JSON.parse($('#bgdata').textContent); return { tests: v.tests || {}, packs: v.packs || {}, heroes: v.heroes || {} }; } catch (e) { return { tests: {}, packs: {}, heroes: {} }; } })();
+const AB_KEY = 'zg-ab';
+const AB = (() => { try { const v = JSON.parse(localStorage.getItem(AB_KEY) || '{}'); return v && typeof v === 'object' && !Array.isArray(v) ? v : {}; } catch (e) { return {}; } })();
+let bgForce = (() => { try { const v = (new URLSearchParams(location.search).get('ozadje') || '').toUpperCase(); return /^[A-Z]$/.test(v) ? v : null; } catch (e) { return null; } })();
+// Nastavitve → Razvoj → Kakovost slik: 'auto' (the default) leaves the choice to the A/B test, as before. 'high' shows the
+// Codex parallax pack of the sunset (B) where the test would show A. 'low' shows the picture already in the game (A)
+// where the test would show the sunset (B). Winter (D) has no low picture yet, so it stays high. Martin Krpan follows the
+// same choice, but only 'high' changes him (see below); 'auto' and 'low' keep the sprite already in the game.
+const FID_KEY = 'zg-fidelity';
+const fidelity = () => { try { const v = localStorage.getItem(FID_KEY); return v === 'high' || v === 'low' ? v : 'auto'; } catch (e) { return 'auto'; } };
+const setFidelity = v => { try { if (v === 'high' || v === 'low') localStorage.setItem(FID_KEY, v); else localStorage.removeItem(FID_KEY); } catch (e) { /* no storage */ } applyHeroFidelity(); };
+const bgPack = (key, v) => { const t = BGX.tests[key], id = t && t.variants && t.variants[v]; return id ? BGX.packs[id] || null : null; };
+const bgReady = (key, v) => v === 'A' || !!bgPack(key, v);
+const bgForced = key => !!(bgForce && BGX.tests[key] && bgReady(key, bgForce));
+// ---------------------------------------------------------------- hero sprites in Visoka (data/hero-art.json; Martin Krpan first)
+// BGX.heroes[id] (build.py): `strip` is the idle | attack picture, which replaces SPRITES[id] so every card, portrait and the
+// codex shows the hero; `sheet` holds the frames, one row a sequence (tools/art_hero_pack.py), which the battle, the road and
+// the hero screens play (game.css .spr.hi). `states` names the idle, run, win and down sequences, `skills` the sequence per
+// skill (1–3) and rank (1–3). For Krpan (docs/characters/martin-krpan): Lipov kij; Kmečka moč rank 1, 2, 3 = two punches,
+// solo salt-bag throw, boulder; Mesarica; running on the road, the bare-fist salute when the last enemy falls, the kneel when down.
+const heroHi = id => fidelity() === 'high' && !!BGX.heroes[id];
+const HERO_LOW = {};   // the sprites already in the game, to go back to
+function applyHeroFidelity() { Object.keys(BGX.heroes).forEach(id => { if (!(id in HERO_LOW)) HERO_LOW[id] = SPRITES[id]; SPRITES[id] = heroHi(id) ? BGX.heroes[id].strip : HERO_LOW[id]; }); }
+// the sheet row of a named sequence, or null
+const heroRow = (id, name) => { const H = BGX.heroes[id], s = H && name && H.seqs[name]; return s ? s.row : null; };
+// the sheet row for skill `tier` at `rank` (1–3), or null when the hero has no frames for it
+function heroSeqRow(id, tier, rank) {
+  const H = BGX.heroes[id], list = H && H.skills && H.skills[tier];
+  return list && list.length ? heroRow(id, list[Math.min(list.length, Math.max(1, +rank || 1)) - 1]) : null;
+}
+// the rows spriteEl puts on a hero: --ri idle, --rr running, --rw victory, --rd down (a missing state falls back in game.css)
+function heroStateRows(id) {
+  const st = (BGX.heroes[id] && BGX.heroes[id].states) || {}, out = {};
+  [['--ri', 'idle'], ['--rr', 'run'], ['--rw', 'win'], ['--rd', 'down']].forEach(([v, k]) => { const r = heroRow(id, st[k]); if (r !== null) out[v] = r; });
+  return out;
+}
+// The variant the fidelity choice shows in place of v (the test's or the address's). Winter (D) and the preview C stay as chosen.
+const fidVariant = (key, v) => {
+  const f = fidelity();
+  if (f === 'low' && v === 'B') return 'A';
+  if (f === 'high' && v === 'A' && bgReady(key, 'B')) return 'B';
+  return v;
+};
+function bgDraw(share, vs) {
+  const w = vs.map(v => Math.max(0, +((share || {})[v]) || 0)), sum = w.reduce((a, b) => a + b, 0);
+  if (!sum) return vs[rnd(vs.length)];
+  let r = Math.random() * sum;
+  for (let i = 0; i < vs.length; i++) { r -= w[i]; if (r < 0) return vs[i]; }
+  return vs[vs.length - 1];
+}
+function bgTestVariant(key) {
+  const t = BGX.tests[key];
+  if (!t) return 'A';
+  if (bgForced(key)) return bgForce;
+  if (!t.live) return 'A';
+  const vs = ['A', ...Object.keys(t.variants || {})];
+  if (!vs.every(v => bgReady(key, v))) return 'A';   // a variant missing from the build: the test is not running, nobody is assigned
+  if (!vs.includes(AB[key])) { AB[key] = bgDraw(t.share, vs); try { localStorage.setItem(AB_KEY, JSON.stringify(AB)); } catch (e) { /* no storage: drawn again next visit */ } }
+  return AB[key];
+}
+const bgVariant = key => fidVariant(key, bgTestVariant(key));
+// for src/stats.js: ozadje-ptuj=B, or B(predogled) when the address chose it
+const bgStatTags = () => Object.keys(BGX.tests).map(k => `ozadje-${k}=${bgVariant(k)}${bgForced(k) ? '(predogled)' : ''}`);
+
+applyHeroFidelity();
+const bgMotion = () => !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+// The pack's layers in a scene (travel, battle, gallery), or null for variant A, whose scene keeps its one background.
+// Layers behind the actors go first, under the same dimming variant A gets in that scene; a foreground layer goes
+// in front of the actors but under the battle UI (game.css: .scene.pbg).
+function bgLayers(scene, key, where) {
+  const v = bgVariant(key), P = v === 'A' ? null : bgPack(key, v);
+  if (!P || !scene) return null;
+  const els = P.layers.map(L => h('i', { class: 'pbg-l' + (L.tileX ? ' tx' : '') + (L.front ? ' front' : ''), 'data-layer': L.id, 'aria-hidden': 'true',
+    style: { 'background-image': `url(${L.src})` } }));
+  const back = els.filter((el, i) => !P.layers[i].front), front = els.filter((el, i) => P.layers[i].front);
+  const dim = { battle: 'linear-gradient(rgba(14,16,26,.36), rgba(14,16,26,.16))', travel: 'linear-gradient(rgba(14,16,26,.2), rgba(14,16,26,.05))' }[where];
+  scene.style.removeProperty('background-image');
+  scene.classList.add('pbg'); scene.classList.toggle('pbg-noroad', !!P.hideRoad);
+  scene.prepend(...back, ...(dim ? [h('i', { class: 'pbg-dim', 'aria-hidden': 'true', style: { 'background-image': dim } })] : []));
+  scene.append(...front);
+  const M = { key, v, P, els, scene, where, size: '' };
+  if (where !== 'travel') { bgPlace(M, null, 0, performance.now()); BG_STILL.add(M); }   // the road places its layers in layoutTravel
+  return M;
+}
+// Where each layer's picture sits. The pack's canvas is fitted to the scene: to its height, or to its width when the
+// scene is wider than the canvas (a short window), then kept on the scene's bottom, where the actors stand. Every
+// layer is registered on that canvas (x, y and its own scale, in canvas pixels) and the canvas is centred, as in battle.
+// camX = how far the walk has gone in CSS pixels (travel): a tiling layer scrolls camX × its speed; a layer that does
+// not tile pans once across the region with progress, from the centre towards its right edge × its pan (1 = all the
+// way), so it never shows an edge. camX null = a still scene (battle, gallery). A picture drawn at least at its own
+// size keeps hard pixel edges (pixel art); a larger picture shrunk to the scene is smoothed instead of aliased.
+function bgPlace(M, camX, progress, now) {
+  const sc = M.scene, W = sc.clientWidth, H = sc.clientHeight;
+  if (!H || !W) return;
+  const P = M.P, s = Math.max(H / P.canvas.h, W / P.canvas.w), cw = P.canvas.w * s, c0 = (W - cw) / 2, oy = H - P.canvas.h * s;
+  const t = bgMotion() ? now / 1000 : 0;
+  M.size = W + 'x' + H;
+  M.els.forEach((el, i) => {
+    const L = P.layers[i], k = L.scale || 1, tw = Math.round(L.w * k * s);   // the tile as the browser repeats it
+    let x = camX == null ? c0 : L.tileX ? c0 - camX * L.speed : c0 - Math.max(0, cw - W) / 2 * clamp(progress, 0, 1) * (L.pan == null ? 1 : L.pan);
+    x += L.x * s;
+    if (L.tileX) { x -= L.drift * s * t; x = ((x % tw) + tw) % tw - tw; }   // the same tile, kept near zero so the numbers stay small
+    el.style.backgroundSize = `${tw}px ${Math.round(L.h * k * s)}px`;
+    el.style.backgroundPosition = `${Math.round(x)}px ${Math.round(oy + L.y * s)}px`;
+    el.style.imageRendering = k * s >= 1 ? 'pixelated' : 'auto';
+  });
+}
+// still scenes are placed again when their size changes (fit to screen, rotating a phone) and, with drifting layers, every frame
+const BG_STILL = new Set();
+(function bgFrame(now) {
+  BG_STILL.forEach(M => {
+    if (!M.scene.isConnected) { BG_STILL.delete(M); return; }
+    const drifts = bgMotion() && M.P.layers.some(L => L.tileX && L.drift);
+    if (drifts || M.size !== M.scene.clientWidth + 'x' + M.scene.clientHeight) bgPlace(M, null, 0, now);
+  });
+  requestAnimationFrame(bgFrame);
+})(performance.now());
+// Liki in karte → Ozadja: each built pack variant next to the pictures of variant A
+function bgGalleryFigures() {
+  const out = [];
+  Object.entries(BGX.tests).forEach(([key, t]) => Object.keys(t.variants || {}).forEach(v => {
+    const P = bgPack(key, v); if (!P) return;
+    const box = h('div', { class: 'gpbg', style: { 'aspect-ratio': `${P.canvas.w} / ${P.canvas.h}` } });
+    const M = { key, v, P, els: [], scene: box, where: 'gallery', size: '' };
+    M.els = P.layers.map(L => h('i', { class: 'pbg-l' + (L.tileX ? ' tx' : ''), 'data-layer': L.id, style: { 'background-image': `url(${L.src})` } }));
+    box.append(...M.els); BG_STILL.add(M);
+    out.push(h('figure', {}, box, `${P.name} — različica ${v}${P.status === 'approved' ? '' : ' (v pregledu)'}`));
+  }));
+  return out;
+}

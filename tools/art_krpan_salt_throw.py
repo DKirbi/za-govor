@@ -1,1 +1,117 @@
-IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwoiIiJCdWlsZCBLcnBhbidzIHNvbG8gS21lxI1rYSBtb8SNIFIyIHNhbHQtYmFnIHRocm93IGFuZCBjb21wYWN0IGRvd25lZCBleHBvcnQuIiIiCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aAppbXBvcnQganNvbgppbXBvcnQgc3RydWN0CmltcG9ydCB6bGliCgpST09UID0gUGF0aChfX2ZpbGVfXykucmVzb2x2ZSgpLnBhcmVudHNbMV0KRlJBTUUgPSA0OApTT1VSQ0UgPSBST09UIC8gJ2FydC9zb3VyY2UvY2hhcmFjdGVycy9tYXJ0aW4ta3JwYW4vYXRsYXNlcy9zYWx0LXNhY2tzLTRmLnBuZycKT1VUID0gUk9PVCAvICdhcnQvZXhwb3J0cy9jaGFyYWN0ZXJzL21hcnRpbi1rcnBhbi9hbmltYXRpb25zL2ttZWNrYS1tb2MtcjItc2FsdC1iYWctdGhyb3cnCkFUTEFTID0gUk9PVCAvICdhcnQvc291cmNlL2NoYXJhY3RlcnMvbWFydGluLWtycGFuL2F0bGFzZXMva21lY2thLW1vYy1yMi1zYWx0LWJhZy10aHJvdy00Zi5wbmcnClNIRUVUID0gUk9PVCAvICdhcnQvZXhwb3J0cy9jaGFyYWN0ZXJzL21hcnRpbi1rcnBhbi9tYXJ0aW4ta3JwYW4tc2hlZXQucG5nJwpJTkRFWCA9IFJPT1QgLyAnYXJ0L2V4cG9ydHMvY2hhcmFjdGVycy9tYXJ0aW4ta3JwYW4vbWFydGluLWtycGFuLXNoZWV0Lmpzb24nClBSRVZJRVcgPSBST09UIC8gJ2FydC9wcmV2aWV3cy9jaGFyYWN0ZXJzL21hcnRpbi1rcnBhbi9rbWVja2EtbW9jLXIyLXNhbHQtYmFnLXRocm93LnBuZycKRE9XTkVEX1NPVVJDRSA9IFJPT1QgLyAnYXJ0L3NvdXJjZS9jaGFyYWN0ZXJzL21hcnRpbi1rcnBhbi9hdGxhc2VzL2Rvd25lZC5wbmcnCkRPV05FRCA9IFJPT1QgLyAnYXJ0L2V4cG9ydHMvY2hhcmFjdGVycy9tYXJ0aW4ta3JwYW4vYW5pbWF0aW9ucy9kb3duZWQvZnJhbWUtMDEucG5nJwoKUEFMRVRURSA9IFt0dXBsZShieXRlcy5mcm9taGV4KGMpKSBmb3IgYyBpbiAoCiAgICAnMWQxNDEwJywnMTcxNTIyJywnMjQyMDJlJywnMzkzNDQ3JywnNTE0YjViJywnNzU2YTc4JywKICAgICdmMmVjZGMnLCdkYmNmYjgnLCdjMGFhOGUnLCdlOWI5OGYnLCdjOThmNjYnLCdhNzY4NDgnLAogICAgJ2I4MzIyZicsJ2UyNDgzMicsJ2YwYTg0ZScsJ2U5YjkzZicsJ2ZmZjBhZCcsCiAgICAnM2YyOTIzJywnNjU0MDJhJywnODg1NTJmJywnYTY2YTM1JywnYzU4YjRlJywKICAgICc1ZTQ5M2MnLCc3ZTY2NTEnLCc5YTgwNjEnLCc0YTM4MmUnLCdkOWI2NzgnKV0KCmRlZiByZWFkX3BuZyhwYXRoKToKICAgIGQgPSBwYXRoLnJlYWRfYnl0ZXMoKTsgcG9zID0gODsgY2h1bmtzID0gW107IHdpZHRoID0gaGVpZ2h0ID0gZGVwdGggPSBjb2xvciA9IE5vbmUKICAgIHdoaWxlIHBvcyA8IGxlbihkKToKICAgICAgICBuID0gc3RydWN0LnVucGFjaygnPkknLCBkW3Bvczpwb3MrNF0pWzBdOyB0eXAgPSBkW3Bvcys0OnBvcys4XTsgZGF0YSA9IGRbcG9zKzg6cG9zKzgrbl07IHBvcyArPSBuICsgMTIKICAgICAgICBpZiB0eXAgPT0gYidJSERSJzogd2lkdGgsIGhlaWdodCwgZGVwdGgsIGNvbG9yLCBfLCBfLCBfID0gc3RydWN0LnVucGFjaygnPklJQkJCQkInLCBkYXRhKQogICAgICAgIGVsaWYgdHlwID09IGInSURBVCc6IGNodW5rcy5hcHBlbmQoZGF0YSkKICAgIGlmIChkZXB0aCwgY29sb3IpICE9ICg4LCA2KTogcmFpc2UgVmFsdWVFcnJvcihmJ0V4cGVjdGVkIFJHQkEgUE5HOiB7cGF0aH0nKQogICAgcmF3ID0gemxpYi5kZWNvbXByZXNzKGInJy5qb2luKGNodW5rcykpOyBzdHJpZGUgPSB3aWR0aCAqIDQ7IHBpeGVscyA9IGJ5dGVhcnJheSh3aWR0aCpoZWlnaHQqNCk7IHByZXYgPSBieXRlYXJyYXkoc3RyaWRlKTsgcG9zID0gMAogICAgZm9yIHkgaW4gcmFuZ2UoaGVpZ2h0KToKICAgICAgICBtb2RlID0gcmF3W3Bvc107IHBvcyArPSAxOyByb3cgPSBieXRlYXJyYXkocmF3W3Bvczpwb3Mrc3RyaWRlXSk7IHBvcyArPSBzdHJpZGUKICAgICAgICBmb3IgaSBpbiByYW5nZShzdHJpZGUpOgogICAgICAgICAgICBhID0gcm93W2ktNF0gaWYgaSA+PSA0IGVsc2UgMDsgdXAgPSBwcmV2W2ldOyB1bCA9IHByZXZbaS00XSBpZiBpID49IDQgZWxzZSAwCiAgICAgICAgICAgIGlmIG1vZGUgPT0gMTogcm93W2ldID0gKHJvd1tpXSArIGEpICYgMjU1CiAgICAgICAgICAgIGVsaWYgbW9kZSA9PSAyOiByb3dbaV0gPSAocm93W2ldICsgdXApICYgMjU1CiAgICAgICAgICAgIGVsaWYgbW9kZSA9PSAzOiByb3dbaV0gPSAocm93W2ldICsgKGErdXApLy8yKSAmIDI1NQogICAgICAgICAgICBlbGlmIG1vZGUgPT0gNDoKICAgICAgICAgICAgICAgIHEgPSBhICsgdXAgLSB1bDsgcGEscGIscGMgPSBhYnMocS1hKSxhYnMocS11cCksYWJzKHEtdWwpOyBwcmVkID0gYSBpZiBwYSA8PSBwYiBhbmQgcGEgPD0gcGMgZWxzZSB1cCBpZiBwYiA8PSBwYyBlbHNlIHVsOyByb3dbaV0gPSAocm93W2ldK3ByZWQpJjI1NQogICAgICAgICAgICBlbGlmIG1vZGUgIT0gMDogcmFpc2UgVmFsdWVFcnJvcihmJ1Vua25vd24gUE5HIGZpbHRlciB7bW9kZX0nKQogICAgICAgIHBpeGVsc1t5KnN0cmlkZTooeSsxKSpzdHJpZGVdID0gcm93OyBwcmV2ID0gcm93CiAgICByZXR1cm4gd2lkdGgsaGVpZ2h0LHBpeGVscwoKZGVmIHdyaXRlX3BuZyhwYXRoLHcsaCxwaXhlbHMpOgogICAgZGVmIGNodW5rKHQsZCk6IHJldHVybiBzdHJ1Y3QucGFjaygnPkknLGxlbihkKSkrdCtkK3N0cnVjdC5wYWNrKCc+SScsemxpYi5jcmMzMih0K2QpJjB4ZmZmZmZmZmYpCiAgICByYXcgPSBiJycuam9pbihiJ1wwJytwaXhlbHNbeSp3KjQ6KHkrMSkqdyo0XSBmb3IgeSBpbiByYW5nZShoKSk7IHBhdGgucGFyZW50Lm1rZGlyKHBhcmVudHM9VHJ1ZSxleGlzdF9vaz1UcnVlKQogICAgcGF0aC53cml0ZV9ieXRlcyhiJ1x4ODlQTkdcclxuXHgxYVxuJytjaHVuayhiJ0lIRFInLHN0cnVjdC5wYWNrKCc+SUlCQkJCQicsdyxoLDgsNiwwLDAsMCkpK2NodW5rKGInSURBVCcsemxpYi5jb21wcmVzcyhyYXcsOSkpK2NodW5rKGInSUVORCcsYicnKSkKCmRlZiBuZWFyZXN0KHJnYik6IHJldHVybiBtaW4oUEFMRVRURSxrZXk9bGFtYmRhIGM6c3VtKChyZ2JbaV0tY1tpXSkqKjIgZm9yIGkgaW4gcmFuZ2UoMykpKQpkZWYgY3JvcF9yZXNpemUoc3JjLHcsYm94LHNjYWxlKToKICAgIHgwLHkwLHgxLHkxPWJveDsgb3c9bWF4KDEscm91bmQoKHgxLXgwKSpzY2FsZSkpOyBvaD1tYXgoMSxyb3VuZCgoeTEteTApKnNjYWxlKSk7IG91dD1ieXRlYXJyYXkob3cqb2gqNCkKICAgIGZvciB5IGluIHJhbmdlKG9oKToKICAgICAgICBzeT15MCttaW4oeTEteTAtMSxpbnQoKHkrLjUpL3NjYWxlKSkKICAgICAgICBmb3IgeCBpbiByYW5nZShvdyk6CiAgICAgICAgICAgIHN4PXgwK21pbih4MS14MC0xLGludCgoeCsuNSkvc2NhbGUpKTsgaT0oc3kqdytzeCkqNDsgYz1zcmNbaTppKzRdCiAgICAgICAgICAgIGlmIGNbM10+PTEyODogb3V0Wyh5Km93K3gpKjQ6KHkqb3creCsxKSo0XT1ieXRlcygoKm5lYXJlc3QoY1s6M10pLDI1NSkpCiAgICByZXR1cm4gb3csb2gsb3V0CmRlZiBmcmFtZSgpOiByZXR1cm4gYnl0ZWFycmF5KEZSQU1FKkZSQU1FKjQpCmRlZiBibGl0KGRzdCxzcmMsc3csc2gseCx5KToKICAgIGlmIHg8MCBvciB5PDAgb3IgeCtzdz5GUkFNRSBvciB5K3NoPkZSQU1FOiByYWlzZSBWYWx1ZUVycm9yKCdTcHJpdGUgY3JvcCBvdXRzaWRlIDQ4eDQ4IGZyYW1lJykKICAgIGZvciB5eSBpbiByYW5nZShzaCk6CiAgICAgICAgZm9yIHh4IGluIHJhbmdlKHN3KToKICAgICAgICAgICAgYz1zcmNbKHl5KnN3K3h4KSo0Oih5eSpzdyt4eCsxKSo0XQogICAgICAgICAgICBpZiBjWzNdOiBkc3RbKCh5K3l5KSpGUkFNRSt4K3h4KSo0OigoeSt5eSkqRlJBTUUreCt4eCsxKSo0XT1jCmRlZiBjZW50ZXJlZChzcmMsdyxib3gsc2NhbGUpOgogICAgc3csc2gscD1jcm9wX3Jlc2l6ZShzcmMsdyxib3gsc2NhbGUpOyBvdXQ9ZnJhbWUoKTsgYmxpdChvdXQscCxzdyxzaCwoRlJBTUUtc3cpLy8yLDQ3LXNoKTsgcmV0dXJuIG91dAoKZGVmIHJhbmsyX2ZyYW1lcygpOgogICAgdyxoLHNyYz1yZWFkX3BuZyhTT1VSQ0UpCiAgICBpZiAodyxoKSE9KDEyNjMsMTI0Nik6IHJhaXNlIFZhbHVlRXJyb3IoZidVbmV4cGVjdGVkIHNvdXJjZSBhdGxhcyBkaW1lbnNpb25zIHsodyxoKX0nKQogICAgIyBTb3VyY2UgY3JvcHMgcmVtb3ZlIHRoZSBtYXJlIGZyb20gZXZlcnkgYWN0aW9uLiBLcnBhbiBiZWdpbnMgYWxvbmU7IHRoZSBiYWdzIGFwcGVhciBpbiBoaXMKICAgICMgaGFuZHMgaW4gZnJhbWUgMiwgdGhlbiBoZSB3aW5kcyB1cCBhbmQgcmVsZWFzZXMgdGhlbSBpbnRvIGZsaWdodCBpbiBmcmFtZSA0LgogICAgZjE9Y2VudGVyZWQoc3JjLHcsKDI4NSwxNjgsNTE5LDUwMyksLjEwNSkKICAgIHJldHVybiBbZjEsY2VudGVyZWQoc3JjLHcsKDg5NywxNzMsMTE0OCw1MDMpLC4xMDUpLGNlbnRlcmVkKHNyYyx3LCgyNTAsODA1LDU3MywxMTIzKSwuMTA1KSxjZW50ZXJlZChzcmMsdywoODMyLDgxMywxMjQzLDExMjMpLC4xMDUpXQoKZGVmIGV4cG9ydF9kb3duZWQoKToKICAgIHcsaCxzcmM9cmVhZF9wbmcoRE9XTkVEX1NPVVJDRSkKICAgIHB0cz1bKHgseSkgZm9yIHkgaW4gcmFuZ2UoaCkgZm9yIHggaW4gcmFuZ2UodykgaWYgc3JjWyh5KncreCkqNCszXT49MTI4XQogICAgeDA9bWluKHggZm9yIHgseSBpbiBwdHMpOyB4MT1tYXgoeCBmb3IgeCx5IGluIHB0cykrMTsgeTA9bWluKHkgZm9yIHgseSBpbiBwdHMpOyB5MT1tYXgoeSBmb3IgeCx5IGluIHB0cykrMQogICAgc2NhbGU9LjA0MDsgbnc9cm91bmQoKHgxLXgwKSpzY2FsZSk7IG5oPXJvdW5kKCh5MS15MCkqc2NhbGUpOyBvdXQ9ZnJhbWUoKTsgb3g9KEZSQU1FLW53KS8vMjsgb3k9NDctbmgKICAgIGZvciB5IGluIHJhbmdlKG5oKToKICAgICAgICBmb3IgeCBpbiByYW5nZShudyk6CiAgICAgICAgICAgIHN4PXgwK21pbih4MS14MC0xLGludCgoeCsuNSkvc2NhbGUpKTsgc3k9eTArbWluKHkxLXkwLTEsaW50KCh5Ky41KS9zY2FsZSkpOyBpPShzeSp3K3N4KSo0OyBjPXNyY1tpOmkrNF0KICAgICAgICAgICAgaWYgY1szXT49MTI4OiBvdXRbKChveSt5KSpGUkFNRStveCt4KSo0Oigob3kreSkqRlJBTUUrb3greCsxKSo0XT1ieXRlcygoKm5lYXJlc3QoY1s6M10pLDI1NSkpCiAgICB3cml0ZV9wbmcoRE9XTkVELEZSQU1FLEZSQU1FLG91dCkKCmRlZiBtYWluKCk6CiAgICBmcmFtZXM9cmFuazJfZnJhbWVzKCk7IGF0bGFzPWJ5dGVhcnJheSg0KkZSQU1FKkZSQU1FKjQpCiAgICBmb3IgbixmciBpbiBlbnVtZXJhdGUoZnJhbWVzKToKICAgICAgICB3cml0ZV9wbmcoT1VUL2YnZnJhbWUte24rMTowMmR9LnBuZycsRlJBTUUsRlJBTUUsZnIpCiAgICAgICAgZm9yIHkgaW4gcmFuZ2UoRlJBTUUpOiBhdGxhc1soeSo0KkZSQU1FK24qRlJBTUUpKjQ6KHkqNCpGUkFNRSsobisxKSpGUkFNRSkqNF09ZnJbeSpGUkFNRSo0Oih5KzEpKkZSQU1FKjRdCiAgICB3cml0ZV9wbmcoQVRMQVMsNCpGUkFNRSxGUkFNRSxhdGxhcykKICAgIHdpLGhpLHBpeGVscz1yZWFkX3BuZyhTSEVFVCk7IGlkeD1qc29uLmxvYWRzKElOREVYLnJlYWRfdGV4dCgpKTsgdGFyZ2V0PWlkeFsnc2VxcyddLmdldCgna21lY2thLW1vYy1yMi1zYWx0LWJhZy10aHJvdycsaWR4WydzZXFzJ10uZ2V0KCdrbWVja2EtbW9jLXIyLW1hdGVyaWFsaXplJykpWydyb3cnXTsgcm93Ynl0ZXM9d2kqRlJBTUUqNAogICAgZm9yIG4sZnIgaW4gZW51bWVyYXRlKGZyYW1lcyk6CiAgICAgICAgZm9yIHkgaW4gcmFuZ2UoRlJBTUUpOgogICAgICAgICAgICBkaT0odGFyZ2V0KkZSQU1FKndpK24qRlJBTUUreSp3aSkqNDsgcGl4ZWxzW2RpOmRpK0ZSQU1FKjRdPWZyW3kqRlJBTUUqNDooeSsxKSpGUkFNRSo0XQogICAgd3JpdGVfcG5nKFNIRUVULHdpLGhpLHBpeGVscykKICAgIGlkeFsnc2VxcyddLnBvcCgna21lY2thLW1vYy1yMi1tYXRlcmlhbGl6ZScsTm9uZSk7IGlkeFsnc2VxcyddWydrbWVja2EtbW9jLXIyLXNhbHQtYmFnLXRocm93J109eydyb3cnOnRhcmdldCwnZnJhbWVzJzo0fQogICAgaWR4WydzZXFzJ109e2s6diBmb3Igayx2IGluIHNvcnRlZChpZHhbJ3NlcXMnXS5pdGVtcygpLGtleT1sYW1iZGEga3Y6a3ZbMV1bJ3JvdyddKX07IElOREVYLndyaXRlX3RleHQoanNvbi5kdW1wcyhpZHgsaW5kZW50PTEpKydcbicpCiAgICBleHBvcnRfZG93bmVkKCkKICAgIHNjYWxlPTQ7IGdhcD0xMjsgY3c9NCpGUkFNRSpzY2FsZSszKmdhcDsgY2g9RlJBTUUqc2NhbGU7IGJnPSgyNSwzMCw0MiwyNTUpOyBwcmV2aWV3PWJ5dGVhcnJheShieXRlcyhiZykqKGN3KmNoKSkKICAgIGZvciBqLGZyIGluIGVudW1lcmF0ZShmcmFtZXMpOgogICAgICAgIGZvciB5IGluIHJhbmdlKEZSQU1FKToKICAgICAgICAgICAgZm9yIHggaW4gcmFuZ2UoRlJBTUUpOgogICAgICAgICAgICAgICAgYz1mclsoeSpGUkFNRSt4KSo0Oih5KkZSQU1FK3grMSkqNF0KICAgICAgICAgICAgICAgIGlmIGNbM106CiAgICAgICAgICAgICAgICAgICAgZm9yIHl5IGluIHJhbmdlKHNjYWxlKToKICAgICAgICAgICAgICAgICAgICAgICAgZm9yIHh4IGluIHJhbmdlKHNjYWxlKToKICAgICAgICAgICAgICAgICAgICAgICAgICAgIGk9KCh5KnNjYWxlK3l5KSpjdysoaiooRlJBTUUqc2NhbGUrZ2FwKSt4KnNjYWxlK3h4KSkqNDsgcHJldmlld1tpOmkrNF09YwogICAgd3JpdGVfcG5nKFBSRVZJRVcsY3csY2gscHJldmlldykKICAgIHByaW50KCdCdWlsdCBmb3VyIHNvbG8gNDh4NDggc2FsdC1iYWcgdGhyb3cgZnJhbWVzIGFuZCByZS1leHBvcnRlZCB0aGUgY3JvdWNoZWQgZG93bmVkIHBvc2UgYXQgMC4wNDAgZnJvbSBzb3VyY2UsIGtlZXBpbmcgaXRzIG9yaWdpbmFsIGJhc2VsaW5lLicpCmlmIF9fbmFtZV9fPT0nX19tYWluX18nOiBtYWluKCkK
+#!/usr/bin/env python3
+"""Build Krpan's solo Kmečka moč R2 salt-bag throw and compact downed export."""
+from pathlib import Path
+import json
+import struct
+import zlib
+
+ROOT = Path(__file__).resolve().parents[1]
+FRAME = 48
+SOURCE = ROOT / 'art/source/characters/martin-krpan/atlases/salt-sacks-4f.png'
+OUT = ROOT / 'art/exports/characters/martin-krpan/animations/kmecka-moc-r2-salt-bag-throw'
+ATLAS = ROOT / 'art/source/characters/martin-krpan/atlases/kmecka-moc-r2-salt-bag-throw-4f.png'
+SHEET = ROOT / 'art/exports/characters/martin-krpan/martin-krpan-sheet.png'
+INDEX = ROOT / 'art/exports/characters/martin-krpan/martin-krpan-sheet.json'
+PREVIEW = ROOT / 'art/previews/characters/martin-krpan/kmecka-moc-r2-salt-bag-throw.png'
+DOWNED_SOURCE = ROOT / 'art/source/characters/martin-krpan/atlases/downed.png'
+DOWNED = ROOT / 'art/exports/characters/martin-krpan/animations/downed/frame-01.png'
+
+PALETTE = [tuple(bytes.fromhex(c)) for c in (
+    '1d1410','171522','24202e','393447','514b5b','756a78',
+    'f2ecdc','dbcfb8','c0aa8e','e9b98f','c98f66','a76848',
+    'b8322f','e24832','f0a84e','e9b93f','fff0ad',
+    '3f2923','65402a','88552f','a66a35','c58b4e',
+    '5e493c','7e6651','9a8061','4a382e','d9b678')]
+
+def read_png(path):
+    d = path.read_bytes(); pos = 8; chunks = []; width = height = depth = color = None
+    while pos < len(d):
+        n = struct.unpack('>I', d[pos:pos+4])[0]; typ = d[pos+4:pos+8]; data = d[pos+8:pos+8+n]; pos += n + 12
+        if typ == b'IHDR': width, height, depth, color, _, _, _ = struct.unpack('>IIBBBBB', data)
+        elif typ == b'IDAT': chunks.append(data)
+    if (depth, color) != (8, 6): raise ValueError(f'Expected RGBA PNG: {path}')
+    raw = zlib.decompress(b''.join(chunks)); stride = width * 4; pixels = bytearray(width*height*4); prev = bytearray(stride); pos = 0
+    for y in range(height):
+        mode = raw[pos]; pos += 1; row = bytearray(raw[pos:pos+stride]); pos += stride
+        for i in range(stride):
+            a = row[i-4] if i >= 4 else 0; up = prev[i]; ul = prev[i-4] if i >= 4 else 0
+            if mode == 1: row[i] = (row[i] + a) & 255
+            elif mode == 2: row[i] = (row[i] + up) & 255
+            elif mode == 3: row[i] = (row[i] + (a+up)//2) & 255
+            elif mode == 4:
+                q = a + up - ul; pa,pb,pc = abs(q-a),abs(q-up),abs(q-ul); pred = a if pa <= pb and pa <= pc else up if pb <= pc else ul; row[i] = (row[i]+pred)&255
+            elif mode != 0: raise ValueError(f'Unknown PNG filter {mode}')
+        pixels[y*stride:(y+1)*stride] = row; prev = row
+    return width,height,pixels
+
+def write_png(path,w,h,pixels):
+    def chunk(t,d): return struct.pack('>I',len(d))+t+d+struct.pack('>I',zlib.crc32(t+d)&0xffffffff)
+    raw = b''.join(b'\0'+pixels[y*w*4:(y+1)*w*4] for y in range(h)); path.parent.mkdir(parents=True,exist_ok=True)
+    path.write_bytes(b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',w,h,8,6,0,0,0))+chunk(b'IDAT',zlib.compress(raw,9))+chunk(b'IEND',b''))
+
+def nearest(rgb): return min(PALETTE,key=lambda c:sum((rgb[i]-c[i])**2 for i in range(3)))
+def crop_resize(src,w,box,scale):
+    x0,y0,x1,y1=box; ow=max(1,round((x1-x0)*scale)); oh=max(1,round((y1-y0)*scale)); out=bytearray(ow*oh*4)
+    for y in range(oh):
+        sy=y0+min(y1-y0-1,int((y+.5)/scale))
+        for x in range(ow):
+            sx=x0+min(x1-x0-1,int((x+.5)/scale)); i=(sy*w+sx)*4; c=src[i:i+4]
+            if c[3]>=128: out[(y*ow+x)*4:(y*ow+x+1)*4]=bytes((*nearest(c[:3]),255))
+    return ow,oh,out
+def frame(): return bytearray(FRAME*FRAME*4)
+def blit(dst,src,sw,sh,x,y):
+    if x<0 or y<0 or x+sw>FRAME or y+sh>FRAME: raise ValueError('Sprite crop outside 48x48 frame')
+    for yy in range(sh):
+        for xx in range(sw):
+            c=src[(yy*sw+xx)*4:(yy*sw+xx+1)*4]
+            if c[3]: dst[((y+yy)*FRAME+x+xx)*4:((y+yy)*FRAME+x+xx+1)*4]=c
+def centered(src,w,box,scale):
+    sw,sh,p=crop_resize(src,w,box,scale); out=frame(); blit(out,p,sw,sh,(FRAME-sw)//2,47-sh); return out
+
+def rank2_frames():
+    w,h,src=read_png(SOURCE)
+    if (w,h)!=(1263,1246): raise ValueError(f'Unexpected source atlas dimensions {(w,h)}')
+    # Source crops remove the mare from every action. Krpan begins alone; the bags appear in his
+    # hands in frame 2, then he winds up and releases them into flight in frame 4.
+    f1=centered(src,w,(285,168,519,503),.105)
+    return [f1,centered(src,w,(897,173,1148,503),.105),centered(src,w,(250,805,573,1123),.105),centered(src,w,(832,813,1243,1123),.105)]
+
+def export_downed():
+    w,h,src=read_png(DOWNED_SOURCE)
+    pts=[(x,y) for y in range(h) for x in range(w) if src[(y*w+x)*4+3]>=128]
+    x0=min(x for x,y in pts); x1=max(x for x,y in pts)+1; y0=min(y for x,y in pts); y1=max(y for x,y in pts)+1
+    scale=.040; nw=round((x1-x0)*scale); nh=round((y1-y0)*scale); out=frame(); ox=(FRAME-nw)//2; oy=47-nh
+    for y in range(nh):
+        for x in range(nw):
+            sx=x0+min(x1-x0-1,int((x+.5)/scale)); sy=y0+min(y1-y0-1,int((y+.5)/scale)); i=(sy*w+sx)*4; c=src[i:i+4]
+            if c[3]>=128: out[((oy+y)*FRAME+ox+x)*4:((oy+y)*FRAME+ox+x+1)*4]=bytes((*nearest(c[:3]),255))
+    write_png(DOWNED,FRAME,FRAME,out)
+    return out
+
+def main():
+    frames=rank2_frames(); downed=export_downed(); atlas=bytearray(4*FRAME*FRAME*4)
+    for n,fr in enumerate(frames):
+        write_png(OUT/f'frame-{n+1:02d}.png',FRAME,FRAME,fr)
+        for y in range(FRAME): atlas[(y*4*FRAME+n*FRAME)*4:(y*4*FRAME+(n+1)*FRAME)*4]=fr[y*FRAME*4:(y+1)*FRAME*4]
+    write_png(ATLAS,4*FRAME,FRAME,atlas)
+    wi,hi,pixels=read_png(SHEET); idx=json.loads(INDEX.read_text()); target=idx['seqs'].get('kmecka-moc-r2-salt-bag-throw',idx['seqs'].get('kmecka-moc-r2-materialize'))['row']; downedrow=idx['seqs']['downed']['row']; rowbytes=wi*FRAME*4
+    for n,fr in enumerate(frames):
+        for y in range(FRAME):
+            di=(target*FRAME*wi+n*FRAME+y*wi)*4; pixels[di:di+FRAME*4]=fr[y*FRAME*4:(y+1)*FRAME*4]
+    for y in range(FRAME):
+        di=(downedrow*FRAME*wi+y*wi)*4; pixels[di:di+FRAME*4]=downed[y*FRAME*4:(y+1)*FRAME*4]
+    write_png(SHEET,wi,hi,pixels)
+    idx['seqs'].pop('kmecka-moc-r2-materialize',None); idx['seqs']['kmecka-moc-r2-salt-bag-throw']={'row':target,'frames':4}
+    idx['seqs']={k:v for k,v in sorted(idx['seqs'].items(),key=lambda kv:kv[1]['row'])}; INDEX.write_text(json.dumps(idx,indent=1)+'\n')
+    scale=4; gap=12; cw=4*FRAME*scale+3*gap; ch=FRAME*scale; bg=(25,30,42,255); preview=bytearray(bytes(bg)*(cw*ch))
+    for j,fr in enumerate(frames):
+        for y in range(FRAME):
+            for x in range(FRAME):
+                c=fr[(y*FRAME+x)*4:(y*FRAME+x+1)*4]
+                if c[3]:
+                    for yy in range(scale):
+                        for xx in range(scale):
+                            i=((y*scale+yy)*cw+(j*(FRAME*scale+gap)+x*scale+xx))*4; preview[i:i+4]=c
+    write_png(PREVIEW,cw,ch,preview)
+    print('Built four solo 48x48 salt-bag throw frames and re-exported the crouched downed pose at 0.040 from source, keeping its original baseline.')
+if __name__=='__main__': main()
