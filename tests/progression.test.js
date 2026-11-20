@@ -1,5 +1,5 @@
 // Reviewed heroes (src/progression.js): their own skill kits with ranks 1–3, experience from the fight
-// (attacks + damage + the enemy's level, for the whole party since balance D) and their health per level.
+// (attacks + damage + the enemy's level: each hero their own share since balance E; the whole party's in balance D) and their health per level.
 // Since balance D a reviewed hero fires every skill they know up to the number of their letters. The first check is the simplest case on
 // purpose: Kurent alone against one škrat, two short words, and the XP adds up by hand.
 // Words are three letters (×1 for length), no č/š/ž, not a hero's own word and never repeated, so a skill's
@@ -50,10 +50,10 @@ run(async () => {
   p = await play(page, 0, 1);
   const xp1 = await ev(page, () => ({ xp: window.__ZG.S.heroes[0].xp, log: window.__ZG.B.logLines.join(' | ') }));
   check(p.dmg[0] === 4 && xp1.xp === 11, 'the škrat is beaten: Kurent gets 2 attacks + 8 damage + level 1 = 11 XP', JSON.stringify({ ...p, xp: xp1.xp }));
-  check(/družina \+11 XP \(napadi 2 · škoda 8 · raven 1\)/.test(xp1.log), 'the battle log says how the party\'s XP was made', xp1.log);
+  check(/Kurent \+11 XP/.test(xp1.log), 'the battle log says what XP each hero got', xp1.log);
   await sleep(1600);
   const res = await ev(page, () => (document.querySelector('.dialog .stats') || {}).textContent || '');
-  check(/Izkušnje družine/.test(res) && /11 XP/.test(res) && /napadi 2 · škoda 8 · raven 1/.test(res), 'the battle result shows the party\'s XP and its parts', res);
+  check(/Izkušnje: Kurent/.test(res) && /11 XP/.test(res) && /napadi 2 · škoda 8 · raven 1/.test(res), 'the battle result shows each hero\'s XP and its parts', res);
   await shot('progression-01-result');
 
   // 2. Rank progression: points raise Ježevka to rank 2 (6) and rank 3 (8), and no further.
@@ -65,8 +65,8 @@ run(async () => {
   await play(page, 0, 1);
   const c2 = await ev(page, () => window.__ZG.B.enemies[0].charge);
   check(Math.abs(c2 - c1 - 0.25) < 1e-9, 'a second Ježevka before the enemy acts adds no delay', JSON.stringify({ c1, c2 }));
-  const ranks = await ev(page, () => { const Z = window.__ZG, st = Z.S.heroes[0]; Z.S.run.pts = 4;   // the party's shared pool
-    const r = [Z.spendPoint(0, 1), Z.spendPoint(0, 1), Z.spendPoint(0, 1)]; return { r, sk: st.sk.join(), pts: Z.S.run.pts }; });
+  const ranks = await ev(page, () => { const Z = window.__ZG, st = Z.S.heroes[0]; st.pts = 4;   // Kurent's own points (balance E)
+    const r = [Z.spendPoint(0, 1), Z.spendPoint(0, 1), Z.spendPoint(0, 1)]; return { r, sk: st.sk.join(), pts: st.pts }; });
   check(ranks.r.join() === 'true,true,false' && ranks.sk === '3,0,0' && ranks.pts === 2, 'two points raise Ježevka to rank 3 and no further', JSON.stringify(ranks));
   await ev(page, () => { window.__ZG.S.heroes[0].sk[0] = 2; });
   p = await play(page, 0, 1);
@@ -90,12 +90,12 @@ run(async () => {
   const winter = await ev(page, () => window.__ZG.B.enemies[0].charge);
   check(p.dmg[0] === 4 + 3 + 4 && Math.abs(winter - (0.5 - 3 / 8.5 + 0.25)) < 1e-9, 'three letters fire all three: −4, −3, Pregon zime −4; the delays do not add up (the longest, 3 s, counts)', JSON.stringify({ ...p, winter }));
 
-  // 3. A hero without a reviewed specification keeps the enemy's fixed XP beside a reviewed one
+  // 3. Balance E: each hero standing gets their own share; one who did not strike gets only the enemy's level
   await battle(page, ['kurent', 'krpan']);
   await ev(page, () => { window.__ZG.B.enemies[0].hp = 4; });
   p = await play(page, 0, 1);
   const mixed = await ev(page, () => window.__ZG.S.heroes.map(st => st.xp));
-  check(p.dmg[0] === 4 && mixed[0] === 1 + 4 + 1 && mixed[1] === mixed[0], 'balance D: the party shares the XP of the fight (1 attack + 4 damage + level 1), Krpan as much as Kurent', JSON.stringify({ ...p, xp: mixed }));
+  check(p.dmg[0] === 4 && mixed[0] === 1 + 4 + 1 && mixed[1] === 1, 'balance E: Kurent gets his own share of the fight (1 attack + 4 damage + level 1), Krpan, who did not strike, only the level', JSON.stringify({ ...p, xp: mixed }));
 
   // 4. Kralj Matjaž at rank 3: Meč 18 and a shield of 6 on each hero hit; Kraljeva vojska +10 on the next attack
   //    and the next two enemy blows 3 weaker; Prebujenje raises the fallen (15 %), heals 6 and hits every enemy for 12

@@ -1465,23 +1465,23 @@ body.mobile .title-stage + .mainmenu { margin-top: -40px; }
   "note": "Journey data shared by the browser prototype and, later, the Godot game: regions in travel order, items, shop sizes. Text is Slovene. Edit by hand, then run tools/art_extra.py (item icons) and build.py. Potions and poisons are used automatically; `when` names the trigger (start of a battle, a hurt hero, a fallen hero, locked letters).",
   "stopGap": 620,
   "checkpointsNote": "Where the journey is saved, by Znanje: after the last battle of these regions. Malček every quarter of the road, Učenjak every third, Knjižni molj once, at the half (after the shrines at Bled). Counted in battles (19 on the road), rounded to the nearest region end.",
-  "chanceNote": "Chests and wells are there by chance. Every region has a slot for each in its stops; when a journey starts, every slot stays with this chance, by Znanje (fewer on higher Znanje). A journey always keeps at least one chest, and at least one well in each half of the road.",
-  "chance": { "chest": { "malcek": 0.6, "ucenjak": 0.45, "molj": 0.3 }, "well": { "malcek": 0.75, "ucenjak": 0.55, "molj": 0.4 } },
+  "chanceNote": "Every region has one event slot (`event` in its stops): a chest or a trap, never both (Game Director, 20 Nov 2026). When a journey starts, each slot becomes a chest with the chance `chest` by Znanje, else a trap: a rock slide or a wall of spikes, half and half (`traps`). Ptuj's is always a chest (`firstChest`). Wells are there by chance (`well`): a journey always keeps at least one well in each half of the road.",
+  "chance": { "chest": { "malcek": 0.6, "ucenjak": 0.45, "molj": 0.3 }, "traps": [ "trap", "darts" ], "firstChest": true, "well": { "malcek": 0.75, "ucenjak": 0.55, "molj": 0.4 } },
   "checkpoints": { "malcek": [ "peca", "gozd", "predjama" ], "ucenjak": [ "triglav", "piran" ], "molj": [ "gozd" ] },
-  "balanceNote": "Balance D (17 Nov 2026), from the road simulations (docs/progression-design.md §4b). hp / atk: enemy health and attack by region, in travel order (bosses keep their own numbers, and so do the Lintvern's wyverns; the vile beside Povodni mož grow with the region). thirdFrom: from this region on a battle has a third enemy once the party has three or more heroes. single: at most one of these in one battle. strong: from this region on, in this share of battles one enemy is strong (Silni …, Silna …), with more health and harder hits. steep: by Znanje, how much more health and how much faster attacks ordinary enemies have by the last region, growing region by region. A region's `sizes` fixes how many enemies its battles have, in order. Ptuj is the same on every Znanje (Malček's enemy health) and a lost battle there never ends the journey.",
-  "balance": { "hp": [ 1, 0.95, 1.2, 1.45, 1.75, 1.8, 2.3, 2.7, 3.0, 3.0 ], "atk": [ 1, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.65, 1.8, 1.8 ], "thirdFrom": "bled", "single": [ "pesjan" ],
-    "strong": { "from": "gozd", "chance": 0.4, "hp": 1.6, "atk": 1.25 }, "steep": { "malcek": [ 0, 0 ], "ucenjak": [ 0, 0 ], "molj": [ 0.15, 0.10 ] } },
+  "balanceNote": "Balance E (20 Nov 2026), from the road simulations of the real game (tools/sim, docs/progression-design.md §4c): softer first regions, a steeper second half, and tougher bosses, so that a Malček player at a word every 10 s loses about half of the journeys. hp / atk: enemy health and attack by region, in travel order (bosses keep their own numbers, and so do the Lintvern's wyverns; the vile beside Povodni mož grow with the region). thirdFrom: from this region on a battle has a third enemy once the party has three or more heroes. single: at most one of these in one battle. strong: from this region on, in this share of battles one enemy is strong (Silni …, Silna …), with more health and harder hits. steep: by Znanje, how much more health and how much faster attacks ordinary enemies have by the last region, growing region by region. A region's `sizes` fixes how many enemies its battles have, in order. Ptuj is the same on every Znanje (Malček's enemy health) and a lost battle there never ends the journey.",
+  "balance": { "hp": [ 1, 0.7, 1.0, 1.5, 1.5, 1.9, 2.25, 2.85, 3.4, 3.4 ], "atk": [ 1, 0.8, 0.95, 1.15, 1.2, 1.35, 1.5, 1.75, 2.0, 2.0 ], "thirdFrom": "bled", "single": [ "pesjan" ],
+    "strong": { "from": "gozd", "chance": 0.4, "hp": 1.6, "atk": 1.25 }, "steep": { "malcek": [ 0, 0 ], "ucenjak": [ 0, 0 ], "molj": [ 0.35, 0.18 ] } },
   "regions": [
-    { "id": "ptuj", "name": "Ptuj", "bg": "ptuj", "intro": "Pustni čas na Ptuju. Kurenti z zvonci preganjajo zimo, a letos se noče umakniti.", "stops": [ "battle", "hero", "battle", "chest", "battle", "well", "battle" ], "sizes": [ 1, 1, 2, 2 ], "pool": [ "skrat", "vesca" ] },
-    { "id": "peca", "name": "Peca", "bg": "peca", "intro": "Pod goro Peco spi kralj Matjaž s svojo vojsko. Nad votlino krožijo krokarji.", "stops": ["battle", "trap", "chest", "hero", "well", "god", "battle"], "pool": [ "perkmandeljc", "skrat", "pesjan" ] },
-    { "id": "triglav", "name": "Triglav", "bg": "triglav", "intro": "Kraljestvo Zlatoroga. S Prisanka gleda v dolino okamnela Ajdovska deklica.", "stops": ["battle", "chest", "trap", "hero", "shop", "well", "god", "battle"], "pool": [ "pesjan", "perkmandeljc", "vesca" ] },
-    { "id": "bled", "name": "Bled", "bg": "bled", "intro": "Otok sredi jezera. Po izročilu je na njem stalo svetišče boginje Žive.", "stops": [ "battle", "chest", "god", "well", "battle" ], "pool": [ "vila", "vesca", "skrat" ] },
-    { "id": "gozd", "name": "Trnovski gozd", "bg": "gozd", "intro": "Temen gozd nad Vipavsko dolino. Po tej poti je Krpan tovoril sol; ponoči tod ne hodi nihče.", "stops": ["battle", "chest", "darts", "hero", "well", "god", "battle"], "pool": [ "mora", "volkodlak", "vesca" ] },
-    { "id": "piran", "name": "Piranske soline", "bg": "piran", "intro": "Sol, morje in burja. Na obali Lepa Vida pere in gleda čez morje.", "stops": ["battle", "chest", "shop", "hero", "well", "god", "battle"], "pool": [ "vila", "pesjan", "mora" ] },
-    { "id": "predjama", "name": "Predjamski grad", "bg": "predjama", "intro": "Grad v skalni steni. Erazem ga je branil leto in dan, hrano pa je dobival po skrivnem rovu.", "stops": ["battle", "darts", "hero", "trap", "chest", "well", "elite"], "pool": [ "mladic", "perkmandeljc", "volkodlak" ] },
-    { "id": "barje", "name": "Ljubljansko barje", "bg": "barje", "intro": "Megla, kolišča in škrati. Do Ljubljane ni več daleč.", "stops": ["battle", "chest", "hero", "shop", "well", "god", "battle"], "pool": [ "skrat", "mora", "volkodlak", "vila" ] },
-    { "id": "reka", "name": "Ljubljanica", "bg": "ljubljanica", "intro": "Reka sedmih imen. Pod Tromostovjem čaka Povodni mož.", "stops": ["chest", "battle", "hero", "well", "boss"], "pool": [ "vila", "mora" ], "boss": [ "vila", "povodni", "vila" ] },
-    { "id": "grad", "name": "Ljubljanski grad", "bg": "grad", "intro": "Na grajskem griču gnezdi Lintvern, ljubljanski zmaj. Tu se pot konča.", "stops": ["chest", "shop", "trap", "darts", "well", "boss"], "pool": [], "boss": [ "lintvern" ], "adds": { "key": "zmajcek", "max": 2 } }
+    { "id": "ptuj", "name": "Ptuj", "bg": "ptuj", "intro": "Pustni čas na Ptuju. Kurenti z zvonci preganjajo zimo, a letos se noče umakniti.", "stops": [ "battle", "hero", "battle", "event", "battle", "well", "battle" ], "sizes": [ 1, 1, 2, 2 ], "pool": [ "skrat", "vesca" ] },
+    { "id": "peca", "name": "Peca", "bg": "peca", "intro": "Pod goro Peco spi kralj Matjaž s svojo vojsko. Nad votlino krožijo krokarji.", "stops": [ "battle", "event", "battle", "hero", "well", "god", "battle" ], "pool": [ "perkmandeljc", "skrat", "pesjan" ] },
+    { "id": "triglav", "name": "Triglav", "bg": "triglav", "intro": "Kraljestvo Zlatoroga. S Prisanka gleda v dolino okamnela Ajdovska deklica.", "stops": [ "battle", "event", "hero", "battle", "shop", "well", "god", "battle" ], "pool": [ "pesjan", "perkmandeljc", "vesca" ] },
+    { "id": "bled", "name": "Bled", "bg": "bled", "intro": "Otok sredi jezera. Po izročilu je na njem stalo svetišče boginje Žive.", "stops": [ "battle", "event", "battle", "god", "well", "battle" ], "pool": [ "vila", "vesca", "skrat" ] },
+    { "id": "gozd", "name": "Trnovski gozd", "bg": "gozd", "intro": "Temen gozd nad Vipavsko dolino. Po tej poti je Krpan tovoril sol; ponoči tod ne hodi nihče.", "stops": [ "battle", "event", "hero", "battle", "well", "god", "battle" ], "pool": [ "mora", "volkodlak", "vesca" ] },
+    { "id": "piran", "name": "Piranske soline", "bg": "piran", "intro": "Sol, morje in burja. Na obali Lepa Vida pere in gleda čez morje.", "stops": [ "battle", "event", "shop", "hero", "battle", "well", "god", "battle" ], "pool": [ "vila", "pesjan", "mora" ] },
+    { "id": "predjama", "name": "Predjamski grad", "bg": "predjama", "intro": "Grad v skalni steni. Erazem ga je branil leto in dan, hrano pa je dobival po skrivnem rovu.", "stops": [ "battle", "event", "hero", "battle", "well", "elite" ], "pool": [ "mladic", "perkmandeljc", "volkodlak" ] },
+    { "id": "barje", "name": "Ljubljansko barje", "bg": "barje", "intro": "Megla, kolišča in škrati. Do Ljubljane ni več daleč.", "stops": [ "battle", "event", "hero", "battle", "shop", "well", "god", "battle" ], "pool": [ "skrat", "mora", "volkodlak", "vila" ] },
+    { "id": "reka", "name": "Ljubljanica", "bg": "ljubljanica", "intro": "Reka sedmih imen. Pod Tromostovjem čaka Povodni mož.", "stops": [ "event", "battle", "hero", "battle", "well", "boss" ], "pool": [ "vila", "mora" ], "boss": [ "vila", "povodni", "vila" ] },
+    { "id": "grad", "name": "Ljubljanski grad", "bg": "grad", "intro": "Na grajskem griču gnezdi Lintvern, ljubljanski zmaj. Tu se pot konča.", "stops": [ "event", "shop", "well", "boss" ], "pool": [], "boss": [ "lintvern" ], "adds": { "key": "zmajcek", "max": 2 } }
   ],
   "items": [
     { "id": "perunova-sekira", "name": "Perunova sekira", "kind": "relic", "price": 60, "text": "Vsi udarci junakov +15 %.", "icon": [ "axe", "#c9ced8", "#8492a6" ] },
@@ -2551,7 +2551,7 @@ const ENEMIES = {
     pattern: ['attack'], moves: { attack: 'Zobje' } },
   vila: { name: 'Vodna vila', f: true, hp: 30, atk: 4, speed: 9, calmStep: 0.34, size: 64, xp: 30,
     pattern: ['attack', 'flood'], moves: { attack: 'Val', flood: 'Poplava' } },
-  povodni: { name: 'Povodni mož', hp: 240, atk: 12, speed: 12.5, calmStep: 0.25, size: 100, xp: 90, boss: true, cwlock: 'vrtinec',
+  povodni: { name: 'Povodni mož', hp: 400, atk: 16, speed: 12.5, calmStep: 0.25, size: 100, xp: 90, boss: true, cwlock: 'vrtinec',
     pattern: ['attack', 'attack', 'cwlock'], moves: { attack: 'Objem vode', cwlock: 'Vrtinec' } },
   // Lintvern (balance D, 17 Nov 2026): three attacks of his own — Kremplji (one hero), Topot (everyone a little, and
   // heroes knocked out of the letter mesh for a while) and his signature, Ognjeni dih: at 66 % and 33 % of his health
@@ -2559,7 +2559,7 @@ const ENEMIES = {
   // and scorches letters that fade one by one; a scorched letter used in a word burns that hero again. Nothing
   // stops his attacks (stuns, Okamnitev) and delays on him are halved. At half health he enrages: faster, Zmajeva
   // uganka, and as many wyverns again as he started with (data/world.json → grad.adds). Health by Znanje (hpBy).
-  lintvern: { name: 'Lintvern', tags: ['zmaj'], hp: 250, hpBy: { lahka: 200, srednja: 250, tezka: 250 }, atk: 11, speed: 11.5, calmStep: 0.25, size: 100, xp: 150, boss: true, cwlock: 'zmaj', unstoppable: true,
+  lintvern: { name: 'Lintvern', tags: ['zmaj'], hp: 250, hpBy: { lahka: 260, srednja: 250, tezka: 250 }, atk: 11, speed: 11.5, calmStep: 0.25, size: 100, xp: 150, boss: true, cwlock: 'zmaj', unstoppable: true,
     pattern: ['scratch', 'scratch', 'stomp'],
     phase2: { at: 0.5, pattern: ['scratch', 'stomp', 'scratch', 'cwlock'], speed: 10, calmStep: 0.34, summon: true },
     breath: { at: [0.66, 0.33], sec: { lahka: 14, srednja: 8, tezka: 6 }, words: { lahka: 4, srednja: 3, tezka: 2 }, hit: 1.2, burn: 4, scorch: 10, fade: 2.5, fadeWords: 3, use: 4 },
@@ -2666,7 +2666,7 @@ const LV = () => LEVELS[S.know] || LEVELS.malcek;
 const DIFFS = {
   lahka: { name: 'Lahka', foeHp: 0.85, withdraw: 1, rise: 0.25, leave: false, finalRetry: true, text: 'Prvi poraz ni konec poti: družina si opomore do polnega zdravja in poskusi znova. Drugi poraz konča pot, a Lintverna lahko vedno izzoveš še enkrat. Padli po zmagi vstanejo.' },
   srednja: { name: 'Srednja', foeHp: 1, withdraw: 0, rise: 0, regionRise: 0.5, leave: false, text: 'Poraz konča pot. Padli obležijo do konca pokrajine, nato vstanejo s polovico zdravja.' },
-  tezka: { name: 'Težka', foeHp: 1.25, withdraw: 0, rise: 0, leave: true, text: 'Močnejši sovražniki, ki so proti koncu poti vse hitrejši. Poraz konča pot. Kdor pade in ga do konca bitke nihče ne obudi, zapusti družino.' },
+  tezka: { name: 'Težka', foeHp: 1.5, withdraw: 0, rise: 0, leave: true, text: 'Močnejši sovražniki, ki so proti koncu poti vse hitrejši. Poraz konča pot. Kdor pade in ga do konca bitke nihče ne obudi, zapusti družino.' },
 };
 const DIFF = () => DIFFS[LV().diff] || DIFFS.srednja;
 // a lost battle on this journey still has a rescue left (Malček: the first one)
@@ -2704,13 +2704,14 @@ const HERO_HP = { krpan: 36, jurij: 26, kurent: 30, matjaz: 34, kresnik: 28, era
 // skill 1, 2 or 3 if the hero knows it; otherwise the strongest skill they know below it. Skill 1 is known
 // from the start; a skill point learns skill 2 (then 3) or raises a known skill to stopnja 2 and 3:
 // a stronger attack, effects that last longer (×1,5, ×2) and one extra effect each.
-// Points are spent at wells, shrines and pedlars (screen "Veščine", src/skills.js).
 // Outside a journey (practice battles, the gallery) every skill is known at stopnja 1.
-// Balance D (17 Nov 2026): on a journey the party levels together. XP comes from the fight (src/progression.js:
-// attacks + damage + the enemy's level) into one pool; every hero has the party's level, and each new level adds
-// PTS_PER_LV skill points to a shared pool that any hero can spend (src/skills.js). Curve from the road simulations
-// (docs/progression-design.md §4b): level 3 by the end of Ptuj, level 9 before the last two bosses.
-const MAX_LV = 9, LV_XP = [0, 45, 110, 220, 360, 540, 760, 1020, 1350], PTS_PER_LV = 3;
+// Balance E (20 Nov 2026, Game Director): on a journey every hero levels on their own again. A beaten enemy gives
+// each hero still standing their own share (src/progression.js: their attacks on it + the damage they dealt + its
+// level); each new level brings that hero PTS_PER_LV skill point of their own. The curve is slower than balance D's
+// party curve (the party went up a level nearly every battle). Points are spent only at wells and at the signpost
+// at a region's end (screen "Veščine", src/skills.js), and the skills are only shown there.
+// Curve from the road simulations of 20 Nov (docs/progression-design.md §4c; the simulator: tools/sim/).
+const MAX_LV = 9, LV_XP = [0, 70, 180, 360, 640, 1000, 1500, 2200, 3100], PTS_PER_LV = 1;
 const lvHp = lvl => 1 + 0.08 * (lvl - 1), lvAtk = lvl => 1 + 0.04 * (lvl - 1), lvLong = lvl => 0.0125 * (lvl - 1);
 // reviewed heroes (src/progression.js): Ajdovska deklica gains a little more health per level (TEST: +10 % for +8 %),
 // Kurent never less than +1 a level
@@ -2720,9 +2721,11 @@ const levelFor = xp => { let l = 1; while (l < MAX_LV && xp >= LV_XP[l]) l++; re
 const heroMaxHp = (id, lvl) => Math.round(baseHpAt(id, lvl) * (has('alatir') ? 1.2 : 1));
 // sk[t]: 0 = skill t+1 not learned yet, 1–3 = its stopnja (rank)
 const heroState = (id, lvl = 1) => ({ id, hp: heroMaxHp(id, lvl), maxHp: heroMaxHp(id, lvl), lvl, xp: LV_XP[lvl - 1], pts: 0, sk: [1, 0, 0], down: false, leveled: false });
-// the shared pool of skill points on a journey, and whether hero `st` still has a skill to learn or raise
-const poolPts = () => (S.run && S.run.pts) || 0;
-const canGrow = st => !!(S.run && st && poolPts() > 0 && st.sk.some((r, i) => r ? r < MAX_RANK : i === 0 || st.sk[i - 1] > 0));
+// a hero's own unspent skill points on a journey, and whether hero `st` can spend one (a skill to learn or raise)
+const heroPts = st => (S.run && st && st.pts) || 0;
+const canGrow = st => !!(S.run && st && heroPts(st) > 0 && st.sk.some((r, i) => r ? r < MAX_RANK : i === 0 || st.sk[i - 1] > 0));
+// the party's unspent points, all heroes together (the signpost's and the well's Veščine button)
+const poolPts = () => S.run ? S.heroes.reduce((a, st) => a + (canGrow(st) ? heroPts(st) : 0), 0) : 0;
 const ptsWord = n => n === 1 ? 'točka veščin' : n === 2 ? 'točki veščin' : n < 5 ? 'točke veščin' : 'točk veščin';
 const MAX_RANK = 3;
 const RANK_POW = [0, 1, 1.2, 1.4], RANK_DUR = [0, 1, 1.5, 2];   // power and effect length by stopnja
@@ -2735,9 +2738,12 @@ function firedTier(k, n) { const st = S.heroes[k]; let t = clamp(n, 1, 3); while
 function setParty(ids) { HEROES.length = 0; ids.forEach(id => HEROES.push(ROSTER[id])); S.heroes = ids.map(id => heroState(id)); S.lastHero = 0; }
 // a hero joins: in a free place, or instead of the one at index `at`
 function joinHero(id, at) {
-  // on a journey a newcomer arrives at the party's level and knows skill 1; the shared points pay for the rest
-  const R = S.run, xp = R ? R.pxp || 0 : Math.floor(S.heroes.reduce((a, x) => a + x.xp, 0) / Math.max(1, S.heroes.length) / 2);
-  const st = heroState(id, R ? R.plvl || 1 : levelFor(xp)); st.xp = xp;
+  // on a journey a newcomer arrives at the level of the party's lowest hero (the one they replace does not count),
+  // knowing skill 1, with the points of those levels to spend at the next well or signpost (balance E)
+  const R = S.run, others = S.heroes.filter((_, k) => k !== at);
+  const half = Math.floor(S.heroes.reduce((a, x) => a + x.xp, 0) / Math.max(1, S.heroes.length) / 2);   // outside a journey: as before
+  const lvl = R ? Math.max(1, Math.min(MAX_LV, ...others.map(x => x.lvl || 1))) : levelFor(half);
+  const st = heroState(id, lvl); if (R) st.pts = lvl - 1; else st.xp = half;
   if (at == null || at < 0) { HEROES.push(ROSTER[id]); S.heroes.push(st); } else { HEROES[at] = ROSTER[id]; S.heroes[at] = st; }
   S.lastHero = 0;
   if (S.run && typeof fitGroups === 'function') fitGroups();   // battles ahead in this region match the new party size
@@ -2805,7 +2811,7 @@ const xpNeed = () => 100 * S.level;
 const letterEq = (tile, typed) => tile === typed;
 
 // Version of this build, filled in by build.py from package.json and git (see CHANGELOG.md).
-const BUILD = {"version": "0.16.0", "stage": "zaprta alfa", "commit": ""};
+const BUILD = {"version": "0.17.0", "stage": "zaprta alfa", "commit": ""};
 const app = $('#app');
 let SCR = null;   // current screen container
 // There is no top bar: pages under the menu have a sticky way back, timed puzzles a Premor button in their header,
@@ -2904,11 +2910,12 @@ function renderHeroMoment(arg) {
     spawnCard(heroEl, { tier: t, c: ch.c, name: ch.name, move: ch.moves[t - 1], word: ch.words[t - 1], value: ch.vals[t - 1], extra: t === 3 ? ch.extra : null, art: id }, ctx);
   };
   const spirit = h('div', { class: 'spirit' + (kind === 'freed' ? ' cursed' : '') + (hs && hs.down ? ' down' : '') + (id === 'veles' ? ' grand' : ''), ref: el => ctx.scene = el },
-    h('button', { class: 'spirit-hit', 'aria-label': `${ch.name}: pokaži veščino`, title: 'Pokaži veščino', onclick: demo }, heroEl = spriteEl(id, ch.c, canGrow(sst) && !(hs && hs.down) ? 'glow' : '')),
+    h('button', { class: 'spirit-hit', 'aria-label': `${ch.name}: pokaži veščino`, title: 'Pokaži veščino', onclick: demo }, heroEl = spriteEl(id, ch.c, '')),
     [18, 34, 52, 68, 82].map((x, i) => h('span', { class: 'mote', style: { left: x + '%', 'animation-delay': (-i * .8) + 's', 'animation-duration': (3.4 + (i % 3) * .7) + 's' } })),
     h('div', { class: 'cards', ref: el => ctx.cards = el }),
-    h('button', { class: 'btn small skillbtn', onclick: () => openSkillInfo(id, sst) },
-      h('span', { class: 'i', 'aria-hidden': 'true' }, 'i'), 'Veščine', canGrow(sst) ? h('span', { class: 'ptsbadge', title: 'neporabljene točke družine' }, poolPts()) : null));
+    // balance E: on a journey the skills are only shown at wells and signposts (src/skills.js); the codex shows them
+    S.run && kind !== 'codex' ? null : h('button', { class: 'btn small skillbtn', onclick: () => openSkillInfo(id, sst) },
+      h('span', { class: 'i', 'aria-hidden': 'true' }, 'i'), 'Veščine'));
   const flip = h('div', { class: 'flip' });
   const front = h('div', { class: 'face front' }); front.innerHTML = CardArt.svg(id, 1);
   // the skills on the card: filled when known, outlined when not yet; a star for stopnja 2, two for stopnja 3
@@ -2923,7 +2930,7 @@ function renderHeroMoment(arg) {
   const wrap = h('div', { class: 'hm', style: { '--c': ch.c } },
     arg.crumb ? crumb(arg.crumb, () => arg.next()) : null,
     h('div', {}, h('div', { class: 'kind' }, HM_KIND[kind]), h('h2', {}, ch.name, h('small', {}, ch.sub)),
-      hs ? h('div', { class: 'hstat' }, hs.down ? 'Obležal. Obudi ga junak z zdravilno močjo, mrtva voda ali premagan bog; vodnjak ne.' : [`Raven ${hs.lvl} · zdravje ${hs.hp}/${hs.maxHp}`, hs.leveled ? h('b', {}, ` · nova raven družine: polno zdravje, +${PTS_PER_LV} točke za veščine!`) : null,
+      hs ? h('div', { class: 'hstat' }, hs.down ? 'Obležal. Obudi ga junak z zdravilno močjo, mrtva voda ali premagan bog; vodnjak ne.' : [`Raven ${hs.lvl} · zdravje ${hs.hp}/${hs.maxHp}`, hs.leveled ? h('b', {}, ' · nova raven: polno zdravje!') : null,
         hs.lvl < MAX_LV ? ` · do naslednje ravni še ${LV_XP[hs.lvl] - hs.xp} XP` : ' · najvišja raven']) : null),
     // what this moment means (unlocked, room in the party, a freed god) comes first, before the pictures
     kind === 'freed' ? h('div', { class: 'note' }, CHAR_ST[id] === 'konec' ? `${ch.name} se ti pridruži šele po koncu zgodbe — takrat lahko zaigraš tudi z njim.` : `${ch.name} se ti ne pridruži takoj: svojo moč ti posodi, ko se srečata na naslednji poti.`) : null,
@@ -3098,7 +3105,7 @@ function renderParty() {
   UI.party.innerHTML = ''; UI.heroBars = [];
   UI.heroEls = HEROES.map((hr, i) => {
     const st = S.heroes[i], sleeping = !!B.sleep[i] && !st.down;
-    const el = spriteEl(hr.id, hr.c, st.down ? 'down' : sleeping ? 'asleep' : canGrow(st) ? 'glow' : '');
+    const el = spriteEl(hr.id, hr.c, st.down ? 'down' : sleeping ? 'asleep' : '');   // no glow in battle: points wait for a well or a signpost
     el.title = hr.name; el.append(h('span', { class: 'st' }, st.down ? '' : sleeping ? (B.sleep[i] && B.sleep[i].why === 'topot' ? 'omamljen' : 'spi') : busy(i) ? 'pleše' : ''));
     const bar = {};
     UI.party.append(h('div', { class: 'herowrap' + (st.down ? ' isdown' : ''), ref: w => bar.wrap = w }, el,
@@ -3905,43 +3912,25 @@ function heroFalls(k) {
 
 function gainXp(n, k, each, noStat) {   // k = hero index; without it the XP is split among the heroes still standing, or with `each` everyone gets all of it
   if (B && !noStat) B.stats.xp += n;
-  if (S.run) return gainPartyXp(n);   // on a journey the party levels together (balance D)
   const who = k != null && k >= 0 ? [k] : living();
-  who.forEach(i => {
-    const st = S.heroes[i]; if (st.down) return;
-    st.xp += (k != null && k >= 0) || each ? n : Math.ceil(n / who.length);
-    while (st.lvl < MAX_LV && st.xp >= LV_XP[st.lvl]) {
-      st.lvl++; st.leveled = true; st.pts = (st.pts || 0) + 1;
-      // a new level heals fully (16 Nov 2026): more health, and all of it
-      const mh = heroMaxHp(HEROES[i].id, st.lvl); st.maxHp = mh; st.hp = mh;
-      chorus();
-      if (B) { log(`${HEROES[i].name}: raven ${st.lvl}! Polno zdravje in +1 točka veščine (porabiš jo pri vodnjaku, svetišču ali krošnjarju).`); fb(`${HEROES[i].name} doseže raven ${st.lvl}: polno zdravje, +1 točka veščine!`, 'ok');
-        if (UI.heroEls && UI.heroEls[i]) { floatOn(UI.heroEls[i], `raven ${st.lvl}`, 'heal'); UI.heroEls[i].classList.add('glow'); } renderPartyHp(); }
-    }
-  });
+  who.forEach(i => { if (!S.heroes[i].down) addXp(i, (k != null && k >= 0) || each ? n : Math.ceil(n / who.length)); });
   renderMeta();
 }
-
-// The party's experience on a journey: one pool, one level for everyone, PTS_PER_LV shared points a level.
-// A new level heals every hero still standing; the fallen get the new maximum and stay down.
-function gainPartyXp(n) {
-  const R = S.run; R.pxp = (R.pxp || 0) + n; R.plvl = R.plvl || 1;
-  let up = 0;
-  while (R.plvl < MAX_LV && R.pxp >= LV_XP[R.plvl]) { R.plvl++; up++; }
-  S.heroes.forEach(st => { st.xp = R.pxp; });
-  if (up) {
-    const pts = up * PTS_PER_LV; R.pts = (R.pts || 0) + pts;
-    HEROES.forEach((hr, i) => { const st = S.heroes[i]; st.lvl = R.plvl; st.leveled = true; st.maxHp = heroMaxHp(hr.id, st.lvl); if (!st.down) st.hp = st.maxHp; });
+// One hero's experience (balance E: on a journey too, every hero levels on their own). Each new level brings
+// PTS_PER_LV skill point of their own (spent at a well or the signpost, src/skills.js) and heals them fully.
+// The level-up says nothing about the point: the skills are only shown where they can be learned.
+function addXp(i, n) {
+  const st = S.heroes[i]; if (!st || n <= 0) return;
+  st.xp = (st.xp || 0) + n;
+  while (st.lvl < MAX_LV && st.xp >= LV_XP[st.lvl]) {
+    st.lvl++; st.leveled = true; st.pts = (st.pts || 0) + PTS_PER_LV;
+    // a new level heals fully (16 Nov 2026): more health, and all of it
+    const mh = heroMaxHp(HEROES[i].id, st.lvl); st.maxHp = mh; if (!st.down) st.hp = mh;
     if (B) B.leveled = true;
     chorus();
-    if (B) {
-      log(`Družina doseže raven ${R.plvl}! Polno zdravje in +${pts} ${ptsWord(pts)} (porabiš jih po bitki, pri vodnjaku, v svetišču ali pri krošnjarju).`);
-      fb(`Raven ${R.plvl}: polno zdravje in +${pts} ${ptsWord(pts)}!`, 'ok');
-      HEROES.forEach((_, i) => { if (UI.heroEls && UI.heroEls[i] && !S.heroes[i].down) { floatOn(UI.heroEls[i], `raven ${R.plvl}`, 'heal'); UI.heroEls[i].classList.add('glow'); } });
-      renderPartyHp();
-    }
+    if (B) { log(`${HEROES[i].name}: raven ${st.lvl}! Polno zdravje.`); fb(`${HEROES[i].name} doseže raven ${st.lvl}: polno zdravje!`, 'ok');
+      if (UI.heroEls && UI.heroEls[i]) floatOn(UI.heroEls[i], `raven ${st.lvl}`, 'heal'); renderPartyHp(); }
   }
-  if (B) renderMeta();
 }
 
 // ------------------------------------------------------------ enemies
@@ -4716,10 +4705,9 @@ function afterResult(win) {
   }
   const last = R && node && node.stop && node.stop.kind === 'boss' && R.ri === WORLD.regions.length - 1;
   const done = () => { S.heroes.forEach(x => x.leveled = false); go(last ? 'ending' : R ? 'travel' : 'title'); };
-  // balance D: with points in the party's pool (a new level brings PTS_PER_LV) Veščine opens right here, after the battle
-  const footer = R && !last ? A => { const t = trainAction(() => go('hero', A)); return (t ? [{ label: t.label, fn: t.fn }] : []).concat([{ label: A.nextLabel, primary: true, fn: () => A.next() }]); } : null;
+  // balance E: points are spent only at wells and signposts (balance D opened Veščine here, after every battle)
   const after = () => go('hero', { kind: 'after', ids: HEROES.map(x => x.id), sel: clamp(S.lastHero || 0, 0, HEROES.length - 1), next: done,
-    nextLabel: last ? 'Konec poti ' : R ? 'Na pot ' : 'Nazaj ', info: res.left && res.left.length ? () => leftLine(res.left) : null, actions: footer });
+    nextLabel: last ? 'Konec poti ' : R ? 'Na pot ' : 'Nazaj ', info: res.left && res.left.length ? () => leftLine(res.left) : null });
   if (R && C) {
     // the god speaks first; after the final challenge the journey is over
     const g = res.god || {};
@@ -5205,10 +5193,9 @@ function pickHero(regionId) {
   for (let i = 0; i < free.length; i++) { r -= w[i]; if (r <= 0) return free[i]; }
   return free[free.length - 1];
 }
-// Chests and wells: every region has a slot for each (its stops in data/world.json), and not every slot
-// is filled on every journey. When the journey starts, each slot stays with a chance set by Znanje
-// (data/world.json → chance: fewer on higher Znanje). A journey always keeps at least one chest, and at
-// least one well in each half of the road, so the second half never goes without one.
+// Wells: every region has a slot (its stops in data/world.json), and not every slot is filled on every journey.
+// When the journey starts, each slot stays with a chance set by Znanje (data/world.json → chance: fewer on higher
+// Znanje). A journey always keeps at least one well in each half of the road, so the second half never goes without one.
 // Returns the indices of the regions where that stop stands on this journey.
 const CHANCE = WORLD.chance || {};
 function planStops(kind, know = S.know) {
@@ -5223,13 +5210,20 @@ function planStops(kind, know = S.know) {
   } else if (!at.length && slots.length) at.push(pick(slots));
   return at.sort((a, b) => a - b);
 }
-function planChests(know) { return planStops('chest', know); }
 function planWells(know) { return planStops('well', know); }
+// Chests and traps (balance E, Game Director 20 Nov 2026): every region has one event slot, a chest or a trap, never
+// both. The slot is a chest with the chance `chest` by Znanje, else a rock slide or a wall of spikes (`traps`); Ptuj's
+// is always a chest. Returns the event of each region (null: the region has no slot).
+function planEvents(know = S.know) {
+  const odds = CHANCE.chest || {}, p = odds[know] != null ? odds[know] : 0.5, traps = CHANCE.traps || ['trap', 'darts'];
+  return WORLD.regions.map((r, i) => !r.stops.includes('event') ? null : i === 0 && CHANCE.firstChest ? 'chest' : Math.random() < p ? 'chest' : pick(traps));
+}
+function planChests(know) { return planEvents(know).map((k, i) => k === 'chest' ? i : -1).filter(i => i >= 0); }
 function newRun(starterId) {
   S.run = { ri: 0, x: 0, endX: 0, stops: [], gold: S.testMode ? 200 : 20, relics: [], bag: {}, rozaUsed: false, jurijUsed: false,
     battles: 0, words: 0, firstBattle: true, met: [starterId], walking: false, prompt: null, starter: starterId, heroAt: null,
-    shrines: null, prayer: null, challenged: false, gifts: [], pxp: 0, plvl: 1, pts: 0, t0: Date.now() };   // the party's XP, level and shared skill points
-  S.run.heroAt = planHeroes(); S.run.shrines = planShrines(starterId); S.run.chestAt = planChests(); S.run.wellAt = planWells();
+    shrines: null, prayer: null, challenged: false, gifts: [], t0: Date.now() };   // levels and skill points are each hero's own (balance E)
+  S.run.heroAt = planHeroes(); S.run.shrines = planShrines(starterId); S.run.eventAt = planEvents(); S.run.wellAt = planWells();
   const g = takeNextGift(); if (g) S.run.gifts.push(g);   // the gift of a god beaten at the end of the last journey
   setParty([starterId]); S.meterBonus = 0;
   enterRegion(0);
@@ -5304,9 +5298,11 @@ function enterRegion(i) {
     if (got) toast(`${WORLD.regions[R.ri].name} je za vami: junaki so spet polno zdravi (+${got} zdravja).` + (up ? ' Padli so vstali s polovico zdravja.' : ''));
   }
   R.ri = i; R.x = 0; R.stops = []; R.prompt = null; R.walking = false;
-  // a hero stop, a shrine, a chest and a well only stay in the regions picked for this journey
-  const kinds = reg.stops.filter(kind => (kind !== 'hero' || !R.heroAt || R.heroAt.includes(i)) && (kind !== 'god' || (R.shrines && R.shrines[i]))
-    && (kind !== 'chest' || !R.chestAt || R.chestAt.includes(i)) && (kind !== 'well' || !R.wellAt || R.wellAt.includes(i)));
+  // a hero stop, a shrine and a well only stay in the regions picked for this journey; the event slot is this
+  // journey's chest or trap
+  const kinds = reg.stops.map(kind => kind === 'event' ? (R.eventAt ? R.eventAt[i] : 'chest') : kind)
+    .filter(kind => kind && (kind !== 'hero' || !R.heroAt || R.heroAt.includes(i)) && (kind !== 'god' || (R.shrines && R.shrines[i]))
+      && (kind !== 'well' || !R.wellAt || R.wellAt.includes(i)));
   let nth = 0;   // battles of this region so far (for its fixed sizes)
   kinds.forEach((kind, n) => {
     const stop = { kind, x: (n + 1) * gap, done: false, passed: false };
@@ -5360,7 +5356,7 @@ function renderTravel() {
   });
   const sign = h('div', { class: 'tv-obj' }, R.ri < WORLD.regions.length - 1 ? h('span', { class: 'cap' }, WORLD.regions[R.ri + 1].name) : null, objEl('kazipot'));
   if (R.ri < WORLD.regions.length - 1) { T.layer.append(sign); T.objs.push({ x: R.endX, el: sign }); }
-  HEROES.forEach((hr, k) => { const st = S.heroes[k]; T.party.append(spriteEl(hr.id, hr.c, st.down ? 'down' : canGrow(st) ? 'glow' : '')); });
+  HEROES.forEach((hr, k) => { const st = S.heroes[k]; T.party.append(spriteEl(hr.id, hr.c, st.down ? 'down' : '')); });
 
   SCR.append(h('div', { class: 'travelwrap' },
     h('div', { class: 'bhead' },
@@ -5376,8 +5372,11 @@ function renderTravel() {
 }
 
 // Prompt (what you can do at this stop) and the party strip under the scene
+// Balance E: a hero with a point to spend glows only where it can be spent, at a well or the signpost (trainHere)
+const trainHere = () => !!(S.run && S.run.prompt && S.run.prompt.trainStop);
 function renderTravelPanel() {
   const R = S.run, T = UI.tv; if (!R || !T || !T.prompt) return;
+  if (T.party) [...T.party.children].forEach((el, k) => { const st = S.heroes[k]; el.classList.toggle('glow', !!st && !st.down && canGrow(st) && trainHere()); });
   T.prompt.innerHTML = ''; T.status.innerHTML = '';
   const P = R.prompt;
   if (P) T.prompt.append(h('div', { class: 'ptext' }, P.icon || null, h('span', {}, P.text), P.tag ? h('span', { class: 'ptag', title: 'Uganka, ki te čaka' }, 'Uganka: ', P.tag) : null),
@@ -5429,8 +5428,10 @@ function promptFor(stop) {
   const pass = (done = false) => { stop.passed = true; if (done) stop.done = true; R.prompt = null; R.walking = true; go('travel'); };
   const skip = S.testMode && stop ? [{ label: 'Preskoči', fn: () => pass(false) }] : [];
   if (!stop) {
-    const next = WORLD.regions[R.ri + 1];
-    return { text: `Kažipot kaže naprej: ${next.name}. Ob koncu pokrajine si junaki opomorejo do polnega zdravja.`, actions: [{ label: `Naprej: ${next.name}`, primary: true, fn: () => { enterRegion(R.ri + 1); S.run.walking = true; sfx('ok'); go('travel'); } }] };
+    const next = WORLD.regions[R.ri + 1], sign = trainAction(() => go('travel'));
+    // balance E: the signpost is, with the well, the place to spend skill points
+    return { text: `Kažipot kaže naprej: ${next.name}. Ob koncu pokrajine si junaki opomorejo do polnega zdravja.`, trainStop: true, keep: true,
+      actions: [{ label: `Naprej: ${next.name}`, primary: true, fn: () => { enterRegion(R.ri + 1); S.run.walking = true; sfx('ok'); go('travel'); } }, ...(sign ? [sign] : [])] };
   }
   if (stop.enemies) {
     const names = stop.enemies.map(k => ENEMIES[k].name).join(' in ');
@@ -5447,20 +5448,20 @@ function promptFor(stop) {
     // the well heals the living; it does not raise the fallen any more
     const hurt = S.heroes.some(st => !st.down && st.hp < st.maxHp), fallen = S.heroes.filter(st => st.down).length;
     const lie = fallen ? ` Kdor je obležal, ga voda ne obudi.` : '';
-    return { text: (hurt ? 'Vodnjak s hladno, čisto vodo. Tu se junaki pozdravijo.' : 'Vodnjak s hladno, čisto vodo. Nihče ni ranjen, a požirek ne škodi.') + lie,
+    return { text: (hurt ? 'Vodnjak s hladno, čisto vodo. Tu se junaki pozdravijo.' : 'Vodnjak s hladno, čisto vodo. Nihče ni ranjen, a požirek ne škodi.') + lie, trainStop: true,
       actions: [{ label: 'Pij iz vodnjaka', primary: true, fn: () => {
         let got = 0;
         S.heroes.forEach(st => { if (st.down) return; got += st.maxHp - st.hp; st.hp = st.maxHp; });
         stop.done = stop.passed = true; sfx('heal');
         const t2 = trainAction(() => go('travel'));
-        R.prompt = { text: got ? `Voda zaceli rane: +${got} zdravja.` : 'Voda je dobra. Naprej!',
+        R.prompt = { text: got ? `Voda zaceli rane: +${got} zdravja.` : 'Voda je dobra. Naprej!', trainStop: true,
           actions: [{ label: 'Naprej ▶', primary: true, fn: () => { R.prompt = null; R.walking = true; renderTravelPanel(); } }, ...(t2 ? [t2] : [])], keep: true };
         go('travel');
       } }, { label: 'Pojdi mimo', fn: () => pass() }, ...(train ? [train] : [])] };
   }
-  if (stop.kind === 'shop') return { text: 'Krošnjar iz Ribnice razgrne robo: napoji, strupi in nekaj redkih predmetov.', actions: [{ label: 'Poglej robo', primary: true, fn: () => openShop(stop) }, { label: 'Pojdi mimo', fn: () => pass() }, ...(train ? [train] : [])] };
+  if (stop.kind === 'shop') return { text: 'Krošnjar iz Ribnice razgrne robo: napoji, strupi in nekaj redkih predmetov.', actions: [{ label: 'Poglej robo', primary: true, fn: () => openShop(stop) }, { label: 'Pojdi mimo', fn: () => pass() }] };
   if (stop.kind === 'hero') return { text: `${ROSTER[stop.hero].name} stoji ob poti.`, actions: [{ label: 'Pozdravi', primary: true, fn: () => meetHero(stop, [stop.hero]) }, { label: 'Pojdi mimo', fn: () => pass() }] };
-  if (stop.kind === 'god') return shrinePrompt(stop, pass, train);
+  if (stop.kind === 'god') return shrinePrompt(stop, pass, null);   // balance E: skill points only at wells and signposts
   return { text: '…', actions: [{ label: 'Naprej', primary: true, fn: () => pass() }] };
 }
 // one entry point for keys, buttons and tests: 'go' = walk / confirm, 'alt' = the second choice, 'skip' = test mode
@@ -6474,7 +6475,7 @@ function reportButton(onclick = openReportInPause, label = 'Pošlji besede') {
 //   Beseda  = zmaga / poraz (a battle) or pot-rešena / pot-končana (a journey)
 //   Kje     = region · kind of battle
 //   Podatki = key=value pairs (see statRow): Znanje, tempo, device, version, enemies, duration, words, seconds
-//             per word on the letter mesh (crosswords and pauses left out), party level, heroes, health, fallen,
+//             per word on the letter mesh (crosswords and pauses left out), each hero's level and unspent points (balance E), heroes, health, fallen,
 //             and the background variant of each A/B test (src/backgrounds.js: ozadje-ptuj=A or B)
 // Nothing personal and none of the words typed are sent. A random id per journey (not per device or player)
 // lets the rows of one journey be read together. This collection must be declared in the stores' privacy
@@ -6495,7 +6496,7 @@ const statHeroes = () => S.heroes.map((st, k) => `${HEROES[k].id}(${st.sk.join('
 const statBase = () => {
   const R = S.run;
   return [`pot=${R.sid}`, `znanje=${S.know}`, `tempo=${S.mode === 'real' ? 'realni' : 'mirni'}`, `naprava=${statDevice()}`,
-    `v=${BUILD.version}${BUILD.commit ? '+' + BUILD.commit : ''}`, `raven=${R.plvl || 1}`, `tocke=${R.pts || 0}`, `junaki=${statHeroes()}`, ...bgStatTags()];
+    `v=${BUILD.version}${BUILD.commit ? '+' + BUILD.commit : ''}`, `raven=${S.heroes.map(st => st.lvl).join('/')}`, `tocke=${S.heroes.map(st => st.pts || 0).join('/')}`, `junaki=${statHeroes()}`, ...bgStatTags()];
 };
 function queueStat(w, where, meta) {
   if (!statsOn()) return null;
@@ -6551,7 +6552,7 @@ function flushStats() {
 }
 setTimeout(() => { if (statsOn() && STATS.some(r => !r.sent)) flushStats(); }, 3500);
 
-const STAT_TEXT = 'Po vsakem boju na poti gre razvijalcu ena vrstica: izid, pokrajina, sovražniki, Znanje, tempo, naprava, različica igre in ozadja, trajanje, število besed in čas na besedo, raven družine, junaki in njihove veščine, izgubljeno zdravje. Nič osebnega in nobene besede, ki jih vpišeš.';
+const STAT_TEXT = 'Po vsakem boju na poti gre razvijalcu ena vrstica: izid, pokrajina, sovražniki, Znanje, tempo, naprava, različica igre in ozadja, trajanje, število besed in čas na besedo, ravni junakov, junaki in njihove veščine, izgubljeno zdravje. Nič osebnega in nobene besede, ki jih vpišeš.';
 // Nastavitve: the switch, what is sent, and how much is waiting
 function statsSection() {
   const waiting = STATS.filter(r => !r.sent).length;
@@ -6926,7 +6927,7 @@ function renderHeroes() {
 //   party (Kresnik) or nearly stopped enemies (Kurent's delays stacked), while their skills 2 and 3 dealt no damage, so
 //   learning them made the hero weaker. Now a skill does at least as much as the one below it at the same rank.
 // - Experience: every hero's attacks on an enemy and the damage dealt to it, plus its level, when it is beaten
-//   (XP_RULE); on a journey it goes to the party's pool (balance D, src/game.js gainPartyXp).
+//   (XP_RULE). Since balance E (20 Nov 2026) every hero gets their own share again, on a journey too (src/game.js addXp).
 const REVIEWED = ['ajda', 'erazem', 'matjaz', 'kresnik', 'kurent', 'krpan'];
 const isReviewed = id => REVIEWED.includes(id);
 
@@ -6977,7 +6978,8 @@ const BURN_DPS = 2;   // Kresnik's burn: 2 damage a second (one word per tick in
 // (hits, burns, counterattacks). Only heroes still standing when the enemy falls get anything, as before.
 const XP_RULE = { attack: 1, damage: 1, level: 1 };
 const foeLevel = e => e.lvl || 1;   // the region's number on the journey (makeEnemy), 1 in practice battles
-// Since balance D (0.13.0) every hero's attacks and damage count, and on a journey the sum goes to the party's pool.
+// Every hero's attacks and damage are counted on the enemy (balance D); since balance E each hero standing when it
+// falls gets their own share (heroes of every kit, not only the reviewed ones).
 function tallyOf(e, k) {
   const hr = HEROES[k]; if (!e || !hr) return null;
   e.tally = e.tally || {}; return e.tally[hr.id] || (e.tally[hr.id] = { a: 0, d: 0 });
@@ -6991,19 +6993,26 @@ function foeXp(e, k) {
   return { n: Math.round(XP_RULE.attack * a + XP_RULE.damage * d + XP_RULE.level * lv), a, d, lv };
 }
 const xpParts = x => `napadi ${x.a} · škoda ${x.d} · raven ${x.lv}`;
-// an enemy is beaten: hand out its experience and say who got what (the log line after »Škrat je premagan: «)
+// an enemy is beaten: hand out its experience, hero by hero, and say who got what (the log line after »Škrat je premagan: «)
 function awardFoeXp(e) {
   if (!S.run) { gainXp(e.xp, null, true); return `vsak junak +${e.xp} XP`; }   // practice battles: as before
-  const x = foeXp(e), w = B.xpWhy.party || (B.xpWhy.party = { n: 0, a: 0, d: 0, lv: 0 });
-  w.n += x.n; w.a += x.a; w.d += x.d; w.lv += x.lv;
-  gainXp(x.n);
-  return `družina +${x.n} XP (${xpParts(x)})`;
+  const said = [];
+  HEROES.forEach((hr, k) => {
+    if (S.heroes[k].down) return;   // only heroes still standing when it falls
+    const x = foeXp(e, k), w = B.xpWhy[hr.id] || (B.xpWhy[hr.id] = { n: 0, a: 0, d: 0, lv: 0 });
+    w.n += x.n; w.a += x.a; w.d += x.d; w.lv += x.lv;
+    if (B) B.stats.xp += x.n;
+    addXp(k, x.n); said.push(`${hr.name} +${x.n}`);
+  });
+  return said.length ? `${said.join(', ')} XP` : 'nihče ne dobi XP';
 }
-// the result of a journey battle: the party's experience with what it was made of
+// the result of a journey battle: each hero's experience with what it was made of
 function xpRows() {
-  const w = B && B.xpWhy && B.xpWhy.party;
-  if (!S.run || !w) return null;
-  return [h('div', {}, 'Izkušnje družine'), h('div', {}, `${w.n} XP`, h('small', { class: 'xpwhy' }, ` (${xpParts(w)})`))];
+  const W = B && B.xpWhy;
+  if (!S.run || !W) return null;
+  const rows = HEROES.filter(hr => W[hr.id]);
+  if (!rows.length) return null;
+  return rows.flatMap(hr => { const w = W[hr.id]; return [h('div', {}, `Izkušnje: ${hr.name}`), h('div', {}, `${w.n} XP`, h('small', { class: 'xpwhy' }, ` (${xpParts(w)})`))]; });
 }
 
 // ------------------------------------------------------------ helpers
@@ -7287,8 +7296,9 @@ const rankText = (id, t, r) => RANK_TEXT[id][t - 1](RK[id][t - 1], r);
 // - SKILL_TEXT: what each of a hero's three skills always does (skill 1, 2, 3 = a word with 1, 2, 3 of their letters)
 // - SKILL_UPS: the extra effect a skill gains at stopnja 2 and at stopnja 3 (a point each)
 // - skillPanel(): the list of skills with their stopnje, used by the hero screens (read only) and by Veščine
-// - renderTrain(): Veščine, where points are spent; it opens from wells, shrines, pedlars and after a battle with a new level.
-// On a journey the points are the party's (S.run.pts, PTS_PER_LV a level): any hero can spend them (balance D).
+// - renderTrain(): Veščine, where points are spent. Since balance E (20 Nov 2026) it opens only at a well and at the
+//   signpost at a region's end, and only there are the skills shown on a journey (hero screens and battles show none).
+// Every hero has their own points (st.pts, PTS_PER_LV a level of their own) and spends them on their own skills.
 // The six reviewed heroes (src/progression.js) have no SKILL_UPS: each of their ranks is described by RANK_TEXT.
 const SKILL_TEXT = {
   perun: ['Hiter udar strele v cilj.', 'Močnejši udar strele v cilj.', 'Silen udar; strela preskoči na vse sovražnike.'],
@@ -7330,11 +7340,11 @@ const rankPips = r => h('span', { class: 'rankpips', 'aria-label': `stopnja ${r}
 const upTags = (k, t) => { const n = upsOf(S.heroes[k], t), ups = SKILL_UPS[HEROES[k].id]; return n && ups ? ups[t - 1].split(' ').slice(0, n) : []; };
 
 // spending points: learn skill 2 after 1 and 3 after 2; raise any known skill up to stopnja 3
-const canLearn = (st, t) => !!st && poolPts() > 0 && st.sk[t - 1] === 0 && (t === 1 || st.sk[t - 2] > 0);
-const canUpgrade = (st, t) => !!st && poolPts() > 0 && st.sk[t - 1] > 0 && st.sk[t - 1] < MAX_RANK;
+const canLearn = (st, t) => !!st && heroPts(st) > 0 && st.sk[t - 1] === 0 && (t === 1 || st.sk[t - 2] > 0);
+const canUpgrade = (st, t) => !!st && heroPts(st) > 0 && st.sk[t - 1] > 0 && st.sk[t - 1] < MAX_RANK;
 function spendPoint(k, t) {
   const st = S.heroes[k]; if (!(canLearn(st, t) || canUpgrade(st, t))) return false;
-  S.run.pts--; st.sk[t - 1]++; return true;
+  st.pts--; st.sk[t - 1]++; return true;
 }
 const partyPoints = () => poolPts();
 // XP still needed for the next level (and its skill point); null at the top level
@@ -7347,7 +7357,7 @@ function skillPanel(id, st, { train = null } = {}) {
   const lv = t => inRun ? st.sk[t - 1] : 1;
   const head = inRun ? h('div', { class: 'sk-sum' },
     h('span', {}, h('b', {}, `Raven ${st.lvl}`), st.lvl < MAX_LV ? ` · do naslednje še ${xpToNext(st)} XP` : ' · najvišja raven'),
-    h('span', { class: 'sk-pts' + (poolPts() ? ' on' : '') }, `Točke družine: ${poolPts()}`)) : null;
+    h('span', { class: 'sk-pts' + (heroPts(st) ? ' on' : '') }, `Točke: ${heroPts(st)}`)) : null;
   // what stopnja 2 and 3 add on top of the skill
   const rankLine = (r, tag) => `${r === 2 ? '+20 % moči, učinki trajajo 1,5-krat dlje' : '+40 % moči, učinki trajajo 2-krat dlje'}; ${UP_TAG[tag][0].toLowerCase()}: ${UP_TAG[tag][1]}`;
   return h('div', { class: 'skills' }, head,
@@ -7373,7 +7383,7 @@ function openSkillInfo(id, st) {
   if (S.bagEl) return;
   const ch = CHARS.find(c => c.id === id);
   const close = () => { ov.remove(); S.bagEl = null; S.overlayKey = null; };
-  const where = st && S.run ? (poolPts() ? `Točke so skupne vsej družini. Porabiš jih po bitki z novo ravnjo, pri vodnjaku, v svetišču ali pri krošnjarju.` : `Vsaka nova raven družine prinese ${PTS_PER_LV} točke za katerega koli junaka; izkušnje prinašajo boji.`) : 'Prvo veščino zna vsak junak od začetka. Na poti s točkami, ki jih prinašajo nove ravni, odklene drugo in tretjo (za daljše besede z več črkami njegove barve) in vsako dvigne do stopnje 3.';
+  const where = st && S.run ? `Vsaka nova raven junaku prinese točko veščine. Porabi jo pri vodnjaku ali na kažipotu na koncu pokrajine.` : 'Prvo veščino zna vsak junak od začetka. Na poti s točkami, ki jih prinašajo nove ravni, odklene drugo in tretjo (za daljše besede z več črkami njegove barve) in vsako dvigne do stopnje 3.';
   const ov = h('div', { class: 'overlay', onclick: e => { if (e.target === ov) close(); } }, h('div', { class: 'dialog skilldlg', role: 'dialog', 'aria-modal': 'true', 'aria-label': `Veščine: ${ch.name}` },
     h('h2', {}, `Veščine: ${ch.name}`),
     skillPanel(id, st),
@@ -7384,7 +7394,7 @@ function openSkillInfo(id, st) {
   const b = ov.querySelector('.btn.primary'); if (b) b.focus();
 }
 
-// ------------------------------------------------------------ Veščine: spending points (wells, shrines, pedlars)
+// ------------------------------------------------------------ Veščine: spending points (wells and signposts, balance E)
 function trainAction(back) {
   const n = partyPoints();
   return n ? { train: true, label: `Veščine · ${n} ${n === 1 ? 'točka' : n === 2 ? 'točki' : n < 5 ? 'točke' : 'točk'}`, fn: () => go('train', { back: () => { refreshTrain(back); back(); } }) } : null;
@@ -7403,8 +7413,8 @@ function renderTrain(arg) {
   SCR.append(h('div', { class: 'page train' },
     crumb('Nazaj na pot', () => arg.back()),
     pageH1('Veščine'),
-    h('p', { class: 'lead' }, `Vsaka nova raven družine prinese ${PTS_PER_LV} točke, skupne vsem junakom. Z vsako točko junak odklene veščino za daljše besede (dve ali tri črke njegove barve) ali dvigne znano veščino na višjo stopnjo, do 3. Kaj prinese vsaka stopnja, piše pri veščini.`),
-    h('p', { class: 'train-pool' }, h('b', {}, `Točke družine: ${poolPts()}`)),
+    h('p', { class: 'lead' }, `Vsaka nova raven junaku prinese točko veščine. Z njo odklene veščino za daljše besede (dve ali tri črke njegove barve) ali dvigne znano veščino na višjo stopnjo, do 3. Kaj prinese vsaka stopnja, piše pri veščini. Točke porabiš pri vodnjaku ali na kažipotu na koncu pokrajine.`),
+    h('p', { class: 'train-pool' }, h('b', {}, `${hr.name}: ${heroPts(st)} ${heroPts(st) === 1 ? 'točka' : heroPts(st) === 2 ? 'točki' : heroPts(st) < 5 ? 'točke' : 'točk'}`)),
     HEROES.length > 1 ? h('div', { class: 'hm-tabs' }, HEROES.map((x, i) => h('button', { class: 'btn small' + (i === k ? ' on' : ''), style: { '--c': x.c }, 'aria-pressed': i === k ? 'true' : 'false',
       onclick: () => { arg.sel = i; mountShell(); renderTrain(arg); } },
       h('i', { style: { 'background-image': `url(${SPRITES[x.id]})` } }), x.name, canGrow(S.heroes[i]) ? h('span', { class: 'ptsbadge', 'aria-label': 'lahko napreduje' }, '+') : null))) : null,
@@ -7628,7 +7638,7 @@ function renderGodWord(arg) {
   const id = arg.god, G = GOD[id], ch = CHARS.find(c => c.id === id);
   const notes = arg.won ? [
     arg.own ? `Družina dobi točko veščine (${HEROES[partyGod()] ? HEROES[partyGod()].name : G.name} ti jo podari).` : null,
-    `Družina: +${GOD_XP} XP.`,
+    `Vsak junak: +${GOD_XP} XP.`,
     arg.raised && arg.raised.length ? `${G.name} dvigne padle: ${arg.raised.join(', ')}.` : null,
     arg.fresh ? `${G.name} je ${G.f ? 'odklenjena' : 'odklenjen'}: na naslednji poti ${G.f ? 'jo' : 'ga'} lahko izbereš.` : null,
     arg.final ? `${G.f ? 'Njen' : 'Njegov'} dar te spremlja vso naslednjo pot: ko beseda nosi tri črke iste barve, ${G.gift}.` : null].filter(Boolean)
@@ -7649,7 +7659,7 @@ function challengeWon(node) {
   // the beaten god raises the fallen, then everyone gets a big chunk of experience
   S.heroes.forEach((st, k) => { if (st.down) { st.down = false; st.hp = Math.max(1, Math.round(st.maxHp * 0.5)); raised.push(HEROES[k].name); } });
   gainXp(GOD_XP, null, true);
-  if (C.own) { const pg = partyGod(); if (pg >= 0 && S.run) { S.run.pts = poolPts() + 1; chorus(); } }   // a point for the shared pool
+  if (C.own) { const pg = partyGod(); if (pg >= 0 && S.run) { S.heroes[pg].pts = heroPts(S.heroes[pg]) + 1; chorus(); } }   // a point for the party god (balance E: their own)
   const fresh = unlock(C.god);
   if (C.final) keepNextGift(C.god);
   return { raised, fresh };
@@ -7701,10 +7711,15 @@ function loadSave() {
   S.know = s.know; S.mode = s.mode; S.suggest = !!s.suggest; S.testMode = !!s.testMode;
   S.run = JSON.parse(JSON.stringify(s.run));
   if (!S.run.wellAt) S.run.wellAt = planWells();   // a save from 0.10.0: wells did not stand by chance yet
-  if (S.run.pxp == null) {   // a save from before 0.13.0: heroes levelled one by one; the party takes the best of them
-    const best = Math.max(0, ...s.heroes.map(st => st.xp || 0));
-    S.run.pxp = best; S.run.plvl = levelFor(best); S.run.pts = s.heroes.reduce((a, st) => a + (st.pts || 0), 0);
-    s.heroes.forEach((st, i) => { st.xp = best; st.lvl = S.run.plvl; st.pts = 0; st.maxHp = heroMaxHp(s.party[i], st.lvl); st.hp = Math.min(st.hp, st.maxHp); });
+  // a save from before 0.17.0 (balance E): one event slot per region, a chest or a trap; regions already planned keep their stops
+  if (!S.run.eventAt) { S.run.eventAt = planEvents(s.know); delete S.run.chestAt; }
+  // a save from 0.13.0–0.16.0 (balance D): the party levelled together with one pool of points. Every hero keeps
+  // the level they have, starting it afresh on the new curve, and the pool is shared out among them, one by one.
+  if (S.run.pxp != null || S.run.pts != null) {
+    let pool = S.run.pts || 0;
+    s.heroes.forEach(st => { st.lvl = clamp(st.lvl || 1, 1, MAX_LV); st.xp = LV_XP[st.lvl - 1]; st.pts = st.pts || 0; });
+    for (let i = 0; pool > 0 && i < 64; i++) { s.heroes[i % s.heroes.length].pts++; pool--; }
+    delete S.run.pxp; delete S.run.plvl; delete S.run.pts;
   }
   HEROES.length = 0; s.party.forEach(id => HEROES.push(ROSTER[id]));
   S.heroes = s.heroes.map(st => ({ ...st, leveled: false })); S.lastHero = 0; S.meterBonus = 0;
@@ -7906,7 +7921,7 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, cheerParty, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, gainPartyXp, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, cheerParty, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 
 </script>

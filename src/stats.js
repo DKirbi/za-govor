@@ -6,7 +6,7 @@
 //   Beseda  = zmaga / poraz (a battle) or pot-rešena / pot-končana (a journey)
 //   Kje     = region · kind of battle
 //   Podatki = key=value pairs (see statRow): Znanje, tempo, device, version, enemies, duration, words, seconds
-//             per word on the letter mesh (crosswords and pauses left out), party level, heroes, health, fallen,
+//             per word on the letter mesh (crosswords and pauses left out), each hero's level and unspent points (balance E), heroes, health, fallen,
 //             and the background variant of each A/B test (src/backgrounds.js: ozadje-ptuj=A or B)
 // Nothing personal and none of the words typed are sent. A random id per journey (not per device or player)
 // lets the rows of one journey be read together. This collection must be declared in the stores' privacy
@@ -27,7 +27,7 @@ const statHeroes = () => S.heroes.map((st, k) => `${HEROES[k].id}(${st.sk.join('
 const statBase = () => {
   const R = S.run;
   return [`pot=${R.sid}`, `znanje=${S.know}`, `tempo=${S.mode === 'real' ? 'realni' : 'mirni'}`, `naprava=${statDevice()}`,
-    `v=${BUILD.version}${BUILD.commit ? '+' + BUILD.commit : ''}`, `raven=${R.plvl || 1}`, `tocke=${R.pts || 0}`, `junaki=${statHeroes()}`, ...bgStatTags()];
+    `v=${BUILD.version}${BUILD.commit ? '+' + BUILD.commit : ''}`, `raven=${S.heroes.map(st => st.lvl).join('/')}`, `tocke=${S.heroes.map(st => st.pts || 0).join('/')}`, `junaki=${statHeroes()}`, ...bgStatTags()];
 };
 function queueStat(w, where, meta) {
   if (!statsOn()) return null;
@@ -83,7 +83,7 @@ function flushStats() {
 }
 setTimeout(() => { if (statsOn() && STATS.some(r => !r.sent)) flushStats(); }, 3500);
 
-const STAT_TEXT = 'Po vsakem boju na poti gre razvijalcu ena vrstica: izid, pokrajina, sovražniki, Znanje, tempo, naprava, različica igre in ozadja, trajanje, število besed in čas na besedo, raven družine, junaki in njihove veščine, izgubljeno zdravje. Nič osebnega in nobene besede, ki jih vpišeš.';
+const STAT_TEXT = 'Po vsakem boju na poti gre razvijalcu ena vrstica: izid, pokrajina, sovražniki, Znanje, tempo, naprava, različica igre in ozadja, trajanje, število besed in čas na besedo, ravni junakov, junaki in njihove veščine, izgubljeno zdravje. Nič osebnega in nobene besede, ki jih vpišeš.';
 // Nastavitve: the switch, what is sent, and how much is waiting
 function statsSection() {
   const waiting = STATS.filter(r => !r.sent).length;

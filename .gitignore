@@ -9,6 +9,8 @@ __pycache__/
 
 # Test screenshots and scratch output
 test-output/
+# Balance simulator results (tools/sim/run.js)
+tools/sim/out/
 
 # OS / editor
 .DS_Store

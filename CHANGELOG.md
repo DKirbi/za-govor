@@ -36,6 +36,35 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
+## 0.17.0 — 20 Nov 2026 · zaprta alfa · Balance E: own levels, a harder road
+
+Branch `feat/balance-e`. Decided by the Game Director on 20 Nov (the game was too easy: XP got out of hand and the
+party went up a level nearly every battle); numbers from simulations of the built game. Details and tables:
+`docs/progression-design.md` §4c.
+
+- **Every hero levels on their own again, and more slowly.** A beaten enemy gives each hero standing their own attacks
+  + damage on it + its level. Levels at 70 / 180 / 360 / 640 / 1000 / 1500 / 2200 / 3100 XP, **one point of their own**
+  a level (balance D: one party level, three shared points). A hero who joins arrives at the level of the party's
+  lowest hero, with the points of those levels. The battle log and result say what each hero got.
+- **Skill points are spent only at a well and at the signpost at a region's end**, and only there are the skills shown:
+  no Veščine after a battle, at shrines or at the pedlar, no Veščine button on the hero screens during a journey (the
+  codex keeps it), and a hero with a point glows only at a well or a signpost.
+- **Three battles in every region** from Peca to Ljubljanica (Ptuj keeps four), and **one event per region: a chest or
+  a trap, never both** (a chest 60 / 45 / 30 % of the time by Znanje, else a rock slide or spikes; Ptuj's is a chest).
+- **Enemies:** softer at Peca and Triglav, steeper from Bled to the castle (health ×3.4 and attack ×2.0 at the end;
+  D: ×3.0 and ×1.8). Povodni mož 400 health, hits 16 (D: 240 / 12). The Lintvern has 221 health on Malček (D: 170).
+  Knjižni molj: enemy health ×1.5 (D: ×1.25), up to +35 % health and 18 % quicker attacks by the castle (D: +15 / 10 %).
+- **Measured** (the bot below, journeys won): Malček **54 %** at a word every 10 s (D: 98 %), Učenjak 38 % at 8 s
+  (D: 95 %), Knjižni molj 26 % at 6 s (D: 96 %).
+- **New: `tools/sim/`**, a balance simulator. A bot plays whole journeys inside `dist/index.html` (headless Chrome)
+  on the game's own clock, so every rule runs as built; only the player is a model (pace, word lengths, crosswords,
+  chests and traps by chance). `node tools/sim/run.js tools/sim/plan.json`; results go to `tools/sim/out/` (ignored).
+- Tester statistics: `raven=` and `tocke=` are now hero by hero (`raven=4/3/3`).
+- Saves from 0.13.0–0.16.0 load: every hero keeps their level and the pooled points are shared out; chests and traps
+  are planned when the save loads.
+- **Art scope (Game Director, 20 Nov):** only the backgrounds are being enriched; the character designs stay as they
+  are (`docs/concept-summary.md`, `docs/art-benchmarks/ART_PRODUCTION_BENCHMARK.md` §4).
+
 ## 0.16.0 — 20 Nov 2026
 
 Branch `fix/post-34-integration`: the work Codex added at the end of #34, connected and checked.

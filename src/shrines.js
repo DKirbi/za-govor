@@ -213,7 +213,7 @@ function renderGodWord(arg) {
   const id = arg.god, G = GOD[id], ch = CHARS.find(c => c.id === id);
   const notes = arg.won ? [
     arg.own ? `Družina dobi točko veščine (${HEROES[partyGod()] ? HEROES[partyGod()].name : G.name} ti jo podari).` : null,
-    `Družina: +${GOD_XP} XP.`,
+    `Vsak junak: +${GOD_XP} XP.`,
     arg.raised && arg.raised.length ? `${G.name} dvigne padle: ${arg.raised.join(', ')}.` : null,
     arg.fresh ? `${G.name} je ${G.f ? 'odklenjena' : 'odklenjen'}: na naslednji poti ${G.f ? 'jo' : 'ga'} lahko izbereš.` : null,
     arg.final ? `${G.f ? 'Njen' : 'Njegov'} dar te spremlja vso naslednjo pot: ko beseda nosi tri črke iste barve, ${G.gift}.` : null].filter(Boolean)
@@ -234,7 +234,7 @@ function challengeWon(node) {
   // the beaten god raises the fallen, then everyone gets a big chunk of experience
   S.heroes.forEach((st, k) => { if (st.down) { st.down = false; st.hp = Math.max(1, Math.round(st.maxHp * 0.5)); raised.push(HEROES[k].name); } });
   gainXp(GOD_XP, null, true);
-  if (C.own) { const pg = partyGod(); if (pg >= 0 && S.run) { S.run.pts = poolPts() + 1; chorus(); } }   // a point for the shared pool
+  if (C.own) { const pg = partyGod(); if (pg >= 0 && S.run) { S.heroes[pg].pts = heroPts(S.heroes[pg]) + 1; chorus(); } }   // a point for the party god (balance E: their own)
   const fresh = unlock(C.god);
   if (C.final) keepNextGift(C.god);
   return { raised, fresh };

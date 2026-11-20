@@ -14,7 +14,7 @@
 //   party (Kresnik) or nearly stopped enemies (Kurent's delays stacked), while their skills 2 and 3 dealt no damage, so
 //   learning them made the hero weaker. Now a skill does at least as much as the one below it at the same rank.
 // - Experience: every hero's attacks on an enemy and the damage dealt to it, plus its level, when it is beaten
-//   (XP_RULE); on a journey it goes to the party's pool (balance D, src/game.js gainPartyXp).
+//   (XP_RULE). Since balance E (20 Nov 2026) every hero gets their own share again, on a journey too (src/game.js addXp).
 const REVIEWED = ['ajda', 'erazem', 'matjaz', 'kresnik', 'kurent', 'krpan'];
 const isReviewed = id => REVIEWED.includes(id);
 
@@ -65,7 +65,8 @@ const BURN_DPS = 2;   // Kresnik's burn: 2 damage a second (one word per tick in
 // (hits, burns, counterattacks). Only heroes still standing when the enemy falls get anything, as before.
 const XP_RULE = { attack: 1, damage: 1, level: 1 };
 const foeLevel = e => e.lvl || 1;   // the region's number on the journey (makeEnemy), 1 in practice battles
-// Since balance D (0.13.0) every hero's attacks and damage count, and on a journey the sum goes to the party's pool.
+// Every hero's attacks and damage are counted on the enemy (balance D); since balance E each hero standing when it
+// falls gets their own share (heroes of every kit, not only the reviewed ones).
 function tallyOf(e, k) {
   const hr = HEROES[k]; if (!e || !hr) return null;
   e.tally = e.tally || {}; return e.tally[hr.id] || (e.tally[hr.id] = { a: 0, d: 0 });
@@ -79,19 +80,26 @@ function foeXp(e, k) {
   return { n: Math.round(XP_RULE.attack * a + XP_RULE.damage * d + XP_RULE.level * lv), a, d, lv };
 }
 const xpParts = x => `napadi ${x.a} · škoda ${x.d} · raven ${x.lv}`;
-// an enemy is beaten: hand out its experience and say who got what (the log line after »Škrat je premagan: «)
+// an enemy is beaten: hand out its experience, hero by hero, and say who got what (the log line after »Škrat je premagan: «)
 function awardFoeXp(e) {
   if (!S.run) { gainXp(e.xp, null, true); return `vsak junak +${e.xp} XP`; }   // practice battles: as before
-  const x = foeXp(e), w = B.xpWhy.party || (B.xpWhy.party = { n: 0, a: 0, d: 0, lv: 0 });
-  w.n += x.n; w.a += x.a; w.d += x.d; w.lv += x.lv;
-  gainXp(x.n);
-  return `družina +${x.n} XP (${xpParts(x)})`;
+  const said = [];
+  HEROES.forEach((hr, k) => {
+    if (S.heroes[k].down) return;   // only heroes still standing when it falls
+    const x = foeXp(e, k), w = B.xpWhy[hr.id] || (B.xpWhy[hr.id] = { n: 0, a: 0, d: 0, lv: 0 });
+    w.n += x.n; w.a += x.a; w.d += x.d; w.lv += x.lv;
+    if (B) B.stats.xp += x.n;
+    addXp(k, x.n); said.push(`${hr.name} +${x.n}`);
+  });
+  return said.length ? `${said.join(', ')} XP` : 'nihče ne dobi XP';
 }
-// the result of a journey battle: the party's experience with what it was made of
+// the result of a journey battle: each hero's experience with what it was made of
 function xpRows() {
-  const w = B && B.xpWhy && B.xpWhy.party;
-  if (!S.run || !w) return null;
-  return [h('div', {}, 'Izkušnje družine'), h('div', {}, `${w.n} XP`, h('small', { class: 'xpwhy' }, ` (${xpParts(w)})`))];
+  const W = B && B.xpWhy;
+  if (!S.run || !W) return null;
+  const rows = HEROES.filter(hr => W[hr.id]);
+  if (!rows.length) return null;
+  return rows.flatMap(hr => { const w = W[hr.id]; return [h('div', {}, `Izkušnje: ${hr.name}`), h('div', {}, `${w.n} XP`, h('small', { class: 'xpwhy' }, ` (${xpParts(w)})`))]; });
 }
 
 // ------------------------------------------------------------ helpers

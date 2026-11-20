@@ -194,10 +194,9 @@ function pickHero(regionId) {
   for (let i = 0; i < free.length; i++) { r -= w[i]; if (r <= 0) return free[i]; }
   return free[free.length - 1];
 }
-// Chests and wells: every region has a slot for each (its stops in data/world.json), and not every slot
-// is filled on every journey. When the journey starts, each slot stays with a chance set by Znanje
-// (data/world.json → chance: fewer on higher Znanje). A journey always keeps at least one chest, and at
-// least one well in each half of the road, so the second half never goes without one.
+// Wells: every region has a slot (its stops in data/world.json), and not every slot is filled on every journey.
+// When the journey starts, each slot stays with a chance set by Znanje (data/world.json → chance: fewer on higher
+// Znanje). A journey always keeps at least one well in each half of the road, so the second half never goes without one.
 // Returns the indices of the regions where that stop stands on this journey.
 const CHANCE = WORLD.chance || {};
 function planStops(kind, know = S.know) {
@@ -212,13 +211,20 @@ function planStops(kind, know = S.know) {
   } else if (!at.length && slots.length) at.push(pick(slots));
   return at.sort((a, b) => a - b);
 }
-function planChests(know) { return planStops('chest', know); }
 function planWells(know) { return planStops('well', know); }
+// Chests and traps (balance E, Game Director 20 Nov 2026): every region has one event slot, a chest or a trap, never
+// both. The slot is a chest with the chance `chest` by Znanje, else a rock slide or a wall of spikes (`traps`); Ptuj's
+// is always a chest. Returns the event of each region (null: the region has no slot).
+function planEvents(know = S.know) {
+  const odds = CHANCE.chest || {}, p = odds[know] != null ? odds[know] : 0.5, traps = CHANCE.traps || ['trap', 'darts'];
+  return WORLD.regions.map((r, i) => !r.stops.includes('event') ? null : i === 0 && CHANCE.firstChest ? 'chest' : Math.random() < p ? 'chest' : pick(traps));
+}
+function planChests(know) { return planEvents(know).map((k, i) => k === 'chest' ? i : -1).filter(i => i >= 0); }
 function newRun(starterId) {
   S.run = { ri: 0, x: 0, endX: 0, stops: [], gold: S.testMode ? 200 : 20, relics: [], bag: {}, rozaUsed: false, jurijUsed: false,
     battles: 0, words: 0, firstBattle: true, met: [starterId], walking: false, prompt: null, starter: starterId, heroAt: null,
-    shrines: null, prayer: null, challenged: false, gifts: [], pxp: 0, plvl: 1, pts: 0, t0: Date.now() };   // the party's XP, level and shared skill points
-  S.run.heroAt = planHeroes(); S.run.shrines = planShrines(starterId); S.run.chestAt = planChests(); S.run.wellAt = planWells();
+    shrines: null, prayer: null, challenged: false, gifts: [], t0: Date.now() };   // levels and skill points are each hero's own (balance E)
+  S.run.heroAt = planHeroes(); S.run.shrines = planShrines(starterId); S.run.eventAt = planEvents(); S.run.wellAt = planWells();
   const g = takeNextGift(); if (g) S.run.gifts.push(g);   // the gift of a god beaten at the end of the last journey
   setParty([starterId]); S.meterBonus = 0;
   enterRegion(0);
@@ -293,9 +299,11 @@ function enterRegion(i) {
     if (got) toast(`${WORLD.regions[R.ri].name} je za vami: junaki so spet polno zdravi (+${got} zdravja).` + (up ? ' Padli so vstali s polovico zdravja.' : ''));
   }
   R.ri = i; R.x = 0; R.stops = []; R.prompt = null; R.walking = false;
-  // a hero stop, a shrine, a chest and a well only stay in the regions picked for this journey
-  const kinds = reg.stops.filter(kind => (kind !== 'hero' || !R.heroAt || R.heroAt.includes(i)) && (kind !== 'god' || (R.shrines && R.shrines[i]))
-    && (kind !== 'chest' || !R.chestAt || R.chestAt.includes(i)) && (kind !== 'well' || !R.wellAt || R.wellAt.includes(i)));
+  // a hero stop, a shrine and a well only stay in the regions picked for this journey; the event slot is this
+  // journey's chest or trap
+  const kinds = reg.stops.map(kind => kind === 'event' ? (R.eventAt ? R.eventAt[i] : 'chest') : kind)
+    .filter(kind => kind && (kind !== 'hero' || !R.heroAt || R.heroAt.includes(i)) && (kind !== 'god' || (R.shrines && R.shrines[i]))
+      && (kind !== 'well' || !R.wellAt || R.wellAt.includes(i)));
   let nth = 0;   // battles of this region so far (for its fixed sizes)
   kinds.forEach((kind, n) => {
     const stop = { kind, x: (n + 1) * gap, done: false, passed: false };
@@ -349,7 +357,7 @@ function renderTravel() {
   });
   const sign = h('div', { class: 'tv-obj' }, R.ri < WORLD.regions.length - 1 ? h('span', { class: 'cap' }, WORLD.regions[R.ri + 1].name) : null, objEl('kazipot'));
   if (R.ri < WORLD.regions.length - 1) { T.layer.append(sign); T.objs.push({ x: R.endX, el: sign }); }
-  HEROES.forEach((hr, k) => { const st = S.heroes[k]; T.party.append(spriteEl(hr.id, hr.c, st.down ? 'down' : canGrow(st) ? 'glow' : '')); });
+  HEROES.forEach((hr, k) => { const st = S.heroes[k]; T.party.append(spriteEl(hr.id, hr.c, st.down ? 'down' : '')); });
 
   SCR.append(h('div', { class: 'travelwrap' },
     h('div', { class: 'bhead' },
@@ -365,8 +373,11 @@ function renderTravel() {
 }
 
 // Prompt (what you can do at this stop) and the party strip under the scene
+// Balance E: a hero with a point to spend glows only where it can be spent, at a well or the signpost (trainHere)
+const trainHere = () => !!(S.run && S.run.prompt && S.run.prompt.trainStop);
 function renderTravelPanel() {
   const R = S.run, T = UI.tv; if (!R || !T || !T.prompt) return;
+  if (T.party) [...T.party.children].forEach((el, k) => { const st = S.heroes[k]; el.classList.toggle('glow', !!st && !st.down && canGrow(st) && trainHere()); });
   T.prompt.innerHTML = ''; T.status.innerHTML = '';
   const P = R.prompt;
   if (P) T.prompt.append(h('div', { class: 'ptext' }, P.icon || null, h('span', {}, P.text), P.tag ? h('span', { class: 'ptag', title: 'Uganka, ki te čaka' }, 'Uganka: ', P.tag) : null),
@@ -418,8 +429,10 @@ function promptFor(stop) {
   const pass = (done = false) => { stop.passed = true; if (done) stop.done = true; R.prompt = null; R.walking = true; go('travel'); };
   const skip = S.testMode && stop ? [{ label: 'Preskoči', fn: () => pass(false) }] : [];
   if (!stop) {
-    const next = WORLD.regions[R.ri + 1];
-    return { text: `Kažipot kaže naprej: ${next.name}. Ob koncu pokrajine si junaki opomorejo do polnega zdravja.`, actions: [{ label: `Naprej: ${next.name}`, primary: true, fn: () => { enterRegion(R.ri + 1); S.run.walking = true; sfx('ok'); go('travel'); } }] };
+    const next = WORLD.regions[R.ri + 1], sign = trainAction(() => go('travel'));
+    // balance E: the signpost is, with the well, the place to spend skill points
+    return { text: `Kažipot kaže naprej: ${next.name}. Ob koncu pokrajine si junaki opomorejo do polnega zdravja.`, trainStop: true, keep: true,
+      actions: [{ label: `Naprej: ${next.name}`, primary: true, fn: () => { enterRegion(R.ri + 1); S.run.walking = true; sfx('ok'); go('travel'); } }, ...(sign ? [sign] : [])] };
   }
   if (stop.enemies) {
     const names = stop.enemies.map(k => ENEMIES[k].name).join(' in ');
@@ -436,20 +449,20 @@ function promptFor(stop) {
     // the well heals the living; it does not raise the fallen any more
     const hurt = S.heroes.some(st => !st.down && st.hp < st.maxHp), fallen = S.heroes.filter(st => st.down).length;
     const lie = fallen ? ` Kdor je obležal, ga voda ne obudi.` : '';
-    return { text: (hurt ? 'Vodnjak s hladno, čisto vodo. Tu se junaki pozdravijo.' : 'Vodnjak s hladno, čisto vodo. Nihče ni ranjen, a požirek ne škodi.') + lie,
+    return { text: (hurt ? 'Vodnjak s hladno, čisto vodo. Tu se junaki pozdravijo.' : 'Vodnjak s hladno, čisto vodo. Nihče ni ranjen, a požirek ne škodi.') + lie, trainStop: true,
       actions: [{ label: 'Pij iz vodnjaka', primary: true, fn: () => {
         let got = 0;
         S.heroes.forEach(st => { if (st.down) return; got += st.maxHp - st.hp; st.hp = st.maxHp; });
         stop.done = stop.passed = true; sfx('heal');
         const t2 = trainAction(() => go('travel'));
-        R.prompt = { text: got ? `Voda zaceli rane: +${got} zdravja.` : 'Voda je dobra. Naprej!',
+        R.prompt = { text: got ? `Voda zaceli rane: +${got} zdravja.` : 'Voda je dobra. Naprej!', trainStop: true,
           actions: [{ label: 'Naprej ▶', primary: true, fn: () => { R.prompt = null; R.walking = true; renderTravelPanel(); } }, ...(t2 ? [t2] : [])], keep: true };
         go('travel');
       } }, { label: 'Pojdi mimo', fn: () => pass() }, ...(train ? [train] : [])] };
   }
-  if (stop.kind === 'shop') return { text: 'Krošnjar iz Ribnice razgrne robo: napoji, strupi in nekaj redkih predmetov.', actions: [{ label: 'Poglej robo', primary: true, fn: () => openShop(stop) }, { label: 'Pojdi mimo', fn: () => pass() }, ...(train ? [train] : [])] };
+  if (stop.kind === 'shop') return { text: 'Krošnjar iz Ribnice razgrne robo: napoji, strupi in nekaj redkih predmetov.', actions: [{ label: 'Poglej robo', primary: true, fn: () => openShop(stop) }, { label: 'Pojdi mimo', fn: () => pass() }] };
   if (stop.kind === 'hero') return { text: `${ROSTER[stop.hero].name} stoji ob poti.`, actions: [{ label: 'Pozdravi', primary: true, fn: () => meetHero(stop, [stop.hero]) }, { label: 'Pojdi mimo', fn: () => pass() }] };
-  if (stop.kind === 'god') return shrinePrompt(stop, pass, train);
+  if (stop.kind === 'god') return shrinePrompt(stop, pass, null);   // balance E: skill points only at wells and signposts
   return { text: '…', actions: [{ label: 'Naprej', primary: true, fn: () => pass() }] };
 }
 // one entry point for keys, buttons and tests: 'go' = walk / confirm, 'alt' = the second choice, 'skip' = test mode

@@ -4,8 +4,9 @@
 // - SKILL_TEXT: what each of a hero's three skills always does (skill 1, 2, 3 = a word with 1, 2, 3 of their letters)
 // - SKILL_UPS: the extra effect a skill gains at stopnja 2 and at stopnja 3 (a point each)
 // - skillPanel(): the list of skills with their stopnje, used by the hero screens (read only) and by Veščine
-// - renderTrain(): Veščine, where points are spent; it opens from wells, shrines, pedlars and after a battle with a new level.
-// On a journey the points are the party's (S.run.pts, PTS_PER_LV a level): any hero can spend them (balance D).
+// - renderTrain(): Veščine, where points are spent. Since balance E (20 Nov 2026) it opens only at a well and at the
+//   signpost at a region's end, and only there are the skills shown on a journey (hero screens and battles show none).
+// Every hero has their own points (st.pts, PTS_PER_LV a level of their own) and spends them on their own skills.
 // The six reviewed heroes (src/progression.js) have no SKILL_UPS: each of their ranks is described by RANK_TEXT.
 const SKILL_TEXT = {
   perun: ['Hiter udar strele v cilj.', 'Močnejši udar strele v cilj.', 'Silen udar; strela preskoči na vse sovražnike.'],
@@ -47,11 +48,11 @@ const rankPips = r => h('span', { class: 'rankpips', 'aria-label': `stopnja ${r}
 const upTags = (k, t) => { const n = upsOf(S.heroes[k], t), ups = SKILL_UPS[HEROES[k].id]; return n && ups ? ups[t - 1].split(' ').slice(0, n) : []; };
 
 // spending points: learn skill 2 after 1 and 3 after 2; raise any known skill up to stopnja 3
-const canLearn = (st, t) => !!st && poolPts() > 0 && st.sk[t - 1] === 0 && (t === 1 || st.sk[t - 2] > 0);
-const canUpgrade = (st, t) => !!st && poolPts() > 0 && st.sk[t - 1] > 0 && st.sk[t - 1] < MAX_RANK;
+const canLearn = (st, t) => !!st && heroPts(st) > 0 && st.sk[t - 1] === 0 && (t === 1 || st.sk[t - 2] > 0);
+const canUpgrade = (st, t) => !!st && heroPts(st) > 0 && st.sk[t - 1] > 0 && st.sk[t - 1] < MAX_RANK;
 function spendPoint(k, t) {
   const st = S.heroes[k]; if (!(canLearn(st, t) || canUpgrade(st, t))) return false;
-  S.run.pts--; st.sk[t - 1]++; return true;
+  st.pts--; st.sk[t - 1]++; return true;
 }
 const partyPoints = () => poolPts();
 // XP still needed for the next level (and its skill point); null at the top level
@@ -64,7 +65,7 @@ function skillPanel(id, st, { train = null } = {}) {
   const lv = t => inRun ? st.sk[t - 1] : 1;
   const head = inRun ? h('div', { class: 'sk-sum' },
     h('span', {}, h('b', {}, `Raven ${st.lvl}`), st.lvl < MAX_LV ? ` · do naslednje še ${xpToNext(st)} XP` : ' · najvišja raven'),
-    h('span', { class: 'sk-pts' + (poolPts() ? ' on' : '') }, `Točke družine: ${poolPts()}`)) : null;
+    h('span', { class: 'sk-pts' + (heroPts(st) ? ' on' : '') }, `Točke: ${heroPts(st)}`)) : null;
   // what stopnja 2 and 3 add on top of the skill
   const rankLine = (r, tag) => `${r === 2 ? '+20 % moči, učinki trajajo 1,5-krat dlje' : '+40 % moči, učinki trajajo 2-krat dlje'}; ${UP_TAG[tag][0].toLowerCase()}: ${UP_TAG[tag][1]}`;
   return h('div', { class: 'skills' }, head,
@@ -90,7 +91,7 @@ function openSkillInfo(id, st) {
   if (S.bagEl) return;
   const ch = CHARS.find(c => c.id === id);
   const close = () => { ov.remove(); S.bagEl = null; S.overlayKey = null; };
-  const where = st && S.run ? (poolPts() ? `Točke so skupne vsej družini. Porabiš jih po bitki z novo ravnjo, pri vodnjaku, v svetišču ali pri krošnjarju.` : `Vsaka nova raven družine prinese ${PTS_PER_LV} točke za katerega koli junaka; izkušnje prinašajo boji.`) : 'Prvo veščino zna vsak junak od začetka. Na poti s točkami, ki jih prinašajo nove ravni, odklene drugo in tretjo (za daljše besede z več črkami njegove barve) in vsako dvigne do stopnje 3.';
+  const where = st && S.run ? `Vsaka nova raven junaku prinese točko veščine. Porabi jo pri vodnjaku ali na kažipotu na koncu pokrajine.` : 'Prvo veščino zna vsak junak od začetka. Na poti s točkami, ki jih prinašajo nove ravni, odklene drugo in tretjo (za daljše besede z več črkami njegove barve) in vsako dvigne do stopnje 3.';
   const ov = h('div', { class: 'overlay', onclick: e => { if (e.target === ov) close(); } }, h('div', { class: 'dialog skilldlg', role: 'dialog', 'aria-modal': 'true', 'aria-label': `Veščine: ${ch.name}` },
     h('h2', {}, `Veščine: ${ch.name}`),
     skillPanel(id, st),
@@ -101,7 +102,7 @@ function openSkillInfo(id, st) {
   const b = ov.querySelector('.btn.primary'); if (b) b.focus();
 }
 
-// ------------------------------------------------------------ Veščine: spending points (wells, shrines, pedlars)
+// ------------------------------------------------------------ Veščine: spending points (wells and signposts, balance E)
 function trainAction(back) {
   const n = partyPoints();
   return n ? { train: true, label: `Veščine · ${n} ${n === 1 ? 'točka' : n === 2 ? 'točki' : n < 5 ? 'točke' : 'točk'}`, fn: () => go('train', { back: () => { refreshTrain(back); back(); } }) } : null;
@@ -120,8 +121,8 @@ function renderTrain(arg) {
   SCR.append(h('div', { class: 'page train' },
     crumb('Nazaj na pot', () => arg.back()),
     pageH1('Veščine'),
-    h('p', { class: 'lead' }, `Vsaka nova raven družine prinese ${PTS_PER_LV} točke, skupne vsem junakom. Z vsako točko junak odklene veščino za daljše besede (dve ali tri črke njegove barve) ali dvigne znano veščino na višjo stopnjo, do 3. Kaj prinese vsaka stopnja, piše pri veščini.`),
-    h('p', { class: 'train-pool' }, h('b', {}, `Točke družine: ${poolPts()}`)),
+    h('p', { class: 'lead' }, `Vsaka nova raven junaku prinese točko veščine. Z njo odklene veščino za daljše besede (dve ali tri črke njegove barve) ali dvigne znano veščino na višjo stopnjo, do 3. Kaj prinese vsaka stopnja, piše pri veščini. Točke porabiš pri vodnjaku ali na kažipotu na koncu pokrajine.`),
+    h('p', { class: 'train-pool' }, h('b', {}, `${hr.name}: ${heroPts(st)} ${heroPts(st) === 1 ? 'točka' : heroPts(st) === 2 ? 'točki' : heroPts(st) < 5 ? 'točke' : 'točk'}`)),
     HEROES.length > 1 ? h('div', { class: 'hm-tabs' }, HEROES.map((x, i) => h('button', { class: 'btn small' + (i === k ? ' on' : ''), style: { '--c': x.c }, 'aria-pressed': i === k ? 'true' : 'false',
       onclick: () => { arg.sel = i; mountShell(); renderTrain(arg); } },
       h('i', { style: { 'background-image': `url(${SPRITES[x.id]})` } }), x.name, canGrow(S.heroes[i]) ? h('span', { class: 'ptsbadge', 'aria-label': 'lahko napreduje' }, '+') : null))) : null,

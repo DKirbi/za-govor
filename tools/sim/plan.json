@@ -1,0 +1,11 @@
+[
+  { "name": "malcek-10", "know": "malcek", "pace": 10, "n": 300 },
+  { "name": "malcek-8", "know": "malcek", "pace": 8, "n": 100 },
+  { "name": "malcek-12", "know": "malcek", "pace": 12, "n": 100 },
+  { "name": "ucenjak-8", "know": "ucenjak", "pace": 8, "n": 300 },
+  { "name": "ucenjak-6", "know": "ucenjak", "pace": 6, "n": 100 },
+  { "name": "ucenjak-10", "know": "ucenjak", "pace": 10, "n": 100 },
+  { "name": "molj-6", "know": "molj", "pace": 6, "n": 300 },
+  { "name": "molj-5", "know": "molj", "pace": 5, "n": 100 },
+  { "name": "molj-8", "know": "molj", "pace": 8, "n": 100 }
+]
