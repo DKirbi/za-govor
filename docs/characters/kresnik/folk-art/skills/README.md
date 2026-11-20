@@ -1,5 +1,9 @@
-# Kresnik — skill folk-art
+# Kresnik — skill folk-art concepts
 
-The three current prototype skills are *Žerjavica*, *Plamen*, and *Kresni ogenj*. Their final names and effects are OPEN pending Game Director review.
+**Status:** Separate generated concept images; pending Game Director review. Working names remain open for the flaming sword and restorative skill.
 
-Create one distinct traditional folk-art illustration brief per approved skill after the kit is confirmed. Artwork production is deferred until the full roster review is complete.
+- **Flaming sword (working label):** [Open concept](../../../../../art/source/characters/kresnik/folk-art/skills/ognjeni-mec/skill-card-concept.png)
+- **Kresna strela:** [Open concept](../../../../../art/source/characters/kresnik/folk-art/skills/kresna-strela/skill-card-concept.png)
+- **Restorative skill (working label):** [Open concept](../../../../../art/source/characters/kresnik/folk-art/skills/kresna-moc/skill-card-concept.png)
+
+Keep Kresnik distinct from Perun. Burning-wheel and fern-flower motifs are intentionally not used here.

@@ -1,0 +1,264 @@
+{
+  "pack": "folk-skill-cards",
+  "status": "IN REVIEW",
+  "visualApproval": "pending-game-director-review",
+  "styleReference": "docs/images/battle-desktop.png",
+  "note": "Native generated dimensions retained. Prepare game exports only after approval and renderer review.",
+  "assets": [
+    {
+      "character": "ajdovska-deklica",
+      "skill": "metanje-skal",
+      "file": "art/source/characters/ajdovska-deklica/folk-art/skills/metanje-skal/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Art direction review; not runtime-ready",
+      "approvalState": "pending-game-director-review"
+    },
+    {
+      "character": "ajdovska-deklica",
+      "skill": "okamnitev",
+      "file": "art/source/characters/ajdovska-deklica/folk-art/skills/okamnitev/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Art direction review; not runtime-ready",
+      "approvalState": "pending-game-director-review"
+    },
+    {
+      "character": "ajdovska-deklica",
+      "skill": "varstvo-popotnikov",
+      "file": "art/source/characters/ajdovska-deklica/folk-art/skills/varstvo-popotnikov/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Art direction review; not runtime-ready",
+      "approvalState": "pending-game-director-review"
+    },
+    {
+      "character": "erazem-predjamski",
+      "skill": "cesnje",
+      "file": "art/source/characters/erazem-predjamski/folk-art/skills/cesnje/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Art direction review; not runtime-ready",
+      "approvalState": "pending-game-director-review"
+    },
+    {
+      "character": "erazem-predjamski",
+      "skill": "mec",
+      "file": "art/source/characters/erazem-predjamski/folk-art/skills/mec/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Art direction review; not runtime-ready",
+      "approvalState": "pending-game-director-review"
+    },
+    {
+      "character": "erazem-predjamski",
+      "skill": "skrivni-rov",
+      "file": "art/source/characters/erazem-predjamski/folk-art/skills/skrivni-rov/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Art direction review; not runtime-ready",
+      "approvalState": "pending-game-director-review"
+    },
+    {
+      "character": "kralj-matjaz",
+      "skill": "kraljeva-vojska",
+      "file": "art/source/characters/kralj-matjaz/folk-art/skills/kraljeva-vojska/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Art direction review; not runtime-ready",
+      "approvalState": "pending-game-director-review"
+    },
+    {
+      "character": "kralj-matjaz",
+      "skill": "mec",
+      "file": "art/source/characters/kralj-matjaz/folk-art/skills/mec/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Art direction review; not runtime-ready",
+      "approvalState": "pending-game-director-review"
+    },
+    {
+      "character": "kralj-matjaz",
+      "skill": "prebujenje",
+      "file": "art/source/characters/kralj-matjaz/folk-art/skills/prebujenje/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Art direction review; not runtime-ready",
+      "approvalState": "pending-game-director-review"
+    },
+    {
+      "character": "kresnik",
+      "skill": "kresna-moc",
+      "file": "art/source/characters/kresnik/folk-art/skills/kresna-moc/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Art direction review; not runtime-ready",
+      "approvalState": "pending-game-director-review"
+    },
+    {
+      "character": "kresnik",
+      "skill": "kresna-strela",
+      "file": "art/source/characters/kresnik/folk-art/skills/kresna-strela/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Art direction review; not runtime-ready",
+      "approvalState": "pending-game-director-review"
+    },
+    {
+      "character": "kresnik",
+      "skill": "ognjeni-mec",
+      "file": "art/source/characters/kresnik/folk-art/skills/ognjeni-mec/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Art direction review; not runtime-ready",
+      "approvalState": "pending-game-director-review"
+    },
+    {
+      "character": "kurent",
+      "skill": "jezevka",
+      "file": "art/source/characters/kurent/folk-art/skills/jezevka/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Art direction review; not runtime-ready",
+      "approvalState": "pending-game-director-review"
+    },
+    {
+      "character": "kurent",
+      "skill": "pregon-zime",
+      "file": "art/source/characters/kurent/folk-art/skills/pregon-zime/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Art direction review; not runtime-ready",
+      "approvalState": "pending-game-director-review"
+    },
+    {
+      "character": "kurent",
+      "skill": "zvonci",
+      "file": "art/source/characters/kurent/folk-art/skills/zvonci/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Art direction review; not runtime-ready",
+      "approvalState": "pending-game-director-review"
+    }
+  ]
+}

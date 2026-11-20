@@ -10,3 +10,5 @@ Each asset pack should have a manifest documenting:
 - visual approval and implementation status.
 
 A manifest records what exists; it must not imply that a planned or missing file has been delivered.
+
+Current reviewed-skill folk-art concepts are inventoried in [folk-skill-cards.json](./folk-skill-cards.json). Their visual specification and Codex handoff are in [FOLK_SKILL_CARDS_SPEC.md](../../docs/art-workflow/FOLK_SKILL_CARDS_SPEC.md) and [CODEX_FOLK_SKILL_CARDS_HANDOFF.md](../../docs/art-workflow/CODEX_FOLK_SKILL_CARDS_HANDOFF.md).
