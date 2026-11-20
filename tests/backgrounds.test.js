@@ -5,7 +5,7 @@
 const { openGame, runner, sleep } = require('./harness');
 const { check, run } = runner('Background variants (A/B tests)');
 
-const ORDER_B = 'sky,clouds,distant-hills,castle-hill,town,riverbank-trees,drava-water,riverbank-wall,bridge,reflections,road-cobbles,foreground';
+const ORDER_B = 'sky,clouds,distant-hills,castle-hill,town,riverbank-trees,drava-water,riverbank-wall,bridge,reflections,road-tile-tall,foreground';
 const ORDER_C = 'sky,clouds,distant-hills,castle-hill,town,drava-water,reflections,sun-glint,road-tile,foreground';
 const mod = (x, tw) => ((x % tw) + tw) % tw - tw;
 
@@ -22,9 +22,17 @@ run(async () => {
     sc.querySelectorAll(':scope > .pbg-l').forEach(e => { const [x, y] = e.style.backgroundPosition.split(' ').map(parseFloat), [w, h] = e.style.backgroundSize.split(' ').map(parseFloat);
       pos[e.dataset.layer] = { x, y, w, h, smooth: e.style.imageRendering === 'auto' }; });
     return { pos, W: sc.clientWidth, H: sc.clientHeight, canvas: P.canvas, L: Object.fromEntries(P.layers.map(l => [l.id, { w: l.w, h: l.h, x: l.x, y: l.y, scale: l.scale, speed: l.speed, pan: l.pan, tileX: l.tileX }])) }; }, id);
+  // the road's top against the characters: the highest feet (layout boxes, as actorFloor), the heroes' heads, and the scale
+  const roadVsActors = () => ev(() => {
+    const sc = document.querySelector('.scene'), road = sc.querySelector('[data-layer="road-tile-tall"]'), P = window.__ZG.BGX.packs.ptuj;
+    const s = Math.max(sc.clientHeight / P.canvas.h, sc.clientWidth / P.canvas.w), box = el => { let y = 0, n = el; while (n && n !== sc) { y += n.offsetTop; n = n.offsetParent; } return [y, y + el.offsetHeight]; };
+    const feet = [...sc.querySelectorAll(':scope > .party .spr, :scope > .enemies .spr, :scope > .tv-objs > .tv-obj')].map(box).map(b => b[1]);
+    const heroes = [...sc.querySelectorAll(':scope > .party .spr')].map(box), heads = heroes.map(([t, b]) => t + (b - t) * 13 / 48);
+    const neck = Math.min(...heroes.map(([t, b]) => t + (b - t) * 0.5)), floor = Math.min(...feet);
+    return { top: parseFloat(road.style.backgroundPosition.split(' ')[1]), floor, neck, want: Math.min(floor - 30 * s, neck), heads: heads.map(Math.round), s }; });
   // every actor's feet against the top of the ground layer's picture (its first solid row, read from the image)
   const feetOnGround = () => ev(async () => {
-    const sc = document.querySelector('.scene'), el = sc.querySelector('[data-layer="road-cobbles"], [data-layer="road-tile"]'), r = sc.getBoundingClientRect();
+    const sc = document.querySelector('.scene'), el = sc.querySelector('[data-layer="road-tile-tall"], [data-layer="road-tile"]'), r = sc.getBoundingClientRect();
     const img = new Image(); img.src = getComputedStyle(el).backgroundImage.slice(5, -2); await img.decode();
     const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; const g = c.getContext('2d'); g.drawImage(img, 0, 0);
     const a = g.getImageData(0, 0, img.width, img.height).data;
@@ -37,10 +45,10 @@ run(async () => {
   // ---------------------------------------------------------------- both packs in the build
   const built = await ev(() => { const Z = window.__ZG, B = Z.BGX.packs.ptuj, C = Z.BGX.packs['ptuj-vecer']; localStorage.removeItem('zg-ab');
     const sum = P => P && { ids: P.layers.map(l => l.id).join(), canvas: P.canvas, status: P.status, name: P.name, tiles: P.layers.filter(l => l.tileX).map(l => l.id).join(), front: P.layers.filter(l => l.front).map(l => l.id).join() };
-    return { B: sum(B), C: sum(C), road: B && B.layers.find(l => l.id === 'road-cobbles'), castle: B && B.layers.find(l => l.id === 'castle-hill'), test: Z.BGX.tests.ptuj, v: Z.bgVariant('ptuj'), tags: Z.bgStatTags(), ab: localStorage.getItem('zg-ab') }; });
-  check(built.B && built.B.ids === ORDER_B && built.B.canvas.w === 1672 && built.B.canvas.h === 560 && built.B.tiles === 'clouds,road-cobbles' && built.B.name === 'Ptuj — sončni zahod nad Dravo',
+    return { B: sum(B), C: sum(C), road: B && B.layers.find(l => l.id === 'road-tile-tall'), castle: B && B.layers.find(l => l.id === 'castle-hill'), test: Z.BGX.tests.ptuj, v: Z.bgVariant('ptuj'), tags: Z.bgStatTags(), ab: localStorage.getItem('zg-ab') }; });
+  check(built.B && built.B.ids === ORDER_B && built.B.canvas.w === 1672 && built.B.canvas.h === 560 && built.B.tiles === 'clouds,road-tile-tall' && built.B.name === 'Ptuj — sončni zahod nad Dravo',
     'variant B is the combined seasonal pack: twelve sunset layers back to front, fitted through a 1672×560 view, clouds and road tile horizontally', JSON.stringify(built.B));
-  check((built.road.scale || 1) === 1 && built.road.w === 1672 && built.road.h === 240 && built.road.y === 325 && built.castle.scale === 0.6 && built.castle.x === 560, 'the small cobbles are drawn 1:1 from the top of the ground band, and the castle hill keeps Codex\'s 0.6 scale, as data/backgrounds.json places them', JSON.stringify({ road: [built.road.w, built.road.scale, built.road.y], castle: [built.castle.x, built.castle.y, built.castle.scale] }));
+  check(built.road.scale === 0.5 && built.road.w === 2172 && built.road.stand === 30 && built.castle.scale === 0.6 && built.castle.x === 560, 'the road is the original tile at half size and follows the characters (stand 30); the castle hill keeps Codex\'s 0.6 scale, as data/backgrounds.json places them', JSON.stringify({ road: [built.road.w, built.road.scale, built.road.y], castle: [built.castle.x, built.castle.y, built.castle.scale] }));
   check(built.C && built.C.ids === ORDER_C && built.C.canvas.w === 640 && built.C.front === 'foreground', 'variant C is Claude\'s pack: ten layers on 640×165, the foreground in front', JSON.stringify(built.C));
   check(built.test.share.C === 0 && built.test.live === false && built.v === 'A' && built.ab === null && built.tags.join() === 'ozadje-ptuj=A',
     'the test is not live and C has no share: everyone sees A, nobody is assigned, the statistics say ozadje-ptuj=A', JSON.stringify(built.test));
@@ -64,9 +72,12 @@ run(async () => {
   await at(0);
   const feetRoadB = await feetOnGround();
   check(feetRoadB.feet.length >= 4 && feetRoadB.feet.every(f => f >= feetRoadB.ground), 'on the road every hero and enemy stands on the Codex cobbles', JSON.stringify(feetRoadB));
+  const rvTravel = await roadVsActors();
+  check(Math.abs(rvTravel.top - rvTravel.want) <= 1 && Math.abs(rvTravel.top - rvTravel.neck) <= 1 && rvTravel.heads.every(y => y < rvTravel.top),
+    'on the road the strip reaches up to the heroes\' necks, so their heads show against the water', JSON.stringify(rvTravel));
   const r1 = await at(1200), p1 = await layerPos('ptuj');
-  const s = Math.max(p1.H / 560, p1.W / 1672), c0 = (p1.W - 1672 * s) / 2, rw = Math.round(1672 * s);
-  check(Math.abs(p1.pos['road-cobbles'].x - Math.round(mod(c0 - 1200 * (r1.mobile ? .62 : 1), rw))) <= 1, 'the road scrolls with the walk on its 1672 px tile', JSON.stringify(p1.pos['road-cobbles']));
+  const s = Math.max(p1.H / 560, p1.W / 1672), c0 = (p1.W - 1672 * s) / 2, rw = Math.round(2172 * 0.5 * s);
+  check(Math.abs(p1.pos['road-tile-tall'].x - Math.round(mod(c0 - 1200 * (r1.mobile ? .62 : 1), rw))) <= 1, 'the road scrolls with the walk on its half-size tile', JSON.stringify(p1.pos['road-tile-tall']));
   check(p1.pos.town.x === p1.pos['drava-water'].x && p1.pos.town.x === p1.pos.reflections.x && p1.pos.town.y < p1.pos['drava-water'].y && p1.pos['riverbank-wall'].y < p1.pos['drava-water'].y, 'the town, the river and its reflections stay together');
   check(Object.values(p1.pos).every(p => p.smooth), 'the large Codex pictures are shrunk smoothly, not aliased as pixel art', JSON.stringify(Object.fromEntries(Object.entries(p1.pos).map(([k, v]) => [k, v.smooth]))));
   await shot('bg-01-ptuj-road-B');
@@ -82,11 +93,14 @@ run(async () => {
     'the battle shows the view centred; the sky covers the whole width', JSON.stringify({ sky: pb.pos.sky, castle: pb.pos['castle-hill'].x, W: pb.W }));
   // a short window: the scene is wider than the view, so the view covers its width and keeps the ground at the bottom
   const cover = await ev(async () => { const sc = document.querySelector('.scene'); sc.style.height = '200px'; await new Promise(r => setTimeout(r, 120));
-    const sky = sc.querySelector('[data-layer="sky"]'), road = sc.querySelector('[data-layer="road-cobbles"]');
+    const sky = sc.querySelector('[data-layer="sky"]'), road = sc.querySelector('[data-layer="road-tile-tall"]');
     const [sx] = sky.style.backgroundPosition.split(' ').map(parseFloat), [sw] = sky.style.backgroundSize.split(' ').map(parseFloat);
     const [, ry] = road.style.backgroundPosition.split(' ').map(parseFloat), [, rh] = road.style.backgroundSize.split(' ').map(parseFloat);
-    const out = { W: sc.clientWidth, H: sc.clientHeight, skyLeft: sx, skyRight: sx + sw, roadBottom: Math.round(ry + rh) }; sc.style.height = ''; await new Promise(r => setTimeout(r, 120)); return out; });
-  check(cover.skyLeft <= 0 && cover.skyRight >= cover.W && cover.roadBottom >= cover.H - 1 && cover.roadBottom - cover.H <= 6, 'in a short, wide scene the view still covers the width and the road reaches the bottom (its 5 spare pixels run just past it)', JSON.stringify(cover));
+    const out = { W: sc.clientWidth, H: sc.clientHeight, skyLeft: sx, skyRight: sx + sw, roadTop: Math.round(ry), repeat: road.style.backgroundRepeat, clip: road.style.clipPath }; sc.style.height = ''; await new Promise(r => setTimeout(r, 120)); return out; });
+  check(cover.skyLeft <= 0 && cover.skyRight >= cover.W && cover.roadTop < cover.H && cover.repeat === 'repeat' && cover.clip.startsWith(`inset(${Math.max(0, cover.roadTop)}px `),
+    'in a short, wide scene the view still covers the width; the road repeats down from its top (clipped above it), so it reaches the bottom', JSON.stringify(cover));
+  const rvBattle = await roadVsActors();
+  check(Math.abs(rvBattle.top - rvBattle.want) <= 1 && rvBattle.top <= rvBattle.floor - 30 * rvBattle.s + 1, 'in battle the road starts at least 30 canvas px above the highest feet (the enemies), so everyone stands on cobbles', JSON.stringify(rvBattle));
   await shot('bg-02-ptuj-battle-B');
 
   // ---------------------------------------------------------------- variant C (preview only): parallax of the pixel-art pack

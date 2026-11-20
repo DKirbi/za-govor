@@ -87,16 +87,16 @@
   "pngBytes": 197077,
   "webpBytes": 28714
  },
- "road-cobbles.png": {
-  "webp": "road-cobbles.webp",
-  "sha1": "e9b220719f7247adce7ad1606de3359fed9f31ff",
+ "road-tile-tall.png": {
+  "webp": "road-tile-tall.webp",
+  "sha1": "15db72f9a416bd779b3939c53a59472616e57479",
   "quality": 90,
   "size": [
-   1672,
-   240
+   2172,
+   663
   ],
-  "pngBytes": 69878,
-  "webpBytes": 127082
+  "pngBytes": 2255695,
+  "webpBytes": 262498
  },
  "sky.png": {
   "webp": "sky.webp",

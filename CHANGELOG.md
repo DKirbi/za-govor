@@ -40,15 +40,15 @@ After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git
 
 Branch `fix/post-34-integration`: the work Codex added at the end of #34, connected and checked.
 
-- **Smaller cobbles on the Ptuj road** (*Visoka*, summer and winter): Codex's `road-cobbles`, drawn 1:1 with about
-  ten rows of stones, replace the large three-row road tile (drawn at 1.3×). Stones are about 38 % of their old size,
-  as the Game Director chose on 19 Nov. The old tile stays in the manifest as `previewOnly`, to bring back if wanted.
-  - **Fix:** the strip did not join seamlessly. Codex's generator drew each edge stone three times (for the repeat)
-    with new random colours and snow each time, so stones cut by the edge changed shade half way. Each stone now keeps
-    one colour; the join changes less than neighbouring pixels do. The generator's seam test compared the strip with
-    copies of itself and could never fail; it now measures the join. It no longer needs macOS `sips`.
-  - The WebP copies follow (`tools/art_bg_webp.py` now skips `previewOnly` layers and removes WebPs nothing draws):
-    the build is 4.1 MB.
+- **The Ptuj road** (*Visoka*, summer and winter): the original cobbles at half size, on a thinner strip.
+  - Stones are about 38 % of their old size (scale 0.5, as chosen on 19 Nov). Codex's redrawn `road-cobbles` were
+    rejected on 20 Nov and are removed, with their generator and brief.
+  - The road's top follows the characters, on every screen: on the road it reaches up to the heroes' necks, so their
+    heads show against the water (about a third less road than before); in battle it starts just above the enemies'
+    feet (they stand higher than the heroes), a little lower than before.
+  - `tools/art_road_stack.py` makes the taller copy the small road needs from the original tile: more of its own
+    cobble rows, joined along the mortar so no straight seam shows, still seamless sideways. Nothing is redrawn.
+  - The WebP copies follow (`tools/art_bg_webp.py` now skips `previewOnly` layers and removes WebPs nothing draws).
 - **Martin Krpan, Kmečka moč rank 2** (*Visoka*): Krpan throws the salt bags alone, without the mare (Game Director,
   20 Nov). The kneel when he is down is a little smaller than before (crouched).
   - **Fix:** both sat 1 px above the ground line every other frame stands on (an off-by-one in

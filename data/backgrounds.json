@@ -82,10 +82,13 @@
           "y": 269,
           "pan": 0.85
         },
-        "road-cobbles": {
+        "road-tile-tall": {
           "x": 0,
           "y": 325,
-          "speed": 1
+          "scale": 0.5,
+          "speed": 1,
+          "stand": 30,
+          "neck": 0.5
         },
         "foreground": {
           "x": 0,
@@ -198,10 +201,13 @@
           "y": 266,
           "pan": 0.85
         },
-        "road-cobbles": {
+        "road-tile-tall": {
           "x": 0,
           "y": 325,
-          "speed": 1
+          "scale": 0.5,
+          "speed": 1,
+          "stand": 30,
+          "neck": 0.5
         },
         "foreground": {
           "x": 0,
@@ -211,5 +217,6 @@
         }
       }
     }
-  }
+  },
+  "standNote": "A ground layer with \"stand\" follows the characters: its top sits \"stand\" canvas pixels above the highest feet in the scene, or at the heroes' necks (\"neck\": that share of a hero sprite from its top) when that is higher. Feet stand on cobbles below the curb on any screen (the enemies in battle), and on the road the heroes' heads show against the water (Game Director, 20 Nov). Without characters (the gallery) it sits at its y."
 }
