@@ -36,6 +36,87 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
+## 0.15.0 — 17 Nov 2026 · zaprta alfa · Ptuj gets a second background for an A/B test
+Branch `feat/ptuj-bg-ab`, with the Codex art pack (#33). Details: `docs/art-benchmarks/ptuj-background/INTEGRATION.md`.
+- **Variant B is the Codex pack, *Ptuj — sončni zahod nad Dravo*** (`art/manifests/ptuj.json`): sunset sky,
+  clouds, distant hills, the castle hill with Ptuj Castle, the town on the Drava, the river with its
+  reflections and a road of big cobbles.
+  - The pack leaves placement open, so `data/backgrounds.json` places its layers for the game's scene: a
+    1672 × 560 view, the town and river moved up, the castle hill at Codex's 0.6 scale, and the road
+    enlarged 1.3× to reach from 58 % of the scene to the bottom.
+  - Every hero and enemy stands on the cobbles in battle and on the road. No pixel is changed.
+- **Variant A, the snowy Ptuj in use, is unchanged**, and it is what players see: the A/B test is off
+  (`live: false`). Turned on, each install keeps A or B (localStorage `zg-ab`). `?ozadje=B` previews B,
+  and *Liki in karte → Ozadja* shows it.
+- **Variant C, *Ptuj — večer ob Dravi*,** is Claude's pixel-art pack (`tools/art_ptuj_parallax.py`, 10
+  layers, 25 KB). It is a preview only (`?ozadje=C`, share 0) and has its own id, so it never touches the
+  Codex files.
+- **Backgrounds in layers** (`src/backgrounds.js`):
+  - Each layer moves at its own rate on the road, from the same centred framing as the battles.
+  - The view covers short, wide scenes without side gaps, with the ground kept at the bottom.
+  - Large pictures are shrunk smoothly, while pixel art keeps hard edges.
+  - A foreground layer stands in front of the actors and under the battle UI.
+  - Nothing drifts under reduced motion.
+- **`build.py`** reads both manifest formats, takes placement from `data/backgrounds.json`, builds a pack
+  in only when all its files are committed, and stops on a layer that contradicts its manifest.
+- **Battle statistics name the background variant** (`ozadje-ptuj=A`, or `B(predogled)` for a preview).
+  The consent text says so (*različica igre in ozadja*).
+- **Size:** the Codex layers grow the single-file build from 2.7 MB to about 9 MB. Runtime-sized
+  exports are an open question.
+- GPT's reference sheet is committed as a reference only. New test file: `tests/backgrounds.test.js`
+  (36 checks).
+- **Combined seasonal pack (PR #34)**: sunset (B) and winter (D, the Kurent background, share 0) share one depth
+  order. The shared bridge sits after the riverbank wall in both, and the outer-bank trees, the foreground
+  rocks and the separate cloud strips are in. Winter stays a preview until the Game Director assigns it.
+- **Fix:** the winter pack drew the bridge behind the sky, because the shared bridge came first in the manifest.
+  `build.py` now orders every layer by where its id first appears in the manifest.
+- **Fix:** castle hill in both packs was placed above the 560 px view and failed the build. Its y is now 0.
+- **Nastavitve → Razvoj → Kakovost slik:** *Samodejno* (the default: the A/B test chooses, as before), *Visoka*
+  (the Codex sunset pack, where the test would show A) or *Nizka* (the picture already in the game, variant A,
+  where the test would show the sunset pack). Winter has no low picture yet, so it stays on its Codex pack.
+  Stored in `zg-fidelity`. Martin Krpan's pictures are not yet part of the setting.
+- **Size:** the half-size copies of the Codex layers are removed, with `tools/art_ptuj_lowfi.py`. They were not
+  the low tier. The single-file build is 18 MB, down from 21.8 MB.
+- **Readable labels in the scene (19 Nov, Game Director):** the HP numbers, rank tags and enemy names under the
+  heroes and enemies have a 1 px dark outline. On snow (winter Ptuj and the picture already in the game) the grey
+  numbers were almost invisible. Only labels on the scene change; the same numbers on dark panels stay as they were.
+- **The Ptuj layers ship as WebP (19 Nov, Game Director):** the single-file build is **4.0 MB, down from 18.5 MB**.
+  `tools/art_bg_webp.py` writes a quality-90 WebP of every layer into `webp/` next to its PNG export (11.5 MB of
+  PNG becomes 0.9 MB for both seasons). Alpha stays exact, the road tile still joins without a seam, and side by
+  side on a phone the scenes look the same. The PNG exports stay as the lossless masters for a PC build.
+  - A pack opts in with `"webp": {"quality": 90}` in `data/backgrounds.json`. Each `webp/index.json` records which
+    PNG a WebP was made from; when a PNG changes, `build.py` embeds that PNG instead and says to rerun the tool
+    (`--check` lists stale ones). `build.py` still needs only the Python standard library.
+
+- **Martin Krpan follows *Kakovost slik* too** (Codex pack `codex/martin-krpan-sprite-assets`, merged into this branch).
+  - *Visoka* draws his Codex sprites; *Samodejno* and *Nizka* keep the sprite already in the game.
+  - Every state has its own row in one 192 × 432 sheet (`martin-krpan-sheet.png/.json`, embedded by `build.py`):
+    idle, Lipov kij, Kmečka moč R1 / R2 / R3, Mesarica, and the approved running, victory and downed poses.
+  - **Running** loops while the party walks the road. **Victory** (a raised bare fist) plays once when the last
+    enemy falls, before *Zmaga!*. **Downed** holds the kneel, greyed like every fallen hero, in battle, on the road
+    and on his hero screen. Reduced motion shows each state's first frame.
+  - **Fix:** the first export of running, victory and downed fitted every frame to 44 px on its own. Krpan grew
+    by about a quarter when he ran or cheered, the run lost its bob, and the kneel stood taller than idle. They are
+    re-exported from the same atlases at the pack's scale. The poses are unchanged.
+- **Hero sprites are data, ready for the rest of the roster:** `data/hero-art.json` names each hero's pack and
+  which sequence the game plays for idle, running, victory, down and each skill rank. `tools/art_hero_pack.py`
+  exports frames from the source atlases, packs the sheet, writes the review previews and validates a pack
+  (`--check`). It replaces `tools/art_krpan_sheet.py` and Codex's two Krpan exporters (`.ps1` and `.py`). The
+  convention for the next heroes is `docs/art-benchmarks/hero-sprites/README.md`; for the next regions,
+  `docs/art-benchmarks/region-backgrounds/README.md`.
+- **Removed as redundant** (17.5 MB): byte-identical copies (`previews/…/ptuj/assembled.*` = `sunset-assembled.*`;
+  the mare-lift export = its source), the PNG twins of the JPG previews, two old previews in
+  `art/source/environments/ptuj/`, the three Krpan-only tools and `docs/collaboration/GITHUB_WRITE_PERMISSION_TEST.md`.
+- **Krpan's skills are now the reviewed ones** (a reviewed hero, like Kurent or Kresnik; `src/progression.js`),
+  replacing Zamah, Kobilica and Lipov kij:
+  - **Lipov kij** 10 / 16 / 20.
+  - **Kmečka moč** (Game Director, 18 Nov): rank 1 two punches of 8, rank 2 the sacks for 20 at one enemy, rank 3 the
+    boulder for 22 split between up to two enemies.
+  - **Mesarica** 10 / 14 / 20 and a bleed of 2 a second for 2 / 3 / 4 s, as in the specification. A bleed and a burn
+    share the enemy's one damage-over-time slot.
+  - Balance impact is untested: Krpan is the main starting hero and his old attacks (7 / 18 / 38, the last one
+    stunning) are gone.
+
 ## 0.14.0 — 17 Nov 2026 · zaprta alfa · Znanje cards fold their details
 - **Nova pot:** each Znanje card shows its figure, name and one line. What losing and a fallen hero
   mean is folded behind **Podrobnosti** beside the *Znanje* heading; it opens all three cards at once

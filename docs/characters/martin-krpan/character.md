@@ -1,6 +1,6 @@
 # Martin Krpan
 
-> **Status:** Character identity, role, three-skill structure and final story-card subject CONFIRMED. Skill 1 rank values and Mesarica rank values CONFIRMED. Kmečka moč rank values and some targeting details OPEN. Artwork production can proceed from the visual direction below.
+> **Status:** Character identity, role, three-skill structure and final story-card subject CONFIRMED. Skill 1 rank values and Mesarica rank values CONFIRMED. Kmečka moč rank values CONFIRMED by the Game Director on 18 Nov 2026; a few targeting details stay OPEN. Artwork production can proceed from the visual direction below.
 > **Character type:** Slovenian literary hero / literary-folklore figure
 > **Current role:** Starting hero; heavy physical attacker
 > **Current prototype reference:** `src/game.js`, `docs/progression-design.md`
@@ -43,32 +43,31 @@ Single-target physical damage.
 
 ### Skill 2 — Kmečka moč
 
-Kmečka moč represents Krpan's exceptional physical strength. Its three ranks use increasingly spectacular displays of strength. The mare is part of the rank 2 visual presentation, not a projectile or an attacker.
+Kmečka moč represents Krpan's exceptional physical strength. Its three ranks use increasingly spectacular displays of strength.
 
 #### Rank 1 — Dvojni udarec
 
 Krpan delivers two consecutive punches.
 
 - Each punch is a separate hit and resolves separately.
-- Exact damage per hit and total damage are **OPEN**.
-- Exact target handling is **OPEN**.
+- **CONFIRMED (Game Director, 18 Nov 2026):** 8 damage per punch, 16 in total.
+- Target handling is **OPEN**. The game aims both punches at the one targeted enemy (implementation reading).
 
-#### Rank 2 — Vreči soli
+#### Rank 2 — Metanje vreč soli
 
-Krpan's mare appears beside him carrying two enormous sacks of salt. Krpan takes the sacks and hurls them at his opponents.
+When rank 2 activates, Martin Krpan starts alone, the salt bags appear in his hands, and he throws them. Do not show bags on the ground or a horse in the skill animation. Keep his established standing spirit scale; this action does not resize his other spirit poses.
 
-- The two sacks are the visual focus of the attack.
-- Exact damage, target count and whether the sacks resolve as separate hits or one combined attack are **OPEN**.
-- The mare helps present the attack but does not kick, charge or attack enemies.
+- **CONFIRMED (Game Director, 20 Nov 2026):** Krpan starts alone; the salt bags appear in his hands and he throws them. No ground bags or horse appear, and his established spirit size is unchanged.
+- **CONFIRMED (Game Director, 18 Nov 2026):** 20 damage to one target, resolved as one combined attack.
 
 #### Rank 3 — Ogromna skala
 
 Krpan lifts and hurls an enormous boulder.
 
 - The boulder can damage up to two enemies.
+- **CONFIRMED (Game Director, 18 Nov 2026):** 22 damage, split between the two enemies it hits (11 each); a single enemy takes all 22. The game takes the targeted enemy and the one beside it (implementation reading; the even split is the reading of "split").
 - Damage is high, immediate, flat direct damage.
 - This is **not** damage over time and does not apply bleed or another lingering damage status.
-- Exact damage and how damage is distributed between the two targets are **OPEN**.
 
 ### Skill 3 — Mesarica
 
@@ -97,11 +96,23 @@ Single-target only. Bleed is a separate damage-over-time status, not part of the
 - The limewood cudgel and Mesarica are defining objects.
 - **Lipov kij:** a readable, weighty cudgel swing.
 - **Kmečka moč R1:** two clear consecutive fist strikes.
-- **Kmečka moč R2:** the mare briefly appears beside Krpan with two oversized sacks of salt; Krpan throws the sacks. The mare is a supporting visual element, not an attacker.
+- **Kmečka moč R2:** Krpan starts alone, then the bags appear in his hands as he prepares to throw them. No bags lie on the ground and no horse appears. His ordinary spirit poses retain their established scale.
 - **Kmečka moč R3:** Krpan throws one enormous boulder. Make the possible two-target impact legible without obscuring the combat UI.
 - **Mesarica:** a strong, precise sword slash with a clear bleed-status cue.
 
 Keep animations economical and readable at the existing gameplay sprite scale. Prefer a few strong key poses and clear impact frames over complex multi-part animation.
+
+### Approved travel, victory and downed states
+
+For the Martin Krpan sprite pack in PR #34, the following poses are approved:
+
+- **Running:** a four-frame right-facing loop in this order: left-foot contact, compression, right-foot contact, opposite compression. Keep the salt sack secured and the cudgel in his existing hand.
+- **Victory:** four frames: settle into a planted stance, raise a bare fist, hold briefly, then return to stance. Krpan is unarmed throughout this gesture.
+- **Downed:** one static crouched kneeling pose with one knee down, the other boot planted and his head bowed. Keep the salt sack on his back and rest the cudgel tip-down beside him. Because he is crouched, this pose is shorter than the standing spirit sprites while keeping the same ground baseline.
+
+These three Martin Krpan states establish a **proposed benchmark** for a future roster-wide sprite convention (`docs/art-benchmarks/hero-sprites/README.md`). They do not approve or define assets for any other character.
+
+**IMPLEMENTED (PR #34, *Kakovost slik = Visoka*):** running loops while the party walks; victory plays once when the last enemy falls; the kneel is held, greyed, while Krpan is down. The skill animations follow §5 above (Lipov kij, Kmečka moč ranks 1–3, Mesarica). The mapping lives in `data/hero-art.json`.
 
 ### Folk-art illustration — Krpan lifts his mare
 
@@ -122,9 +133,8 @@ The exact composition and execution will be developed during the full roster art
 
 ## 6. Open decisions
 
-- Kmečka moč R1: damage per punch, total damage and target handling.
-- Kmečka moč R2: damage, target count and whether the two sacks resolve as separate hits or one combined attack.
-- Kmečka moč R3: exact flat damage and damage distribution when two enemies are hit.
+- Kmečka moč R1: which enemy takes the punches (the game uses the one targeted).
+- Kmečka moč R3: which second enemy the boulder hits (the game uses the one beside the target).
 - Exact placement of the separate folk-art illustration of Krpan lifting his mare.
 - Animation timing and implementation details should follow the shared combat rules and be tested without changing the confirmed skill structure.
 
@@ -134,4 +144,4 @@ The exact composition and execution will be developed during the full roster art
 - [Slovenska biografija — Fran Levstik](https://www.slovenska-biografija.si/oseba/sbi322455/), biographical context for the author.
 - Scholarship on the possible historical and folkloric inspirations for the tale should be treated as interpretation and context, not proof that Martin Krpan was a historical person.
 
-**Interpretation boundary:** The cudgel, Mesarica, mare, salt trade, boulder-throwing gameplay skill and Brdavs duel belong to different layers: the cudgel, sword, mare, salt trade and duel are in Levstik's literary tale; the specific skill ranks, combat targets and numerical effects are game design. The Kmečka moč skill's boulder throw and the use of the mare to present the sacks are game interpretations, not claims about additional episodes in the literary source.
+**Interpretation boundary:** The cudgel, Mesarica, mare, salt trade, boulder-throwing gameplay skill and Brdavs duel belong to different layers: the cudgel, sword, mare, salt trade and duel are in Levstik's literary tale; the specific skill ranks, combat targets and numerical effects are game design. The Kmečka moč boulder throw is a game interpretation; the earlier mare-and-sacks art is retained only as historical artwork, not as the active rank-2 animation.

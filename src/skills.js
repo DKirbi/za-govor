@@ -6,7 +6,7 @@
 // - skillPanel(): the list of skills with their stopnje, used by the hero screens (read only) and by Veščine
 // - renderTrain(): Veščine, where points are spent; it opens from wells, shrines, pedlars and after a battle with a new level.
 // On a journey the points are the party's (S.run.pts, PTS_PER_LV a level): any hero can spend them (balance D).
-// The five reviewed heroes (src/progression.js) have no SKILL_UPS: each of their ranks is described by RANK_TEXT.
+// The six reviewed heroes (src/progression.js) have no SKILL_UPS: each of their ranks is described by RANK_TEXT.
 const SKILL_TEXT = {
   perun: ['Hiter udar strele v cilj.', 'Močnejši udar strele v cilj.', 'Silen udar; strela preskoči na vse sovražnike.'],
   svarog: ['Udarec s kladivom; družina dobi malo ščita.', 'Močnejši udarec in več ščita.', 'Silen udarec in velik ščit za vso družino.'],
@@ -14,7 +14,6 @@ const SKILL_TEXT = {
   veles: ['Močan udarec in strup.', 'Še močnejši udarec in strup.', 'Silen udarec; kača ovije in zastrupi vse sovražnike.'],
   dazbog: ['Udarec s sončnim žarkom.', 'Udarec; naslednja beseda udari ×1,5.', 'Silen udarec; naslednja beseda šteje dvojno.'],
   stribog: ['Sapica zadene vse sovražnike.', 'Burja močneje zadene vse.', 'Vihar silno zadene vse in očisti mrežo črk.'],
-  krpan: ['Težek udarec s kijem.', 'Še težji udarec.', 'Silen udarec, ki cilj omami.'],
   jurij: ['Malo pozdravi in šibko udari.', 'Pozdravi več in odklene zaklenjene črke.', 'Pozdravi veliko; enkrat na poti obudi junaka, ki je obležal.'],
   klepec: ['Udarec s pastirsko palico.', 'Močnejši udarec z izruvanim drevesom.', 'Silen udarec; vsak Vilin dar ga do konca bitke okrepi.'],
   vida: ['Udarec s hrepenenjem.', 'Udarec; cilj napada šibkeje.', 'Silen udarec; vsi sovražniki napadajo šibkeje.'],
@@ -27,7 +26,6 @@ const SKILL_UPS = {
   veles: ['krit slabi', 'krit omama', 'krit zdravi'],
   dazbog: ['krit zdravi', 'vsi krit', 'zdravi krit'],
   stribog: ['slabi krit', 'omama krit', 'slabi krit'],
-  krpan: ['krit omama', 'krit vsi', 'krit vsi'],
   jurij: ['zdravi scit', 'zdravi slabi', 'zdravi scit'],
   klepec: ['krit omama', 'vsi krit', 'krit zdravi'],
   vida: ['slabi zdravi', 'slabi vsi', 'zdravi krit'],

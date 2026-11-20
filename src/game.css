@@ -407,6 +407,28 @@ body.mobile .curclue { margin-top: 0; }
 @keyframes lunge3 { 0% { transform: translateX(calc(var(--px) * -5)) } 14% { transform: translate(calc(var(--px) * 8), calc(var(--px) * -3)) }
   30% { transform: translateX(calc(var(--px) * 11)) } 44% { transform: translateX(calc(var(--px) * 5)) } 58% { transform: translate(calc(var(--px) * 11), calc(var(--px) * -2)) }
   74% { transform: translateX(calc(var(--px) * 9)) } 88% { transform: translateX(calc(var(--px) * 3)) } 100% { transform: none } }
+/* Visoka: a hero with frames (data/hero-art.json, src/backgrounds.js) plays them from one sheet. spriteEl puts --cols, --rows
+   and the rows of its states on the element: --ri idle, --rr running, --rw victory, --rd down; attackAnim sets --ra, the row
+   of the skill it plays. --r is the row shown, --f the frame the animation steps through (every animated sequence has four
+   frames; a held state has one). Idle loops; a skill plays once in 0,72 s in place of the lunge; running loops while the
+   party walks; victory (.cheer) plays once when the last enemy falls and holds its last frame; down holds the kneel, greyed
+   like every fallen hero but upright. A hero without a state (no hi-run, hi-win or hi-down) keeps what the game did before. */
+@property --f { syntax: '<number>'; inherits: false; initial-value: 0; }
+.spr.hi { --r: var(--ri, 0); }
+.spr.hi.atk, .spr.hi.atk3 { --r: var(--ra, var(--ri, 0)); }
+.scene.travel.walking .party .spr.hi.hi-run:not(.down) { --r: var(--rr); }
+.spr.hi.hi-win.cheer { --r: var(--rw); }
+.spr.hi.hi-down.down, .spirit.down .spr.hi.hi-down { --r: var(--rd); }
+.spr.hi .sp { background-size: calc(var(--cols) * 100%) calc(var(--rows) * 100%);
+  background-position: calc(var(--f) / (var(--cols) - 1) * 100%) calc(var(--r, 0) / (var(--rows) - 1) * 100%);
+  animation: hiplay 1.2s steps(4, jump-none) infinite; }
+.spirit .spr.hi .sp { animation: hiplay 1.2s steps(4, jump-none) infinite, breathe 3.2s steps(1) infinite; }   /* the hero screens keep their breathing */
+.spr.hi.atk .sp, .spr.hi.atk3 .sp { animation: hiplay .72s steps(4, jump-none) both; }
+.scene.travel.walking .party .spr.hi.hi-run:not(.down) .sp { animation: hiplay .5s steps(4, jump-none) infinite; }
+.spr.hi.hi-win.cheer .sp { animation: hiplay .8s steps(4, jump-none) both; }
+.hero.spr.hi.hi-down.down .sp, .spirit.down .spr.hi.hi-down .sp { animation: none !important; transform: none; --f: 0;
+  background-position: 0 calc(var(--r) / (var(--rows) - 1) * 100%); filter: grayscale(1) brightness(.7); }
+@keyframes hiplay { from { --f: 0 } to { --f: 3 } }
 .hit { animation: hitblink .5s steps(1) .14s both !important; }
 @keyframes hitblink { 0% { opacity: 0; transform: translateX(5px) } 14% { opacity: 1; transform: translateX(-5px) } 28% { opacity: 0; transform: translateX(4px) }
   42% { opacity: 1; transform: translateX(-4px) } 56% { opacity: 0; transform: translateX(2px) } 70% { opacity: 1; transform: translateX(-2px) } 84% { opacity: 0 } 100% { opacity: 1; transform: none } }
@@ -467,7 +489,7 @@ body.mobile .gstage { height: 268px; } body.mobile .gstage .hero.spr { width: 96
 body.mobile .gstage .party { left: 6%; } body.mobile .gstage .enemies { right: 6%; }
 body.mobile .card.folk { font-size: 11px; }
 body.mobile .card.folk.t1 { width: 100px; } body.mobile .card.folk.t2 { width: 146px; } body.mobile .card.folk.t3 { width: 200px; }
-@media (prefers-reduced-motion: reduce) { .sp, .spr.atk .sp, .spr.atk3 .sp, .hit, .scene.flash::after { animation: none !important; } .scene.flash::after { display: none; } }
+@media (prefers-reduced-motion: reduce) { .sp, .spr.atk .sp, .spr.atk3 .sp, .spr.hi .sp, .spr.hi.cheer .sp, .scene.travel.walking .party .spr.hi .sp, .hit, .scene.flash::after { animation: none !important; } .scene.flash::after { display: none; } }
 
 /* iteration 4: hidden keyword column (geslo) */
 .cell.gk { outline: 2px solid var(--gold); outline-offset: -2px; }
@@ -641,6 +663,11 @@ body.mobile .wordbar .chips { min-height: 24px; }
 .obj.spr.big { --px: 3px; }
 .mirror { transform: scaleX(-1); }
 .foename { font-size: 11px; color: var(--dim); font-weight: 600; white-space: nowrap; }
+/* HP numbers, rank tags and enemy names sit on the background art itself: a 1 px dark outline keeps them readable on
+   snow, sky and water alike (the same classes on the dark panels outside the scene need none) */
+.scene .hpnum, .scene .foename { --ol: #120f16;
+  text-shadow: 1px 0 var(--ol), -1px 0 var(--ol), 0 1px var(--ol), 0 -1px var(--ol),
+    1px 1px var(--ol), -1px 1px var(--ol), 1px -1px var(--ol), -1px -1px var(--ol), 0 0 3px rgb(0 0 0 / .6); }
 
 .travelwrap { display: grid; gap: 10px; }
 .tv-intro { margin: -4px 0 0; color: var(--dim); font-style: italic; }
@@ -1321,3 +1348,14 @@ body.mobile .report .rp-send .btn, body.mobile .report .rp-close { min-height: 4
 @keyframes ember { from { opacity: .35; } to { opacity: .95; } }
 .train-pool { margin: 0 0 6px; color: var(--gold); }
 @media (prefers-reduced-motion: reduce) { .foe.spr.charging, .tile.scorch::before { animation: none; } }
+
+/* ---------- background variants (src/backgrounds.js): a layered pack in place of the one picture ---------- */
+/* Positions and sizes are set per layer in bgPlace; variant A never gets these classes. */
+.pbg-l, .pbg-dim { position: absolute; inset: 0; pointer-events: none; background-repeat: no-repeat; image-rendering: pixelated; }
+.pbg-l.tx { background-repeat: repeat-x; }
+.scene.pbg-noroad > .road { display: none; }
+/* a foreground layer stands in front of the heroes and enemies, never in front of the battle UI */
+.scene.pbg > .pbg-l.front { z-index: 1; }
+.scene.pbg > .partyhp, .scene.pbg > .cards, .scene.pbg > .floats { z-index: 2; }
+.scene.travel.pbg > .pbg-l.front { z-index: 3; }
+.gbg .gpbg { position: relative; width: 100%; overflow: hidden; border-radius: 6px; border: 1px solid var(--line); background: #1a1e2b; }

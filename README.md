@@ -475,6 +475,7 @@ CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 | `tests/lexicon.test.js` | The word list in the browser: over a million forms accepted and a common part suggested, the 217-word coverage set accepted and its non-words (Croatian, English, made up) refused, the reported words (*jasa*, *loj*, *runa*, *seks*) and *ritem*/*ritual*/*riti*, vulgar words accepted but never suggested, mythology names, *deny.json*, non-standard forms, base forms (*ljudje* → *človek*), headwords Sloleks lacks (*zborišča*, *sedemkotnik*), and at 4× slower CPU a mesh walk under 50 ms and a lookup under 20 µs |
 | `tests/title.test.js` | The title scene: the *Za govor!* heading and tab title, whole-number scaling (3× at 1280 px, 4× at 1920, 2× on a phone), square wordmark pixels, full width with no sideways scrolling (also at an odd width), starting at the top of the page (below a phone's status bar), room left for the menu, the wordmark standing still, sparks rising in whole art pixels and not restarting when the start screen is rebuilt, a still picture with reduced motion |
 | `tests/desktop.test.js` | A keyboard playthrough: c/s/z are not accepted for č/š/ž, first battle, result and hero screens, chest, finisher, Lintvern's letter lock and forced crossword, ambush, rock slide, and no console errors anywhere |
+| `tests/backgrounds.test.js` | Background A/B tests for Ptuj: the Codex pack built in as variant B (eight layers placed through a 1672×560 view, the road enlarged 1.3×) and Claude's pack as preview-only variant C; variant A unchanged on the road and in battle while the test is off; `?ozadje=B`/`C` previews marked in the statistics; every hero and enemy standing on the ground layer (read from the image) in battle and on the road; town, river and reflections moving together; smooth shrinking for B and hard pixels for C; a short, wide scene covered without side gaps; C's tiling speeds, drift and reduced motion; the foreground in front of the actors and under the battle UI; other regions untouched; the gallery entries; a live test assigning A or B per install by its share and never C |
 
 Screenshots from each run land in `test-output/` (ignored by git).
 `npm run screenshots` regenerates the images in `docs/images/` used by this README.
@@ -488,6 +489,7 @@ za-govor/
 │   ├── index.src.html        # page template with placeholders
 │   ├── game.js               # battles, crosswords, chest, rock slide, heroes (no framework)
 │   ├── journey.js            # the road: regions, stops, party, items, pedlar, bag, spikes
+│   ├── backgrounds.js        # background A/B tests: variant choice, layered parallax packs, gallery entry
 │   ├── playtest.js           # pause, puzzle intros, fullscreen, fit to screen
 │   ├── mobile.js             # phone specifics: in-game keyboard, haptics, Android back button
 │   ├── credits.js            # O igri: Avtor (Oygn Productions), Navdih, Zasluge (every source)
@@ -511,7 +513,12 @@ za-govor/
 │   ├── clues.json            # crossword clue banks per knowledge level, mythology keywords
 │   ├── words.json            # words of each region: chests (with clues), rock slides, themes (a first list to review)
 │   ├── meanings.json         # meanings shown next to words (filled in by hand from Kaj pomeni? reports)
+│   ├── backgrounds.json      # background A/B tests: variants, share, live switch, layer speeds
 │   └── world.json            # the journey: regions, stops, enemy pools, items, save checkpoints
+├── art/                      # original artwork and game-ready exports (art/README.md)
+│   ├── exports/environments/ptuj/        # variant B of the Ptuj background: the Codex layer PNGs (#33)
+│   ├── exports/environments/ptuj-vecer/  # variant C: Claude's pixel-art layers (tools/art_ptuj_parallax.py)
+│   └── manifests/            # each pack's layers: order, sizes, alpha, tiling (ptuj.json, ptuj-vecer.json)
 ├── tools/
 │   ├── build_lexicon.py      # builds data/lexicon.bin from Sloleks, Franček and the thesaurus
 │   ├── sloleks_extract.py    # every form from the Sloleks XML (reads the zip directly)
@@ -522,6 +529,7 @@ za-govor/
 │   ├── cluebank.py           # the three clue banks; validates and builds data/clues.json
 │   ├── art_extra.py          # draws the new heroes, road objects, item icons, backgrounds and knowledge-level figures (needs Pillow)
 │   ├── art_title.py          # draws the title scene, the Za govor! wordmark and its ribbon (needs Pillow)
+│   ├── art_ptuj_parallax.py  # draws variant C of the Ptuj background: ten pixel-art parallax layers and their manifest (needs Pillow)
 │   └── readme-shots.js       # regenerates docs/images/
 ├── tests/                    # headless Chrome tests (puppeteer-core)
 └── docs/
@@ -539,6 +547,8 @@ za-govor/
   enemy pools and local hero, and all items. On the travel screen the party stands still
   and the stops slide towards it; the background pans slowly across the region's landmark.
   The same file is meant to feed the Godot game.
+  A region background can be A/B tested against a layered parallax pack (`data/backgrounds.json`,
+  `src/backgrounds.js`, `docs/art-benchmarks/ptuj-background/INTEGRATION.md`); Ptuj has the Codex pack as B and Claude's *večer ob Dravi* as a preview-only C.
 - **Dictionary.** `data/lexicon.bin` is a minimised automaton (DAWG) over every accepted
   form, 1.48 million of them in 1.4 MB. Each form ends in a mark saying whether the game may
   *suggest* it or only *accepts* it, followed by its base form written as "drop n letters,

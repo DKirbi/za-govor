@@ -1,0 +1,332 @@
+{
+  "pack": "Martin Krpan gameplay sprites and separate mare-lifting folk-art concept",
+  "version": "0.1.0",
+  "status": "review",
+  "approval": "The original pack review remains open. The running, victory and downed pose sequences below were approved for this PR; this does not approve assets for other characters. The active Kmečka moč R2 animation shows Krpan starting alone, producing the salt bags in his hands and throwing them; no horse or ground bags appear.",
+  "canvas": {
+    "frameWidth": 48,
+    "frameHeight": 48,
+    "facing": "right",
+    "groundBaselineY": 47,
+    "format": "PNG RGBA, transparent background, binary alpha"
+  },
+  "gameConvention": {
+    "inspected": "src/game.js: SPR_SIZE.krpan = 48; the sprite in the game is a 96×48 strip of two 48×48 frames.",
+    "runtimeSprite": "art/exports/characters/martin-krpan/martin-krpan-v2.png",
+    "integrationStatus": "Integrated for Nastavitve → Razvoj → Kakovost slik = Visoka (data/hero-art.json, src/backgrounds.js): the strip replaces SPRITES.krpan on cards and portraits; the sheet plays idle, the skills by rank, running on the road, victory when the last enemy falls and the kneel while he is down. Samodejno and Nizka keep the sprite already in the game."
+  },
+  "artDirection": "Modernized SNES/GBA-inspired pixel art, broad readable silhouette, wide hat, prominent moustache, cream shirt, red vest and sash, salt sack, dark trousers and boots, restrained warm palette and dark outline.",
+  "export": {
+    "frame": 48,
+    "baselineRow": 47,
+    "alphaThreshold": 128,
+    "palette": [
+      "1d1410",
+      "171522",
+      "24202e",
+      "393447",
+      "514b5b",
+      "756a78",
+      "f2ecdc",
+      "dbcfb8",
+      "c0aa8e",
+      "e9b98f",
+      "c98f66",
+      "a76848",
+      "b8322f",
+      "e24832",
+      "f0a84e",
+      "e9b93f",
+      "fff0ad",
+      "3f2923",
+      "65402a",
+      "88552f",
+      "a66a35",
+      "c58b4e",
+      "5e493c",
+      "7e6651",
+      "9a8061",
+      "4a382e",
+      "d9b678"
+    ],
+    "scale": 0.0766,
+    "scaleNote": "Output pixels per source pixel. 0.0766 is the scale of the first six atlases (a 631×623 cell to 48×48), at which Krpan stands about 35 px tall. A sequence generated at another size sets its own sourceLayout.scale so he keeps that size in every state."
+  },
+  "processing": {
+    "exportScripts": [
+      "tools/art_hero_pack.py",
+      "tools/art_krpan_salt_throw.py"
+    ],
+    "sourceAtlases": "The original six generated 2×2 pose atlases are 1263×1246. New running and victory sources are 2172×724 horizontal four-frame atlases; the new downed source is a single 1312×1199 pose. The corrected rank-2 salt-bag throw uses a native 192×48 four-frame atlas cropped from the retained salt-sacks source; the mare and ground sacks are excluded from active frames.",
+    "exports": "The first six sequences (fit: cell) resample each whole 2×2 atlas cell to 48×48 with nearest-neighbour; they were exported by an earlier PowerShell script (tools/export_martin_krpan_frames.ps1, removed in PR #34; in the branch history) and re-exporting them with tools/art_hero_pack.py changes up to 26 pixels a frame through nearest-colour ties, so the tool leaves committed frames alone unless named with --only. Running, victory and downed (fit: scale) use one scale per sequence, the union of the frames centred, so the run keeps its bob and Krpan keeps his size. Every frame: alpha thresholded at 128, the 27-colour palette in export.palette, lowest opaque pixel on row 47. The rank-2 sequence starts with Krpan alone, then the bags appear in his hands before he winds up and throws them. The crouched downed pose uses source scale 0.040 so it is shorter than standing poses while keeping the ground baseline.",
+    "exportHistory": "PR #34 first exported running, victory and downed by fitting each frame to 44×44 on its own. That made them about 25 % larger than idle and the attacks, erased the run's bob and stood the kneel taller than the standing pose. They were re-exported from the same atlases at the pack's scale (downed at 0.047, below). The poses are unchanged.",
+    "preview": "The original pack previews remain preserved; kmecka-moc-r2-salt-bag-throw.html and .png show the active rank-2 frames."
+  },
+  "sequences": [
+    {
+      "id": "idle",
+      "label": "Idle breathing / weight shift",
+      "sourceAtlas": "art/source/characters/martin-krpan/atlases/idle-4f.png",
+      "sourceLayout": {
+        "columns": 2,
+        "rows": 2,
+        "frameOrder": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "fit": "cell"
+      },
+      "framesBackToFront": [
+        "art/exports/characters/martin-krpan/animations/idle/frame-01.png",
+        "art/exports/characters/martin-krpan/animations/idle/frame-02.png",
+        "art/exports/characters/martin-krpan/animations/idle/frame-03.png",
+        "art/exports/characters/martin-krpan/animations/idle/frame-04.png"
+      ]
+    },
+    {
+      "id": "cudgel-strike",
+      "label": "Weighty limewood cudgel strike; action description only, not assigned to a progression skill name.",
+      "sourceAtlas": "art/source/characters/martin-krpan/atlases/cudgel-strike-4f.png",
+      "sourceLayout": {
+        "columns": 2,
+        "rows": 2,
+        "frameOrder": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "fit": "cell"
+      },
+      "framesBackToFront": [
+        "art/exports/characters/martin-krpan/animations/cudgel-strike/frame-01.png",
+        "art/exports/characters/martin-krpan/animations/cudgel-strike/frame-02.png",
+        "art/exports/characters/martin-krpan/animations/cudgel-strike/frame-03.png",
+        "art/exports/characters/martin-krpan/animations/cudgel-strike/frame-04.png"
+      ]
+    },
+    {
+      "id": "kmecka-moc-r1-double-punch",
+      "label": "Two separate bare-handed punches; no weapon attack.",
+      "sourceAtlas": "art/source/characters/martin-krpan/atlases/double-punch-4f.png",
+      "sourceLayout": {
+        "columns": 2,
+        "rows": 2,
+        "frameOrder": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "fit": "cell"
+      },
+      "framesBackToFront": [
+        "art/exports/characters/martin-krpan/animations/double-punch/frame-01.png",
+        "art/exports/characters/martin-krpan/animations/double-punch/frame-02.png",
+        "art/exports/characters/martin-krpan/animations/double-punch/frame-03.png",
+        "art/exports/characters/martin-krpan/animations/double-punch/frame-04.png"
+      ]
+    },
+    {
+      "id": "kmecka-moc-r2-salt-bag-throw",
+      "label": "Krpan starts alone, the salt bags appear in his hands, then he winds up and throws them. No ground bags or horse appears in the active skill animation.",
+      "poseApproval": "Confirmed art direction: show Krpan throwing salt bags instead of showing the horse.",
+      "playback": "Start alone; produce the bags in hand, wind up and throw.",
+      "sourceAtlas": "art/source/characters/martin-krpan/atlases/kmecka-moc-r2-salt-bag-throw-4f.png",
+      "sourceLayout": {
+        "columns": 4,
+        "rows": 1,
+        "frameOrder": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "fit": "scale",
+        "scale": 1
+      },
+      "framesBackToFront": [
+        "art/exports/characters/martin-krpan/animations/kmecka-moc-r2-salt-bag-throw/frame-01.png",
+        "art/exports/characters/martin-krpan/animations/kmecka-moc-r2-salt-bag-throw/frame-02.png",
+        "art/exports/characters/martin-krpan/animations/kmecka-moc-r2-salt-bag-throw/frame-03.png",
+        "art/exports/characters/martin-krpan/animations/kmecka-moc-r2-salt-bag-throw/frame-04.png"
+      ]
+    },
+    {
+      "id": "kmecka-moc-r3-boulder",
+      "label": "Krpan braces, lifts, winds up and throws one boulder. No target count or damage is specified by these images.",
+      "sourceAtlas": "art/source/characters/martin-krpan/atlases/boulder-throw-4f.png",
+      "sourceLayout": {
+        "columns": 2,
+        "rows": 2,
+        "frameOrder": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "fit": "cell"
+      },
+      "framesBackToFront": [
+        "art/exports/characters/martin-krpan/animations/boulder-throw/frame-01.png",
+        "art/exports/characters/martin-krpan/animations/boulder-throw/frame-02.png",
+        "art/exports/characters/martin-krpan/animations/boulder-throw/frame-03.png",
+        "art/exports/characters/martin-krpan/animations/boulder-throw/frame-04.png"
+      ]
+    },
+    {
+      "id": "mesarica-slash",
+      "label": "Draw, precise single slash, restrained bleed cue, recovery. Asset name does not resolve the current skill-name conflict.",
+      "sourceAtlas": "art/source/characters/martin-krpan/atlases/mesarica-slash-4f.png",
+      "sourceLayout": {
+        "columns": 2,
+        "rows": 2,
+        "frameOrder": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "fit": "cell"
+      },
+      "framesBackToFront": [
+        "art/exports/characters/martin-krpan/animations/mesarica-slash/frame-01.png",
+        "art/exports/characters/martin-krpan/animations/mesarica-slash/frame-02.png",
+        "art/exports/characters/martin-krpan/animations/mesarica-slash/frame-03.png",
+        "art/exports/characters/martin-krpan/animations/mesarica-slash/frame-04.png"
+      ]
+    },
+    {
+      "id": "running",
+      "label": "Approved four-frame right-facing loop: left-foot contact, compression, right-foot contact, opposite compression. Krpan keeps his sack secured and carries the cudgel in its existing hand.",
+      "poseApproval": "Approved for this PR",
+      "playback": "Loop while the party travels toward the next fight.",
+      "sourceAtlas": "art/source/characters/martin-krpan/atlases/running-4f.png",
+      "sourceLayout": {
+        "columns": 4,
+        "rows": 1,
+        "frameOrder": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "fit": "scale"
+      },
+      "framesBackToFront": [
+        "art/exports/characters/martin-krpan/animations/running/frame-01.png",
+        "art/exports/characters/martin-krpan/animations/running/frame-02.png",
+        "art/exports/characters/martin-krpan/animations/running/frame-03.png",
+        "art/exports/characters/martin-krpan/animations/running/frame-04.png"
+      ]
+    },
+    {
+      "id": "victory",
+      "label": "Approved four-frame one-shot: settle into a planted stance, raise a bare fist, hold, return to stance. No weapon or effect.",
+      "poseApproval": "Approved for this PR",
+      "playback": "Play when the party defeats an enemy.",
+      "sourceAtlas": "art/source/characters/martin-krpan/atlases/victory-4f.png",
+      "sourceLayout": {
+        "columns": 4,
+        "rows": 1,
+        "frameOrder": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "fit": "scale"
+      },
+      "framesBackToFront": [
+        "art/exports/characters/martin-krpan/animations/victory/frame-01.png",
+        "art/exports/characters/martin-krpan/animations/victory/frame-02.png",
+        "art/exports/characters/martin-krpan/animations/victory/frame-03.png",
+        "art/exports/characters/martin-krpan/animations/victory/frame-04.png"
+      ]
+    },
+    {
+      "id": "downed",
+      "label": "Approved one-frame crouched kneel: one knee down, the other boot planted, head bowed, salt sack secured, cudgel resting tip-down. The crouched silhouette is shorter than standing poses.",
+      "poseApproval": "Approved for this PR",
+      "playback": "Hold while Krpan is downed.",
+      "sourceAtlas": "art/source/characters/martin-krpan/atlases/downed.png",
+      "sourceLayout": {
+        "columns": 1,
+        "rows": 1,
+        "frameOrder": [
+          1
+        ],
+        "fit": "scale",
+        "scale": 0.04,
+        "scaleNote": "The source pose is exported at 0.040 so its crouched silhouette is shorter than standing states; the lowest opaque pixel stays on row 47."
+      },
+      "framesBackToFront": [
+        "art/exports/characters/martin-krpan/animations/downed/frame-01.png"
+      ]
+    }
+  ],
+  "runtimeSheet": {
+    "path": "art/exports/characters/martin-krpan/martin-krpan-v2.png",
+    "dimensions": [
+      96,
+      48
+    ],
+    "frameOrder": [
+      "idle/frame-01.png",
+      "cudgel-strike/frame-03.png"
+    ],
+    "note": "Maintains the existing idle | attack two-frame layout for implementation review."
+  },
+  "folkArt": {
+    "source": "art/source/characters/martin-krpan/folk-art/mare-lift.png",
+    "export": null,
+    "sourceDimensions": [
+      1145,
+      1374
+    ],
+    "type": "separate narrative illustration; not a gameplay sprite and not the final Brdavs story card",
+    "status": "PROPOSED artistic interpretation",
+    "literaryNote": "Levstik's text describes Krpan carrying the mare and its load aside for the carriage. The overhead lift shown here is an artistic interpretation, not a literal staging specified by the passage.",
+    "exportNote": "No runtime export until its placement is decided (OPEN). The earlier export was a byte-identical copy of the source and was removed in PR #34."
+  },
+  "preview": "art/previews/characters/martin-krpan/kmecka-moc-r2-salt-bag-throw.png",
+  "animationPreview": "art/previews/characters/martin-krpan/kmecka-moc-r2-salt-bag-throw.html",
+  "benchmark": "These states set the roster convention in docs/art-benchmarks/hero-sprites/README.md. It approves no other character's assets.",
+  "openDecisions": [
+    "The mare-lifting folk-art illustration's exact placement remains OPEN.",
+    "The final Brdavs story card is a separate confirmed subject and is not part of this asset pack."
+  ],
+  "resolvedDecisions": [
+    "Runtime integration (PR #34): Visoka plays every sequence; see gameConvention.integrationStatus.",
+    "Kmečka moč R2: Krpan starts alone, the bags appear in his hands, then he throws them; no horse or bags on the ground appear.",
+    "Idle, running and victory keep the established standing spirit scale. The crouched downed pose uses source scale 0.040 and is shorter than standing poses."
+  ],
+  "sources": [
+    {
+      "claim": "Primary literary source for Krpan, his mare and the carriage episode.",
+      "url": "https://sl.wikisource.org/wiki/Martin_Krpan_z_Vrha",
+      "note": "The passage says Krpan carried the mare with its load to the side of the road; the overhead illustration is labeled as interpretation."
+    },
+    {
+      "claim": "Project-approved character identity and game-art interpretation boundaries.",
+      "path": "docs/characters/martin-krpan/character.md"
+    },
+    {
+      "claim": "Krpan's reviewed skills (Lipov kij, Kmečka moč, Mesarica) and their ranks.",
+      "path": "docs/progression-design.md"
+    }
+  ],
+  "reviewStatus": "The active Kmečka moč R2 sequence shows Krpan starting alone; salt bags appear in his hands before he throws them. No horse or ground bags appear. Idle, running and victory retain the established standing scale, while the downed crouch is shorter. The earlier mare-and-sacks frames remain preserved as historical assets.",
+  "retainedHistoricalAssets": {
+    "note": "The previous mare-and-sacks study is preserved on disk for history, but is not an active sequence, runtime sheet row, or Kmečka moč R2 frame.",
+    "sourceAtlas": "art/source/characters/martin-krpan/atlases/salt-sacks-4f.png",
+    "frames": [
+      "art/exports/characters/martin-krpan/animations/salt-sacks/frame-01.png",
+      "art/exports/characters/martin-krpan/animations/salt-sacks/frame-02.png",
+      "art/exports/characters/martin-krpan/animations/salt-sacks/frame-03.png",
+      "art/exports/characters/martin-krpan/animations/salt-sacks/frame-04.png"
+    ]
+  }
+}
