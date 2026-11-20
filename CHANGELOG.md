@@ -61,6 +61,9 @@ party went up a level nearly every battle); numbers from simulations of the buil
 - **Skill texts, short** (Game Director, from the phone): stopnja 1 says what a skill does, stopnji 2 and 3 only what
   changes; time in words (*2 sekundi*, *5 sekund*); the dots are explained once; Kurent's texts rewritten (no dance,
   no "naslednji udarec").
+- **Skill wording** (Game Director): the enemy is *nasprotnik* in its proper forms (no *cilj*, no *sovražnik* in
+  skills), damage *za 4 točke*, delays *kasneje*. Stopnja 1 of every reviewed skill opens with a short line from the
+  hero's legend (Pregon zime: *Kurentov ples privabi ostale kurente …*); stopnji 2 and 3 only change the numbers.
 - **New: effect icons** (`src/effects.js`): crossed swords for attack, a shield for defence, green with an arrow up
   for stronger, red with an arrow down for weaker. In skill texts and battle cards, and above the heads of heroes and
   enemies for as long as the effect lasts.

@@ -619,7 +619,7 @@ CHARS.push(
     note: 'Odprta čelada z rdečo perjanico, brki, oklep z rdečo suknjo in ščit. Ob napadu zamahne z mečem in na oblegovalce letijo sveže češnje, kakor pripoveduje izročilo.' },
   { id: 'klepec', name: 'Peter Klepec', c: '#b8a04a', sub: 'pastir iz Osilnice · moč, ki raste', moves: ['Pastirska palica', 'Izruvano drevo', 'Vilin dar'], words: ['PAŠA', 'DREVO', 'OSILNICA'], vals: ['−6', '−15', '−30 · moč +'], extra: 'vsak Vilin dar ga okrepi do konca bitke',
     note: 'Slamnik, svetli lasje, bela srajca, telovnik, bos. V roki drži izruvano drevo; ob napadu zamahne z njim in listje leti.' },
-  { id: 'vida', name: 'Lepa Vida', c: '#5fa8d9', sub: 'pesem z obale · slabi sovražnike', moves: ['Hrepenenje', 'Morska pena', 'Pesem z obale'], words: ['MORJE', 'OBALA', 'HREPENI'], vals: ['−5', '−12 · napad −1', '−24'], extra: 'vsi sovražniki napadajo šibkeje',
+  { id: 'vida', name: 'Lepa Vida', c: '#5fa8d9', sub: 'pesem z obale · slabi nasprotnike', moves: ['Hrepenenje', 'Morska pena', 'Pesem z obale'], words: ['MORJE', 'OBALA', 'HREPENI'], vals: ['−5', '−12 · napad −1', '−24'], extra: 'vsi sovražniki napadajo šibkeje',
     note: 'Dolgi temni lasje z rdečim trakom, bela bluza, modro krilo, v roki perilo. Ob napadu dvigne roko in iz morja se dvigne pena.' },
   { id: 'ajda', name: 'Ajdovska deklica', c: '#9fb0be', sub: 'okamnela velikanka s Prisanka · varuhinja', moves: ['Metanje skal', 'Varstvo popotnikov', 'Okamnitev'], words: ['GORA', 'SKALA', 'PRISANK'], vals: ['−6', 'prestreže napad', 'okamni cilj'], extra: 'sovražnik izpusti napad',
     note: 'Večja od drugih, s svetlo kito in planiko v laseh. Ena roka, lice in rob krila so že iz skale; ob napadu udari s kamnito pestjo.' });
@@ -751,7 +751,7 @@ const KIT = {
   matjaz:  { ini: 'Ma', kit: 'reviewed', role: 'ščit in vojska', domain: ['meč', 'krona', 'kralj', 'vojska', 'brada', 'gora', 'miza', 'lipa', 'krokar', 'spanje'] },
   erazem:  { ini: 'Er', kit: 'reviewed', role: 'meč, češnje, izmik', domain: ['grad', 'vitez', 'jama', 'rov', 'češnja', 'oklep', 'stolp', 'skala', 'obleganje', 'top'] },
   klepec:  { ini: 'Kl', kit: 'grow', role: 'moč raste', domain: ['pastir', 'ovca', 'drevo', 'paša', 'vila', 'moč', 'koza', 'palica', 'reka', 'hrib'] },
-  vida:    { ini: 'Vi', kit: 'song', role: 'slabi sovražnike', domain: ['morje', 'obala', 'val', 'pesem', 'ladja', 'pena', 'galeb', 'sol', 'plenica', 'jadro'] },
+  vida:    { ini: 'Vi', kit: 'song', role: 'slabi nasprotnike', domain: ['morje', 'obala', 'val', 'pesem', 'ladja', 'pena', 'galeb', 'sol', 'plenica', 'jadro'] },
   ajda:    { ini: 'Aj', kit: 'reviewed', role: 'varstvo, okamnitev', domain: ['gora', 'skala', 'kamen', 'vrh', 'planika', 'gams', 'okno', 'sneg', 'stena', 'pot'] },
 };
 const ROSTER = Object.fromEntries(CHARS.map(ch => [ch.id, { id: ch.id, name: ch.name, c: ch.c, moves: ch.moves, god: isGod(ch.id), ...KIT[ch.id] }]));
@@ -899,10 +899,10 @@ const canWithdraw = node => !!(S.run && (freeRetry(node) || (DIFF().withdraw && 
 const MINW = () => LV().minWord;
 
 const FINISHER_FX = {
-  perun: { text: 'Strele udarijo vse sovražnike!', heroId: 'perun', move: 'Strela zagovora' },
-  kres: { text: 'Ogenj zajame vse sovražnike!', heroId: 'kresnik', move: 'Kresni plamen' },
+  perun: { text: 'Strele udarijo vse nasprotnike!', heroId: 'perun', move: 'Strela zagovora' },
+  kres: { text: 'Ogenj zajame vse nasprotnike!', heroId: 'kresnik', move: 'Kresni plamen' },
   mokos: { text: 'Zagovor okrepi družino, črke se očistijo!', heroId: 'mokos', move: 'Materin blagoslov' },
-  triglav: { text: 'Gora omami sovražnike!', heroId: 'ajda', move: 'Gorski udar' },
+  triglav: { text: 'Gora omami nasprotnike!', heroId: 'ajda', move: 'Gorski udar' },
 };
 // who speaks the zagovor: the themed hero if they travel with you, otherwise whoever struck last
 function fxHero(fx) {
@@ -2016,7 +2016,7 @@ function heroAct(a, w) {
     case 'venom': {          // Veles: the hardest single hit, poison; tier 3 strikes everyone
       const d = hit(4.2); burn(target, 1.2 * p, 'zastrupljen');
       if (a.tier === 3) others().forEach(e => { hit(2.2, e); burn(e, 1.2 * p, 'zastrupljen'); });
-      card.value = `−${d} · strup`; if (a.tier === 3) card.extra = 'kača ovije vse sovražnike'; break; }
+      card.value = `−${d} · strup`; if (a.tier === 3) card.extra = 'kača ovije vse nasprotnike'; break; }
     case 'light': {          // Dažbog: his light makes the next word stronger
       const d = hit(3); card.value = `−${d}`;
       if (a.tier >= 2) { B.double = a.tier === 3 ? 2 : 1.5; card.extra = `naslednja beseda ×${num(B.double)}`; }
@@ -2028,7 +2028,7 @@ function heroAct(a, w) {
       break; }
     case 'heavy': {          // Krpan: slow and heavy; tier 3 stuns
       const d = hit(4.2); card.value = `−${d}`;
-      if (a.tier === 3) { stun(target, 5, 2); card.extra = 'cilj je omamljen'; }
+      if (a.tier === 3) { stun(target, 5, 2); card.extra = 'nasprotnik je omamljen'; }
       break; }
     case 'grow': {           // Peter Klepec: every Vilin dar makes him stronger for the rest of the battle
       const d = hit(3 * (1 + 0.12 * B.grow)); card.value = `−${d}`;
@@ -2037,8 +2037,8 @@ function heroAct(a, w) {
     case 'song': {           // Lepa Vida: her song takes the strength out of enemies
       const d = hit(2.4); card.value = `−${d}`;
       const weaken = (e, n) => { e.atk = Math.max(1, e.atk - Math.round(n * dur)); };
-      if (a.tier === 2) { weaken(target, 1); card.extra = '{atk-} cilj'; }
-      if (a.tier === 3) { alive().forEach(e => weaken(e, 2)); card.extra = '{atk-} vsi sovražniki'; }
+      if (a.tier === 2) { weaken(target, 1); card.extra = '{atk-} nasprotnik'; }
+      if (a.tier === 3) { alive().forEach(e => weaken(e, 2)); card.extra = '{atk-} vsi nasprotniki'; }
       break; }
     default: card.value = `−${hit(3)}`;
   }
@@ -2794,7 +2794,7 @@ function cwEntrySolved(e, hidden = 0, aided = false) {
       card.value = got ? `+${got} zdravja` : 'več ne zaceli — do vodnjaka';
     } else if (t) {
       card.value = `−${damageEnemy(t, 3 * len * lv * pw)}`;
-      if (C.id === 'kres') { applyBurn(t, 1.5); card.extra = 'cilj gori'; }
+      if (C.id === 'kres') { applyBurn(t, 1.5); card.extra = 'nasprotnik gori'; }
     }
     spawnCard(UI.heroEls[hk], card);
   } else if (C.kind === 'ambush') {

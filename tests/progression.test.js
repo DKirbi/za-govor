@@ -172,7 +172,7 @@ run(async () => {
   // 9. Veščine shows each reviewed skill's own ranks, not the generic stopnje
   const panel = await ev(page, () => { const Z = window.__ZG; Z.S.heroes[0].pts = 1; Z.go('train', { back: () => Z.go('title') });
     return { rows: document.querySelectorAll('.train .sk').length, ups: document.querySelectorAll('.train .sk-ups li').length, text: (document.querySelector('.train .skills') || {}).textContent || '' }; });
-  check(panel.rows === 3 && panel.ups === 6 && /Metanje skal/.test(panel.text) && /Udarec 8 vsem sovražnikom/.test(panel.text) && !/učinki/.test(panel.text),
+  check(panel.rows === 3 && panel.ups === 6 && /Metanje skal/.test(panel.text) && /vse nasprotnike, vsakega za \d+ točk/.test(panel.text) && !/sovražnik|cilj/.test(panel.text) && !/učinki/.test(panel.text),
     'Veščine lists Metanje skal, Varstvo popotnikov and Okamnitev with their own rank 2 and 3', panel.text.slice(0, 400));
   // Game Director, 20 Nov: short texts — stopnja 1 says what the skill does, 2 and 3 only what changes; time in words;
   // attack and defence changes as icons; the dots are explained once, not in every skill
@@ -180,9 +180,9 @@ run(async () => {
     const out = { text: d.textContent, icons: [...d.querySelectorAll('img.fxi')].map(i => i.alt), legend: !!d.querySelector('.sk-legend'),
       lines: [...d.querySelectorAll('.sk-ups li')].map(li => li.textContent) };
     document.querySelectorAll('.overlay').forEach(o => o.remove()); Z.S.bagEl = null; Z.S.overlayKey = null; return out; });
-  check(short.legend && !/Beseda z/.test(short.text) && !/pleše|naslednji udarec/.test(short.text) && /2 sekundi pozneje/.test(short.text) && !/\d s\b/.test(short.text),
-    'Kurent\'s skills: no dance, no "naslednji udarec", seconds in words, the dots explained once', short.text.slice(0, 300));
-  check(short.icons.filter(a => a === 'šibkejši napad').length >= 3 && short.lines[0] === 'Stopnja 2 Udarec 6, 3 sekunde pozneje.',
+  check(short.legend && !/Beseda z/.test(short.text) && !/pleše|naslednji udarec/.test(short.text) && /napade 2 sekundi kasneje/.test(short.text) && /za 4 točke/.test(short.text) && !/cilj|sovražnik/.test(short.text) && !/\d s\b/.test(short.text),
+    'Kurent\'s skills: no dance, no "naslednji udarec", "nasprotnik" not "cilj", damage "za N točk", seconds in words, the dots explained once', short.text.slice(0, 300));
+  check(short.icons.filter(a => a === 'šibkejši napad').length >= 3 && short.lines[0] === 'Stopnja 2 Za 6 točk, napade 3 sekunde kasneje.',
     'a weaker enemy attack is shown with the red swords; stopnja 2 lists only the change', JSON.stringify({ icons: short.icons, first: short.lines[0] }));
   await shot('progression-03-skills');
 
@@ -209,7 +209,7 @@ run(async () => {
   const bleed = await ev(page, async () => { const Z = window.__ZG, e = Z.B.enemies[0]; const t0 = e.burnTurns, b = e.burn; await new Promise(r => setTimeout(r, 2300)); return { t0, b, hp: e.hp }; });
   check(bleed.t0 === 4 && bleed.hp === 999 - 46, 'Krpan: Mesarica rank 3 bleeds for 4 s (calm mode ticks per word, as Kresnik\'s fire does; nothing extra on the clock)', JSON.stringify(bleed));
   const kt = await ev(page, () => { const Z = window.__ZG; Z.S.heroes[0].pts = 1; Z.go('train', { back: () => Z.go('title') }); return (document.querySelector('.train .skills') || {}).textContent || ''; });
-  check(/Lipov kij/.test(kt) && /Kmečka moč/.test(kt) && /Mesarica/.test(kt) && /Dva udarca s pestjo, po 8/.test(kt) && /Vreči soli: udarec 20/.test(kt) && !/Kobilica/.test(kt), 'Veščine shows Krpan\'s new skills with their own rank text', kt.slice(0, 400));
+  check(/Lipov kij/.test(kt) && /Kmečka moč/.test(kt) && /Mesarica/.test(kt) && /dva zaporedna udarca s pestjo, vsak za 8 točk/.test(kt) && /Vreče soli: za 20 točk/.test(kt) && !/Kobilica/.test(kt), 'Veščine shows Krpan\'s new skills with their own rank text', kt.slice(0, 400));
 
   check(!errors.length, 'no page errors', errors.join(' | '));
   return ctx;

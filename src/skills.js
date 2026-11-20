@@ -9,15 +9,15 @@
 // Every hero has their own points (st.pts, PTS_PER_LV a level of their own) and spends them on their own skills.
 // The six reviewed heroes (src/progression.js) have no SKILL_UPS: each of their ranks is described by RANK_TEXT.
 const SKILL_TEXT = {
-  perun: ['Hiter udar strele v cilj.', 'Močnejši udar strele v cilj.', 'Silen udar; strela preskoči na vse sovražnike.'],
+  perun: ['Hiter udar strele v nasprotnika.', 'Močnejši udar strele v nasprotnika.', 'Silen udar; strela preskoči na vse nasprotnike.'],
   svarog: ['Udarec s kladivom; družini {def+} malo ščita.', 'Močnejši udarec, {def+} več ščita.', 'Silen udarec, {def+} velik ščit družini.'],
   mokos: ['Pozdravi družino in šibko udari.', 'Pozdravi več; očisti zaklenjene črke in zbudi speče junake.', 'Pozdravi veliko; enkrat v bitki obudi junaka, ki je obležal.'],
-  veles: ['Močan udarec in strup.', 'Še močnejši udarec in strup.', 'Silen udarec; kača ovije in zastrupi vse sovražnike.'],
+  veles: ['Močan udarec in strup.', 'Še močnejši udarec in strup.', 'Silen udarec; kača ovije in zastrupi vse nasprotnike.'],
   dazbog: ['Udarec s sončnim žarkom.', 'Udarec; naslednja beseda {atk+} ×1,5.', 'Silen udarec; naslednja beseda {atk+} ×2.'],
-  stribog: ['Sapica zadene vse sovražnike.', 'Burja močneje zadene vse.', 'Vihar silno zadene vse in očisti mrežo črk.'],
+  stribog: ['Sapica zadene vse nasprotnike.', 'Burja močneje zadene vse.', 'Vihar silno zadene vse in očisti mrežo črk.'],
   jurij: ['Malo pozdravi in šibko udari.', 'Pozdravi več in odklene zaklenjene črke.', 'Pozdravi veliko; enkrat na poti obudi junaka, ki je obležal.'],
   klepec: ['Udarec s pastirsko palico.', 'Močnejši udarec z izruvanim drevesom.', 'Silen udarec; {atk+} +12 % do konca bitke (vsakič znova).'],
-  vida: ['Udarec s hrepenenjem.', 'Udarec; cilju {atk-} −1.', 'Silen udarec; vsem sovražnikom {atk-} −2.'],
+  vida: ['Udarec s hrepenenjem.', 'Udarec; nasprotnik udari šibkeje {atk-} −1.', 'Silen udarec; vsi nasprotniki udarijo šibkeje {atk-} −2.'],
 };
 // the extra effect of every skill at stopnja 2 and at stopnja 3
 const SKILL_UPS = {
@@ -34,12 +34,12 @@ const SKILL_UPS = {
 const UP_TAG = {
   moc: ['Moč', '+25 % moči'],
   krit: ['Kritični udarec', '30 % možnosti za dvojni udarec'],
-  vsi: ['Na vse', 'zadene tudi druge sovražnike'],
+  vsi: ['Na vse', 'zadene tudi druge nasprotnike'],
   zdravi: ['Zdravljenje', 'malo pozdravi družino'],
   scit: ['Ščit', '{def+} družini'],
-  omama: ['Omama', 'cilj za hip omami'],
-  ogenj: ['Ogenj', 'cilj zagori'],
-  slabi: ['Oslabitev', 'cilju {atk-} −1'],
+  omama: ['Omama', 'nasprotnika za hip omami'],
+  ogenj: ['Ogenj', 'nasprotnik zagori'],
+  slabi: ['Oslabitev', 'nasprotnik udari šibkeje {atk-} −1'],
 };
 // how many of the hero's letters fire each skill (»beseda z dvema črkama te barve«)
 const LEN_INS = t => ['z eno črko', 'z dvema črkama', 's tremi črkami'][t - 1];

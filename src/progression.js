@@ -117,9 +117,9 @@ function xpRows() {
 }
 
 // ------------------------------------------------------------ helpers
-// Slovene number forms: 1 sovražnik, 2 sovražnika, 3–4 sovražniki, 5+ sovražnikov (and the verb with them)
+// Slovene number forms: 1 nasprotnik, 2 nasprotnika, 3–4 nasprotniki, 5+ nasprotnikov (and the verb with them)
 const nForm = (n, f) => n === 1 ? f[0] : n === 2 ? f[1] : n < 5 ? f[2] : f[3];
-const FOES_N = ['sovražnik', 'sovražnika', 'sovražniki', 'sovražnikov'], ATTACKS_ACC = ['napad', 'napada', 'napade', 'napadov'];
+const FOES_N = ['nasprotnik', 'nasprotnika', 'nasprotniki', 'nasprotnikov'], FOES_ACC = ['nasprotnika', 'nasprotnika', 'nasprotnike', 'nasprotnikov'], ATTACKS_ACC = ['napad', 'napada', 'napade', 'napadov'];
 const v3 = (arr, r) => Array.isArray(arr) ? arr[clamp(r, 1, 3) - 1] : arr;
 const hasTag = (e, tags) => !!(e.tags && e.tags.some(t => tags.includes(t)));
 const isDragon = e => hasTag(e, ['zmaj', 'kaca']);
@@ -172,12 +172,12 @@ function reviewedAct(a, target, card) {
   const say = [];
   switch (`${id}${a.tier}`) {
     // Kurent
-    case 'kurent1': { const d = hit(v3(R.dmg, r)), s = v3(R.delay, r); delayFoe(target, s); say.push(`−${d}`, `napade ${secs(s)} pozneje`); break; }
+    case 'kurent1': { const d = hit(v3(R.dmg, r)), s = v3(R.delay, r); delayFoe(target, s); say.push(`−${d}`, `napade ${secs(s)} kasneje`); break; }
     case 'kurent2': {
       B.busy[k] = B.time + R.dance;
       const n = v3(R.weaken, r), foes = pickFoes(target, v3(R.foes, r)); let d = 0;
       foes.forEach(e => { d = Math.max(d, hit(v3(R.dmg, r), e)); if (e.hp > 0) e.weak = { by: n }; });   // until its next blow
-      say.push(`−${d}${foes.length > 1 ? ' vsakemu' : ''}`, `{atk-} −${n}`, foes.length > 1 ? `${foes.length} ${nForm(foes.length, FOES_N)}` : 'cilj');
+      say.push(`−${d}${foes.length > 1 ? ' vsakemu' : ''}`, `{atk-} −${n}`, foes.length > 1 ? `${foes.length} ${nForm(foes.length, FOES_N)}` : 'nasprotnik');
       renderParty(); renderPuzzle(); renderSide(); break; }
     case 'kurent3': {
       const s = v3(R.delay, r); let hurt = 0, d = 0;
@@ -186,7 +186,7 @@ function reviewedAct(a, target, card) {
         delayFoe(e, s);
         if (r >= 2 && hasTag(e, R.tags)) { hurt++; e.bane = { dps: e.atk * 0.5 / 4, until: B.time + 4, by: k }; e.baneAcc = 0; e.half = B.time + 4; if (r >= 3) e.halfNext = true; }
       });
-      say.push(`−${d} vsem`, `napadejo ${secs(s)} pozneje`); if (hurt) card.extra = hurt > 1 ? 'duhovi {atk-} ½' : 'duh {atk-} ½';
+      say.push(`−${d} vsem`, `napadejo ${secs(s)} kasneje`); if (hurt) card.extra = hurt > 1 ? 'duhovi {atk-} ½' : 'duh {atk-} ½';
       break; }
     // Kralj Matjaž
     case 'matjaz1': { const d = hit(v3(R.dmg, r)), w = v3(R.ward, r); say.push(`−${d}`); if (w) { B.ward = Math.max(B.ward || 0, w); B.wardBy = k; say.push(`{def+} +${w} vsem`); } break; }
@@ -223,7 +223,7 @@ function reviewedAct(a, target, card) {
     case 'krpan2': {
       const n = v3(R.hits, r), foes = [target, v3(R.foes, r) > 1 ? foeBeside(target) : null].filter(e => e && e.hp > 0); let d = 0;
       foes.forEach(e => { for (let i = 0; i < n; i++) d += hit(v3(R.dmg, r) / foes.length, e); });
-      say.push(`−${d}`, n > 1 ? `${n} udarca po ${v3(R.dmg, r)}` : foes.length > 1 ? `razdeljeno med ${foes.length} ${nForm(foes.length, FOES_N)}` : 'cilj'); break; }
+      say.push(`−${d}`, n > 1 ? `${n} udarca po ${v3(R.dmg, r)}` : foes.length > 1 ? `razdeljeno med ${foes.length} ${nForm(foes.length, FOES_ACC)}` : 'cilj'); break; }
     case 'krpan3': {
       const d = hit(v3(R.dmg, r)), s = v3(R.bleed, r); fixedBurn(target, s, k, 'krvavi'); say.push(`−${d}`, `krvavi ${secs(s)}`); break; }
     // Erazem Predjamski
@@ -249,7 +249,7 @@ function reviewedAct(a, target, card) {
     case 'ajda3': {
       const foes = pickFoes(target, v3(R.foes, r)), n = v3(R.rounds, r);
       foes.forEach(e => { if (e.unstoppable) { floatOn(e.el, 'neustavljiv', 'info'); return; } e.stone = Math.max(e.stone || 0, n); });   // Lintvern cannot be stopped
-      say.push(foes.length > 1 ? `okamni ${foes.length} ${nForm(foes.length, FOES_N)}` : 'okamni cilj'); card.extra = n > 1 ? `izpusti ${n} ${nForm(n, ATTACKS_ACC)}` : 'izpusti en napad';
+      say.push(foes.length > 1 ? `okamni ${foes.length} ${nForm(foes.length, FOES_ACC)}` : 'okamni nasprotnika'); card.extra = n > 1 ? `izpusti ${n} ${nForm(n, ATTACKS_ACC)}` : 'izpusti en napad';
       break; }
   }
   card.value = say.join(' · ');
@@ -361,56 +361,62 @@ function reviewedPartyNotes() {
 }
 
 // ------------------------------------------------------------ the Veščine texts, rank by rank (src/skills.js)
-// Game Director, 20 Nov 2026: short, for a phone. Stopnja 1 says what the skill does (damage and effects only);
-// stopnji 2 and 3 say only what changes. Time in words (2 sekundi, 5 sekund), attack and defence changes as icons
-// ({atk-} = the enemy hits weaker, {def+} = the heroes take less, src/effects.js). "Udarec N" = N damage.
+// Game Director, 20 Nov 2026: short, for a phone. Stopnja 1 gives the skill a line of context from the legend and
+// says what it does; stopnji 2 and 3 only update the numbers. Damage is "za N točk", the one hit is "nasprotnik"
+// (never "cilj"), all of them "nasprotniki"; time in words (2 sekundi, 5 sekund); attack and defence changes as
+// icons ({atk-} = the enemy hits weaker, {def+} = the heroes take less, src/effects.js).
 const secs = n => Number.isInteger(n) ? `${n} ${nForm(n, ['sekundo', 'sekundi', 'sekunde', 'sekund'])}` : `${num(n)} sekunde`;
-const foesAcc = n => `${n} ${nForm(n, ['sovražnika', 'sovražnika', 'sovražnike', 'sovražnikov'])}`;
+const capFirst = t => t.charAt(0).toUpperCase() + t.slice(1);
+const tock = n => `${n} ${nForm(n, ['točko', 'točki', 'točke', 'točk'])}`;   // za 1 točko, 2 točki, 3 točke, 5 točk
+const foesAcc = n => `${n} ${nForm(n, FOES_ACC)}`;
 const attacksAcc = n => n === 1 ? 'naslednji napad' : `naslednje ${n} ${nForm(n, ATTACKS_ACC)}`.replace('naslednje 2 napada', 'naslednja 2 napada');
 const RANK_TEXT = {
   kurent: [
-    (R, r) => r === 1 ? `Udarec ${v3(R.dmg, r)}. Cilj napade ${secs(v3(R.delay, r))} pozneje.`
-      : `Udarec ${v3(R.dmg, r)}, ${secs(v3(R.delay, r))} pozneje.`,
-    (R, r) => r === 1 ? `Zvonci napadejo cilj: udarec ${v3(R.dmg, r)}, {atk-} −${v3(R.weaken, r)}.`
-      : `Napadejo ${foesAcc(v3(R.foes, r))}: udarec ${v3(R.dmg, r)}, {atk-} −${v3(R.weaken, r)}.`,
-    (R, r) => r === 1 ? `Vsi sovražniki: udarec ${v3(R.dmg, r)}. Napadejo ${secs(v3(R.delay, r))} pozneje.`
-      : r === 2 ? `Udarec ${v3(R.dmg, r)}, ${secs(v3(R.delay, r))} pozneje. Duhovi in bitja mraza (Mora): {atk-} ½ za 4 sekunde, škodijo si sami.`
-      : `Udarec ${v3(R.dmg, r)}, ${secs(v3(R.delay, r))} pozneje. Duhovi: {atk-} ½ še ob naslednjem napadu.`,
+    (R, r) => r === 1 ? `Kurent zamahne z ježevko in zadene nasprotnika za ${tock(v3(R.dmg, r))}. Udarec ga zmede, da napade ${secs(v3(R.delay, r))} kasneje.`
+      : `Za ${tock(v3(R.dmg, r))}, napade ${secs(v3(R.delay, r))} kasneje.`,
+    (R, r) => r === 1 ? `Močno zvonenje poškoduje nasprotnika za ${tock(v3(R.dmg, r))} in ga zbega, da udari šibkeje {atk-} −${v3(R.weaken, r)}.`
+      : `${v3(R.foes, r)} ${nForm(v3(R.foes, r), FOES_N)}, vsak za ${tock(v3(R.dmg, r))}, {atk-} −${v3(R.weaken, r)}.`,
+    (R, r) => r === 1 ? `Kurentov ples privabi ostale kurente, katerih zvonovi odženejo mraz in zlo. Vsi nasprotniki utrpijo ${tock(v3(R.dmg, r))} škode in napadejo ${secs(v3(R.delay, r))} kasneje.`
+      : r === 2 ? `${capFirst(tock(v3(R.dmg, r)))} škode, ${secs(v3(R.delay, r))} kasneje. Duhovi in bitja mraza (Mora) 4 sekunde udarjajo s pol moči {atk-} ½ in si škodijo sami.`
+      : `${capFirst(tock(v3(R.dmg, r)))} škode, ${secs(v3(R.delay, r))} kasneje; duhovi tudi ob naslednjem napadu {atk-} ½.`,
   ],
   matjaz: [
-    (R, r) => r === 1 ? `Udarec ${v3(R.dmg, r)}.` : r === 2 ? `Udarec ${v3(R.dmg, r)}. Vsi junaki: {def+} +${v3(R.ward, r)} ob naslednjem napadu.` : `Udarec ${v3(R.dmg, r)}, {def+} +${v3(R.ward, r)}.`,
-    (R, r) => r === 1 ? `Vsi junaki: {atk+} +${v3(R.bonus, r)} pri naslednjem napadu.`
-      : r === 2 ? `{atk+} +${v3(R.bonus, r)}.` : `{atk+} +${v3(R.bonus, r)}. Vsi junaki: {def+} +${v3(R.soften, r)} ob naslednjih ${R.hits} udarcih.`,
-    (R, r) => r === 1 ? `Vsi junaki +${v3(R.heal, r)} zdravja, padli vstanejo (${Math.round(R.revive * 100)} % zdravja). Vsi: {def+} +${v3(R.ward, r)} ob naslednjem napadu.`
-      : r === 2 ? `+${v3(R.heal, r)} zdravja, {def+} +${v3(R.ward, r)}.` : `Še udarec ${v3(R.dmg, r)} vsem sovražnikom.`,
+    (R, r) => r === 1 ? `Kralj Matjaž zamahne s svojim mečem in zadene nasprotnika za ${tock(v3(R.dmg, r))}.`
+      : r === 2 ? `Za ${tock(v3(R.dmg, r))}; ob naslednjem napadu nasprotnika vsi junaki {def+} +${v3(R.ward, r)}.` : `Za ${tock(v3(R.dmg, r))}, {def+} +${v3(R.ward, r)}.`,
+    (R, r) => r === 1 ? `Matjaževi vojščaki se zbudijo pod Peco in stopijo družini ob bok: vsak junak udari naslednjič močneje {atk+} +${v3(R.bonus, r)}.`
+      : r === 2 ? `{atk+} +${v3(R.bonus, r)}.` : `{atk+} +${v3(R.bonus, r)}; ob naslednjih ${R.hits} udarcih nasprotnikov vsi junaki {def+} +${v3(R.soften, r)}.`,
+    (R, r) => r === 1 ? `Kralj se prebudi in z njim vsa družina: vsak junak dobi ${tock(v3(R.heal, r))} zdravja, padli vstanejo s ${Math.round(R.revive * 100)} % zdravja, ob naslednjem napadu pa vsi {def+} +${v3(R.ward, r)}.`
+      : r === 2 ? `${capFirst(tock(v3(R.heal, r)))} zdravja, {def+} +${v3(R.ward, r)}.` : `Še vsi nasprotniki utrpijo ${tock(v3(R.dmg, r))} škode.`,
   ],
   kresnik: [
-    (R, r) => r === 1 ? `Udarec ${v3(R.dmg, r)} (zmaju ${Math.round(v3(R.dmg, r) * R.vsDragon)}). Cilj gori ${secs(v3(R.burn, r))}, ${BURN_DPS} na sekundo.`
-      : `Udarec ${v3(R.dmg, r)} (zmaju ${Math.round(v3(R.dmg, r) * R.vsDragon)}), gori ${secs(v3(R.burn, r))}.`,
-    (R, r) => r === 1 ? `Udarec ${v3(R.dmg, r)}. Cilj gori ${secs(v3(R.burn, r))}, ${BURN_DPS} na sekundo.`
-      : r === 2 ? `Udarec ${v3(R.dmg, r)}.` : `Udarec ${v3(R.dmg, r)}; strela preskoči še na sosednjega sovražnika (udarec ${v3(R.chain, r)}, gori).`,
-    (R, r) => r === 1 ? `Vsi sovražniki: udarec ${v3(R.dmg, r)}. Od naslednje rane si povrne ${Math.round(v3(R.back, r) * 100)} % zdravja in pol toliko zlatnikov.`
-      : `Udarec ${v3(R.dmg, r)}; povrne si ${Math.round(v3(R.back, r) * 100)} % od naslednjih ${v3(R.charges, r)} ran.`,
+    (R, r) => r === 1 ? `Kresnik zamahne z ognjenim mečem in zadene nasprotnika za ${tock(v3(R.dmg, r))}, zmaja za ${tock(Math.round(v3(R.dmg, r) * R.vsDragon))}. Plamen ga žge še ${secs(v3(R.burn, r))}, po ${tock(BURN_DPS)} na sekundo.`
+      : `Za ${tock(v3(R.dmg, r))} (zmaja za ${tock(Math.round(v3(R.dmg, r) * R.vsDragon))}), gori ${secs(v3(R.burn, r))}.`,
+    (R, r) => r === 1 ? `Kresnik prikliče kresno strelo, ki zadene nasprotnika za ${tock(v3(R.dmg, r))} in ga žge ${secs(v3(R.burn, r))}, po ${tock(BURN_DPS)} na sekundo.`
+      : r === 2 ? `Za ${tock(v3(R.dmg, r))}.` : `Za ${tock(v3(R.dmg, r))}; strela preskoči še na sosednjega nasprotnika (za ${tock(v3(R.chain, r))}, tudi ta gori).`,
+    (R, r) => r === 1 ? `Moč kresne noči zadene vse nasprotnike za ${tock(v3(R.dmg, r))}. Ko Kresnika naslednjič ranijo, si povrne ${Math.round(v3(R.back, r) * 100)} % prejete škode in dobi pol toliko zlatnikov.`
+      : `Za ${tock(v3(R.dmg, r))}; povrne si ${Math.round(v3(R.back, r) * 100)} % ob naslednjih ${v3(R.charges, r)} ranah.`,
   ],
   krpan: [
-    (R, r) => `Udarec ${v3(R.dmg, r)}.`,
-    (R, r) => r === 1 ? `Dva udarca s pestjo, po ${v3(R.dmg, r)}.`
-      : r === 2 ? `Vreči soli: udarec ${v3(R.dmg, r)}.` : `Skala: udarec ${v3(R.dmg, r)}, razdeljen med 2 sovražnika.`,
-    (R, r) => r === 1 ? `Udarec ${v3(R.dmg, r)}. Cilj krvavi ${secs(v3(R.bleed, r))}, ${BURN_DPS} na sekundo.`
-      : `Udarec ${v3(R.dmg, r)}, krvavi ${secs(v3(R.bleed, r))}.`,
+    (R, r) => r === 1 ? `Krpan zamahne s kijem iz cesaričine lipe in zadene nasprotnika za ${tock(v3(R.dmg, r))}.` : `Za ${tock(v3(R.dmg, r))}.`,
+    (R, r) => r === 1 ? `Krpan pokaže svojo kmečko moč: dva zaporedna udarca s pestjo, vsak za ${tock(v3(R.dmg, r))}.`
+      : r === 2 ? `Vreče soli: za ${tock(v3(R.dmg, r))}.` : `Ogromna skala: ${tock(v3(R.dmg, r))} škode, razdeljenih med 2 nasprotnika.`,
+    (R, r) => r === 1 ? `Krpan potegne svojo mesarico in zadene nasprotnika za ${tock(v3(R.dmg, r))}; rana krvavi še ${secs(v3(R.bleed, r))}, po ${tock(BURN_DPS)} na sekundo.`
+      : `Za ${tock(v3(R.dmg, r))}, krvavi ${secs(v3(R.bleed, r))}.`,
   ],
   erazem: [
-    (R, r) => `Udarec ${v3(R.dmg, r)}.`,
-    (R, r) => r === 1 ? `Udarec ${v3(R.dmg, r)}. Junaka ob njem +${v3(R.heal, r)} zdravja.` : `Udarec ${v3(R.dmg, r)}, +${v3(R.heal, r)} zdravja.`,
-    (R, r) => r === 1 ? 'Naslednji napad nanj zgreši ({def+}).'
-      : r === 2 ? `Nato udari nazaj: ${num(v3(R.counter, r))} × zamah z mečem.`
-      : `Izmakne se tudi junak ob njem; nazaj udari ${num(v3(R.counter, r))} ×.`,
+    (R, r) => r === 1 ? `Predjamski vitez zamahne z mečem in zadene nasprotnika za ${tock(v3(R.dmg, r))}.` : `Za ${tock(v3(R.dmg, r))}.`,
+    (R, r) => r === 1 ? `Erazem, ki je oblegovalce dražil s svežimi češnjami, jih zdaj zaluča v nasprotnika: ${tock(v3(R.dmg, r))} škode, junaki ob njem pa dobijo po ${tock(v3(R.heal, r))} zdravja.`
+      : `Za ${tock(v3(R.dmg, r))}, po ${tock(v3(R.heal, r))} zdravja.`,
+    (R, r) => r === 1 ? 'Erazem se umakne v skrivni rov, po katerem je med obleganjem dobival hrano: naslednji napad nanj zgreši {def+}.'
+      : r === 2 ? `Iz rova udari nazaj, ${num(v3(R.counter, r))}-krat močneje kot z mečem.`
+      : `V rov vzame še junaka ob sebi; nazaj udari ${num(v3(R.counter, r))}-krat močneje.`,
   ],
   ajda: [
-    (R, r) => v3(R.all, r) ? `Udarec ${v3(R.dmg, r)} vsem sovražnikom.` : `Udarec ${v3(R.dmg, r)}.`,
-    (R, r) => r === 1 ? `Naslednji napad na druge junake prestreže sama, s pol škode ({def+} drugim).`
+    (R, r) => r === 1 ? `Velikanka s Prisanka zaluča skalo in zadene nasprotnika za ${tock(v3(R.dmg, r))}.`
+      : v3(R.all, r) && !v3(R.all, r - 1) ? `Skale zadenejo vse nasprotnike, vsakega za ${tock(v3(R.dmg, r))}.` : `Za ${tock(v3(R.dmg, r))}.`,
+    (R, r) => r === 1 ? `Kakor je nekoč skozi snežni metež vodila izgubljene popotnike, zdaj varuje družino: sama prestreže naslednji napad na junake in utrpi le pol škode {def+}.`
       : `Prestreže ${attacksAcc(v3(R.charges, r))}.`,
-    (R, r) => r === 1 ? `Okamni cilj: izpusti en napad.`
+    (R, r) => r === 1 ? `Deklica, ki se je sama spremenila v kamen, okamni nasprotnika: ta izpusti en napad.`
       : r === 2 ? `Okamni ${foesAcc(v3(R.foes, r))}.` : `Okamnjeni izpustijo po ${v3(R.rounds, r)} napada.`,
   ],
 };
