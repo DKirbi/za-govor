@@ -14,7 +14,7 @@ code changes per hero.
 | one per skill rank | 4, once | the skill fired by a word (0.72 s) | as the character specification §5 describes it. If two ranks look the same, list one sequence for both in `data/hero-art.json` |
 | `running` | 4, loop | while the party walks the road (0.5 s a loop) | right-facing: contact, compression, other contact, compression. Keep the bob: the compression frames sit lower |
 | `victory` | 4, once, holds the last frame | when the last enemy falls (0.8 s), before *Zmaga!* | the last frame returns to the standing pose |
-| `downed` | 1, held | while the hero is down (in battle, on the road, on the hero screen) | upright pose (kneel, slump, sit). The game greys it, so it must read by silhouette alone |
+| `downed` | 1, held | while the hero is down (in battle, on the road, on the hero screen) | crouched or down pose (kneel, slump, sit). If crouched, the silhouette may be shorter than standing states; keep the feet on the baseline. The game greys it, so it must read by silhouette alone |
 
 Plus: the idle | attack strip (two frames side by side) that cards and portraits use, a review contact sheet and an
 animation preview. The tool writes all three.
@@ -70,7 +70,7 @@ alphaThreshold, palette, scale}`, `sequences[] {id, label, sourceAtlas, sourceLa
 `runtimeSheet {path, frameOrder}`, `preview`, `animationPreview`. Also record the approval state, open decisions and
 sources, as in Krpan's.
 
-Name sequences by visible action and skill (`kmecka-moc-r2-materialize`), not by frame numbers or approval state.
+Name sequences by visible action and skill (`kmecka-moc-r2-salt-bag-throw`), not by frame numbers or approval state.
 
 ## 6. Connect it to the game
 
@@ -91,7 +91,7 @@ keep the sprite already in the game. `tests/backgrounds.test.js` shows how Krpan
 
 ## 7. Review checklist
 
-- [ ] Idle, the skills, running, victory and downed show the same hero at the same size (lay idle frame 1 over each).
+- [ ] Idle, skills, running and victory show the hero at the established standing scale (lay idle frame 1 over each). A crouched downed pose may be shorter, with its feet still on the baseline.
 - [ ] The run keeps its bob; the feet touch row 47 in every frame.
 - [ ] Each skill animation matches the specification (§5 of the hero's `character.md`); a rank-3 skill reads bigger
       than rank 1.
