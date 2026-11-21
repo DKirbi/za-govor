@@ -70,6 +70,8 @@ If sources conflict, stop and surface the conflict. Do not silently reconcile it
 
 ## 4. Non-negotiable project identity
 
+> **Current scope — CONFIRMED by the Game Director, 20 Nov 2026:** the art work now goes into **enriching the backgrounds** only. The **character designs stay as they are**: heroes, gods and enemies keep their current designs, sprites and cards. Do not brief, produce or integrate character redesigns unless the Game Director reopens them. Sections 6 (characters and spirits) stay as the standard for the existing assets and for any future work the Game Director approves.
+
 ### Gameplay art
 - Modernised SNES/GBA-inspired pixel art for gameplay characters, spirits, enemies, props, environments and effects.
 - Clear pixel clusters, strong silhouettes, controlled palettes and deliberate detail.

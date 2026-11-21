@@ -1185,6 +1185,16 @@ body.mobile .skillbtn { min-height: 40px; padding: 6px 12px; }
 .rankpips i { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--c, var(--gold)); }
 .rankpips i.on { background: var(--c, var(--gold)); }
 .sk-text { margin: 4px 0 6px; font-size: 13.5px; line-height: 1.45; }
+.sk-legend { margin: 0; font-size: 12px; color: var(--dim); display: flex; align-items: center; gap: 6px; }
+/* effect icons (src/effects.js): crossed swords = attack, shield = defence; green up = stronger, red down = weaker */
+img.fxi { height: 18px; width: auto; image-rendering: pixelated; vertical-align: -4px; margin: 0 1px; }
+.fxb { display: inline-flex; align-items: center; gap: 1px; font-size: 10.5px; font-weight: 800; line-height: 1;
+  text-shadow: 0 1px 0 #000, 0 -1px 0 #000, 1px 0 0 #000, -1px 0 0 #000; }
+.fxb img.fxi { vertical-align: 0; margin: 0; }
+.fxb.up b { color: #a9f0a1; } .fxb.down b { color: #ffa094; }
+/* above the head: badges and status words stacked upwards, so several never spill into the next actor */
+.actor .st { display: flex; flex-direction: column-reverse; align-items: center; gap: 1px; top: auto; bottom: calc(100% + 2px); }
+body.mobile .fxb { font-size: 9.5px; } body.mobile .fxb img.fxi { height: 15px; }
 .sk-ups { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; font-size: 12.5px; color: var(--faint); }
 .sk-ups li { position: relative; padding-left: 17px; line-height: 1.4; }
 .sk-ups li i { position: absolute; left: 1px; top: .42em; width: 8px; height: 8px; transform: rotate(45deg); border: 1.5px solid var(--faint); }

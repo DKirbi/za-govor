@@ -109,14 +109,14 @@ run(async () => {
   await toLastBattle(page, 4);
   check(await page.evaluate(() => { const R = window.__ZG.S.run, n = R.stops.find(s => !s.passed); return window.__ZG.isCheckpoint(n); }) === true, 'for Knjižni molj the last battle at Trnovski gozd is the checkpoint');
 
-  // the chests and wells planned for the journey are kept in the save; a 0.10.0 save (no wells planned, a Težavnost of its own) still loads
+  // the chests, traps and wells planned for the journey are kept in the save; a 0.10.0 save (no wells planned, a Težavnost of its own) still loads
   const plans = await page.evaluate(() => { const Z = window.__ZG; Z.writeSave(); const s = JSON.parse(Z.readSaveRaw());
-    const kept = Array.isArray(s.run.chestAt) && Array.isArray(s.run.wellAt) && !('diff' in s);
+    const kept = Array.isArray(s.run.eventAt) && s.run.eventAt.length === 10 && Array.isArray(s.run.wellAt) && !('diff' in s);
     delete s.run.wellAt; s.diff = 'tezka'; localStorage.setItem('zg-save', JSON.stringify(s));
     return { kept, raw: s }; });
   await page.reload(); await page.waitForFunction(() => !!window.__ZG); await sleep(500);
   const old = await page.evaluate(() => { const Z = window.__ZG; Z.S.tutOn = false; const ok = !!Z.SAVED && Z.loadSave(); return { ok, wells: Z.S.run && Z.S.run.wellAt, know: Z.S.know }; });
-  check(plans.kept, 'the save keeps the chests and wells of this journey, and no Težavnost of its own');
+  check(plans.kept, 'the save keeps the chests, traps and wells of this journey, and no Težavnost of its own');
   check(old.ok && Array.isArray(old.wells) && old.wells.length >= 2 && old.know === 'molj', 'a save from 0.10.0 still loads; its wells are planned when it loads', JSON.stringify(old));
 
   // a journey that ends removes its save; a new journey starts without one

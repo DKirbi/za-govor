@@ -55,29 +55,39 @@ run(async () => {
     return out; });
   check(hints.molj.hints === 0 && !hints.molj.btn && hints.malcek.hints === 4 && hints.malcek.btn, 'Knjižni molj has no Namig at all, even with Praprotno seme', JSON.stringify(hints));
 
-  // chests and wells: a slot for each in every region, at the start of Ljubljanica and Ljubljanski grad a chest;
-  // on a journey only by chance, fewer on higher Znanje; never no chest, never a half of the road without a well
+  // balance E (Game Director, 20 Nov 2026): every region has one event slot, a chest or a trap (never both), and a well
+  // slot. The event is a chest by chance, fewer on higher Znanje, else a rock slide or spikes; Ptuj's is always a chest.
+  // Wells stand by chance too, never a half of the road without one. Ljubljanica and Ljubljanski grad start with the event.
   const shipped = require('../data/world.json').chance;   // the harness sets every chance to 1; these checks need the real odds
   const plan = await page.evaluate(shipped => { const Z = window.__ZG, W = Z.WORLD, keep = JSON.parse(JSON.stringify(W.chance));
-    Object.assign(W.chance.chest, shipped.chest); Object.assign(W.chance.well, shipped.well);
-    const out = { first: {}, everyRegion: W.regions.every(r => r.stops.includes('chest') && r.stops.includes('well')) }, half = W.regions.length / 2;
+    Object.assign(W.chance.chest, shipped.chest); Object.assign(W.chance.well, shipped.well); W.chance.traps = shipped.traps.slice();
+    const out = { first: {}, slots: W.regions.map(r => [r.stops.filter(k => k === 'event').length, r.stops.filter(k => ['chest', 'trap', 'darts'].includes(k)).length, r.stops.filter(k => k === 'well').length]) }, half = W.regions.length / 2;
     for (const id of ['reka', 'grad']) out.first[id] = W.regions.find(r => r.id === id).stops[0];
-    for (const kind of ['chest', 'well']) { out[kind] = {};
-      for (const k of ['malcek', 'ucenjak', 'molj']) { let sum = 0, none = 0, dryHalf = 0;
-        for (let i = 0; i < 600; i++) { const p = Z.planStops(kind, k); sum += p.length; if (!p.length) none++; if (!p.some(x => x < half) || !p.some(x => x >= half)) dryHalf++; }
-        out[kind][k] = { avg: +(sum / 600).toFixed(2), none, dryHalf }; } }
-    Object.assign(W.chance.chest, keep.chest); Object.assign(W.chance.well, keep.well);
+    out.chest = {}; out.kinds = new Set(); out.ptuj = new Set();
+    for (const k of ['malcek', 'ucenjak', 'molj']) { let chests = 0, n = 0;
+      for (let i = 0; i < 600; i++) { const p = Z.planEvents(k); out.ptuj.add(p[0]); p.slice(1).forEach(x => { if (x) { n++; out.kinds.add(x); if (x === 'chest') chests++; } }); }
+      out.chest[k] = +(chests / n).toFixed(2); }
+    out.kinds = [...out.kinds].sort().join(); out.ptuj = [...out.ptuj].join();
+    out.well = {};
+    for (const k of ['malcek', 'ucenjak', 'molj']) { let sum = 0, dryHalf = 0;
+      for (let i = 0; i < 600; i++) { const p = Z.planStops('well', k); sum += p.length; if (!p.some(x => x < half) || !p.some(x => x >= half)) dryHalf++; }
+      out.well[k] = { avg: +(sum / 600).toFixed(2), dryHalf }; }
+    Object.assign(W.chance.chest, keep.chest); Object.assign(W.chance.well, keep.well); W.chance.traps = keep.traps;
     return out; }, shipped);
-  check(plan.everyRegion, 'every region has a chest slot and a well slot');
-  check(plan.first.reka === 'chest' && plan.first.grad === 'chest', 'Ljubljanica and Ljubljanski grad start with a chest', JSON.stringify(plan.first));
-  check(['chest', 'well'].every(kind => plan[kind].malcek.avg > plan[kind].ucenjak.avg && plan[kind].ucenjak.avg > plan[kind].molj.avg && plan[kind].molj.avg >= 2),
-    'chests and wells stand by chance: fewer on higher Znanje (Malček > Učenjak > Knjižni molj)', JSON.stringify(plan));
-  check(['malcek', 'ucenjak', 'molj'].every(k => plan.chest[k].none === 0 && plan.well[k].dryHalf === 0), 'a journey always keeps a chest, and a well in each half of the road');
-  const drop = await page.evaluate(() => { const Z = window.__ZG; Z.newRun('krpan'); const R = Z.S.run;
-    R.chestAt = []; R.wellAt = []; Z.enterRegion(0); const without = R.stops.some(s => s.kind === 'chest' || s.kind === 'well');
-    R.chestAt = [0]; R.wellAt = [0]; Z.enterRegion(0); const withIt = R.stops.some(s => s.kind === 'chest') && R.stops.some(s => s.kind === 'well');
-    return { without, withIt }; });
-  check(!drop.without && drop.withIt, 'a chest or a well left out of the journey is not on the road', JSON.stringify(drop));
+  check(plan.slots.every(([ev, old, well]) => ev === 1 && old === 0 && well === 1), 'every region has exactly one event slot (no fixed chests or traps) and one well slot', JSON.stringify(plan.slots));
+  check(plan.first.reka === 'event' && plan.first.grad === 'event', 'Ljubljanica and Ljubljanski grad start with the event', JSON.stringify(plan.first));
+  check(plan.ptuj === 'chest' && plan.kinds === 'chest,darts,trap', 'Ptuj\'s event is always a chest; elsewhere a chest, a rock slide or spikes', JSON.stringify({ ptuj: plan.ptuj, kinds: plan.kinds }));
+  check(plan.chest.malcek > plan.chest.ucenjak && plan.chest.ucenjak > plan.chest.molj && Math.abs(plan.chest.malcek - shipped.chest.malcek) < 0.07,
+    'the event is a chest more often on lower Znanje (Malček > Učenjak > Knjižni molj), a trap otherwise', JSON.stringify(plan.chest));
+  check(plan.well.malcek.avg > plan.well.ucenjak.avg && plan.well.ucenjak.avg > plan.well.molj.avg && ['malcek', 'ucenjak', 'molj'].every(k => plan.well[k].dryHalf === 0),
+    'wells stand by chance, fewer on higher Znanje, and never a half of the road without one', JSON.stringify(plan.well));
+  const drop = await page.evaluate(() => { const Z = window.__ZG; Z.newRun('krpan'); const R = Z.S.run, kinds = () => R.stops.map(s => s.kind);
+    R.eventAt = R.eventAt.map(() => null); R.wellAt = []; Z.enterRegion(1); const without = kinds();
+    R.eventAt[1] = 'trap'; R.wellAt = [1]; Z.enterRegion(1); const trap = kinds();
+    R.eventAt[1] = 'chest'; Z.enterRegion(1); const chest = kinds();
+    return { without, trap, chest }; });
+  check(!drop.without.some(k => ['chest', 'trap', 'darts', 'well', 'event'].includes(k)) && drop.trap.includes('trap') && !drop.trap.includes('chest') && drop.trap.includes('well')
+    && drop.chest.includes('chest') && !drop.chest.includes('trap'), 'a region\'s event is its chest or its trap, never both; a well left out is not on the road', JSON.stringify(drop));
 
   // three-letter words count on every level
   const three = await page.evaluate(() => { const Z = window.__ZG; return ['malcek', 'ucenjak', 'molj'].map(k => Z.LEVELS[k].minWord); });

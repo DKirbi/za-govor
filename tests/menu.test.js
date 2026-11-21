@@ -65,8 +65,15 @@ run(async () => {
       tut: tog('Pokaži razlage ugank').querySelector('input').checked,
       dev: { inBox: !!tog('Preizkusni način').closest('.devbox'), checked: tog('Preizkusni način').querySelector('input').checked, tag: document.querySelector('.setup .devtag').textContent } };
   });
-  check(nr.real === 'Sovražniki napadajo sproti in počasi topijo zdravje družine.', 'Realni čas keeps only its first sentence', nr.real);
-  check(/^Brez časovnega pritiska, sovražniki napadejo/.test(nr.calm) && /Dogodki imajo dvojni čas\.$/.test(nr.calm), 'Mirni način is one short line: no time pressure, events get double time', nr.calm);
+  check(nr.real === 'Nasprotniki napadajo sproti in počasi topijo zdravje družine.', 'Realni čas keeps only its first sentence', nr.real);
+  check(/^Brez časovnega pritiska, nasprotniki napadejo/.test(nr.calm) && /Dogodki imajo dvojni čas\.$/.test(nr.calm), 'Mirni način is one short line: no time pressure, events get double time', nr.calm);
+  // Game Director, 21 Nov: the game calls the foe "nasprotnik" everywhere; "sovražnik" and "cilj" (for the chosen foe)
+  // are wrong. Only Peter Klepec's legend keeps "sovražniki" (the real invaders he held off) and the Dakar clue its finish line.
+  { const fs = require('fs'), path = require('path'), src = ['game', 'journey', 'menu', 'playtest', 'shrines', 'stats', 'progression', 'skills', 'effects']
+      .map(f => fs.readFileSync(path.join(__dirname, '../src', f + '.js'), 'utf8')).join('\n') + fs.readFileSync(path.join(__dirname, '../data/world.json'), 'utf8');
+    const strings = (src.match(/'[^'\n]*'|`[^`]*`|"[^"\n]*"/g) || []).filter(t => !/branil dolino pred sovražniki/.test(t));
+    const bad = strings.filter(t => /sovražni|\bcilj/i.test(t));
+    check(!bad.length, 'no player-facing text calls the foe "sovražnik" or "cilj"', bad.slice(0, 5).join(' | ')); }
   check(nr.malcek === 'Za učenje besed.' && nr.ucenjak === 'Zahtevnejše besede, malo pomoči.' && nr.molj === 'Za križankarje in pametnjakoviče.', 'the knowledge levels have one short line each');
   check(nr.sprites.length === 3 && nr.sprites.every(Boolean), 'each knowledge level has its own pixel figure');
   check(nr.blocks.join() === 'Tempo,Znanje', 'Nova pot asks for Tempo and Znanje only: Težavnost is part of Znanje', nr.blocks.join());
