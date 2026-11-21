@@ -25,8 +25,8 @@ Three local art-direction concepts extend the treatment documented in [the Ptuj 
 - Continue the recent folk-card treatment: broad hand-painted shapes, dark confident contours, warm ochre, cream, russet and moss green, restrained board texture, and clear scene layers.
 - Keep background forms spacious and readable, with open ground for the battle party and visible landmarks behind it.
 - Use generated background art as a concept. Keep the game's existing sprites crisp, at integer scaling, and unchanged so the painterly versus pixel-art contrast remains clear.
-- Each preview uses one hero and one enemy idle frame extracted from the current `src/game.js` sprite sheet, with small ground shadows. The selected frames and backgrounds are not split into production runtime layers.
-- The scenic images are stylized illustrations, not surveyed reconstructions. They do not include parallax layers, water animation, finalized battle coordinates, or battle UI.
+- Each preview uses one hero and one enemy idle frame extracted from the current `src/game.js` sprite sheet, with small ground shadows. The original location compositions remain flattened reference images.
+- The scenic images are stylized illustrations, not surveyed reconstructions. They do not include production parallax, water animation, finalized battle coordinates, or battle UI.
 
 ## Prompt set and generation
 
@@ -38,4 +38,4 @@ Built-in ImageGen generated each background as a wide 16:9, character-free Slove
 
 ## Next: parallax and mobile
 
-These are reference images, not ready-to-ship game backgrounds. The next environment-art pass can separate sky, distant land, landmark silhouettes, river, embankment, and foreground into independently addressable layers; define calm parallax and ambient effects; and test mobile landscape and portrait crops against real battle UI and sprite sizes. Keep pixel sprites crisp and the staging area clear as those layers are assembled. No runtime layers, motion, or mobile layouts are implemented in this reference set.
+These are reference images, not ready-to-ship game backgrounds. The [Ljubljanica parallax study](../ljubljanica-parallax/README.md) now sketches the rightward camera journey, separates the bridge, clouds, reflections, water and near-bank path as transparent working layers, and documents initial motion ratios plus mobile framing guidance. Those cutouts remain concept references: no runtime layers, motion, or mobile layouts are implemented in this reference set.
