@@ -1,11 +1,29 @@
 # Ptuj background asset manifest
 
-**Status:** OPEN — asset pack not yet delivered  
-**Visual owner:** GPT  
-**Approval:** Game Director  
-**Technical integration:** Claude
+- **Status:** OPEN — parallax concept slices prepared; production pack not yet delivered
+- **Visual owner:** GPT
+- **Approval:** Game Director
+- **Technical integration:** Claude
 
-This manifest is a checklist and destination map. It does not claim that any of the files below already exist.
+This manifest is a checklist and destination map for the production paths below. The concept slices listed next are separate references; they do not yet fulfill those production paths.
+
+## Prototype slice references
+
+The first folk-art slice set has been generated from the reviewed panorama. These files are concept references for composition and parallax tuning; they do not fulfill the production paths below or update the in-game background.
+
+| Layer | Current reference |
+|---|---|
+| Sky | [`sky.png`](../ptuj-parallax/layers/sky.png) |
+| Distant hills | [`distant-hills.png`](../ptuj-parallax/layers/distant-hills.png) |
+| Castle hill | [`castle-hill.png`](../ptuj-parallax/layers/castle-hill.png) |
+| Town | [`town.png`](../ptuj-parallax/layers/town.png) |
+| Clouds | [`clouds.png`](../ptuj-parallax/layers/clouds.png) |
+| Reflections | [`water-reflections.png`](../ptuj-parallax/layers/water-reflections.png) |
+| Drava water | [`drava-water.png`](../ptuj-parallax/layers/drava-water.png) |
+| Foreground path | [`foreground-road.png`](../ptuj-parallax/layers/foreground-road.png) |
+| Near foreground | [`foreground-oak.png`](../ptuj-parallax/layers/foreground-oak.png) |
+
+See the [Ptuj layer and motion preview](../ptuj-parallax/README.md) for the complete stack, composition and initial speed ratios.
 
 ## Planned source files
 

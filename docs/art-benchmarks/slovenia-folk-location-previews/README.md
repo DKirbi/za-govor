@@ -38,4 +38,4 @@ Built-in ImageGen generated each background as a wide 16:9, character-free Slove
 
 ## Next: parallax and mobile
 
-These are reference images, not ready-to-ship game backgrounds. The [Ljubljanica parallax study](../ljubljanica-parallax/README.md) now sketches the rightward camera journey, separates the bridge, clouds, reflections, water and near-bank path as transparent working layers, and documents initial motion ratios plus mobile framing guidance. Those cutouts remain concept references: no runtime layers, motion, or mobile layouts are implemented in this reference set.
+These are reference images, not ready-to-ship game backgrounds. The [Ptuj parallax study](../ptuj-parallax/README.md) now provides the first separate folk-art layer set, while the [Ljubljanica parallax study](../ljubljanica-parallax/README.md) sketches the rightward camera journey and its bridge, clouds, reflections, water, and path layers. The [background roadmap](../background-parallax-roadmap.md) lists all ten game regions and the preview-first workflow. These cutouts remain concept references: no runtime parallax layers, motion, or mobile layouts are implemented in the game.
