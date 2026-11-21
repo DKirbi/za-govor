@@ -1,0 +1,111 @@
+{
+  "pack": "folk-skill-cards-additional",
+  "status": "IN REVIEW",
+  "visualApproval": "pending-game-director-review",
+  "styleReference": "docs/images/battle-desktop.png",
+  "note": "Additional concepts for Lepa Vida and Martin Krpan. Native generated dimensions retained; not runtime-ready.",
+  "assets": [
+    {
+      "character": "lepa-vida",
+      "skill": "hrepenenje",
+      "file": "art/source/characters/lepa-vida/folk-art/skills/hrepenenje/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Basic folk-card concept; art direction review only",
+      "approvalState": "pending-game-director-review"
+    },
+    {
+      "character": "lepa-vida",
+      "skill": "morska-pena",
+      "file": "art/source/characters/lepa-vida/folk-art/skills/morska-pena/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Basic folk-card concept; art direction review only",
+      "approvalState": "pending-game-director-review"
+    },
+    {
+      "character": "lepa-vida",
+      "skill": "pesem-z-obale",
+      "file": "art/source/characters/lepa-vida/folk-art/skills/pesem-z-obale/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Basic folk-card concept; art direction review only",
+      "approvalState": "pending-game-director-review"
+    },
+    {
+      "character": "martin-krpan",
+      "skill": "kmecka-moc",
+      "file": "art/source/characters/martin-krpan/folk-art/skills/kmecka-moc/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Basic folk-card concept; art direction review only",
+      "approvalState": "pending-game-director-review"
+    },
+    {
+      "character": "martin-krpan",
+      "skill": "lipov-kij",
+      "file": "art/source/characters/martin-krpan/folk-art/skills/lipov-kij/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Basic folk-card concept; art direction review only",
+      "approvalState": "pending-game-director-review"
+    },
+    {
+      "character": "martin-krpan",
+      "skill": "mesarica",
+      "file": "art/source/characters/martin-krpan/folk-art/skills/mesarica/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Basic folk-card concept; art direction review only",
+      "approvalState": "pending-game-director-review"
+    }
+  ]
+}
