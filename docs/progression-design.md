@@ -372,7 +372,7 @@ Built (v0.10.0): the rocks come from the region's rock words (`data/words.json`:
 ### 11.8 Post-match, folk cards and character screens — *partly built*
 - **Built:** hero screens (meeting a hero, after a battle, the party) end in a **full-width footer** right under the content; on a phone it sticks to the bottom of the screen, so the way on is never below the fold (checked on 360×640).
 - **Built:** *Upravljanje* in *Kako igrati* covers phone, tablet and computer (this device first), and says the game is most comfortable on a tablet or computer.
-- *Not built:* **post-match screen** (the team, the **last damage dealer** in front, statistics on the others and on their cards); **folk cards** minted by character achievements, stored in the achievements view; the character screen's toggle between bio and folk cards, a tapped card full screen.
+- *Not built:* **post-match screen** (the team, the **last damage dealer** in front, statistics on the others and on their cards); **folk cards** minted by character achievements, stored in the achievements view; the character screen's toggle between bio and folk cards, a tapped card full screen. The broader proposed achievement catalog and special final-battle cards are listed in [achievements-design.md](achievements-design.md).
 
 ### 11.9 Word meanings collected from players — *Kaj pomeni?* — built (v0.10.0)
 Replaces the 12 Nov "dictionary slip" data plan (`zagovor-next-dictionary-build.md`). Meanings are not sourced up front; players tell us which words need one, and the set grows release by release.

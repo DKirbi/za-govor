@@ -200,7 +200,8 @@ skills they know, one after another — a quiet extra that the game does not ann
 *Dosežki in junaki* lists every hero: the ones you have unlocked open their card and
 backstory, the others are silhouettes. A developer link there
 opens the full gallery with sprites, cards, road objects, all items and the ten backgrounds.
-Achievements have their place on the same page but none exist yet.
+Achievements have their place on the same page but none exist yet; the planned catalog and
+final-battle card rewards are in [docs/achievements-design.md](docs/achievements-design.md).
 
 ### Enemies
 Enemies attack in real time, telegraphed by a glowing wind-up. Their strongest moves
@@ -642,6 +643,8 @@ in [docs/progression-design.md](docs/progression-design.md) and
   direction, crossword sources, open questions.
 - [Progression design](docs/progression-design.md) — party, health and levels, roster,
   cursed-god bosses, items, backgrounds.
+- [Achievements](docs/achievements-design.md) — word, combat and journey goals, plus
+  the special story cards earned by surviving the final battle.
 - [Platform roadmap](docs/platform-roadmap.md) — from browser prototype to Windows, macOS,
   Linux, Android and iOS.
 - [Playtest notes](docs/playtest-notes.md) — what each test round found and what changed

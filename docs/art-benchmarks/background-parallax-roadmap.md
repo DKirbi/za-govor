@@ -7,7 +7,7 @@ The campaign currently has ten implemented battle backgrounds. Their order and `
 | Order | Campaign region | Runtime key | Game background | Folk-art reference / next step |
 | ---: | --- | --- | --- | --- |
 | 1 | Ptuj | `ptuj` | Implemented pixel-art scene | Folk panorama already reviewed. First separate slices and motion preview are in [Ptuj parallax study](ptuj-parallax/README.md). |
-| 2 | Peca | `peca` | Implemented pixel-art scene | Existing [Peca character/background preview](slovenia-folk-location-previews/peca-folk-preview.png); show for confirmation before slicing. |
+| 2 | Peca | `peca` | Implemented pixel-art scene | Approved folk panorama; first-pass layers and camera preview are in the [Peca parallax study](peca-parallax/README.md). |
 | 3 | Triglav | `triglav` | Implemented pixel-art scene | Make a folk-art preview, get approval, then slice. |
 | 4 | Bled | `bled` | Implemented pixel-art scene | Make a folk-art preview, get approval, then slice. |
 | 5 | Trnovski gozd | `gozd` | Implemented pixel-art scene | Existing [Trnovski gozd character/background preview](slovenia-folk-location-previews/trnovski-gozd-folk-preview.png); review before slicing. |
@@ -25,9 +25,10 @@ The first-pass folk-art panorama references currently cover Ptuj, Peca, Trnovski
 - [x] Finish the first Ptuj layer pass: sky, clouds, distant hills, castle hill, town, Drava water, reflections, near-bank oak and foreground path.
 - [x] Create a Ptuj layer-composite image and an interactive camera-pan preview.
 - [ ] Review the Ptuj cutout edges and layer placement during runtime integration; the current slices are art-direction references and have not replaced game assets.
-- [ ] **Next: Peca.** Present the existing Peca preview to the Game Director. After approval, separate its background into parallax layers.
+- [x] Complete the Peca first-pass layer set from the approved character/background preview and create a static composite plus an interactive camera-pan preview.
+- [ ] **Next: Triglav.** Create a folk-art scene preview and get approval before slicing.
 - [ ] Continue in campaign order: Triglav, Bled, Trnovski gozd, Piranske soline, Predjama, Ljubljansko barje, Ljubljanica, then Ljubljanski grad.
-- [ ] For each remaining region, create the folk-art scene preview first. Pause for approval before generating its slices.
+- [ ] For each remaining region, create the folk-art scene preview first. Pause for approval before generating its slices. Existing Trnovski gozd and Ljubljanica previews still need review before any new slices.
 - [ ] After each scene's slices are approved, tune parallax speeds, cloud/water/ambient motion, character staging, reduced-motion behavior, and mobile landscape/portrait framing in the battle viewport.
 
 ## Layer workflow
