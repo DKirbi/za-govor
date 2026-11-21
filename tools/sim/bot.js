@@ -9,7 +9,7 @@
 //     (Game Director, 20 Nov 2026); in other battles the game's own target (the first enemy standing);
 //   - the zagovor is spoken as soon as it is full; a crossword entry takes `cw` × pace seconds;
 //   - chests, rock slides and spikes end by chance (`chest`, `rocks`, `spikes`); the pedlar sells by a fixed list;
-//   - the first shrine is prayed at; every hero who waits on the road joins while there is room;
+//   - the first shrine is prayed at and the god fought at that region's end; every hero who waits on the road joins while there is room;
 //   - skill points are spent wherever the game lets them be spent (canGrow), one point at a time round the party:
 //     learn the next skill first, then raise the lowest rank.
 // The parameters are assumptions about players, not measurements; the testers' statistics (src/stats.js) should replace them.
@@ -29,7 +29,7 @@
   }
   const rndIn = (a, b) => a + Math.random() * (b - a);
   const draw = w => { const keys = Object.keys(w), tot = keys.reduce((s, k) => s + w[k], 0); let r = Math.random() * tot; for (const k of keys) { r -= w[k]; if (r <= 0) return +k; } return +keys[keys.length - 1]; };
-  const ROOTS = () => ({ WORLD, LV_XP, DIFFS, ENEMIES, LEVELS, ITEMS });
+  const ROOTS = () => ({ WORLD, LV_XP, DIFFS, ENEMIES, LEVELS, ITEMS, GOD_BAL });
   // overrides: { 'WORLD.balance.hp': [...], 'LV_XP': [...], 'DIFFS.lahka.foeHp': 0.9, ... } (objects are changed in place)
   SIM.set = ov => {
     const R = ROOTS();
@@ -103,8 +103,8 @@
     C.cur = { e: k, p: 0 };
     cwCheck();
   }
-  function fight(stop, o, J) {
-    stopBattle(stop);
+  function fight(stop, o, J, start) {
+    if (start) start(); else stopBattle(stop);
     const b = B, used = new Set(), dt = 0.1, R = S.run, ri = R.ri;
     const hp0 = S.partyHp, max0 = S.maxHp, n0 = HEROES.length;
     let next = o.pace * rndIn(0.6, 1.4), cwT = null, t = 0, words = 0;
@@ -127,6 +127,7 @@
       drain: max0 ? +((hp0 - (win ? S.partyHp : 0)) / max0).toFixed(3) : 0, hpStart: max0 ? +(hp0 / max0).toFixed(3) : 0 });
     J.snap = { lv: S.heroes.map(st => st.lvl), party: HEROES.map(x => x.id), sk: S.heroes.map(st => st.sk.join('')), gold: R.gold, relics: R.relics.slice() };
     afterResult(win);
+    if (S.screen === 'godword' && S.godArg) S.godArg.next();   // the god's last word (won) or departure (lost)
     // the hero screen after a win: walk on
     if (S.screen === 'hero' && S.heroArg) { spendIfAllowed(o, 'after'); S.heroArg.next(); }
     return win;
@@ -189,6 +190,15 @@
     for (let guard = 0; guard < 400; guard++) {
       const R = S.run; if (!R) break;
       const stop = R.stops.find(s => !s.passed);
+      if (!stop && godWaits()) {
+        // after a prayer: the god before the signpost (src/shrines.js); the party rests first
+        const god = R.prayer; godArrives(); const key = godFoe(god);
+        const win = fight({ kind: 'god', enemies: [key] }, o, J, () => S.godArg.go());
+        J.gods = (J.gods || []).concat({ ri: R.ri, god, win });
+        if (!S.run) { J.lostAt = { ri: R.ri, kind: 'god', enemies: key }; break; }
+        if (S.run.prompt) S.run.prompt = null;   // withdrew: on to the signpost
+        go('travel'); continue;
+      }
       if (!stop) {
         J.regions.push({ ri: R.ri, lv: S.heroes.map(st => st.lvl), xp: S.heroes.map(st => st.xp), sk: S.heroes.map(st => st.sk.join('')), party: HEROES.map(x => x.id), down: S.heroes.filter(st => st.down).length });
         if (R.ri >= last) break;

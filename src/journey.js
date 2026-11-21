@@ -418,6 +418,7 @@ function travelTick(dt) {
   if (R.walking && !R.prompt) {
     const n = nextStop(), target = n ? n.x : R.endX;
     R.x = Math.min(target, R.x + TV_SPEED * dt);
+    if (R.x >= target && !n && godWaits()) { godArrives(); return; }   // after a prayer: the god, before the signpost (src/shrines.js)
     if (R.x >= target) { R.walking = false; R.prompt = promptFor(n); sfx('sel', { rate: .7 }); renderTravelPanel(); }
   }
   layoutTravel();
@@ -428,6 +429,10 @@ function promptFor(stop) {
   const R = S.run, reg = WORLD.regions[R.ri];
   const pass = (done = false) => { stop.passed = true; if (done) stop.done = true; R.prompt = null; R.walking = true; go('travel'); };
   const skip = S.testMode && stop ? [{ label: 'Preskoči', fn: () => pass(false) }] : [];
+  if (!stop && godWaits()) {   // back at the region's end with the god still waiting (a reload, an older save): no way past
+    const G = GOD[R.prayer];
+    return { text: `Pred kažipotom te čaka ${G.name}.`, keep: true, actions: [{ label: 'Sprejmi izziv', primary: true, fn: godArrives }] };
+  }
   if (!stop) {
     const next = WORLD.regions[R.ri + 1], sign = trainAction(() => go('travel'));
     // balance E: the signpost is, with the well, the place to spend skill points

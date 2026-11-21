@@ -64,6 +64,11 @@ party went up a level nearly every battle); numbers from simulations of the buil
 - **Skill wording** (Game Director): the enemy is *nasprotnik* in its proper forms (no *cilj*, no *sovražnik* in
   skills), damage *za 4 točke*, delays *kasneje*. Stopnja 1 of every reviewed skill opens with a short line from the
   hero's legend (Pregon zime: *Kurentov ples privabi ostale kurente …*); stopnji 2 and 3 only change the numbers.
+- **The god comes at the end of the region** (Game Director): after a prayer the god arrives before that region's
+  signpost (the party rests first), not after the dragon. The shrines stand near the start of their regions, right
+  after the first battle. Losing is losing a battle (Malček withdraws to the signpost; Učenjak and Knjižni molj end
+  the journey); winning unlocks the god and the gift stays for this journey and the next. The god's lines no longer
+  mention the castle. The balance bot now fights the god too.
 - **Nasprotnik everywhere** (Game Director): the whole game calls the foe *nasprotnik*; the marker over the chosen
   foe reads *▼ izbran*. Only Peter Klepec's legend keeps *sovražniki* (the invaders he held off).
 - **New: effect icons** (`src/effects.js`): crossed swords for attack, a shield for defence, green with an arrow up

@@ -275,13 +275,14 @@ texts and above the heads of heroes and enemies for as long as the effect lasts.
   god's power — Perun's lightning chains to every enemy, Svarog gives a big shield, Mokoš
   heals, Dažbog doubles the next word, Stribog's wind hits everyone and clears the mesh, Veles
   poisons every enemy.
-  **When the journey ends**, as you leave the ending screen, **the god comes for the
-  challenge**: a battle against a god far tougher than the dragon who only uses their special
+  **At the end of that region, before the signpost**, after the party has rested, **the god
+  comes for the challenge** (the shrines stand near the start of their regions): a battle
+  against a god tougher than any boss on the road who only uses their special
   (Perun's *Nevihta* is a chain of lightning through the whole party, the first hero hit
   hardest). Losing is like losing any battle. Win, and the god speaks a cryptic word
   (*»Hm … tebe si bom zapomnil.«*), raises the fallen, gives every hero 250 XP, is
-  **unlocked** for later journeys (a god never just joins), and the **gift lasts the whole
-  next journey**.
+  **unlocked** for later journeys (a god never just joins), and the **gift stays for the rest
+  of this journey and the whole next one**.
   **With a god in the party**, that god's own shrine holds their **godly version**: no prayer
   and no gift, the challenge starts at once and the party god does not strike their other
   self. Winning gives the party god a skill point at once and every hero 250 XP. Other gods'

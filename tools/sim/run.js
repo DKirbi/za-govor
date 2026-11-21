@@ -49,20 +49,24 @@ function summary(js) {
   const n = js.length, won = js.filter(j => j.won).length, p = won / n, ci = 1.96 * Math.sqrt(p * (1 - p) / n);
   const regions = Math.max(...js.flatMap(j => j.battles.map(b => b.ri))) + 1;
   const per = Array.from({ length: regions }, (_, ri) => {
-    const bs = js.flatMap(j => j.battles.filter(b => b.ri === ri));
+    const bs = js.flatMap(j => j.battles.filter(b => b.ri === ri && b.kind !== 'god'));
     const end = js.filter(j => !j.won && j.lostAt && j.lostAt.ri === ri).length;
     const lv = js.map(j => j.regions.find(r => r.ri === ri)).filter(Boolean);
     const gap = lv.filter(r => r.lv.length >= 3).map(r => Math.max(...r.lv) - Math.min(...r.lv));
     return { ri, battles: bs.length, firstTry: pct(bs.filter(b => b.win).length, bs.length), drain: Math.round(100 * mean(bs.filter(b => b.win).map(b => b.drain))),
       t: Math.round(mean(bs.map(b => b.t))), ended: end, lvMax: +mean(lv.map(r => Math.max(...r.lv))).toFixed(1), lvMin: +mean(lv.map(r => Math.min(...r.lv))).toFixed(1), gap: +mean(gap).toFixed(1) };
   });
-  return { n, won, winPct: pct(won, n), ci: Math.round(1000 * ci) / 10, rescues: +mean(js.map(j => j.rescues || 0)).toFixed(2), stalls: js.reduce((s, j) => s + j.stalls, 0),
+  const gods = js.flatMap(j => j.gods || []), godPer = Array.from({ length: 10 }, (_, ri) => gods.filter(g => g.ri === ri)).map((g, ri) => g.length ? `${RN[ri]} ${pct(g.filter(x => x.win).length, g.length)} % of ${g.length}` : null).filter(Boolean);
+  const godEnd = js.filter(j => j.lostAt && j.lostAt.kind === 'god').length;
+  return { gods: gods.length ? `gods beaten ${pct(gods.filter(g => g.win).length, gods.length)} % of ${gods.length} (${godPer.join(', ')}); journeys ended by a god ${godEnd}` : 'no god fights',
+    n, won, winPct: pct(won, n), ci: Math.round(1000 * ci) / 10, rescues: +mean(js.map(j => j.rescues || 0)).toFixed(2), stalls: js.reduce((s, j) => s + j.stalls, 0),
     minutes: +mean(js.map(j => j.battles.reduce((s, b) => s + b.t, 0) / 60)).toFixed(1),
     dmg: (() => { const t = ['hero', 'burn', 'other'].map(k => js.reduce((s, j) => s + (j.dmg ? j.dmg[k] : 0), 0)), sum = t.reduce((a, b) => a + b, 0) || 1; return t.map(x => Math.round(100 * x / sum)).join('/'); })(), per };
 }
 const RN = ['Ptuj', 'Peca', 'Triglav', 'Bled', 'Gozd', 'Piran', 'Predjama', 'Barje', 'Ljublj.', 'Grad'];
 function print(name, s) {
   console.log(`\n${name}: journeys won ${s.won}/${s.n} = ${s.winPct} % (±${s.ci}), second chances used ${s.rescues}, ${s.minutes} min of battle, damage skills/burns/zagovor+rest ${s.dmg} %, stalls ${s.stalls}`);
+  console.log('  ' + s.gods);
   console.log('  region      battles  1st try %  drain %  sec  ended  lv max/min (gap)');
   s.per.forEach(r => console.log(`  ${(RN[r.ri] || r.ri).padEnd(10)} ${String(r.battles).padStart(8)} ${String(r.firstTry).padStart(10)} ${String(r.drain).padStart(8)} ${String(r.t).padStart(4)} ${String(r.ended).padStart(6)}   ${r.lvMax}/${r.lvMin} (${r.gap})`));
 }
