@@ -223,7 +223,7 @@ function reviewedAct(a, target, card) {
     case 'krpan2': {
       const n = v3(R.hits, r), foes = [target, v3(R.foes, r) > 1 ? foeBeside(target) : null].filter(e => e && e.hp > 0); let d = 0;
       foes.forEach(e => { for (let i = 0; i < n; i++) d += hit(v3(R.dmg, r) / foes.length, e); });
-      say.push(`−${d}`, n > 1 ? `${n} udarca po ${v3(R.dmg, r)}` : foes.length > 1 ? `razdeljeno med ${foes.length} ${nForm(foes.length, FOES_ACC)}` : 'cilj'); break; }
+      say.push(`−${d}`, n > 1 ? `${n} udarca po ${v3(R.dmg, r)}` : foes.length > 1 ? `razdeljeno med ${foes.length} ${nForm(foes.length, FOES_ACC)}` : 'nasprotnik'); break; }
     case 'krpan3': {
       const d = hit(v3(R.dmg, r)), s = v3(R.bleed, r); fixedBurn(target, s, k, 'krvavi'); say.push(`−${d}`, `krvavi ${secs(s)}`); break; }
     // Erazem Predjamski
@@ -363,7 +363,7 @@ function reviewedPartyNotes() {
 // ------------------------------------------------------------ the Veščine texts, rank by rank (src/skills.js)
 // Game Director, 20 Nov 2026: short, for a phone. Stopnja 1 gives the skill a line of context from the legend and
 // says what it does; stopnji 2 and 3 only update the numbers. Damage is "za N točk", the one hit is "nasprotnik"
-// (never "cilj"), all of them "nasprotniki"; time in words (2 sekundi, 5 sekund); attack and defence changes as
+// (never the target word), all of them "nasprotniki"; time in words (2 sekundi, 5 sekund); attack and defence changes as
 // icons ({atk-} = the enemy hits weaker, {def+} = the heroes take less, src/effects.js).
 const secs = n => Number.isInteger(n) ? `${n} ${nForm(n, ['sekundo', 'sekundi', 'sekunde', 'sekund'])}` : `${num(n)} sekunde`;
 const capFirst = t => t.charAt(0).toUpperCase() + t.slice(1);

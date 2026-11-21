@@ -64,8 +64,10 @@ party went up a level nearly every battle); numbers from simulations of the buil
 - **Skill wording** (Game Director): the enemy is *nasprotnik* in its proper forms (no *cilj*, no *sovražnik* in
   skills), damage *za 4 točke*, delays *kasneje*. Stopnja 1 of every reviewed skill opens with a short line from the
   hero's legend (Pregon zime: *Kurentov ples privabi ostale kurente …*); stopnji 2 and 3 only change the numbers.
+- **Nasprotnik everywhere** (Game Director): the whole game calls the foe *nasprotnik*; the marker over the chosen
+  foe reads *▼ izbran*. Only Peter Klepec's legend keeps *sovražniki* (the invaders he held off).
 - **New: effect icons** (`src/effects.js`): crossed swords for attack, a shield for defence, green with an arrow up
-  for stronger, red with an arrow down for weaker. In skill texts and battle cards, and above the heads of heroes and
+  for stronger, red with an arrow down for weaker; the arrow is as big as the shield. In skill texts and battle cards, and above the heads of heroes and
   enemies for as long as the effect lasts.
   Knjižni molj: enemy health ×1.5 (D: ×1.25), up to +35 % health and 18 % quicker attacks by the castle (D: +15 / 10 %).
 - **Measured** (the bot below, journeys won): Malček **55 %** at a word every 10 s (D: 98 %), Učenjak 49 % at 8 s

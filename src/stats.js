@@ -83,7 +83,7 @@ function flushStats() {
 }
 setTimeout(() => { if (statsOn() && STATS.some(r => !r.sent)) flushStats(); }, 3500);
 
-const STAT_TEXT = 'Po vsakem boju na poti gre razvijalcu ena vrstica: izid, pokrajina, sovražniki, Znanje, tempo, naprava, različica igre in ozadja, trajanje, število besed in čas na besedo, ravni junakov, junaki in njihove veščine, izgubljeno zdravje. Nič osebnega in nobene besede, ki jih vpišeš.';
+const STAT_TEXT = 'Po vsakem boju na poti gre razvijalcu ena vrstica: izid, pokrajina, nasprotniki, Znanje, tempo, naprava, različica igre in ozadja, trajanje, število besed in čas na besedo, ravni junakov, junaki in njihove veščine, izgubljeno zdravje. Nič osebnega in nobene besede, ki jih vpišeš.';
 // Nastavitve: the switch, what is sent, and how much is waiting
 function statsSection() {
   const waiting = STATS.filter(r => !r.sent).length;

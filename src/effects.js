@@ -1,7 +1,7 @@
 // ============================================================ effect icons: attack and defence, stronger or weaker
 // Game Director, 20 Nov 2026: a "−3" alone means nothing in Slovene, so changes to attack and defence get a picture.
 // Crossed swords = attack, a shield = defence; green with an arrow up = stronger, red with an arrow down = weaker.
-// The icons are 16-pixel-high pixel art drawn here (SVG rects with crisp edges), used
+// The icons are 15-pixel-high pixel art drawn here (SVG rects with crisp edges), used
 //   - in skill texts and battle cards, as tokens in the text: {atk+} {atk-} {def+} {def-} (fxText);
 //   - above the heads of heroes and enemies for as long as the effect lasts (heroFx, foeFx → fxBadges).
 const FX_COL = { up: ['#235a2c', '#45b457', '#a9f0a1'], down: ['#6e1813', '#d6443a', '#ffa094'] }, FX_LINE = '#120d16';
@@ -24,9 +24,14 @@ function fxPixels(kind, dir) {
     for (let y = 2; y <= 8; y++) set(3, y, lt);
     for (let y = 3; y <= 11; y++) set(7, y, dk);
   }
-  // the arrow beside it: up for stronger, down for weaker
-  const arrow = ['..x..', '.xxx.', 'xxxxx', '.xxx.', '.xxx.', '.xxx.'];
-  (dir === 'up' ? arrow : arrow.slice().reverse()).forEach((row, i) => [...row].forEach((c, j) => { if (c === 'x') set(16 + j, 5 + i, lt); }));
+  // the arrow beside it, as tall as the swords or the shield (Game Director, 21 Nov: the small one could hardly be
+  // seen): up for stronger, down for weaker; as wide as the shield (an 11-wide head, a 5-wide shaft), light with a
+  // darker right edge
+  const xs = [...px.keys()].map(k => +k.split(',')[0]), ys = [...px.keys()].map(k => +k.split(',')[1]);
+  const top = Math.min(...ys), H = Math.max(...ys) - top + 1, left = Math.max(...xs) + 3;
+  const arrow = Array.from({ length: H }, (_, i) => i < 6 ? [5 - i, 5 + i] : [3, 7]);
+  (dir === 'up' ? arrow : arrow.slice().reverse()).forEach(([x0, x1], i) => {
+    for (let x = x0; x <= x1; x++) px.set(`${left + x},${top + i}`, x === x1 && x1 > x0 ? md : lt); });
   // a dark outline around everything, so the icon reads on sky, snow and water
   const out = new Map(px);
   for (const k of px.keys()) { const [x, y] = k.split(',').map(Number);

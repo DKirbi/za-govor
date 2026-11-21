@@ -598,7 +598,7 @@ const CHARS = [
     note: 'Bela peča z žitnim vencem, vezena bluza in predpasnik, preslica z volno. Ko zdravi, pošlje vodo; na največji karti stoji pod mavrico med žitom, kravo in čebelnjakom.' },
   { id: 'kresnik', name: 'Kresnik', c: 'var(--kresnik)', sub: 'sončni junak · ogenj', moves: ['Ognjeni meč', 'Kresna strela', 'Kresna moč'], words: ['KRES', 'ISKRA', 'POLETJE'], vals: ['−5 · gori', '−10 · gori', '−5 vsem · povrne četrtino rane'], extra: 'zlatniki iz povrnjene moči',
     note: 'Zlati lasje kot plamen, rdeč telovnik, bakla. Največja karta je kresna noč: kres, goreče kolo, ki se vali po hribu, in praprotni cvet.' },
-  { id: 'veles', name: 'Veles', c: 'var(--veles)', sub: 'gospodar živine in spodnjega sveta', moves: ['Kačji pik', 'Medvedja šapa', 'Korenine sveta'], words: ['ROG', 'MEDVED', 'KORENINE'], vals: ['−10 · strup', '−24', '−50'], extra: 'kača ovije vse sovražnike',
+  { id: 'veles', name: 'Veles', c: 'var(--veles)', sub: 'gospodar živine in spodnjega sveta', moves: ['Kačji pik', 'Medvedja šapa', 'Korenine sveta'], words: ['ROG', 'MEDVED', 'KORENINE'], vals: ['−10 · strup', '−24', '−50'], extra: 'kača ovije vse nasprotnike',
     note: 'Rogovi, medvedji kožuh, palica s kačo in zelene oči. Perunov večni nasprotnik, zato je zemeljski in temen, kjer je Perun nebesen in svetel. Najmočnejši med vsemi: večja postava, najtrši udarci. Zaigraš ga lahko šele po koncu zgodbe.' },
 ];
 CHARS.push(
@@ -606,7 +606,7 @@ CHARS.push(
     note: 'Širok klobuk, brki, telovnik, na hrbtu vreča soli, v roki lipov kij. Na srednji karti dvigne kobilico s ceste, na največji premaga Brdavsa.' },
   { id: 'jurij', name: 'Zeleni Jurij', c: '#4fae5a', sub: 'znanilec pomladi · zdravi malo in pogosto', moves: ['Popek', 'Brstenje', 'Jurjevo'], words: ['LIST', 'BREZA', 'POMLAD'], vals: ['+4 zdravja', '+10 zdravja', '+22 zdravja'], extra: 'odklene vse črke',
     note: 'Od glave do kolen oblečen v brezovo zelenje s cvetjem, v roki brezova veja. Na največji karti prijezdi na belem konju.' },
-  { id: 'kurent', name: 'Kurent', c: '#d9cfae', sub: 'preganjalec zime · zamik in hrup', moves: ['Ježevka', 'Zvonci', 'Pregon zime'], words: ['ZVON', 'MASKA', 'PUST'], vals: ['−4 · zamik 2 s', '−3 · udarec −3', '−4 vsem · zamik 3 s'], extra: 'vsi sovražniki zamudijo napad',
+  { id: 'kurent', name: 'Kurent', c: '#d9cfae', sub: 'preganjalec zime · zamik in hrup', moves: ['Ježevka', 'Zvonci', 'Pregon zime'], words: ['ZVON', 'MASKA', 'PUST'], vals: ['−4 · zamik 2 s', '−3 · udarec −3', '−4 vsem · zamik 3 s'], extra: 'vsi nasprotniki zamudijo napad',
     note: 'Ovčji kožuh, usnjena maska z dolgim rdečim jezikom, rogovi s trakovi, zvonci za pasom in ježevka. Na največji karti kurenti preženejo zimo.' },
   { id: 'matjaz', name: 'Kralj Matjaž', c: '#d84a5a', sub: 'speči kralj · ščit in vojska', moves: ['Meč', 'Kraljeva vojska', 'Prebujenje'], words: ['MEČ', 'KRONA', 'KRALJ'], vals: ['−6', 'naslednji napad +3', '+3 zdravja · ščit 3'], extra: 'padli vstanejo',
     note: 'Krona, dolga siva brada, rdeč plašč s hermelinom, meč. Na največji karti se prebudi pod Peco: brada je ovita okrog mize, krokarji letijo, lipa ozeleni.' },
@@ -619,9 +619,9 @@ CHARS.push(
     note: 'Odprta čelada z rdečo perjanico, brki, oklep z rdečo suknjo in ščit. Ob napadu zamahne z mečem in na oblegovalce letijo sveže češnje, kakor pripoveduje izročilo.' },
   { id: 'klepec', name: 'Peter Klepec', c: '#b8a04a', sub: 'pastir iz Osilnice · moč, ki raste', moves: ['Pastirska palica', 'Izruvano drevo', 'Vilin dar'], words: ['PAŠA', 'DREVO', 'OSILNICA'], vals: ['−6', '−15', '−30 · moč +'], extra: 'vsak Vilin dar ga okrepi do konca bitke',
     note: 'Slamnik, svetli lasje, bela srajca, telovnik, bos. V roki drži izruvano drevo; ob napadu zamahne z njim in listje leti.' },
-  { id: 'vida', name: 'Lepa Vida', c: '#5fa8d9', sub: 'pesem z obale · slabi nasprotnike', moves: ['Hrepenenje', 'Morska pena', 'Pesem z obale'], words: ['MORJE', 'OBALA', 'HREPENI'], vals: ['−5', '−12 · napad −1', '−24'], extra: 'vsi sovražniki napadajo šibkeje',
+  { id: 'vida', name: 'Lepa Vida', c: '#5fa8d9', sub: 'pesem z obale · slabi nasprotnike', moves: ['Hrepenenje', 'Morska pena', 'Pesem z obale'], words: ['MORJE', 'OBALA', 'HREPENI'], vals: ['−5', '−12 · napad −1', '−24'], extra: 'vsi nasprotniki napadajo šibkeje',
     note: 'Dolgi temni lasje z rdečim trakom, bela bluza, modro krilo, v roki perilo. Ob napadu dvigne roko in iz morja se dvigne pena.' },
-  { id: 'ajda', name: 'Ajdovska deklica', c: '#9fb0be', sub: 'okamnela velikanka s Prisanka · varuhinja', moves: ['Metanje skal', 'Varstvo popotnikov', 'Okamnitev'], words: ['GORA', 'SKALA', 'PRISANK'], vals: ['−6', 'prestreže napad', 'okamni cilj'], extra: 'sovražnik izpusti napad',
+  { id: 'ajda', name: 'Ajdovska deklica', c: '#9fb0be', sub: 'okamnela velikanka s Prisanka · varuhinja', moves: ['Metanje skal', 'Varstvo popotnikov', 'Okamnitev'], words: ['GORA', 'SKALA', 'PRISANK'], vals: ['−6', 'prestreže napad', 'okamni nasprotnika'], extra: 'nasprotnik izpusti napad',
     note: 'Večja od drugih, s svetlo kito in planiko v laseh. Ena roka, lice in rob krila so že iz skale; ob napadu udari s kamnito pestjo.' });
 // Folk heroes can start a journey and join on the road; gods are stronger, and only one god may travel with the party.
 const CHAR_ST = { krpan: 'junak', jurij: 'junak', kurent: 'junak', kresnik: 'junak', matjaz: 'junak', erazem: 'junak', klepec: 'junak', vida: 'junak', ajda: 'junak', mokos: 'bog', svarog: 'bog', stribog: 'bog', dazbog: 'bog', perun: 'bog', veles: 'bog' };
@@ -805,13 +805,13 @@ const foeArt = e => e.art || e.key;
 // from data/world.json; these stay for the automated tests and the README screenshots.
 const NODES = [
   { id: 'barje', type: 'battle', title: 'Barje', sub: 'Bitka · dva škrata',
-    teach: 'Mreža črk, barve junakov, moč napada, izbira cilja.',
+    teach: 'Mreža črk, barve junakov, moč napada, izbira nasprotnika.',
     battle: { enemies: ['skrat', 'skrat'], finishers: ['perun'], meterStart: 0, tips: [
       { until: 1, text: 'Vpiši besedo na tipkovnici ali vleci z miško čez sosednje črke, nato pritisni Pošlji ali Enter.',
         m: 'Vleci s prstom čez sosednje črke in spusti: beseda se pošlje sama. Če črke pritiskaš eno za drugo, pritisni Pošlji ob besedi.' },
       { until: 3, text: 'Barvne črke sprožijo junake: ena črka junakove barve sproži prvo veščino, dve drugo, tri tretjo. Daljša beseda pomeni večji množitelj.' },
-      { until: 5, text: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Klikni sovražnika ali uporabi ←/→ za izbiro cilja.',
-        m: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Za cilj izbereš sovražnika s pritiskom nanj.' },
+      { until: 5, text: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Nasprotnika izbereš s klikom ali s tipkama ←/→.',
+        m: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Nasprotnika izbereš s pritiskom nanj.' },
       { until: 99, text: 'Poskusi različne oblike: »volk«, »volka« in »volkom« so vse veljavne, a ponovitve iste besede so šibkejše.' } ] } },
   { id: 'skrinja', type: 'chest', title: 'Skrinja', sub: 'Dogodek na čas',
     teach: 'Iz premešanih črk sestavi skrito besedo, preden se ključavnica zatakne.' },
@@ -833,7 +833,7 @@ const NODES = [
     teach: 'Šefovski boj: kremplji, topot, ognjeni dih z ožganimi črkami in, ko pobesni, zmajeva uganka.',
     battle: { enemies: ['lintvern'], finishers: ['triglav', 'kres'], meterStart: 0.3, tips: [
       { until: 4, text: 'Ko Lintvern zajema sapo, ga nič ne ustavi: ognjeni dih ožge črke — kdor jih uporabi, se opeče. Pod polovico zdravja pobesni in te sili v zmajevo uganko.' },
-      { until: 99, text: 'Triglavski zagovor omami sovražnika — prihrani ga za drugo fazo.' } ] } },
+      { until: 99, text: 'Triglavski zagovor omami nasprotnika — prihrani ga za drugo fazo.' } ] } },
 ];
 
 const CHESTS = [
@@ -884,7 +884,7 @@ const LV = () => LEVELS[S.know] || LEVELS.malcek;
 const DIFFS = {
   lahka: { name: 'Lahka', foeHp: 0.85, withdraw: 1, rise: 0.25, leave: false, finalRetry: true, text: 'Prvi poraz ni konec poti: družina si opomore do polnega zdravja in poskusi znova. Drugi poraz konča pot, a Lintverna lahko vedno izzoveš še enkrat. Padli po zmagi vstanejo.' },
   srednja: { name: 'Srednja', foeHp: 1, withdraw: 0, rise: 0, regionRise: 0.5, leave: false, text: 'Poraz konča pot. Padli obležijo do konca pokrajine, nato vstanejo s polovico zdravja.' },
-  tezka: { name: 'Težka', foeHp: 1.5, withdraw: 0, rise: 0, leave: true, text: 'Močnejši sovražniki, ki so proti koncu poti vse hitrejši. Poraz konča pot. Kdor pade in ga do konca bitke nihče ne obudi, zapusti družino.' },
+  tezka: { name: 'Težka', foeHp: 1.5, withdraw: 0, rise: 0, leave: true, text: 'Močnejši nasprotniki, ki so proti koncu poti vse hitrejši. Poraz konča pot. Kdor pade in ga do konca bitke nihče ne obudi, zapusti družino.' },
 };
 const DIFF = () => DIFFS[LV().diff] || DIFFS.srednja;
 // a lost battle on this journey still has a rescue left (Malček: the first one)
@@ -1102,7 +1102,7 @@ const LORE = {
     meet: 'Kladivo je toplo, nakovalo čaka. Kujmo.', after: 'Dobro kovano drži.', thanks: 'Peč v meni spet gori s pravim ognjem. Hvala vam. Ko se naslednjič srečamo, bo moje kladivo vaše.' },
   mokos: { story: ['Mokoš je mati vlažna zemlja, zavetnica predic, vode in žetve. Bila je edina boginja med kipi kneza Vladimirja v Kijevu.', 'V slovenskem izročilu se je ohranila v pripovedki o Mokoški. Kjer prede Mokoš, se nit ne strga in rane se zacelijo.'],
     meet: 'Pridi bliže, otrok. Zemlja pomni vsako besedo.', after: 'Pijte in počivajte.', thanks: 'Voda v meni je spet čista. Hvala vam, otroci. Ko se naslednjič srečamo, vas bo zdravila moja roka.' },
-  stribog: { story: ['Stribog je ded vetrov. V Pesmi o Igorjevem pohodu so vetrovi imenovani Stribogovi vnuki, ki s puščicami pihajo z morja.', 'V igri je njegova sapa burja: upogne bore, premeša črke in zadene vse sovražnike hkrati.'],
+  stribog: { story: ['Stribog je ded vetrov. V Pesmi o Igorjevem pohodu so vetrovi imenovani Stribogovi vnuki, ki s puščicami pihajo z morja.', 'V igri je njegova sapa burja: upogne bore, premeša črke in zadene vse nasprotnike hkrati.'],
     meet: 'Vsak veter je moj vnuk. Kam naj zapiham?', after: 'Razpihali smo jih.', thanks: 'Vetrovi me spet ubogajo. Hvala vam. Ko se naslednjič srečamo, bo burja pihala za vas.' },
   dazbog: { story: ['Dažbog je sonce, bog, ki daje. Stari zapisi ga imenujejo Svarogov sin.', 'Vsako jutro se s sončnim vozom pripelje čez nebo. V igri njegova luč podvoji moč naslednje besede.'],
     meet: 'Kjer sem jaz, je dan. Naj se vidi vsaka črka.', after: 'Jutro je vedno pametnejše.', thanks: 'Tema mi je padla z oči. Hvala vam. Ko se naslednjič srečamo, vam bom svetil na pot.' },
@@ -1172,7 +1172,7 @@ function renderGallery() {
   const wrap = h('div', { class: 'gallery' },
     crumb('Nazaj na junake', () => go('heroes')),
     h('h1', { class: 'logo page-h1', tabindex: '-1', style: { 'font-size': '30px' } }, 'Liki in karte'),
-    h('p', { class: 'lead' }, 'Piksel sličice so narisane na mreži 48 × 48 (šefa 64 × 64) z dvema sličicama: mirovanje in napad. Napad je namenoma preprost, kot na prvih ročnih konzolah: lik skoči naprej, tarča utripne. Nad napadalcem se dvigne poslikana deska v slogu panjskih končnic in ostane do tri sekunde; močnejša beseda pokaže večjo in bogatejšo sliko. Sovražnikove karte imajo temen okvir.'));
+    h('p', { class: 'lead' }, 'Piksel sličice so narisane na mreži 48 × 48 (šefa 64 × 64) z dvema sličicama: mirovanje in napad. Napad je namenoma preprost, kot na prvih ročnih konzolah: lik skoči naprej, tarča utripne. Nad napadalcem se dvigne poslikana deska v slogu panjskih končnic in ostane do tri sekunde; močnejša beseda pokaže večjo in bogatejšo sliko. Nasprotnikove karte imajo temen okvir.'));
   const frames = (id, cursed) => h('div', { class: 'gframes' },
     cursed ? h('figure', {}, h('div', { class: 'fr cursed', style: { 'background-image': `url(${SPRITES[id]})` } }), 'zaklet (šef)') : null,
     h('figure', {}, h('div', { class: 'fr', style: { 'background-image': `url(${SPRITES[id]})` } }), 'mirovanje'),
@@ -1200,7 +1200,7 @@ function renderGallery() {
       h('p', {}, ch.note), frames(ch.id, false),
       h('div', { class: 'gboards' }, [1, 2, 3].map(t => board(ch.id, t, `${['', '1 črka', '2 črki', '3 črke'][t]} · ${ch.moves[t - 1]}`)))));
   });
-  wrap.append(h('h2', {}, 'Sovražniki'));
+  wrap.append(h('h2', {}, 'Nasprotniki'));
   FOE_CHARS.forEach(ch => {
     const ctx = {}, c = '#c0506a';
     const foe = spriteEl(ch.id, c, 'flip'), dummy = spriteEl('dummy', '#8a8f6a');
@@ -1377,7 +1377,7 @@ function renderEnemies() {
       const steps = Math.round(1 / e.calmStep), on = Math.round(e.charge / e.calmStep);
       return h('div', { class: 'pips', title: 'Napade, ko so vse pike polne' }, Array.from({ length: steps }, (_, k) => h('i', { class: k < on ? 'on' : '' })));
     })() : null;
-    UI.enemies.append(h('div', { class: 'foewrap' }, isT ? h('span', { class: 'tg' }, '▼ cilj') : null, e.el,
+    UI.enemies.append(h('div', { class: 'foewrap' }, isT ? h('span', { class: 'tg' }, '▼ izbran') : null, e.el,
       h('span', { class: 'foename' }, e.name),
       h('div', { class: 'hpbar', style: { width: Math.max(44, SPR_SIZE[foeArt(e)] * (S.mobile ? 1 : 2)) + 'px' } }, h('i', { style: { width: (100 * e.hp / e.maxHp) + '%' } })),
       h('span', { class: 'hpnum' }, `${e.hp}/${e.maxHp}`),
@@ -1434,7 +1434,7 @@ function renderSide() {
         h('span', { class: 'zz' }, S.heroes[i].down ? 'padel' : busy(i) && !B.sleep[i] ? 'pleše' : asleep(i) ? (B.sleep[i] && B.sleep[i].why === 'topot' ? 'omamljen' : 'spi') : ''))))),
     h('div', { class: 'box keys' },
       h('kbd', {}, 'Enter'), h('span', {}, 'potrdi'), h('kbd', {}, 'Del'), h('span', {}, 'počisti'), h('kbd', {}, 'Esc'), h('span', {}, 'premor'),
-      h('kbd', {}, '← →'), h('span', {}, 'cilj')));
+      h('kbd', {}, '← →'), h('span', {}, 'izberi nasprotnika')));
 }
 
 // ------------------------------------------------------------ feedback + log
@@ -2421,7 +2421,7 @@ function shuffleGrid(byPlayer) {
   B.hint = null;
   B.grid.forEach((t, i) => { if (!isLocked(t)) B.grid[i] = newTile(); });
   ensureSolvable(); clearWord();
-  fb('Mreža premešana.' + (S.mode === 'calm' && byPlayer ? ' Sovražniki so izkoristili trenutek.' : ''), 'warn');
+  fb('Mreža premešana.' + (S.mode === 'calm' && byPlayer ? ' Nasprotniki so izkoristili trenutek.' : ''), 'warn');
   if (S.mode === 'calm' && byPlayer) calmAfterWord();
   renderPuzzle();
 }
@@ -2839,7 +2839,7 @@ function cwComplete() {
     B.enemies.filter(e => e.hp > 0).forEach(e => damageEnemy(e, d));
     B.meter = Math.min(METER_MAX, B.meter + 12);
     spawnCard(leadEl(), { tier: 3, c: 'var(--water)', name: 'Družina', move: 'Zaseda uspela', value: `−${d} vsem`, extra: 'zagovor +12', portrait: '!' });
-    log('Zaseda uspela: vsi sovražniki prejmejo še en udarec.');
+    log('Zaseda uspela: vsi nasprotniki prejmejo še en udarec.');
   } else {
     const e = C.enemy;
     if (e && e.hp > 0) {
@@ -2906,7 +2906,7 @@ function showResult(win) {
     : D.withdraw ? 'Vsi junaki so obležali že drugič. Pot je končana.' : 'Vsi junaki so obležali. Pot je končana.';
   const ov = h('div', { class: 'overlay' }, h('div', { class: 'dialog' },
     h('h2', {}, win ? 'Zmaga!' : 'Poraz'),
-    h('div', { class: 'muted' }, win ? (C ? `${GOD[C.god].name} je ${GOD[C.god].f ? 'premagana' : 'premagan'}.` : R ? (hurt || down ? 'Sovražniki so premagani. Rane ostanejo: junaki se pozdravijo pri vodnjaku ali na koncu pokrajine.' : 'Sovražniki so premagani.') : 'Sovražniki so premagani.') : lost),
+    h('div', { class: 'muted' }, win ? (C ? `${GOD[C.god].name} je ${GOD[C.god].f ? 'premagana' : 'premagan'}.` : R ? (hurt || down ? 'Nasprotniki so premagani. Rane ostanejo: junaki se pozdravijo pri vodnjaku ali na koncu pokrajine.' : 'Nasprotniki so premagani.') : 'Nasprotniki so premagani.') : lost),
     left.length ? h('p', { class: 'note' }, leftLine(left)) : null,
     saved ? h('p', { class: 'savednote', role: 'status' }, h('b', {}, 'Shranjeno.'), ' Pot lahko zdaj zapustiš in jo pozneje nadaljuješ od tod.') : null,
     win && B.found ? newWordsRow(B.found, 'mreza') : null,

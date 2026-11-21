@@ -81,8 +81,8 @@ function applyItem(id, arg) {
   if (id === 'rusalkina-solza') { B.grid.forEach(x => { x.lockUntil = 0; x.lockWords = 0; x.flood = false; x.scorch = false; }); B.sleep = {}; return 'Rusalkina solza: črke so čiste, junaki budni.'; }
   if (id === 'velesov-strup') { if (!arg) return null; applyBurn(arg, 2.8, 'zastrupljen', true); return `Velesov strup: ${arg.name} je zastrupljen.`; }
   if (id === 'volcja-jagoda') { if (!arg) return null; arg.atk = Math.max(1, Math.round(arg.atk * 0.7)); return `Volčja jagoda: ${arg.name} napada šibkeje.`; }
-  if (id === 'morin-prah') { if (!foes.length) return null; foes.forEach(e => { if (S.mode === 'real') e.stunUntil = Math.max(e.stunUntil, B.time + 8); else e.stunWords = Math.max(e.stunWords, 2); }); return 'Morin prah: sovražniki zaspijo.'; }
-  if (id === 'kresna-zerjavica') { if (!foes.length) return null; foes.forEach(e => applyBurn(e, 2.5)); return 'Kresna žerjavica: vsi sovražniki gorijo.'; }
+  if (id === 'morin-prah') { if (!foes.length) return null; foes.forEach(e => { if (S.mode === 'real') e.stunUntil = Math.max(e.stunUntil, B.time + 8); else e.stunWords = Math.max(e.stunWords, 2); }); return 'Morin prah: nasprotniki zaspijo.'; }
+  if (id === 'kresna-zerjavica') { if (!foes.length) return null; foes.forEach(e => applyBurn(e, 2.5)); return 'Kresna žerjavica: vsi nasprotniki gorijo.'; }
   return null;
 }
 // Heroes use what the party carries without being told. `when`:
@@ -344,7 +344,7 @@ function renderTravel() {
       if (stop.done) return;
       body = h('div', { class: 'tv-foes' }, stop.enemies.map((k, n) => { const e = ENEMIES[k], art = e.art || k;
         return h('div', { class: 'actor foe spr' + (e.boss ? ' boss' : '') + (n === stop.strong ? ' strong' : ''), style: { '--art': Math.round(SPR_SIZE[art] * (e.scale || 1)) } }, h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[art]})`, filter: e.tint || '', 'animation-delay': (-n * 400) + 'ms' } })); }));
-      cap = stop.kind === 'boss' ? 'Šef' : stop.kind === 'elite' ? 'Zaseda' : 'Sovražniki';
+      cap = stop.kind === 'boss' ? 'Šef' : stop.kind === 'elite' ? 'Zaseda' : 'Nasprotniki';
     } else if (stop.kind === 'chest') { body = objEl('skrinja', stop.done ? 1 : 0); cap = stop.done ? '' : 'Skrinja'; }
     else if (stop.kind === 'trap') { if (stop.done) return; body = objEl('plaz'); cap = 'Plaz'; }
     else if (stop.kind === 'darts') { body = objEl('puscice', stop.done ? 1 : 0); cap = stop.done ? '' : 'Konice'; }
@@ -513,7 +513,7 @@ function openShop(stop) {
   };
   const ov = h('div', { class: 'overlay' }, h('div', { class: 'dialog bag' },
     h('h2', {}, 'Krošnjar', goldEl),
-    h('div', { class: 'shophead' }, objEl('krosnjar', 1, 'npc'), h('p', { class: 'muted' }, '»Suha roba, mokra roba! Napoj za žejo, strup za sovražnika, pa kaj starega iz časov bogov.«')),
+    h('div', { class: 'shophead' }, objEl('krosnjar', 1, 'npc'), h('p', { class: 'muted' }, '»Suha roba, mokra roba! Napoj za žejo, strup za nasprotnika, pa kaj starega iz časov bogov.«')),
     list,
     h('div', { class: 'row' }, h('button', { class: 'btn primary', onclick: close }, 'Hvala, grem naprej ', h('kbd', {}, 'Esc')))));
   paint(); document.body.append(ov); S.bagEl = ov;

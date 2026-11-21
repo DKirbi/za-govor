@@ -151,11 +151,11 @@ function figDarts() {
 function tutCross(kind) {
   const real = S.mode === 'real', C = B && B.cw, geslo = !!(C && C.D && C.D.style === 'geslo'), secs = C && C.timerMax !== Infinity ? Math.round(C.timerMax) : 0;
   const lead = { finisher: 'Zagovor je poln. Vsaka pravilno rešena beseda je napad, cela križanka pa še mogočnejši udarec.',
-    lock: 'Sovražnik te je ujel v križanko. Mreža črk je zaprta, dokler križanke ne rešiš.',
-    ambush: 'Tokrat udariš prvi. Vsaka pravilno rešena beseda je udarec, preden te sovražniki opazijo.' }[kind];
-  const time = kind === 'finisher' ? (real ? 'Časa ni, a sovražniki napadajo naprej, le pol počasneje. Križanko lahko prekličeš; moč zagovora ostane.' : 'Časa ni in sovražniki čakajo. Križanko lahko prekličeš; moč zagovora ostane.')
+    lock: 'Nasprotnik te je ujel v križanko. Mreža črk je zaprta, dokler križanke ne rešiš.',
+    ambush: 'Tokrat udariš prvi. Vsaka pravilno rešena beseda je udarec, preden te nasprotniki opazijo.' }[kind];
+  const time = kind === 'finisher' ? (real ? 'Časa ni, a nasprotniki napadajo naprej, le pol počasneje. Križanko lahko prekličeš; moč zagovora ostane.' : 'Časa ni in nasprotniki čakajo. Križanko lahko prekličeš; moč zagovora ostane.')
     : !secs ? 'V mirnem načinu časa ni.'
-    : kind === 'lock' ? `Rdeča črta nad križanko je čas (${secs} s). Ko poteče, sovražnik udari z vso močjo.`
+    : kind === 'lock' ? `Rdeča črta nad križanko je čas (${secs} s). Ko poteče, nasprotnik udari z vso močjo.`
     : `Rdeča črta nad križanko je čas (${secs} s). Ko poteče, te opazijo in bitka se nadaljuje v mreži črk.`;
   return { title: { finisher: 'Zagovor: križanka', lock: 'Zaklepanje: križanka', ambush: 'Zaseda: križanka' }[kind], lead, fig: figCross(), calm: kind === 'finisher' || !secs, time,
     steps: [
@@ -168,8 +168,8 @@ function tutCross(kind) {
 // seconds of the running event, when there is one (Kako igrati shows the same intros without an event)
 const evSecs = k => S.ev && S.ev[k] ? ` (${Math.round(S.ev[k])} s)` : '';
 const TUT = {
-  mesh: () => ({ title: 'Mreža črk', lead: 'Iz sosednjih črk sestavi slovensko besedo. Vsaka beseda je napad na sovražnika.', fig: figMesh(), calm: S.mode !== 'real',
-    time: S.mode === 'real' ? 'Sovražniki napadajo sproti. Ko sovražnik zažari, sledi udarec, zato so hitre besede vredne več kot popolne.' : 'V mirnem načinu sovražniki počakajo na tvojo besedo.',
+  mesh: () => ({ title: 'Mreža črk', lead: 'Iz sosednjih črk sestavi slovensko besedo. Vsaka beseda je napad na nasprotnika.', fig: figMesh(), calm: S.mode !== 'real',
+    time: S.mode === 'real' ? 'Nasprotniki napadajo sproti. Ko nasprotnik zažari, sledi udarec, zato so hitre besede vredne več kot popolne.' : 'V mirnem načinu nasprotniki počakajo na tvojo besedo.',
     steps: [
       S.mobile ? ['Vleci s prstom po sosednjih črkah, tudi poševno, ali pa jih pritiskaj eno za drugo.'] : ['Tipkaj besedo; pot po sosednjih črkah se poišče sama. Lahko tudi vlečeš z miško ali klikaš črke eno za drugo.'],
       S.mobile ? [`Ko spustiš prst, se beseda pošlje sama. Če črke pritiskaš, pritisni Pošlji ob besedi ali še enkrat zadnjo črko. Beseda ima vsaj ${MINW()} črke; daljša udari močneje.`] : [K('Enter'), ` ali Pošlji odda besedo. Imeti mora vsaj ${MINW()} črke; daljša udari močneje.`],
