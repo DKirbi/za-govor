@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Triglav grassy-road parallax</title>
+<style>
+:root { color-scheme:light; font-family:Georgia,'Times New Roman',serif; background:#e8e0c7; color:#332c20; }
+* { box-sizing:border-box; }
+body { margin:0; padding:18px; }
+main { max-width:1080px; margin:0 auto; }
+h1 { margin:0 0 8px; font-size:clamp(1.25rem,2.5vw,1.8rem); font-weight:600; }
+p { margin:0 0 12px; line-height:1.45; }
+.scene { position:relative; width:100%; aspect-ratio:16/9; overflow:hidden; isolation:isolate; background:#748da2; border:2px solid #54402c; }
+.layer,.actor { position:absolute; display:block; max-width:none; pointer-events:none; user-select:none; }
+.sky { left:-10%; top:0; width:120%; height:100%; z-index:0; }
+.clouds { left:-4%; top:0; width:108%; height:100%; z-index:1; animation:cloud-drift 52s linear infinite; }
+.foothills { left:0; top:0; width:100%; height:100%; z-index:2; }
+.peaks { left:0; top:4%; width:100%; height:55.6%; z-index:3; }
+.forest { left:-22%; top:-8%; width:144%; height:85%; z-index:4; }
+.ibex { left:20%; top:31%; width:5.5%; height:auto; z-index:5; }
+.grass { left:-48%; top:-14%; width:196%; height:116%; z-index:6; }
+.flowers { left:-15%; top:23%; width:130%; height:77%; z-index:7; }
+.spruces { left:0; top:-40%; width:100%; height:100%; z-index:8; }
+.actor { bottom:11%; width:11.5%; height:auto; aspect-ratio:1; z-index:9; transition:left .15s linear; image-rendering:pixelated; }
+#hero { left:18%; }
+#foe { left:78%; }
+.actor img { display:block; width:100%; height:100%; image-rendering:pixelated; }
+.controls { display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding-top:12px; }
+.progress-control { flex:1 1 240px; display:grid; grid-template-columns:1fr auto; gap:6px 12px; align-items:center; }
+.progress-control label { font-weight:600; }
+#progress { grid-column:1/-1; width:100%; accent-color:#765131; }
+button { min-height:44px; padding:8px 14px; border:1px solid #5b4630; border-radius:6px; background:#f5efd9; color:#332c20; font:inherit; font-weight:600; }
+button:focus-visible,input:focus-visible { outline:3px solid #265d7a; outline-offset:2px; }
+#status { min-width:190px; }
+@keyframes cloud-drift { from { translate:0 0; } to { translate:-16px 0; } }
+@media(max-width:560px) { body { padding:10px; } .controls { gap:8px; } .progress-control { flex-basis:100%; } button { flex:1 1 auto; } #status { flex:1 1 100%; } }
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Along the grassy road below Triglav</h1>
+  <p>Scrub or play a rightward journey. The broad grass lane moves fastest; foothills and snowy peaks drift more slowly behind the party.</p>
+  <div id="scene" class="scene" role="img" aria-label="Side-scrolling folk-painted Triglav landscape with three snowy peaks, forested foothills, a golden-horned ibex, a wide grassy road, and crisp pixel-art characters.">
+    <img class="layer sky" src="layers/sky.png" alt="" aria-hidden="true">
+    <img class="layer clouds" src="layers/clouds.png" alt="" aria-hidden="true">
+    <img class="layer foothills" src="layers/distant-foothills.png" alt="" aria-hidden="true">
+    <img class="layer peaks" src="layers/distant-peaks.png" alt="" aria-hidden="true">
+    <img class="layer forest" src="layers/midground-forest.png" alt="" aria-hidden="true">
+    <img class="layer ibex" src="layers/zlatorog-ibex.png" alt="" aria-hidden="true">
+    <img class="layer grass" src="layers/foreground-grass-lane.png" alt="" aria-hidden="true">
+    <img class="layer flowers" src="layers/foreground-flowers.png" alt="" aria-hidden="true">
+    <img class="layer spruces" src="layers/foreground-spruces.png" alt="" aria-hidden="true">
+    <div id="hero" class="actor"><img src="actors/krpan-idle.png" alt="" aria-hidden="true"></div>
+    <div id="foe" class="actor"><img src="actors/pesjan-idle.png" alt="" aria-hidden="true"></div>
+  </div>
+  <div class="controls">
+    <div class="progress-control">
+      <label for="progress">Travel from left to right</label>
+      <output id="progress-value" for="progress">0%</output>
+      <input id="progress" type="range" min="0" max="100" step="1" value="0" aria-label="Travel rightward across the grassy road">
+    </div>
+    <button id="travel" type="button">Walk the road</button>
+    <span id="status" aria-live="polite">Entering the valley</span>
+  </div>
+</main>
+<script>
+const scene=document.getElementById('scene');
+const progress=document.getElementById('progress');
+const value=document.getElementById('progress-value');
+const status=document.getElementById('status');
+const button=document.getElementById('travel');
+const hero=document.getElementById('hero');
+const foe=document.getElementById('foe');
+const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+const layers={
+  sky:document.querySelector('.sky'),clouds:document.querySelector('.clouds'),foothills:document.querySelector('.foothills'),
+  peaks:document.querySelector('.peaks'),forest:document.querySelector('.forest'),ibex:document.querySelector('.ibex'),
+  grass:document.querySelector('.grass'),flowers:document.querySelector('.flowers'),spruces:document.querySelector('.spruces')
+};
+const speeds={sky:.03,clouds:.025,foothills:.12,peaks:.16,forest:.34,ibex:.16,grass:1,flowers:.88,spruces:.72};
+let frame=0,start=0,playing=false;
+function clamp(n){return Math.max(0,Math.min(1,n));}
+function render(){
+  const p=Number(progress.value)/100,ahead=p,travel=scene.clientWidth*.25;
+  for(const [name,factor] of Object.entries(speeds)) layers[name].style.transform=`translate3d(${-Math.round(ahead*travel*factor)}px,0,0)`;
+  hero.style.left=`${18+p*16}%`;
+  foe.style.left=`${78-p*14}%`;
+  value.value=`${Math.round(p*100)}%`;
+  status.textContent=p>=.9?'Reaching the mountain encounter':p>=.4?'Crossing the forest valley':'Entering the valley';
+  if(p>=1&&playing)stop();
+}
+function stop(){playing=false;cancelAnimationFrame(frame);button.textContent='Replay journey';}
+function tick(now){if(!start)start=now;const p=clamp((now-start)/12000);progress.value=String(Math.round(p*100));render();if(p<1&&playing)frame=requestAnimationFrame(tick);}
+progress.addEventListener('input',()=>{stop();render();});
+window.addEventListener('resize',render);
+button.addEventListener('click',()=>{if(reduced.matches){progress.value='100';render();return;}if(playing){stop();return;}progress.value='0';start=0;playing=true;button.textContent='Pause journey';render();frame=requestAnimationFrame(tick);});
+render();
+</script>
+</body>
+</html>
