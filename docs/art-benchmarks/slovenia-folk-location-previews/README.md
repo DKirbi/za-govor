@@ -1,6 +1,6 @@
 # Slovenian folk-style location previews
 
-Four local art-direction concepts extend the treatment documented in [the Ptuj folk-card and background guide](../ptuj-folk-style-preview/README.md). Each panorama is shown by itself and with actual idle-frame game sprites composited over it. These are previews only: no production art manifest, runtime scene, or character sprite has been changed.
+Five local art-direction concepts extend the treatment documented in [the Ptuj folk-card and background guide](../ptuj-folk-style-preview/README.md). Each panorama is shown by itself and with actual idle-frame game sprites composited over it. These are previews only: no production art manifest, runtime scene, or character sprite has been changed.
 
 ## Peca
 
@@ -13,6 +13,12 @@ Four local art-direction concepts extend the treatment documented in [the Ptuj f
 ![Triglav folk-art scene with Krpan and Pesjan game sprites](triglav-folk-preview.png)
 
 [Background only](triglav-folk-background.png) · The three snowy peaks and a small golden-horned ibex evoke the chapter's legends. The cliff wall has natural rock contours without a human portrait. A broad grassy lane runs horizontally across the foreground for left-to-right travel. Krpan is a party-sprite stand-in for composition; the regional Pesjan uses its current Volkodlak-based gameplay sprite. Ajdovska deklica's gameplay pixel sprite is not in the current sprite bundle. The separate [Triglav parallax study](../triglav-parallax/README.md) includes the first slices and a camera preview.
+
+## Bled
+
+![Bled folk-art scene with Zeleni Jurij and Vila game sprites](bled-folk-preview.png)
+
+[Background only](bled-folk-background.png) · The island church, castle on its cliff, Julian Alps, lake reflections, and a wide grassy lakeshore lane set up a left-to-right travel scene. Zeleni Jurij is a party-sprite stand-in; Vila is an enemy from Bled's regional pool. The first separate layers and camera preview are in the [Bled parallax study](../bled-parallax/README.md).
 
 ## Trnovski gozd
 
@@ -40,9 +46,10 @@ Built-in ImageGen generated each background as a wide 16:9, character-free Slove
 
 - **Peca:** wooded Karavanke mountain, rocky foothill, and a small cave entrance suggesting King Matjaž's legend.
 - **Triglav:** three alpine summits, natural limestone cliffs without a portrait, larch and spruce slopes, and a small white ibex with golden horns for Zlatorog. The current game sprites show Krpan as a party stand-in and the regional Pesjan.
+- **Bled:** side-on lake panorama with the island church, castle cliff, calm reflections, and a broad horizontal grassy shore route. The preview pairs Zeleni Jurij's party sprite with the regional Vila enemy.
 - **Trnovski gozd:** quiet moonlit woodland path, beech and fir silhouettes, high-karst doline and layered forested plateau.
 - **Ljubljanica:** river-level side elevation with the Triple Bridge spanning horizontally, arch openings visible against the water, old-town facades and the castle hill behind it. A targeted view-angle revision produced the selected background.
 
 ## Next: parallax and mobile
 
-These are reference images, not ready-to-ship game backgrounds. The [Ptuj parallax study](../ptuj-parallax/README.md), [Peca parallax study](../peca-parallax/README.md), and [Triglav parallax study](../triglav-parallax/README.md) provide first-pass separate folk-art layer sets. The [Ljubljanica parallax study](../ljubljanica-parallax/README.md) sketches the rightward camera journey and its bridge, clouds, reflections, water, and path layers. The [background roadmap](../background-parallax-roadmap.md) lists all ten game regions and the preview-first workflow. These cutouts remain concept references: no runtime parallax layers, motion, or mobile layouts are implemented in the game.
+These are reference images, not ready-to-ship game backgrounds. The [Ptuj parallax study](../ptuj-parallax/README.md), [Peca parallax study](../peca-parallax/README.md), [Triglav parallax study](../triglav-parallax/README.md), and [Bled parallax study](../bled-parallax/README.md) provide first-pass separate folk-art layer sets. The [Ljubljanica parallax study](../ljubljanica-parallax/README.md) sketches the rightward camera journey and its bridge, clouds, reflections, water, and path layers. The [background roadmap](../background-parallax-roadmap.md) lists all ten game regions and the preview-first workflow. These cutouts remain concept references: no runtime parallax layers, motion, or mobile layouts are implemented in the game.
