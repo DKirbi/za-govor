@@ -22,9 +22,9 @@ Five local art-direction concepts extend the treatment documented in [the Ptuj f
 
 ## Trnovski gozd
 
-![Trnovski gozd folk-art scene with Martin Krpan and Volkodlak](trnovski-gozd-folk-preview.png)
+![Trnovski gozd folk-art scene with Martin Krpan and Volkodlak on a broad grassy travel lane](trnovski-gozd-folk-preview-grasslane.png)
 
-[Background only](trnovski-gozd-folk-background.png) · A moonlit karst-forest path frames the campaign's Martin Krpan and its Volkodlak enemy. The landscape cue is the forested high karst plateau and doline of Trnovski gozd; see the [Natura 2000 Slovenia reference](https://natura2000.gov.si/fileadmin/user_upload/Dokumenti/natura2000inslovenia.pdf).
+[Background only](trnovski-gozd-folk-background-grasslane.png) · A moonlit karst forest, doline and natural rock forms frame the campaign's Martin Krpan and Volkodlak on a broad, continuous grassy lane for left-to-right travel. The first winding-path composition remains available as the [original scene](trnovski-gozd-folk-background.png). This revised composition is ready for review before slicing. The landscape cue is the forested high karst plateau and doline of Trnovski gozd; see the [Natura 2000 Slovenia reference](https://natura2000.gov.si/fileadmin/user_upload/Dokumenti/natura2000inslovenia.pdf).
 
 ## Ljubljanica
 
