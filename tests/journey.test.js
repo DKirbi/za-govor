@@ -59,10 +59,13 @@ run(async () => {
   await page.keyboard.press('Enter'); await sleep(300);
   let s = await state(page);
   check(s.screen === 'travel' && s.party.join() === 'krpan' && s.ri === 0, 'the journey starts at Ptuj with one hero', JSON.stringify(s.party));
-  const shrinePlan = await page.evaluate(() => { const R = window.__ZG.S.run, g = Object.values(R.shrines); return { n: g.length, distinct: new Set(g).size, gifts: R.gifts.length }; });
-  check(shrinePlan.n === 3 && shrinePlan.distinct === 3 && shrinePlan.gifts === 0, 'a journey passes three shrines, each of a different god; no gift yet', JSON.stringify(shrinePlan));
+  const shrinePlan = await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run, g = Object.values(R.shrines), last = Z.WORLD.regions.length - 1;
+    const plans = Array.from({ length: 60 }, () => Object.keys(planShrines('krpan')).map(Number));
+    return { n: g.length, distinct: new Set(g).size, gifts: R.gifts.length, allTwo: plans.every(p => p.length === 2), neverLast: plans.every(p => !p.includes(last)), spread: new Set(plans.flat()).size }; });
+  check(shrinePlan.n === 2 && shrinePlan.distinct === 2 && shrinePlan.gifts === 0 && shrinePlan.allTwo && shrinePlan.neverLast && shrinePlan.spread >= 4,
+    'a journey passes two shrines (24 Nov), each of a different god, in random regions and never the last; no gift yet', JSON.stringify(shrinePlan));
   await page.evaluate(() => { window.__ZG.S.run.shrines = { 3: 'perun' }; });   // the test meets Perun's shrine at Bled
-  check(await page.evaluate(() => document.querySelectorAll('.tv-hero.empty').length) === 3, 'three places in the party are free');
+  check(await page.evaluate(() => document.querySelectorAll('.tv-hero.empty').length) === 2, 'a party of three (24 Nov): two places are free');
   const start = await page.evaluate(() => { const st = window.__ZG.S.heroes[0]; return { lvl: st.lvl, pts: st.pts, sk: st.sk.join() }; });
   check(start.lvl === 1 && start.pts === 0 && start.sk === '1,0,0', 'a hero starts at level 1 knowing only the first skill', JSON.stringify(start));
 
@@ -269,7 +272,7 @@ run(async () => {
   check(shrine.screen === 'shrine' && shrine.h2 === 'Svetišče' && shrine.sign && shrine.gods === 0 && /^Pomoli se/.test(shrine.btns[0]), 'the page is titled Svetišče and shows the god\'s sign, never the god', JSON.stringify(shrine));
   await shot('journey-07-shrine');
   await page.keyboard.press('Enter'); await sleep(400);
-  const prayed = await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run; return { prayer: R.prayer, gifts: R.gifts.slice(), say: (document.querySelector('.shrine .say.god') || {}).textContent || '',
+  const prayed = await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run; return { prayer: (Z.waitingPrayer() || {}).god, gifts: R.gifts.slice(), say: (document.querySelector('.shrine .say.god') || {}).textContent || '',
     party: Z.HEROES.map(h => h.id), unlocked: Z.UNLOCKED.has('perun') }; });
   check(prayed.prayer === 'perun' && prayed.gifts.includes('perun') && /Tvoja molitev je uslišana/.test(prayed.say) && !prayed.party.includes('perun') && !prayed.unlocked,
     'Perun answers the prayer and lends his gift; he neither joins nor is unlocked yet', JSON.stringify(prayed));
@@ -293,13 +296,22 @@ run(async () => {
   // the dragon); the party rests first, as at every region's end. Bled's shrine stands right after its first battle.
   check(await page.evaluate(() => { const Z = window.__ZG; return Z.WORLD.regions.filter(r => r.stops.includes('god')).every(r => r.stops.indexOf('god') === 1); }),
     'every shrine stands near the start of its region, right after the first battle');
-  await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run; R.stops.forEach(st => { st.passed = true; }); R.prompt = null; Z.S.heroes[0].hp = 1; Z.go('travel'); });
+  const preGod = await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run; R.stops.forEach(st => { st.passed = true; }); R.prompt = null; Z.S.heroes[0].hp = 1;
+    const fell = Z.S.heroes[1]; if (fell) { fell.down = true; fell.hp = 0; } Z.go('travel'); return { two: !!fell }; });
   await page.keyboard.press('ArrowRight');
   for (let i = 0; i < 60 && (await state(page)).screen !== 'godcome'; i++) await sleep(200);
   const come = await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run; return { screen: Z.S.screen, ri: R.ri, god: !!document.querySelector('.godcome .hero.spr'), lead: (document.querySelector('.godcome .lead') || {}).textContent,
-    note: (document.querySelector('.godcome .note') || {}).textContent || '', rested: Z.S.heroes[0].hp === Z.S.heroes[0].maxHp, prompt: R.prompt }; });
-  check(come.screen === 'godcome' && come.ri === 3 && come.god && /Perun je prišel po svoje/.test(come.lead || '') && come.rested && /opomorejo/.test(come.note) && !come.prompt,
-    'at the end of Bled, before the signpost, Perun comes for the challenge; the party has rested first', JSON.stringify(come));
+    note: (document.querySelector('.godcome .note') || {}).textContent || '', healed: Z.S.heroes.every(h => !h.down && h.hp === h.maxHp), snap: R.godSnap, prompt: R.prompt,
+    btns: [...document.querySelectorAll('.godcome .row .btn')].map(b => b.textContent) }; });
+  check(come.screen === 'godcome' && come.ri === 3 && come.god && /Perun je prišel po svoje/.test(come.lead || '') && come.healed && /Boj mora biti pošten/.test(come.note) && !come.prompt &&
+    come.snap && come.snap[0].hp === 1 && (!preGod.two || come.snap[1].down),
+    'at the end of Bled, before the signpost, Perun comes; no rest first, he heals everyone (the fallen too) for a fair fight and remembers how they came', JSON.stringify(come));
+  // skill points can be spent before the fight (Veščine on the arrival screen)
+  const trainCome = await page.evaluate(() => { const Z = window.__ZG; Z.S.heroes[0].pts = (Z.S.heroes[0].pts || 0) + 1; Z.go('godcome', Z.S.godArg);
+    return [...document.querySelectorAll('.godcome .row .btn')].map(b => b.textContent); });
+  check(trainCome.some(t => /^Veščine · \d+ točk/.test(t)) && /porabiš še pred bojem/.test(await page.evaluate(() => document.querySelector('.godcome .note').textContent)),
+    'with a point to spend, Veščine is offered before the god\'s fight', JSON.stringify(trainCome));
+  await page.evaluate(() => { const Z = window.__ZG; Z.S.heroes[0].pts -= 1; Z.go('godcome', Z.S.godArg); });
   await shot('journey-08-godcome');
   await page.keyboard.press('Enter'); await sleep(900);
   const fight = await page.evaluate(() => { const Z = window.__ZG, B = Z.B; return { screen: Z.S.screen, foes: B.enemies.map(e => e.name), hp: B.enemies[0].maxHp, pattern: B.enemies[0].pattern.join(), }; });
@@ -313,9 +325,11 @@ run(async () => {
   await winBattle(page);
   await page.keyboard.press('Enter'); await sleep(500);
   const word = await page.evaluate(() => ({ screen: window.__ZG.S.screen, say: (document.querySelector('.godword .say') || {}).textContent || '', notes: [...document.querySelectorAll('.godword .note')].map(n => n.textContent).join(' | '),
-    unlocked: window.__ZG.UNLOCKED.has('perun'), next: localStorage.getItem('zg-gift'), raised: window.__ZG.S.heroes.every(h => !h.down) }));
-  check(word.screen === 'godword' && /zapomnil/.test(word.say) && word.unlocked && word.next === 'perun' && word.raised && /\+250 XP/.test(word.notes) && /do konca poti/.test(word.notes),
-    'beaten, Perun speaks, raises the fallen, gives XP, is unlocked; his gift stays for this journey and waits for the next', JSON.stringify(word));
+    unlocked: window.__ZG.UNLOCKED.has('perun'), next: localStorage.getItem('zg-gift'), healed: window.__ZG.S.heroes.every(h => !h.down && h.hp === h.maxHp),
+    gifts: window.__ZG.S.run.gifts.slice(), result: (window.__ZG.S.run.prayers[0] || {}).result }));
+  check(word.screen === 'godword' && /zapomnil/.test(word.say) && word.unlocked && word.next === null && word.healed && /\+250 XP/.test(word.notes) && /do konca poti/.test(word.notes) &&
+    !/naslednjo pot/.test(word.notes) && word.gifts.includes('perun') && word.result === 'won',
+    'beaten, Perun speaks, heals everyone again, gives XP, is unlocked; his gift stays to the end of this journey only', JSON.stringify(word));
   await shot('journey-09-godword');
   // after his word the road goes on: the signpost of Bled, and a later shrine of Perun only lets you bow
   for (let i = 0; i < 4 && !(await state(page)).prompt; i++) { await page.keyboard.press('Enter'); await sleep(500); }
@@ -325,9 +339,9 @@ run(async () => {
   await walk(page);
   const laterS = await state(page);
   check(/že preizkusil/.test(laterS.prompt || ''), 'a later shrine of Perun says he has already tested you', JSON.stringify(laterS));
-  const next = await page.evaluate(() => { const Z = window.__ZG; Z.S.testMode = true; Z.newRun('krpan'); Z.go('travel'); return { gifts: Z.S.run.gifts.slice(), left: localStorage.getItem('zg-gift') }; });
-  check(next.gifts.join() === 'perun' && next.left === null, 'the next journey carries Perun\'s gift from start to end', JSON.stringify(next));
-  check(await page.evaluate(() => /dar: Perun/.test((() => { const Z = window.__ZG; return Z.S.run.gifts.map(g => 'dar: ' + Z.GOD[g].name).join(); })())), 'the gift is named after the god');
+  const next = await page.evaluate(() => { const Z = window.__ZG; localStorage.setItem('zg-gift', 'perun'); Z.S.testMode = true; Z.newRun('krpan'); Z.go('travel'); return { gifts: Z.S.run.gifts.slice(), left: localStorage.getItem('zg-gift') }; });
+  check(next.gifts.length === 0 && next.left === null, 'the next journey starts without a gift, and an old stored one is forgotten', JSON.stringify(next));
+  check(await page.evaluate(() => giftGoneLine('mokos') === 'Dar, ki ti ga je posodila Mokoš, je ugasnil.' && giftGoneLine('perun') === 'Dar, ki ti ga je posodil Perun, je ugasnil.'), 'the line for a gift going out fits the god\'s gender');
 
   // a party god at their own shrine meets their godly version at once; the party god does not strike it
   await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run; Z.setParty(['perun', 'krpan']); R.stops = [{ kind: 'god', god: 'perun', x: R.x + 300, done: false, passed: false }]; R.endX = R.x + 900; R.prompt = null; Z.go('travel'); });
@@ -398,33 +412,44 @@ run(async () => {
   check(easy2.btns.join() === 'Konec poti Enter' && /že drugič/.test(easy2.said) && easy2.screen === 'title' && !easy2.run, 'Malček (Lahka): a second lost battle on the same journey ends it', JSON.stringify(easy2));
   const hard = await lose('srednja');
   check(hard.btns.join() === 'Konec poti Enter' && hard.screen === 'title' && !hard.run, 'Učenjak (Srednja): a lost battle ends the journey (no retrying outside the test mode)', JSON.stringify(hard));
-  // losing to the god at a region's end is losing a battle: on Malček the god leaves and the party withdraws to the
-  // signpost; on Učenjak the journey is over
+  // 24 Nov: losing to the god never ends the journey, on any Znanje, and uses no withdrawal. The god leaves, every hero
+  // is as healthy as they came, and the gift stays until the next region is behind the party.
   const loseGod = async d => {
     await page.evaluate(d => { const Z = window.__ZG; Z.setDiff(d); Z.S.testMode = false; Z.newRun('krpan'); Z.joinHero('kurent'); Z.enterRegion(3); const R = Z.S.run;
-      R.prayer = 'perun'; R.gifts.push('perun'); R.stops.forEach(x => { x.passed = true; }); R.x = R.endX - 5; R.prompt = null; Z.go('travel'); }, d);
+      R.prayers = [{ god: 'perun', ri: 3, result: null }]; R.gifts.push('perun'); R.stops.forEach(x => { x.passed = true; }); R.x = R.endX - 5; R.prompt = null;
+      Z.S.heroes[0].hp = 7; Z.S.heroes[1].down = true; Z.S.heroes[1].hp = 0; Z.go('travel'); }, d);
     await page.keyboard.press('ArrowRight');
     for (let i = 0; i < 40 && (await state(page)).screen !== 'godcome'; i++) await sleep(200);
     await page.keyboard.press('Enter'); await sleep(900);
     await page.evaluate(() => { const Z = window.__ZG; Z.S.heroes.forEach((h, k) => woundHero(k, 9999)); checkEnd(); }); await sleep(1600);
-    const said = await page.evaluate(() => (document.querySelector('.overlay .dialog .muted') || {}).textContent);
+    const said = await page.evaluate(() => ({ text: (document.querySelector('.overlay .dialog .muted') || {}).textContent, btns: [...document.querySelectorAll('.overlay .btn')].map(b => b.textContent.trim()) }));
     await page.keyboard.press('Enter'); await sleep(500);
     const word = await page.evaluate(() => ({ screen: window.__ZG.S.screen, note: [...document.querySelectorAll('.godword .note')].map(n => n.textContent).join(' | '), btn: (document.querySelector('.godword .btn') || {}).textContent }));
     await page.keyboard.press('Enter'); await sleep(500);
-    return { said, word, ...(await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run; return { screen: Z.S.screen, run: !!R, challenged: R && R.challenged, prompt: R && R.prompt && R.prompt.text, unlocked: Z.UNLOCKED.has('perun') }; })) };
+    return { said, word, ...(await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run; return { screen: Z.S.screen, run: !!R, result: R && (R.prayers[0] || {}).result, prompt: R && R.prompt && R.prompt.text,
+      unlocked: Z.UNLOCKED.has('perun'), rescues: R && (R.rescues || 0), hp: Z.S.heroes.map(h => [h.hp, h.down]), gifts: R && R.gifts.slice(), until: R && R.giftUntil.perun }; })) };
   };
   await page.evaluate(() => { const Z = window.__ZG; Z.UNLOCKED.delete('perun'); });
-  const godEasy = await loseGod('lahka');
-  check(/Perun je močnejši/.test(godEasy.said) && godEasy.word.screen === 'godword' && /odide brez besede/.test(godEasy.word.note) && godEasy.run && godEasy.challenged && /umakne/.test(godEasy.prompt || '') && !godEasy.unlocked,
-    'Malček: lost to Perun at the region\'s end, he leaves and the party withdraws (no unlock); he does not come again', JSON.stringify(godEasy));
-  await page.keyboard.press('Enter'); await sleep(200);
-  for (let i = 0; i < 40 && !(await state(page)).prompt; i++) await sleep(200);
-  check(/^Kažipot kaže naprej/.test((await state(page)).prompt || ''), 'after withdrawing from the god the road goes on to the signpost', (await state(page)).prompt);
+  for (const d of ['lahka', 'srednja', 'tezka']) {
+    const g = await loseGod(d);
+    check(/Perun je močnejši/.test(g.said.text || '') && /Pot se ne konča/.test(g.said.text || '') && g.said.btns.join() === 'Naprej Enter' && g.word.screen === 'godword' && /odide brez besede/.test(g.word.note) &&
+      /naslednja pokrajina/.test(g.word.note) && g.run && g.screen === 'travel' && /^Kažipot kaže naprej/.test(g.prompt || '') && g.result === 'lost' && !g.unlocked && g.rescues === 0 &&
+      g.hp[0][0] === 7 && !g.hp[0][1] && g.hp[1][1] && g.gifts.includes('perun') && g.until === 4,
+      `${d}: lost to Perun, he leaves; the journey goes on with the health the party came with, no withdrawal used, the gift kept until Trnovski gozd is behind; the road goes on to the signpost`, JSON.stringify(g));
+  }
+  check(await page.evaluate(() => !window.__ZG.godWaits()), 'after a lost challenge the god does not come again');
+  // the gift of a lost challenge works through the next region and goes out when that one is behind
+  const fade = await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run; Z.enterRegion(4); const mid = R.gifts.includes('perun');
+    Z.enterRegion(5); return { mid, after: R.gifts.includes('perun'), toast: (document.querySelector('.toast') || {}).textContent || '' }; });
+  check(fade.mid && !fade.after && /Dar, ki ti ga je posodil Perun, je ugasnil/.test(fade.toast), 'the gift lasts through Trnovski gozd and goes out when it is behind the party, and says so', JSON.stringify(fade));
   const atEnd = await page.evaluate(() => { const Z = window.__ZG; Z.setDiff('lahka'); Z.newRun('krpan'); Z.enterRegion(3); const R = Z.S.run;
-    R.prayer = 'perun'; R.stops.forEach(x => { x.passed = true; }); R.x = R.endX; R.prompt = null; Z.go('travel'); return { prompt: R.prompt && R.prompt.text, label: R.prompt && R.prompt.actions[0].label }; });
+    R.prayers = [{ god: 'perun', ri: 3, result: null }]; R.stops.forEach(x => { x.passed = true; }); R.x = R.endX; R.prompt = null; Z.go('travel'); return { prompt: R.prompt && R.prompt.text, label: R.prompt && R.prompt.actions[0].label }; });
   check(/te čaka Perun/.test(atEnd.prompt || '') && atEnd.label === 'Sprejmi izziv', 'back at the region\'s end with the god still waiting (a reload), the road offers his challenge, not the signpost', JSON.stringify(atEnd));
-  const godHard = await loseGod('srednja');
-  check(/Pot je končana/.test(godHard.said) && /Konec poti/.test(godHard.word.btn || '') && godHard.screen === 'title' && !godHard.run, 'Učenjak: losing to the god at the region\'s end ends the journey, like any lost battle', JSON.stringify(godHard));
+  // a save from before 24 Nov: one prayer and three shrines become the new form, the first two shrines kept
+  const old = await page.evaluate(() => { const Z = window.__ZG, R = { ri: 3, prayer: 'perun', challenged: false, gifts: ['perun'], shrines: { 1: 'svarog', 3: 'perun', 7: 'veles' } };
+    Z.migratePrayers(R); return R; });
+  check(JSON.stringify(old.prayers) === JSON.stringify([{ god: 'perun', ri: 3, result: null }]) && Object.keys(old.shrines).join() === '1,3' && !('prayer' in old) && old.giftUntil,
+    'an older save\'s single prayer and three shrines become two shrines and the prayer list', JSON.stringify(old));
   // balance D: at Ptuj (the tutorial) a lost battle never ends the journey and costs no rescue, on any Znanje;
   // on Malček the Lintvern can always be fought once more, rescue or not
   const free = await page.evaluate(() => { const Z = window.__ZG; Z.setDiff('srednja'); Z.newRun('krpan'); const node = { stop: Z.S.run.stops.find(x => x.enemies) };
@@ -442,16 +467,19 @@ run(async () => {
   check(left.party.join() === 'krpan,jurij' && /Kurent je padel in zapustil družino/.test(left.note || ''), 'Knjižni molj (Težka): a hero still down when the battle is won leaves the party', JSON.stringify(left));
   await page.evaluate(() => { const Z = window.__ZG; Z.S.know = 'malcek'; Z.S.testMode = true; Z.newRun('krpan'); Z.go('travel'); }); await sleep(200);
 
-  // a full party: the fifth hero can only replace someone
+  // a full party (three, 24 Nov): the fourth hero can only replace someone
   await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run; R.prompt = null;
-    Z.setParty(['erazem', 'kurent', 'stribog', 'krpan']); Z.S.heroes[1].down = true; Z.S.heroes[1].hp = 0; R.stops.push({ kind: 'hero', hero: 'vida', x: R.x + 300, done: false, passed: false }); R.stops.sort((p, q) => p.x - q.x); Z.go('travel'); });
+    Z.setParty(['erazem', 'kurent', 'krpan']); Z.S.heroes[1].down = true; Z.S.heroes[1].hp = 0; R.stops.push({ kind: 'hero', hero: 'vida', x: R.x + 300, done: false, passed: false }); R.stops.sort((p, q) => p.x - q.x); Z.go('travel'); });
   await page.evaluate(() => { const R = window.__ZG.S.run; R.stops.forEach(x => { if (x.kind !== 'hero' || x.hero !== 'vida') x.passed = true; }); });
   await walk(page); await page.keyboard.press('Enter'); await sleep(400);
   const swap = await page.evaluate(() => [...document.querySelectorAll('.hm .hm-foot .btn')].map(b => b.textContent));
-  check(swap.length === 5 && swap.filter(t => /^(Namesto|Zapusti)/.test(t)).length === 4 && swap.some(t => /^Zapusti: Kurent/.test(t)), 'with four heroes a new one can only take somebody\'s place; a fallen hero can be left behind', swap.join(' | '));
+  const fullText = await page.evaluate(() => document.querySelector('.hm').textContent);
+  check(swap.length === 4 && swap.filter(t => /^(Namesto|Zapusti)/.test(t)).length === 3 && swap.some(t => /^Zapusti: Kurent/.test(t)) && /Družina je polna \(trije\)/.test(fullText),
+    'with three heroes the party is full: a new one can only take somebody\'s place; a fallen hero can be left behind', swap.join(' | '));
   await page.evaluate(() => [...document.querySelectorAll('.hm .hm-foot .btn')].find(b => /Kurent/.test(b.textContent)).click()); await sleep(300);
   s = await state(page);
-  check(s.party.join() === 'erazem,vida,stribog,krpan', 'Lepa Vida takes the fallen Kurent\'s place', s.party.join());
+  check(s.party.join() === 'erazem,vida,krpan', 'Lepa Vida takes the fallen Kurent\'s place', s.party.join());
+  check(await page.evaluate(() => window.__ZG.PARTY_MAX) === 3, 'a party holds three heroes at most (24 Nov)');
   await page.evaluate(() => { const Z = window.__ZG; Z.S.testMode = false; Z.S.pickIds = null; Z.go('title'); Z.go('newrun'); }); await page.keyboard.press('Enter'); await sleep(200);
   const again = await page.evaluate(() => ({ open: document.querySelectorAll('button.pickcard').length, known: window.__ZG.UNLOCKED.size, locked: document.querySelectorAll('.pickcard.locked').length }));
   check(again.open === again.known && again.open > 3 && again.open + again.locked === 15, 'the next journey can start with anyone unlocked so far', JSON.stringify(again));
@@ -466,7 +494,7 @@ run(async () => {
   let d = await page.evaluate(() => { const E = window.__ZG.S.ev; return { word: E.word, cols: E.cols.length, rows: E.cols[0].length, ok: [...E.word].every((ch, c) => E.cols[c].includes(ch)),
     warn: document.querySelector('.darts .dart-warn').textContent, heroes: document.querySelectorAll('.dartparty .dp-hero').length }; });
   check(d.cols === 6 && d.rows === 3 && d.ok, 'the dart wall has six columns of three letters and hides a word', d.word);
-  check(d.warn === 'Konice se sprožijo – pripravi se na umik!' && d.heroes === 4, 'the wall warns instead of repeating the rules, and the whole party stands in front of it', JSON.stringify(d));
+  check(d.warn === 'Konice se sprožijo – pripravi se na umik!' && d.heroes === await page.evaluate(() => window.__ZG.HEROES.length), 'the wall warns instead of repeating the rules, and the whole party stands in front of it', JSON.stringify(d));
   await page.evaluate(() => document.querySelectorAll('.dartcol')[2].querySelector('.tile').click());
   check(await page.evaluate(() => window.__ZG.S.ev.sel.length) === 0, 'a column cannot be taken before the ones to its left');
   for (const ch of d.word) await page.evaluate(c => document.dispatchEvent(new KeyboardEvent('keydown', { key: c, bubbles: true, cancelable: true })), ch);

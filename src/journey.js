@@ -1,8 +1,8 @@
 // ============================================================ journey: one walk across Slovenia
 // The game is a single side-scrolling road: region after region (data/world.json), each with
 // stops — battles with random enemies, chests, rock slides, wells, pedlars, heroes to meet and
-// shrines of challenge (src/shrines.js). You start with one hero; up to four travel together and only
-// one of them may be a god. Health does not come back after a battle: it is restored at wells (which
+// shrines of challenge (src/shrines.js). You start with one hero; up to three travel together (PARTY_MAX,
+// Game Director, 24 Nov 2026; four before) and only one of them may be a god. Health does not come back after a battle: it is restored at wells (which
 // stand by chance, like chests: planStops), by a new level and at the end of every region (restAfterRegion);
 // none of these raise the fallen (that takes a healer, Mrtva voda or a beaten god; see DIFFS in src/game.js).
 const WORLD = JSON.parse($('#worlddata').textContent);
@@ -181,6 +181,9 @@ function startJourney() { const ids = starterChoices(), id = ids[clamp(S.pickSel
 // Heroes on the road: one waits at Ptuj, and two more in other regions picked at random, so a journey
 // never meets everyone and the next one meets others. Each place favours its own hero (HERO_HOME).
 const HERO_MEETS = 3;
+// the most heroes in a party (24 Nov 2026: three, "a fun number"; three enemies stand on screen at most, too).
+// A save from before keeps a party of four until a hero leaves it (src/save.js).
+const PARTY_MAX = 3;
 const HERO_HOME = { ptuj: 'kurent', peca: 'matjaz', triglav: 'ajda', gozd: 'krpan', piran: 'vida', predjama: 'erazem', barje: 'jurij', reka: 'klepec' };   // the legends of the places (README)
 function planHeroes() {
   const slots = WORLD.regions.map((r, i) => r.stops.includes('hero') ? i : -1).filter(i => i > 0);
@@ -223,9 +226,9 @@ function planChests(know) { return planEvents(know).map((k, i) => k === 'chest' 
 function newRun(starterId) {
   S.run = { ri: 0, x: 0, endX: 0, stops: [], gold: S.testMode ? 200 : 20, relics: [], bag: {}, rozaUsed: false, jurijUsed: false,
     battles: 0, words: 0, firstBattle: true, met: [starterId], walking: false, prompt: null, starter: starterId, heroAt: null,
-    shrines: null, prayer: null, challenged: false, gifts: [], t0: Date.now() };   // levels and skill points are each hero's own (balance E)
+    shrines: null, prayers: [], giftUntil: {}, gifts: [], t0: Date.now() };   // levels and skill points are each hero's own (balance E)
   S.run.heroAt = planHeroes(); S.run.shrines = planShrines(starterId); S.run.eventAt = planEvents(); S.run.wellAt = planWells();
-  const g = takeNextGift(); if (g) S.run.gifts.push(g);   // the gift of a god beaten at the end of the last journey
+  forgetNextGift();   // 24 Nov: a beaten god's gift no longer carries into the next journey (src/shrines.js)
   setParty([starterId]); S.meterBonus = 0;
   enterRegion(0);
 }
@@ -296,7 +299,8 @@ function enterRegion(i) {
   const R = S.run, reg = WORLD.regions[i], gap = WORLD.stopGap;
   if (i > 0 && i !== R.ri) {
     const down = S.heroes.filter(x => x.down).length, got = restAfterRegion(), up = down - S.heroes.filter(x => x.down).length;
-    if (got) toast(`${WORLD.regions[R.ri].name} je za vami: junaki so spet polno zdravi (+${got} zdravja).` + (up ? ' Padli so vstali s polovico zdravja.' : ''));
+    const gone = expireGifts(R.ri).map(giftGoneLine).join(' ');   // a gift lent until this region's end goes out (src/shrines.js)
+    if (got || gone) toast((got ? `${WORLD.regions[R.ri].name} je za vami: junaki so spet polno zdravi (+${got} zdravja).` + (up ? ' Padli so vstali s polovico zdravja.' : '') : '') + (got && gone ? ' ' : '') + gone);
   }
   R.ri = i; R.x = 0; R.stops = []; R.prompt = null; R.walking = false;
   // a hero stop, a shrine and a well only stay in the regions picked for this journey; the event slot is this
@@ -394,7 +398,7 @@ function renderTravelPanel() {
         h('div', {}, h('b', {}, hr.name, hr.god ? h('span', { class: 'godtag' }, 'bog') : null),
           h('div', { class: 'hpbar' + (pct <= 25 ? ' crit' : pct <= 50 ? ' low' : '') }, h('i', { style: { width: pct + '%' } })),
           h('span', { class: 'hpnum' }, st.down ? 'obležal' : `${st.hp}/${st.maxHp} · raven ${st.lvl}`))); }),
-      Array.from({ length: 4 - HEROES.length }, () => h('div', { class: 'tv-hero empty' }, 'prosto mesto'))),
+      Array.from({ length: Math.max(0, PARTY_MAX - HEROES.length) }, () => h('div', { class: 'tv-hero empty' }, 'prosto mesto'))),
     h('div', { class: 'tv-gear' },
       h('span', { class: 'goldtag', title: 'Zlatniki' }, h('i', { class: 'coin' }), R.gold),
       h('span', { class: 'relics' }, R.relics.map(id => h('span', { title: `${ITEMS[id].name}: ${ITEMS[id].text}` }, itemIcon(id)))),
@@ -430,7 +434,7 @@ function promptFor(stop) {
   const pass = (done = false) => { stop.passed = true; if (done) stop.done = true; R.prompt = null; R.walking = true; go('travel'); };
   const skip = S.testMode && stop ? [{ label: 'Preskoči', fn: () => pass(false) }] : [];
   if (!stop && godWaits()) {   // back at the region's end with the god still waiting (a reload, an older save): no way past
-    const G = GOD[R.prayer];
+    const G = GOD[waitingPrayer().god];
     return { text: `Pred kažipotom te čaka ${G.name}.`, keep: true, actions: [{ label: 'Sprejmi izziv', primary: true, fn: godArrives }] };
   }
   if (!stop) {
@@ -496,11 +500,11 @@ function meetHero(stop, ids) {
   const leave = () => { stop.passed = true; R.prompt = null; back(); };
   // only a hero who joins is unlocked for later journeys; one you leave behind stays unknown
   go('hero', { kind: 'meet', ids, sel: 0,
-    info: A => { const id = A.ids[A.sel], full = HEROES.length >= 4, nm = ROSTER[id].name, f = heroF(id);
+    info: A => { const id = A.ids[A.sel], full = HEROES.length >= PARTY_MAX, nm = ROSTER[id].name, f = heroF(id);
       return (UNLOCKED.has(id) ? '' : `Če ${nm} gre s teboj, ${f ? 'jo' : 'ga'} odkleneš: na naslednji poti lahko začneš tudi z ${f ? 'njo' : 'njim'}. `) + (isGod(id) ? 'Bog je močnejši od ljudskih junakov, a s teboj gre le eden. ' : '') +
-        (full ? `Družina je polna (štirje). Če ${f ? 'jo' : 'ga'} vzameš s seboj, se mora eden od tvojih posloviti.` : `V družini je še prostor (${HEROES.length} od 4).`); },
+        (full ? `Družina je polna (${PARTY_MAX === 3 ? 'trije' : PARTY_MAX}). Če ${f ? 'jo' : 'ga'} vzameš s seboj, se mora eden od tvojih posloviti.` : `V družini je še prostor (${HEROES.length} od ${PARTY_MAX}).`); },
     actions: A => { const id = A.ids[A.sel], hr = ROSTER[id], join = at => () => { joinHero(id, at); const fresh = unlock(id); stop.done = stop.passed = true; R.prompt = null; sfx('win', { vol: .6 }); back(); if (fresh) toast(heroF(id) ? `${hr.name} je odklenjena: na naslednji poti lahko začneš tudi z njo.` : `${hr.name} je odklenjen: na naslednji poti lahko začneš tudi z njim.`); };
-      const acts = HEROES.length < 4 ? [{ label: `${hr.name} gre s teboj`, primary: true, fn: join() }]
+      const acts = HEROES.length < PARTY_MAX ? [{ label: `${hr.name} gre s teboj`, primary: true, fn: join() }]
         : HEROES.map((x, k) => ({ label: `${S.heroes[k].down ? 'Zapusti' : 'Namesto'}: ${x.name}${S.heroes[k].down ? ' (obležal)' : ''}`, fn: join(k) }));
       return acts.concat([{ label: 'Pojdi naprej brez novega junaka', fn: leave }]); } });
 }

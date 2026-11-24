@@ -757,7 +757,7 @@ const KIT = {
 const ROSTER = Object.fromEntries(CHARS.map(ch => [ch.id, { id: ch.id, name: ch.name, c: ch.c, moves: ch.moves, god: isGod(ch.id), ...KIT[ch.id] }]));
 const GOD_ATK = { veles: 1.5 }, GOD_ATK_DEFAULT = 1.35;   // gods hit harder than folk heroes; Veles hardest
 const CLASSIC = ['perun', 'svarog', 'mokos', 'kresnik'];   // the four used by the practice battles and the tests
-const HEROES = [];   // the current party (up to four), in battle order; S.heroes holds their health and level
+const HEROES = [];   // the current party (on a journey up to PARTY_MAX, src/journey.js; the practice four), in battle order; S.heroes holds their health and level
 
 const ENEMIES = {
   skrat: { name: 'Škrat', hp: 22, atk: 4, speed: 8.5, calmStep: 0.25, size: 64, xp: 20,
@@ -1178,7 +1178,7 @@ function renderGallery() {
     h('figure', {}, h('div', { class: 'fr', style: { 'background-image': `url(${SPRITES[id]})` } }), 'mirovanje'),
     h('figure', {}, h('div', { class: 'fr', style: { 'background-image': `url(${SPRITES[id]})`, 'background-position': '100% 0' } }), 'napad'));
   const board = (id, t, cap) => { const f = h('figure', { class: 'gboard' }); f.innerHTML = CardArt.svg(id, t); f.append(h('figcaption', {}, cap)); return f; };
-  wrap.append(h('p', { class: 'lead' }, 'Vsi liki so igralni. Pot začneš z enim, drugi se ti pridružijo na poti; v družini so največ štirje. Bogovi so močnejši od ljudskih junakov, zato gre s teboj le eden. Oznaka ob imenu pove, kam kdo sodi.'));
+  wrap.append(h('p', { class: 'lead' }, 'Vsi liki so igralni. Pot začneš z enim, drugi se ti pridružijo na poti; v družini so največ trije. Bogovi so močnejši od ljudskih junakov, zato gre s teboj le eden. Oznaka ob imenu pove, kam kdo sodi.'));
   renderGalleryExtras(wrap);
   wrap.append(h('h2', {}, 'Ozadja'), h('div', { class: 'gbg' }, BG_INFO.map(([k, cap]) => h('figure', {}, h('img', { src: BG[k], alt: cap }), cap)), bgGalleryFigures()));
   wrap.append(h('h2', {}, 'Junaki'));
@@ -1248,7 +1248,8 @@ function newTile() {
 function startBattle(node) {
   const def = node.battle;
   B = S.battle = {
-    node, def, enemies: def.enemies.map((k, i) => makeEnemy(k, i, def.scale, i === def.strong)), target: 0, grid: [], path: [], typed: '', nopath: false,
+    node, def, enemies: def.enemies.slice(0, FOE_SLOTS).map((k, i) => makeEnemy(k, i, def.scale, i === def.strong)),
+    queue: def.enemies.slice(FOE_SLOTS).map((k, j) => ({ key: k, strong: j + FOE_SLOTS === def.strong })), target: 0, grid: [], path: [], typed: '', nopath: false,
     lemmaUses: new Map(), meter: Math.round(METER_MAX * Math.max(def.meterStart, S.meterBonus)), hints: LV().noHints ? 0 : LV().hints + (has('praprotno-seme') ? 1 : 0), shield: has('svarogovo-kladivo') ? 8 : 0,
     boost: 0, double: 1, evade: 0, grow: 0, heroBurn: {}, hbAcc: {}, scorchNext: 0, ward: 0, rally: {}, busy: {}, restore: {}, guard: null, dampen: null, rov: null, xpBy: {}, xpWhy: {}, snapBag: S.run ? JSON.stringify(S.run.bag) : null, snapGold: S.run ? S.run.gold : 0,
     get hp() { return S.partyHp; }, set hp(v) { S.partyHp = v; }, snap: JSON.stringify(S.heroes), revived: false, sleep: {}, time: 0, paused: false, over: false, cw: null, words: 0, logLines: [], fbTimer: 0,
@@ -2091,9 +2092,30 @@ function damageEnemy(e, amount, opts = {}) {
     const said = awardFoeXp(e);
     log(`${e.name} je ${e.f ? 'premagana' : 'premagan'}: ${said}` + (drop ? `, +${drop} zlatnikov.` : '.'));
     retarget();
-    const b = B; later(() => { if (B === b) checkEnd(); }, 650);
+    const b = B;
+    // the next enemy in line steps in: at once if the field would be empty, otherwise after a short while
+    if (B.queue && B.queue.length) { if (B.enemies.some(x => x.hp > 0)) later(() => { if (B === b) stepIn(); }, FOE_STEP_IN * 1000); else stepIn(); }
+    later(() => { if (B === b) checkEnd(); }, 650);
   }
   renderEnemies();
+  return a;
+}
+// ------------------------------------------------------------ at most three enemies on screen (24 Nov 2026)
+// Game Director: more enemies may come, but only three stand on screen at a time. The rest wait in B.queue
+// and step into the place of a fallen one after FOE_STEP_IN seconds (game clock), or at once when the last
+// one on screen falls, so the field is never empty while someone still waits.
+const FOE_SLOTS = 3, FOE_STEP_IN = 2.5;
+function freeSlot() {
+  const i = B.enemies.findIndex(e => e.hp <= 0);
+  return i >= 0 ? i : B.enemies.length < FOE_SLOTS ? B.enemies.length : -1;
+}
+function stepIn() {
+  if (!B || B.over || !B.queue || !B.queue.length) return null;
+  const i = freeSlot(); if (i < 0) return null;
+  const q = B.queue.shift(), a = makeEnemy(q.key, i, B.def.scale, q.strong);
+  a.charge = 0; B.enemies[i] = a;
+  log(`${a.name} stopi v boj.` + (B.queue.length ? ` Čaka še ${B.queue.length}.` : ''));
+  retarget(); renderEnemies();
   return a;
 }
 
@@ -2294,7 +2316,9 @@ function fadeScorch(n) {
 function summonAdds(e) {
   const reg = S.run ? WORLD.regions[S.run.ri] : null, adds = reg && reg.adds;
   const n = adds ? Math.min(adds.max || 2, Math.max(0, HEROES.length - 1)) : 0;
-  for (let k = 0; k < n; k++) { const a = makeEnemy(adds.key, B.enemies.length, null); a.charge = 0.3; B.enemies.push(a); }
+  // 24 Nov: they wait in line (B.queue) and fly in at once where there is room; never more than three on screen
+  for (let k = 0; k < n; k++) B.queue.push({ key: adds.key });
+  for (let k = 0; k < n; k++) { const a = stepIn(); if (!a) break; a.charge = 0.3; }
   if (n) renderEnemies();
   return n;
 }
@@ -2871,6 +2895,7 @@ function checkEnd() {
   if (!B || B.over || S.screen !== 'battle') return;
   const b = B;   // timers must act on this battle only, even if the player has moved on
   if (!living().length) { B.over = true; later(() => { if (B === b) showResult(false); }, 700); }
+  else if (B.enemies.every(e => e.hp <= 0) && B.queue && B.queue.length) stepIn();   // nobody on screen, but someone waits
   else if (B.enemies.every(e => e.hp <= 0)) { B.over = true; if (B.cw) closeCrossword(); cheerParty(); later(() => { if (B === b) showResult(true); }, 900); }
 }
 // the last enemy is down: a hero with a victory sequence (Visoka, game.css .spr.hi.cheer) plays it once before the result
@@ -2899,7 +2924,7 @@ function showResult(win) {
   B.result = { god, left, saved };
   const hurt = S.heroes.some(x => !x.down && x.hp < x.maxHp), down = S.heroes.some(x => x.down);
   const lost = !R ? 'Vsi junaki so obležali. Poskusi znova.'
-    : C && C.prayer ? `Vsi junaki so obležali. ${GOD[C.god].name} je ${GOD[C.god].f ? 'močnejša' : 'močnejši'}. ` + (canWithdraw(node) ? 'Družina se umakne in si opomore do polnega zdravja. To je edina druga priložnost na tej poti.' : 'Pot je končana.')
+    : C ? `Vsi junaki so obležali. ${GOD[C.god].name} je ${GOD[C.god].f ? 'močnejša' : 'močnejši'}. Pot se ne konča: junaki bodo spet tako zdravi kot pred izzivom.`
     : freeRetry(node) === 'ptuj' ? 'Vsi junaki so obležali. Na Ptuju se šele učiš: družina si opomore do polnega zdravja in poskusi znova.'
     : freeRetry(node) === 'final' ? 'Vsi junaki so obležali. Pred zadnjim bojem dobiš še eno priložnost: družina si opomore do polnega zdravja.'
     : canWithdraw(node) ? 'Vsi junaki so obležali. Družina se umakne in si opomore do polnega zdravja. To je edina druga priložnost na tej poti.'
@@ -2925,7 +2950,7 @@ function showResult(win) {
       !win && (!R || S.testMode) ? h('button', { class: 'btn', onclick: () => {
         ov.remove(); S.heroes = JSON.parse(B.snap); if (R && B.snapBag) { R.bag = JSON.parse(B.snapBag); R.gold = B.snapGold; } go('battle', node); } }, 'Poskusi znova') : null,
       h('button', { class: 'btn primary', onclick: () => { ov.remove(); afterResult(win); } },
-        win ? 'Naprej ' : !R ? 'Nazaj ' : canWithdraw(node) ? 'Umakni se ' : 'Konec poti ', h('kbd', {}, 'Enter')))));
+        win || (R && C) ? 'Naprej ' : !R ? 'Nazaj ' : canWithdraw(node) ? 'Umakni se ' : 'Konec poti ', h('kbd', {}, 'Enter')))));
   document.body.append(ov);
   S.screen = 'result'; S.resultEl = ov; S.resultNode = node;
 }
@@ -2942,11 +2967,13 @@ function afterResult(win) {
   const node = S.resultNode, R = S.run, D = DIFF(), C = node && node.challenge, res = (B && B.result) || {};
   if (!win) {
     if (!R) return go('title');
-    // the god's challenge at a region's end: the god leaves; then it is any lost battle (withdraw or the end)
-    if (C && C.prayer) {
-      R.challenged = true;
-      const on = canWithdraw(node);
-      return go('godword', { god: C.god, won: false, next: () => on ? withdraw(node) : (statJourney(false), resetRun(), go('title')), nextLabel: on ? 'Naprej ' : 'Konec poti ' });
+    // a god's challenge (24 Nov): the god leaves and the journey goes on on every Znanje, with the health the
+    // party came with (src/shrines.js, challengeLost); no withdrawing is used up
+    if (C) {
+      challengeLost(node);
+      const stop = node.stop;
+      return go('godword', { god: C.god, won: false, prayer: !!C.prayer,
+        next: () => { if (stop) stop.done = stop.passed = true; R.prompt = null; R.walking = false; go('travel'); }, nextLabel: 'Naprej ' });
     }
     if (canWithdraw(node)) return withdraw(node);
     statJourney(false); resetRun(); return go('title');
@@ -3293,6 +3320,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, cheerParty, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, noteSupport, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, godWaits, godArrives, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { waitingPrayer, migratePrayers, get PARTY_MAX() { return PARTY_MAX; }, FOE_SLOTS, stepIn, statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, cheerParty, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, noteSupport, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, godWaits, godArrives, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 

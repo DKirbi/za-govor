@@ -18,7 +18,8 @@ const regionName = id => (WORLD.regions.find(r => r.id === id) || {}).name || id
 function saveFits(s) {
   try {
     const R = s.run, reg = WORLD.regions[R.ri];
-    return s.v === SAVE_V && !!reg && reg.id === s.region && Array.isArray(s.party) && s.party.length >= 1 && s.party.length <= 4 &&
+    return s.v === SAVE_V && !!reg && reg.id === s.region && Array.isArray(s.party) && s.party.length >= 1 && s.party.length <= 4 &&   // four: a save from before the party of three (24 Nov) still loads
+     
       s.party.every(id => ROSTER[id]) && Array.isArray(s.heroes) && s.heroes.length === s.party.length && !!LEVELS[s.know] &&
       Array.isArray(R.stops) && R.stops.every(st => st && typeof st.kind === 'string');
   } catch (e) { return false; }
@@ -45,6 +46,7 @@ function loadSave() {
   S.know = s.know; S.mode = s.mode; S.suggest = !!s.suggest; S.testMode = !!s.testMode;
   S.run = JSON.parse(JSON.stringify(s.run));
   if (!S.run.wellAt) S.run.wellAt = planWells();   // a save from 0.10.0: wells did not stand by chance yet
+  migratePrayers(S.run);   // a save from before 24 Nov: one prayer, three shrines (src/shrines.js)
   // a save from before 0.17.0 (balance E): one event slot per region, a chest or a trap; regions already planned keep their stops
   if (!S.run.eventAt) { S.run.eventAt = planEvents(s.know); delete S.run.chestAt; }
   // a save from 0.13.0–0.16.0 (balance D): the party levelled together with one pool of points. Every hero keeps

@@ -9,7 +9,8 @@
 //     (Game Director, 20 Nov 2026); in other battles the game's own target (the first enemy standing);
 //   - the zagovor is spoken as soon as it is full; a crossword entry takes `cw` × pace seconds;
 //   - chests, rock slides and spikes end by chance (`chest`, `rocks`, `spikes`); the pedlar sells by a fixed list;
-//   - the first shrine is prayed at and the god fought at that region's end; every hero who waits on the road joins while there is room;
+//   - every shrine is prayed at (two a journey, 24 Nov) and the god fought at that region's end; a lost challenge does not
+//     end the journey; every hero who waits on the road joins while there is room (a party of three);
 //   - skill points are spent wherever the game lets them be spent (canGrow), one point at a time round the party:
 //     learn the next skill first, then raise the lowest rank.
 // The parameters are assumptions about players, not measurements; the testers' statistics (src/stats.js) should replace them.
@@ -191,8 +192,8 @@
       const R = S.run; if (!R) break;
       const stop = R.stops.find(s => !s.passed);
       if (!stop && godWaits()) {
-        // after a prayer: the god before the signpost (src/shrines.js); the party rests first
-        const god = R.prayer; godArrives(); const key = godFoe(god);
+        // after a prayer: the god before the signpost (src/shrines.js); a fair fight, everyone healed first
+        const god = waitingPrayer().god; godArrives(); const key = godFoe(god);
         const win = fight({ kind: 'god', enemies: [key] }, o, J, () => S.godArg.go());
         J.gods = (J.gods || []).concat({ ri: R.ri, god, win });
         if (!S.run) { J.lostAt = { ri: R.ri, kind: 'god', enemies: key }; break; }
@@ -220,8 +221,8 @@
       else if (stop.kind === 'darts') spikes(stop, o);
       else if (stop.kind === 'well') well(stop);
       else if (stop.kind === 'shop') shop(stop, o);
-      else if (stop.kind === 'hero') { if (o.join && HEROES.length < 4) joinHero(stop.hero); stop.done = stop.passed = true; }
-      else if (stop.kind === 'god') { const R2 = S.run; if (o.pray && !R2.prayer && partyGod() < 0) { R2.prayer = stop.god; if (!R2.gifts.includes(stop.god)) R2.gifts.push(stop.god); } stop.done = stop.passed = true; }
+      else if (stop.kind === 'hero') { if (o.join && HEROES.length < PARTY_MAX) joinHero(stop.hero); stop.done = stop.passed = true; }
+      else if (stop.kind === 'god') { const R2 = S.run; if (o.pray && partyGod() < 0 && !R2.prayers.some(p => p.god === stop.god)) { R2.prayers.push({ god: stop.god, ri: R2.ri, result: null }); if (!R2.gifts.includes(stop.god)) R2.gifts.push(stop.god); } stop.done = stop.passed = true; }
       else stop.passed = true;
       go('travel');
     }
