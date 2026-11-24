@@ -34,7 +34,17 @@ The same interruption rule applies to both sides: hero attacks can be interrupte
 
 **Damage-over-time effects are not reduced by interruption.** Existing poison and burn effects continue unaffected.
 
-## 3. Screen communication and special effects
+## 3. Enemies on screen — at most three (Game Director, 24 Nov 2026)
+
+**Status:** CONFIRMED and IMPLEMENTED (v0.18.0, `FOE_SLOTS` and `stepIn` in `src/game.js`).
+
+- A battle can bring more enemies than fit, but **at most three stand on screen** at a time. The rest wait in line (`B.queue`).
+- When an enemy on screen is beaten, the next in line **steps into its place after 2.5 s** of game time (the clock stops while the game is paused or a crossword is open, as for every enemy).
+- When the **last enemy on screen** is beaten and someone still waits, the next steps in **at once**, so the field is never empty.
+- The battle is won only when nobody stands and nobody waits.
+- The Lintvern's wyverns that he calls when he enrages join the line and fly in where there is room. Ordinary battles still have one to three enemies; whether some get more waiting is a balance question for the simulator.
+
+## 4. Screen communication and special effects
 
 Enemies may have unique actions, statuses and special effects. Their current states should be communicated clearly on screen, using appropriate combinations of:
 
@@ -45,7 +55,7 @@ Enemies may have unique actions, statuses and special effects. Their current sta
 
 The exact icon set, animation conventions, stacking rules, duration display and UI placement are **OPEN** and should be developed as the combat roster and enemy behaviours are reviewed.
 
-## 4. Implementation guidance
+## 5. Implementation guidance
 
 - Keep the underlying action state distinct from applied status effects.
 - Make duration, interruption behaviour and damage modifiers explicit for each mechanic.
