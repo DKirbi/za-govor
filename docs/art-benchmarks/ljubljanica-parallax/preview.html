@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Along the Ljubljanica — parallax preview</title>
+<style>
+:root { color-scheme: light; font-family: Georgia, 'Times New Roman', serif; background:#e8e0c7; color:#332c20; }
+* { box-sizing:border-box; }
+body { margin:0; padding:18px; }
+main { max-width:1080px; margin:0 auto; }
+h1 { margin:0 0 10px; font-size:clamp(1.2rem, 2.5vw, 1.8rem); font-weight:600; }
+.scene { position:relative; width:100%; aspect-ratio:16 / 9; overflow:hidden; isolation:isolate; background:#6c9fc7; border:2px solid #54402c; }
+.layer { position:absolute; display:block; max-width:none; pointer-events:none; user-select:none; }
+.sky { left:-8%; top:-8%; width:116%; height:116%; object-fit:cover; z-index:0; }
+.clouds { left:-8%; top:-15%; width:128%; height:auto; z-index:1; animation:cloud-drift 48s linear infinite; }
+.town { left:-5%; top:7%; width:110%; height:auto; z-index:2; }
+.river { left:-35%; top:69%; width:145%; height:22%; object-fit:fill; z-index:3; }
+.bridge { left:-5%; top:46%; width:110%; height:35%; object-fit:fill; z-index:5; }
+.reflections { left:-14%; top:52%; width:140%; height:42%; object-fit:fill; z-index:4; animation:water-glint 4.5s ease-in-out infinite alternate; }
+.road { left:-68%; bottom:0; width:170%; height:auto; z-index:7; }
+.sprite { image-rendering:pixelated; image-rendering:crisp-edges; z-index:8; }
+.hero { left:20%; bottom:11%; width:9%; aspect-ratio:1; }
+.enemy { left:66%; bottom:11%; width:12%; aspect-ratio:1; opacity:0; }
+.arrival { inset:0; width:100%; height:100%; object-fit:cover; z-index:20; opacity:0; }
+.controls { display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding-top:12px; }
+.progress-control { flex:1 1 240px; display:grid; grid-template-columns:1fr auto; gap:6px 12px; align-items:center; }
+.progress-control label { font-weight:600; }
+#progress { grid-column:1 / -1; width:100%; accent-color:#765131; }
+button { min-height:44px; padding:8px 14px; border:1px solid #5b4630; border-radius:6px; background:#f5efd9; color:#332c20; font:inherit; font-weight:600; }
+button:focus-visible, input:focus-visible { outline:3px solid #265d7a; outline-offset:2px; }
+#status { min-width:180px; }
+@keyframes cloud-drift { from { translate:0 0; } to { translate:-28px 0; } }
+@keyframes water-glint { from { opacity:.62; } to { opacity:.92; } }
+@media (max-width:560px) {
+ body { padding:10px; }
+ .controls { gap:8px; }
+ .progress-control { flex-basis:100%; }
+ button { flex:1 1 auto; }
+ #status { flex:1 1 100%; }
+}
+@media (prefers-reduced-motion:reduce) {
+ *, *::before, *::after { scroll-behavior:auto !important; animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; }
+}
+</style>
+</head>
+<body>
+<main>
+  <h1>Along the Ljubljanica</h1>
+  <div id="scene" class="scene" role="img" aria-label="A folk-painted journey along the Ljubljanica. The side-view Triple Bridge and Ljubljana Castle enter the final battle view with pixel-art Povodni mož.">
+    <img class="layer sky" src="layers/distant-sky-hills.png" alt="" aria-hidden="true">
+    <img class="layer town" src="layers/town-castle.png" alt="" aria-hidden="true">
+    <img class="layer river" src="layers/river-surface.png" alt="" aria-hidden="true">
+    <img class="layer clouds" src="layers/clouds.png" alt="" aria-hidden="true">
+    <img class="layer bridge" src="layers/bridge.png" alt="" aria-hidden="true">
+    <img class="layer reflections" src="layers/water-reflections.png" alt="" aria-hidden="true">
+    <img class="layer road" src="layers/foreground-road.png" alt="" aria-hidden="true">
+    <img class="layer sprite hero" src="layers/hero-zeleni-jurij.png" alt="" aria-hidden="true">
+    <img class="layer sprite enemy" src="layers/enemy-povodni-moz.png" alt="" aria-hidden="true">
+    <img class="layer arrival" src="../slovenia-folk-location-previews/ljubljanica-folk-preview.png" alt="" aria-hidden="true">
+  </div>
+  <div class="controls">
+    <div class="progress-control">
+      <label for="progress">Journey</label>
+      <output id="progress-value" for="progress">0%</output>
+      <input id="progress" type="range" min="0" max="100" step="1" value="0" aria-label="Journey progress toward the Triple Bridge">
+    </div>
+    <button id="travel" type="button">Travel to the bridge</button>
+    <span id="status" aria-live="polite">River approach</span>
+  </div>
+</main>
+<script>
+const progress = document.getElementById('progress');
+const value = document.getElementById('progress-value');
+const status = document.getElementById('status');
+const travelButton = document.getElementById('travel');
+const layers = {
+  sky: document.querySelector('.sky'), town: document.querySelector('.town'),
+  river: document.querySelector('.river'), clouds: document.querySelector('.clouds'),
+  bridge: document.querySelector('.bridge'), reflections: document.querySelector('.reflections'),
+  road: document.querySelector('.road'), enemy: document.querySelector('.enemy'), arrival: document.querySelector('.arrival')
+};
+const scene = document.getElementById('scene');
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+let animationFrame = 0;
+let animationStart = 0;
+let isPlaying = false;
+function clamp01(n) { return Math.max(0, Math.min(1, n)); }
+function render() {
+  const p = Number(progress.value) / 100;
+  const ahead = 1 - p;
+  const travelDistance = scene.clientWidth * 0.65;
+  const pan = (factor) => `${Math.round(ahead * travelDistance * factor)}px`;
+  layers.sky.style.transform = `translate3d(${pan(0.10)}, 0, 0)`;
+  layers.town.style.transform = `translate3d(${pan(0.22)}, 0, 0)`;
+  layers.river.style.transform = `translate3d(${pan(0.50)}, 0, 0)`;
+  layers.clouds.style.transform = `translate3d(${pan(0.035)}, 0, 0)`;
+  layers.bridge.style.transform = `translate3d(${pan(0.40)}, 0, 0)`;
+  layers.reflections.style.transform = `translate3d(${pan(0.58)}, 0, 0)`;
+  layers.road.style.transform = `translate3d(${pan(0.90)}, 0, 0)`;
+  layers.enemy.style.opacity = String(clamp01((p - 0.72) / 0.2));
+  layers.arrival.style.opacity = String(clamp01((p - 0.96) / 0.04));
+  value.value = `${Math.round(p * 100)}%`;
+  status.textContent = p >= 0.999 ? 'Battle: Povodni mož' : p >= 0.72 ? 'The bridge is near' : 'River approach';
+  if (p >= 1 && isPlaying) stopPlayback();
+}
+function stopPlayback() {
+  isPlaying = false;
+  cancelAnimationFrame(animationFrame);
+  travelButton.textContent = 'Replay journey';
+}
+function playFrame(now) {
+  if (!animationStart) animationStart = now;
+  const p = clamp01((now - animationStart) / 14000);
+  progress.value = String(Math.round(p * 100));
+  render();
+  if (p < 1 && isPlaying) animationFrame = requestAnimationFrame(playFrame);
+}
+progress.addEventListener('input', () => { stopPlayback(); render(); });
+window.addEventListener('resize', render);
+travelButton.addEventListener('click', () => {
+  if (prefersReducedMotion.matches) {
+    progress.value = '100';
+    render();
+    return;
+  }
+  if (isPlaying) { stopPlayback(); return; }
+  progress.value = '0';
+  animationStart = 0;
+  isPlaying = true;
+  travelButton.textContent = 'Pause journey';
+  render();
+  animationFrame = requestAnimationFrame(playFrame);
+});
+render();
+</script>
+</body>
+</html>

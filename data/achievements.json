@@ -1,0 +1,824 @@
+{
+ "note": "Achievements (src/achievements.js), from docs/achievements-design.md (Codex, updated 25 Nov 2026 for the party of three). Data only, for the browser prototype and the Godot game later. rule: count = a lifetime counter reaches min; set = every id in all has been seen; event = one moment in a journey that meets every condition. Only real journeys count, never practice battles or test mode. hidden = shown as ??? until earned; card = a story card for that hero (a collection row on the hero screen); icon = a slot for Codex's icon pack (docs/achievement-art-spec.md), empty until it exists.",
+ "groups": [
+  "Besede",
+  "Pošasti",
+  "Pot",
+  "Druščina",
+  "Zgodbe",
+  "Skrivnost"
+ ],
+ "tiers": {
+  "bronasta": "bronasta",
+  "srebrna": "srebrna",
+  "zlata": "zlata"
+ },
+ "fullParty": 3,
+ "achievements": [
+  {
+   "id": "prva-beseda",
+   "title": "Prva beseda",
+   "text": "Izreci prvo besedo v bitki na poti.",
+   "group": "Besede",
+   "tier": "bronasta",
+   "rule": {
+    "count": "words",
+    "min": 1
+   },
+   "icon": null
+  },
+  {
+   "id": "besedni-tok",
+   "title": "Besedni tok",
+   "text": "Izreci 100 besed v bitkah na poti.",
+   "group": "Besede",
+   "tier": "bronasta",
+   "rule": {
+    "count": "words",
+    "min": 100
+   },
+   "icon": null
+  },
+  {
+   "id": "ziva-zakladnica",
+   "title": "Živa zakladnica",
+   "text": "Izreci 1000 besed v bitkah na poti.",
+   "group": "Besede",
+   "tier": "srebrna",
+   "rule": {
+    "count": "words",
+    "min": 1000
+   },
+   "icon": null
+  },
+  {
+   "id": "slovar-na-nogah",
+   "title": "Slovar na nogah",
+   "text": "Izreci 10.000 besed v bitkah na poti.",
+   "group": "Besede",
+   "tier": "zlata",
+   "rule": {
+    "count": "words",
+    "min": 10000
+   },
+   "icon": null
+  },
+  {
+   "id": "zbiralec-besed",
+   "title": "Zbiralec besed",
+   "text": "Uporabi 100 različnih besed (šteje osnovna oblika).",
+   "group": "Besede",
+   "tier": "bronasta",
+   "rule": {
+    "count": "uniqueWords",
+    "min": 100
+   },
+   "icon": null
+  },
+  {
+   "id": "tisoc-obrazov",
+   "title": "Tisoč obrazov",
+   "text": "Uporabi 1000 različnih besed (šteje osnovna oblika).",
+   "group": "Besede",
+   "tier": "zlata",
+   "rule": {
+    "count": "uniqueWords",
+    "min": 1000
+   },
+   "icon": null
+  },
+  {
+   "id": "sest-crk",
+   "title": "Šest črk",
+   "text": "Izreci 100 besed z natanko šestimi črkami.",
+   "group": "Besede",
+   "tier": "srebrna",
+   "rule": {
+    "count": "len6",
+    "min": 100
+   },
+   "icon": null
+  },
+  {
+   "id": "dolga-sapa",
+   "title": "Dolga sapa",
+   "text": "Izreci 100 besed z devetimi ali več črkami.",
+   "group": "Besede",
+   "tier": "zlata",
+   "rule": {
+    "count": "len9",
+    "min": 100
+   },
+   "icon": null
+  },
+  {
+   "id": "slovenski-zaklad",
+   "title": "Č, Š, Ž — slovenski zaklad",
+   "text": "Izreci 100 besed s Č, Š ali Ž.",
+   "group": "Besede",
+   "tier": "srebrna",
+   "rule": {
+    "count": "czs",
+    "min": 100
+   },
+   "icon": null
+  },
+  {
+   "id": "brez-ponavljanja",
+   "title": "Brez ponavljanja",
+   "text": "V eni bitki izreci 20 različnih besed.",
+   "group": "Besede",
+   "tier": "srebrna",
+   "rule": {
+    "event": "word",
+    "battleUnique": 20
+   },
+   "icon": null
+  },
+  {
+   "id": "dolga-beseda-mocan-udarec",
+   "title": "Dolga beseda, močan udarec",
+   "text": "Premagaj nasprotnika z besedo z vsaj devetimi črkami.",
+   "group": "Besede",
+   "tier": "bronasta",
+   "rule": {
+    "event": "kill",
+    "wordMin": 9
+   },
+   "icon": null
+  },
+  {
+   "id": "beseda-za-boga",
+   "title": "Beseda za boga",
+   "text": "Premagaj nasprotnika z eno od junakovih besed (×1,5).",
+   "group": "Besede",
+   "tier": "bronasta",
+   "rule": {
+    "event": "kill",
+    "domain": true
+   },
+   "icon": null
+  },
+  {
+   "id": "prva-zmaga",
+   "title": "Prva zmaga",
+   "text": "Zmagaj v prvi bitki na poti.",
+   "group": "Pošasti",
+   "tier": "bronasta",
+   "rule": {
+    "count": "battlesWon",
+    "min": 1
+   },
+   "icon": null
+  },
+  {
+   "id": "poznavalec-posasti",
+   "title": "Poznavalec pošasti",
+   "text": "Premagaj vsaj enega nasprotnika vsake vrste: škrata, moro, volkodlaka, vodno vilo, veščo, perkmandeljca, pesjana, zmajevega mladiča, Povodnega moža in Lintverna.",
+   "group": "Pošasti",
+   "tier": "zlata",
+   "rule": {
+    "set": "foeTypes",
+    "all": [
+     "skrat",
+     "mora",
+     "volkodlak",
+     "vila",
+     "vesca",
+     "perkmandeljc",
+     "pesjan",
+     "mladic",
+     "povodni",
+     "lintvern"
+    ]
+   },
+   "icon": null
+  },
+  {
+   "id": "volkodlakov-strah",
+   "title": "Volkodlakov strah",
+   "text": "Premagaj volkodlaka desetkrat.",
+   "group": "Pošasti",
+   "tier": "srebrna",
+   "rule": {
+    "count": "foe:volkodlak",
+    "min": 10
+   },
+   "icon": null
+  },
+  {
+   "id": "volkodlakova-nocna-mora",
+   "title": "Volkodlakova nočna mora",
+   "text": "Premagaj volkodlaka petdesetkrat.",
+   "group": "Pošasti",
+   "tier": "zlata",
+   "rule": {
+    "count": "foe:volkodlak",
+    "min": 50
+   },
+   "icon": null
+  },
+  {
+   "id": "vrtinec-se-polege",
+   "title": "Vrtinec se poleže",
+   "text": "Prvič premagaj Povodnega moža.",
+   "group": "Pošasti",
+   "tier": "srebrna",
+   "rule": {
+    "count": "foe:povodni",
+    "min": 1
+   },
+   "icon": null
+  },
+  {
+   "id": "gospod-reke",
+   "title": "Gospod reke",
+   "text": "Premagaj Povodnega moža desetkrat.",
+   "group": "Pošasti",
+   "tier": "zlata",
+   "rule": {
+    "count": "foe:povodni",
+    "min": 10
+   },
+   "icon": null
+  },
+  {
+   "id": "zmajeva-tehtnica",
+   "title": "Zmajeva tehtnica",
+   "text": "Prvič premagaj Lintverna.",
+   "group": "Pošasti",
+   "tier": "zlata",
+   "rule": {
+    "count": "foe:lintvern",
+    "min": 1
+   },
+   "icon": null
+  },
+  {
+   "id": "deset-zmajev",
+   "title": "Deset zmajev",
+   "text": "Premagaj Lintverna desetkrat.",
+   "group": "Pošasti",
+   "tier": "zlata",
+   "rule": {
+    "count": "foe:lintvern",
+    "min": 10
+   },
+   "icon": null
+  },
+  {
+   "id": "lovec-na-velikane",
+   "title": "Lovec na velikane",
+   "text": "Premagaj šefa, ne da bi v tej bitki obležal kateri koli junak.",
+   "group": "Pošasti",
+   "tier": "srebrna",
+   "rule": {
+    "event": "battleWon",
+    "boss": true,
+    "noneFell": true
+   },
+   "icon": null
+  },
+  {
+   "id": "niti-besede-zaman",
+   "title": "Niti besede zaman",
+   "text": "Premagaj volkodlaka, ne da bi v tej bitki ponovil katero koli besedo.",
+   "group": "Pošasti",
+   "tier": "srebrna",
+   "rule": {
+    "event": "kill",
+    "foe": "volkodlak",
+    "noRepeat": true
+   },
+   "icon": null
+  },
+  {
+   "id": "cez-prvi-prag",
+   "title": "Čez prvi prag",
+   "text": "Prehodi pokrajino Ptuj.",
+   "group": "Pot",
+   "tier": "bronasta",
+   "rule": {
+    "event": "regionLeft",
+    "region": "ptuj"
+   },
+   "icon": null
+  },
+  {
+   "id": "do-gradu",
+   "title": "Do gradu",
+   "text": "Pridi do Ljubljanskega gradu.",
+   "group": "Pot",
+   "tier": "bronasta",
+   "rule": {
+    "event": "regionEntered",
+    "region": "grad"
+   },
+   "icon": null
+  },
+  {
+   "id": "slovenija-v-besedah",
+   "title": "Slovenija v besedah",
+   "text": "Končaj pot: premagaj Lintverna.",
+   "group": "Pot",
+   "tier": "zlata",
+   "rule": {
+    "event": "journeyWon"
+   },
+   "icon": null
+  },
+  {
+   "id": "brez-ovinka",
+   "title": "Brez ovinka",
+   "text": "Končaj pot, ne da bi se umaknil iz bitke (umik je mogoč le na Malčku).",
+   "group": "Pot",
+   "tier": "srebrna",
+   "rule": {
+    "event": "journeyWon",
+    "noWithdraw": true
+   },
+   "icon": null
+  },
+  {
+   "id": "druzina-ostane-skupaj",
+   "title": "Družina ostane skupaj",
+   "text": "Premagaj Lintverna s polno družino: vsi trije junaki so živi.",
+   "group": "Pot",
+   "tier": "zlata",
+   "rule": {
+    "event": "journeyWon",
+    "partyAlive": true
+   },
+   "icon": null
+  },
+  {
+   "id": "sam-na-poti",
+   "title": "Sam na poti",
+   "text": "Končaj pot z enim samim junakom.",
+   "group": "Pot",
+   "tier": "zlata",
+   "rule": {
+    "event": "journeyWon",
+    "solo": true
+   },
+   "icon": null
+  },
+  {
+   "id": "brez-bozjega-daru",
+   "title": "Brez božjega daru",
+   "text": "Končaj pot brez boga v družini in brez darov iz svetišč.",
+   "group": "Pot",
+   "tier": "srebrna",
+   "rule": {
+    "event": "journeyWon",
+    "noGod": true
+   },
+   "icon": null
+  },
+  {
+   "id": "knjigoljubov-izziv",
+   "title": "Knjigoljubov izziv",
+   "text": "Končaj pot na Knjižnem molju.",
+   "group": "Pot",
+   "tier": "zlata",
+   "rule": {
+    "event": "journeyWon",
+    "know": "molj"
+   },
+   "icon": null
+  },
+  {
+   "id": "vse-tri-mere-znanja",
+   "title": "Vse tri mere znanja",
+   "text": "Končaj pot na Malčku, Učenjaku in Knjižnem molju.",
+   "group": "Pot",
+   "tier": "zlata",
+   "rule": {
+    "set": "knowsWon",
+    "all": [
+     "malcek",
+     "ucenjak",
+     "molj"
+    ]
+   },
+   "icon": null
+  },
+  {
+   "id": "sest-znamenj",
+   "title": "Šest znamenj",
+   "text": "V izzivih svetišč premagaj vseh šest bogov.",
+   "group": "Pot",
+   "tier": "zlata",
+   "rule": {
+    "set": "godsBeaten",
+    "all": [
+     "perun",
+     "svarog",
+     "mokos",
+     "dazbog",
+     "stribog",
+     "veles"
+    ]
+   },
+   "icon": null
+  },
+  {
+   "id": "shranjevalec-skrivnosti",
+   "title": "Shranjevalec skrivnosti",
+   "text": "Pravilno odpri deset skrinj.",
+   "group": "Pot",
+   "tier": "srebrna",
+   "rule": {
+    "count": "chests",
+    "min": 10
+   },
+   "icon": null
+  },
+  {
+   "id": "plaz-pod-nadzorom",
+   "title": "Plaz pod nadzorom",
+   "text": "Ubrani se desetim plazovom, ne da bi te katera skala ranila.",
+   "group": "Pot",
+   "tier": "srebrna",
+   "rule": {
+    "count": "slides",
+    "min": 10
+   },
+   "icon": null
+  },
+  {
+   "id": "mreza-brez-ran",
+   "title": "Mreža brez ran",
+   "text": "Zmagaj v bitki, ne da bi kateri koli junak izgubil zdravje.",
+   "group": "Pot",
+   "tier": "zlata",
+   "rule": {
+    "event": "battleWon",
+    "noDamage": true
+   },
+   "icon": null
+  },
+  {
+   "id": "vstani-in-govori",
+   "title": "Vstani in govori",
+   "text": "Obudi padlega junaka in zmagaj v isti bitki.",
+   "group": "Pot",
+   "tier": "bronasta",
+   "rule": {
+    "event": "battleWon",
+    "revived": true
+   },
+   "icon": null
+  },
+  {
+   "id": "nova-druzba",
+   "title": "Nova družba",
+   "text": "Na poti pridobi prvega novega junaka.",
+   "group": "Druščina",
+   "tier": "bronasta",
+   "rule": {
+    "count": "recruits",
+    "min": 1
+   },
+   "icon": null
+  },
+  {
+   "id": "vsi-obrazi-slovenije",
+   "title": "Vsi obrazi Slovenije",
+   "text": "Spoznaj vseh devet ljudskih junakov.",
+   "group": "Druščina",
+   "tier": "zlata",
+   "rule": {
+    "set": "unlocked",
+    "all": [
+     "krpan",
+     "jurij",
+     "kurent",
+     "matjaz",
+     "erazem",
+     "klepec",
+     "vida",
+     "ajda",
+     "kresnik"
+    ]
+   },
+   "icon": null
+  },
+  {
+   "id": "stara-bozanstva",
+   "title": "Stara božanstva",
+   "text": "Spoznaj vseh šest bogov.",
+   "group": "Druščina",
+   "tier": "zlata",
+   "rule": {
+    "set": "unlocked",
+    "all": [
+     "perun",
+     "svarog",
+     "mokos",
+     "dazbog",
+     "stribog",
+     "veles"
+    ]
+   },
+   "icon": null
+  },
+  {
+   "id": "zbrana-druscina",
+   "title": "Zbrana druščina",
+   "text": "Spoznaj vseh 15 junakov in bogov.",
+   "group": "Druščina",
+   "tier": "zlata",
+   "rule": {
+    "set": "unlocked",
+    "all": [
+     "krpan",
+     "jurij",
+     "kurent",
+     "matjaz",
+     "erazem",
+     "klepec",
+     "vida",
+     "ajda",
+     "kresnik",
+     "perun",
+     "svarog",
+     "mokos",
+     "dazbog",
+     "stribog",
+     "veles"
+    ]
+   },
+   "icon": null
+  },
+  {
+   "id": "vsak-ima-svojo-zgodbo",
+   "title": "Vsak ima svojo zgodbo",
+   "text": "Z vsakim od devetih ljudskih junakov v družini končaj pot.",
+   "group": "Druščina",
+   "tier": "zlata",
+   "rule": {
+    "set": "folkWon",
+    "all": [
+     "krpan",
+     "jurij",
+     "kurent",
+     "matjaz",
+     "erazem",
+     "klepec",
+     "vida",
+     "ajda",
+     "kresnik"
+    ]
+   },
+   "icon": null
+  },
+  {
+   "id": "bogovi-na-poti",
+   "title": "Bogovi na poti",
+   "text": "Končaj pot z vsakim od šestih bogov v družini.",
+   "group": "Druščina",
+   "tier": "zlata",
+   "rule": {
+    "set": "godsWon",
+    "all": [
+     "perun",
+     "svarog",
+     "mokos",
+     "dazbog",
+     "stribog",
+     "veles"
+    ]
+   },
+   "icon": null
+  },
+  {
+   "id": "karta-krpan",
+   "title": "Krpan premaga Brdavsa",
+   "text": "Ko pade Lintvern, je Martin Krpan živ v družini.",
+   "group": "Zgodbe",
+   "tier": "zlata",
+   "rule": {
+    "event": "journeyWon",
+    "alive": "krpan"
+   },
+   "card": "krpan",
+   "icon": null
+  },
+  {
+   "id": "karta-kurent",
+   "title": "Kurentovanje",
+   "text": "Ko pade Lintvern, je Kurent živ v družini.",
+   "group": "Zgodbe",
+   "tier": "zlata",
+   "rule": {
+    "event": "journeyWon",
+    "alive": "kurent"
+   },
+   "card": "kurent",
+   "icon": null
+  },
+  {
+   "id": "karta-matjaz",
+   "title": "Speči kralj pod Peco",
+   "text": "Ko pade Lintvern, je Kralj Matjaž živ v družini.",
+   "group": "Zgodbe",
+   "tier": "zlata",
+   "rule": {
+    "event": "journeyWon",
+    "alive": "matjaz"
+   },
+   "card": "matjaz",
+   "icon": null
+  },
+  {
+   "id": "karta-ajda",
+   "title": "Kameni zid",
+   "text": "Ko pade Lintvern, je Ajdovska deklica živa v družini.",
+   "group": "Zgodbe",
+   "tier": "zlata",
+   "rule": {
+    "event": "journeyWon",
+    "alive": "ajda"
+   },
+   "card": "ajda",
+   "icon": null
+  },
+  {
+   "id": "karta-erazem",
+   "title": "Predjamski grad",
+   "text": "Ko pade Lintvern, je Erazem Predjamski živ v družini.",
+   "group": "Zgodbe",
+   "tier": "zlata",
+   "rule": {
+    "event": "journeyWon",
+    "alive": "erazem"
+   },
+   "card": "erazem",
+   "icon": null
+  },
+  {
+   "id": "karta-kresnik",
+   "title": "Kresna noč",
+   "text": "Ko pade Lintvern, je Kresnik živ v družini.",
+   "group": "Zgodbe",
+   "tier": "zlata",
+   "rule": {
+    "event": "journeyWon",
+    "alive": "kresnik"
+   },
+   "card": "kresnik",
+   "icon": null
+  },
+  {
+   "id": "karta-jurij",
+   "title": "Jurjevo",
+   "text": "Ko pade Lintvern, je Zeleni Jurij živ v družini.",
+   "group": "Zgodbe",
+   "tier": "zlata",
+   "rule": {
+    "event": "journeyWon",
+    "alive": "jurij"
+   },
+   "card": "jurij",
+   "icon": null
+  },
+  {
+   "id": "karta-klepec",
+   "title": "Vilin dar",
+   "text": "Ko pade Lintvern, je Peter Klepec živ v družini.",
+   "group": "Zgodbe",
+   "tier": "zlata",
+   "rule": {
+    "event": "journeyWon",
+    "alive": "klepec"
+   },
+   "card": "klepec",
+   "icon": null
+  },
+  {
+   "id": "karta-vida",
+   "title": "Pesem z obale",
+   "text": "Ko pade Lintvern, je Lepa Vida živa v družini.",
+   "group": "Zgodbe",
+   "tier": "zlata",
+   "rule": {
+    "event": "journeyWon",
+    "alive": "vida"
+   },
+   "card": "vida",
+   "icon": null
+  },
+  {
+   "id": "karta-perun",
+   "title": "Nevihta nad gorami",
+   "text": "Ko pade Lintvern, je Perun živ v družini.",
+   "group": "Zgodbe",
+   "tier": "zlata",
+   "rule": {
+    "event": "journeyWon",
+    "alive": "perun"
+   },
+   "card": "perun",
+   "icon": null
+  },
+  {
+   "id": "karta-svarog",
+   "title": "Nebeška kovačnica",
+   "text": "Ko pade Lintvern, je Svarog živ v družini.",
+   "group": "Zgodbe",
+   "tier": "zlata",
+   "rule": {
+    "event": "journeyWon",
+    "alive": "svarog"
+   },
+   "card": "svarog",
+   "icon": null
+  },
+  {
+   "id": "karta-mokos",
+   "title": "Materina roka",
+   "text": "Ko pade Lintvern, je Mokoš živa v družini.",
+   "group": "Zgodbe",
+   "tier": "zlata",
+   "rule": {
+    "event": "journeyWon",
+    "alive": "mokos"
+   },
+   "card": "mokos",
+   "icon": null
+  },
+  {
+   "id": "karta-dazbog",
+   "title": "Sončni voz",
+   "text": "Ko pade Lintvern, je Dažbog živ v družini.",
+   "group": "Zgodbe",
+   "tier": "zlata",
+   "rule": {
+    "event": "journeyWon",
+    "alive": "dazbog"
+   },
+   "card": "dazbog",
+   "icon": null
+  },
+  {
+   "id": "karta-stribog",
+   "title": "Burja čez morje",
+   "text": "Ko pade Lintvern, je Stribog živ v družini.",
+   "group": "Zgodbe",
+   "tier": "zlata",
+   "rule": {
+    "event": "journeyWon",
+    "alive": "stribog"
+   },
+   "card": "stribog",
+   "icon": null
+  },
+  {
+   "id": "karta-veles",
+   "title": "Korenine sveta",
+   "text": "Ko pade Lintvern, je Veles živ v družini.",
+   "group": "Zgodbe",
+   "tier": "zlata",
+   "rule": {
+    "event": "journeyWon",
+    "alive": "veles"
+   },
+   "card": "veles",
+   "icon": null
+  },
+  {
+   "id": "zlatorogova-zapuscina",
+   "title": "Zlatorogova zapuščina",
+   "text": "Zberi vseh 15 kart zgodb, nato premagaj Lintverna na Knjižnem molju s polno družino živih junakov.",
+   "group": "Skrivnost",
+   "tier": "zlata",
+   "rule": {
+    "event": "journeyWon",
+    "know": "molj",
+    "partyAlive": true,
+    "storyCards": "all"
+   },
+   "hidden": true,
+   "card": "zlatorog",
+   "icon": null
+  },
+  {
+   "id": "zadnja-beseda",
+   "title": "Zadnja beseda",
+   "text": "Na Knjižnem molju v realnem tempu premagaj Lintverna s polno družino živih junakov; zadnji udarec naj bo beseda z vsaj devetimi črkami in s Č, Š ali Ž.",
+   "group": "Skrivnost",
+   "tier": "zlata",
+   "rule": {
+    "event": "journeyWon",
+    "know": "molj",
+    "mode": "real",
+    "partyAlive": true,
+    "lastWordMin": 9,
+    "lastWordCzs": true
+   },
+   "hidden": true,
+   "icon": null
+  }
+ ]
+}

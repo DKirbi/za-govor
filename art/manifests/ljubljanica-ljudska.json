@@ -1,0 +1,168 @@
+{
+  "pack": "Ljubljanica — ljudska poslikava (Codex)",
+  "version": "0.1.0",
+  "status": "review",
+  "approval": "OPEN — Game Director review required (first in-game draft, 25 Nov 2026)",
+  "canvas": {
+    "width": 996,
+    "height": 560,
+    "aspectRatio": "16:9",
+    "basis": "The 16:9 scene of Codex's docs/art-benchmarks/ljubljanica-parallax/preview.html at 560 px"
+  },
+  "madeBy": "tools/art_folk_parallax.py from Codex's study PNGs (unchanged masters); WebP q80",
+  "layers": [
+    {
+      "id": "sky-hills",
+      "order": 1,
+      "file": "art/exports/environments/ljubljanica-ljudska/sky-hills.webp",
+      "width": 2302,
+      "height": 650,
+      "x": -78,
+      "y": -45,
+      "alpha": false,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/ljubljanica-parallax/layers/distant-sky-hills.png",
+      "sourceSha1": "780220caa7aba0480c53e249bc7f0f0863c76d1b",
+      "previewBox": [
+        -8,
+        -8,
+        116,
+        116
+      ],
+      "fit": "cover",
+      "mirrored": "both sides"
+    },
+    {
+      "id": "clouds",
+      "order": 2,
+      "file": "art/exports/environments/ljubljanica-ljudska/clouds.webp",
+      "width": 1275,
+      "height": 173,
+      "x": -80,
+      "y": 32,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/ljubljanica-parallax/layers/clouds.png",
+      "sourceSha1": "2dde87e0a3fcb7e25880e858d51a0f46af51fe77",
+      "previewBox": [
+        -8,
+        -15,
+        128,
+        null
+      ],
+      "fit": "fill"
+    },
+    {
+      "id": "town-castle",
+      "order": 3,
+      "file": "art/exports/environments/ljubljanica-ljudska/town-castle.webp",
+      "width": 2148,
+      "height": 292,
+      "x": -39,
+      "y": 69,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/ljubljanica-parallax/layers/town-castle.png",
+      "sourceSha1": "6fd32f245ad574d01ca244fc23418126b011ed54",
+      "previewBox": [
+        -5,
+        7,
+        110,
+        null
+      ],
+      "fit": "fill",
+      "mirrored": "both sides"
+    },
+    {
+      "id": "river",
+      "order": 4,
+      "file": "art/exports/environments/ljubljanica-ljudska/river.webp",
+      "width": 2880,
+      "height": 123,
+      "x": -347,
+      "y": 386,
+      "alpha": false,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/ljubljanica-parallax/layers/river-surface.png",
+      "sourceSha1": "ca7516341fdfa81a9ec1392dd5ade7860dce74ae",
+      "previewBox": [
+        -35,
+        69,
+        145,
+        22
+      ],
+      "fit": "fill",
+      "mirrored": "both sides"
+    },
+    {
+      "id": "glints",
+      "order": 5,
+      "file": "art/exports/environments/ljubljanica-ljudska/glints.webp",
+      "width": 1394,
+      "height": 72,
+      "x": -139,
+      "y": 381,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/ljubljanica-parallax/layers/water-reflections.png",
+      "sourceSha1": "1362489d2d7a692747b4935071d6688f52eef1ac",
+      "previewBox": [
+        -14,
+        52,
+        140,
+        42
+      ],
+      "fit": "fill"
+    },
+    {
+      "id": "bridge",
+      "order": 6,
+      "file": "art/exports/environments/ljubljanica-ljudska/bridge.webp",
+      "width": 2112,
+      "height": 104,
+      "x": -30,
+      "y": 310,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/ljubljanica-parallax/layers/bridge.png",
+      "sourceSha1": "dac045f15d6d584588d13ac6ebc065b95f3a9329",
+      "previewBox": [
+        -5,
+        46,
+        110,
+        35
+      ],
+      "fit": "fill",
+      "mirrored": "both sides"
+    },
+    {
+      "id": "road",
+      "order": 7,
+      "file": "art/exports/environments/ljubljanica-ljudska/road.webp",
+      "width": 3378,
+      "height": 228,
+      "x": -675,
+      "y": 446,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/ljubljanica-parallax/layers/foreground-road.png",
+      "sourceSha1": "a126bb73a5564551613a52eaef14d1aeaa403739",
+      "previewBox": [
+        -68,
+        null,
+        170,
+        null
+      ],
+      "fit": "fill",
+      "mirrored": "both sides",
+      "laneMirroredBelow": true
+    }
+  ]
+}

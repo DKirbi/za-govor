@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bled lakeshore parallax</title>
+<style>
+:root { color-scheme:light; font-family:Georgia,'Times New Roman',serif; background:#e8e0c7; color:#332c20; }
+* { box-sizing:border-box; }
+body { margin:0; padding:18px; }
+main { max-width:1080px; margin:0 auto; }
+h1 { margin:0 0 8px; font-size:clamp(1.25rem,2.5vw,1.8rem); font-weight:600; }
+p { margin:0 0 12px; line-height:1.45; }
+.scene { position:relative; width:100%; aspect-ratio:16/9; overflow:hidden; isolation:isolate; background:#6689a0; border:2px solid #54402c; }
+.layer,.actor { position:absolute; display:block; max-width:none; pointer-events:none; user-select:none; }
+.sky { left:-10%; top:-2%; width:120%; height:104%; z-index:0; }
+.clouds { left:-15%; top:-1%; width:130%; height:auto; z-index:1; animation:cloud-drift 58s linear infinite; }
+.mountains { left:-8%; top:0; width:116%; height:100%; z-index:2; }
+.shoreline { left:-10%; top:0; width:120%; height:100%; z-index:3; }
+.castle { left:0; top:0; width:100%; height:100%; z-index:4; }
+.island { left:22.5%; top:4%; width:70%; height:auto; z-index:8; }
+.water { left:-12%; top:0; width:124%; height:100%; z-index:5; }
+.reflections { left:-12%; top:0; width:124%; height:100%; z-index:7; }
+.grass { left:-15%; top:4%; width:130%; height:100%; z-index:9; }
+.actor { bottom:11%; width:10.5%; height:auto; aspect-ratio:1; z-index:10; transition:left .15s linear; image-rendering:pixelated; }
+#hero { left:34%; }
+#foe { left:76%; }
+.actor img { display:block; width:100%; height:100%; image-rendering:pixelated; }
+.controls { display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding-top:12px; }
+.progress-control { flex:1 1 240px; display:grid; grid-template-columns:1fr auto; gap:6px 12px; align-items:center; }
+.progress-control label { font-weight:600; }
+#progress { grid-column:1/-1; width:100%; accent-color:#765131; }
+button { min-height:44px; padding:8px 14px; border:1px solid #5b4630; border-radius:6px; background:#f5efd9; color:#332c20; font:inherit; font-weight:600; }
+button:focus-visible,input:focus-visible { outline:3px solid #265d7a; outline-offset:2px; }
+#status { min-width:190px; }
+@keyframes cloud-drift { from { translate:0 0; } to { translate:-18px 0; } }
+@media(max-width:560px) { body { padding:10px; } .controls { gap:8px; } .progress-control { flex-basis:100%; } button { flex:1 1 auto; } #status { flex:1 1 100%; } }
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; } }
+body.capture { width:1672px; height:941px; padding:0; overflow:hidden; background:transparent; }
+body.capture main { width:1672px; max-width:none; margin:0; }
+body.capture h1,body.capture main>p,body.capture .controls { display:none; }
+body.capture .scene { width:1672px; height:941px; aspect-ratio:auto; border:0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Along Lake Bled’s grassy shore</h1>
+  <p>Scrub or play a rightward journey. The broad grass lane moves fastest; the Julian Alps, forested shore, castle and island drift at different speeds behind the party.</p>
+  <div id="scene" class="scene" role="img" aria-label="Side-scrolling folk-painted Lake Bled with the castle cliff at left, the island church, Julian Alps, separate water reflections, a wide grassy lane, and crisp pixel-art characters.">
+    <img class="layer sky" src="layers/sky.png" alt="" aria-hidden="true">
+    <img class="layer clouds" src="layers/clouds.png" alt="" aria-hidden="true">
+    <img class="layer mountains" src="layers/distant-mountains.png" alt="" aria-hidden="true">
+    <img class="layer shoreline" src="layers/forested-shoreline.png" alt="" aria-hidden="true">
+    <img class="layer castle" src="layers/castle-cliff.png" alt="" aria-hidden="true">
+    <img class="layer water" src="layers/lake-water.png" alt="" aria-hidden="true">
+    <img class="layer island" src="layers/island-church.png" alt="" aria-hidden="true">
+    <img class="layer reflections" src="layers/water-reflections.png" alt="" aria-hidden="true">
+    <img class="layer grass" src="layers/foreground-grass-lane.png" alt="" aria-hidden="true">
+    <div id="hero" class="actor"><img src="actors/jurij-idle.png" alt="" aria-hidden="true"></div>
+    <div id="foe" class="actor"><img src="actors/vila-idle.png" alt="" aria-hidden="true"></div>
+  </div>
+  <div class="controls">
+    <div class="progress-control">
+      <label for="progress">Travel from left to right</label>
+      <output id="progress-value" for="progress">0%</output>
+      <input id="progress" type="range" min="0" max="100" step="1" value="0" aria-label="Travel rightward along the grassy shore">
+    </div>
+    <button id="travel" type="button">Walk the shore</button>
+    <span id="status" aria-live="polite">Entering the lakeshore</span>
+  </div>
+</main>
+<script>
+if(new URLSearchParams(location.search).has('capture'))document.body.classList.add('capture');
+const scene=document.getElementById('scene');
+const progress=document.getElementById('progress');
+const value=document.getElementById('progress-value');
+const status=document.getElementById('status');
+const button=document.getElementById('travel');
+const hero=document.getElementById('hero');
+const foe=document.getElementById('foe');
+const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+const layers={
+  sky:document.querySelector('.sky'),clouds:document.querySelector('.clouds'),mountains:document.querySelector('.mountains'),
+  shoreline:document.querySelector('.shoreline'),castle:document.querySelector('.castle'),water:document.querySelector('.water'),
+  island:document.querySelector('.island'),reflections:document.querySelector('.reflections'),grass:document.querySelector('.grass')
+};
+const speeds={sky:.03,clouds:.025,mountains:.12,shoreline:.2,castle:.3,water:.62,island:.36,reflections:.64,grass:1};
+let frame=0,start=0,playing=false;
+function clamp(n){return Math.max(0,Math.min(1,n));}
+function render(){
+  const p=Number(progress.value)/100,travel=scene.clientWidth*.12;
+  for(const [name,factor] of Object.entries(speeds)) layers[name].style.transform=`translate3d(${-Math.round(p*travel*factor)}px,0,0)`;
+  hero.style.left=`${34+p*14}%`;
+  foe.style.left=`${76-p*12}%`;
+  value.value=`${Math.round(p*100)}%`;
+  status.textContent=p>=.85?'Passing the island church':p>=.4?'Crossing the open lakeshore':'Entering the lakeshore';
+  if(p>=1&&playing)stop();
+}
+function stop(){playing=false;cancelAnimationFrame(frame);button.textContent='Replay journey';}
+function tick(now){if(!start)start=now;const p=clamp((now-start)/12000);progress.value=String(Math.round(p*100));render();if(p<1&&playing)frame=requestAnimationFrame(tick);}
+progress.addEventListener('input',()=>{stop();render();});
+window.addEventListener('resize',render);
+button.addEventListener('click',()=>{if(reduced.matches){progress.value='100';render();return;}if(playing){stop();return;}progress.value='0';start=0;playing=true;button.textContent='Pause journey';render();frame=requestAnimationFrame(tick);});
+render();
+</script>
+</body>
+</html>

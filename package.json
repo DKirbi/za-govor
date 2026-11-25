@@ -1,6 +1,6 @@
 {
   "name": "za-govor",
-  "version": "0.17.0",
+  "version": "0.19.0",
   "config": {
     "stage": "zaprta alfa"
   },
@@ -23,6 +23,8 @@
     "test:progression": "node tests/progression.test.js",
     "test:balance": "node tests/balance.test.js",
     "test:backgrounds": "node tests/backgrounds.test.js",
+    "test:parallax": "node tests/parallax.test.js",
+    "test:achievements": "node tests/achievements.test.js",
     "screenshots": "node tools/readme-shots.js",
     "android:sync": "python3 build.py && cap sync android",
     "android:open": "cap open android",

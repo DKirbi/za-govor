@@ -1,0 +1,189 @@
+{
+  "pack": "Trnovski gozd — ljudska poslikava (Codex)",
+  "version": "0.1.0",
+  "status": "review",
+  "approval": "OPEN — Game Director review required (first in-game draft, 25 Nov 2026)",
+  "canvas": {
+    "width": 996,
+    "height": 560,
+    "aspectRatio": "16:9",
+    "basis": "The 16:9 scene of Codex's docs/art-benchmarks/trnovski-gozd-parallax/preview.html at 560 px"
+  },
+  "madeBy": "tools/art_folk_parallax.py from Codex's study PNGs (unchanged masters); WebP q80",
+  "layers": [
+    {
+      "id": "sky",
+      "order": 1,
+      "file": "art/exports/environments/gozd-ljudska/sky.webp",
+      "width": 996,
+      "height": 560,
+      "x": 0,
+      "y": 0,
+      "alpha": false,
+      "tileX": false,
+      "role": "background",
+      "source": "docs/art-benchmarks/trnovski-gozd-parallax/layers/sky.png",
+      "sourceSha1": "715b156222decdb4fe66f55424a0a9eb8c866cd9",
+      "previewBox": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "fit": "fill"
+    },
+    {
+      "id": "moon",
+      "order": 2,
+      "file": "art/exports/environments/gozd-ljudska/moon.webp",
+      "width": 86,
+      "height": 84,
+      "x": 691,
+      "y": 20,
+      "alpha": true,
+      "tileX": false,
+      "role": "background",
+      "source": "docs/art-benchmarks/trnovski-gozd-parallax/layers/moon.png",
+      "sourceSha1": "d731ef2cbe08a04b7e9d317c5c1e39f1946da235",
+      "previewBox": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "fit": "fill"
+    },
+    {
+      "id": "clouds",
+      "order": 3,
+      "file": "art/exports/environments/gozd-ljudska/clouds.webp",
+      "width": 996,
+      "height": 92,
+      "x": 0,
+      "y": 66,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/trnovski-gozd-parallax/layers/clouds.png",
+      "sourceSha1": "ecc49d86e981538b3f9c50dbeb7c033a449dae3a",
+      "previewBox": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "fit": "fill"
+    },
+    {
+      "id": "distant-karst-ridge",
+      "order": 4,
+      "file": "art/exports/environments/gozd-ljudska/distant-karst-ridge.webp",
+      "width": 1978,
+      "height": 84,
+      "x": 0,
+      "y": 174,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/trnovski-gozd-parallax/layers/distant-karst-ridge.png",
+      "sourceSha1": "85c20b329c3980fb400b271b7e17f3c056b7d02e",
+      "previewBox": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "right side"
+    },
+    {
+      "id": "doline-forest",
+      "order": 5,
+      "file": "art/exports/environments/gozd-ljudska/doline-forest.webp",
+      "width": 1984,
+      "height": 255,
+      "x": 2,
+      "y": 181,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/trnovski-gozd-parallax/layers/doline-forest.png",
+      "sourceSha1": "a807b23f1149ebd775eb34bf1ff3f238ea5c9965",
+      "previewBox": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "both sides"
+    },
+    {
+      "id": "framing-trees",
+      "order": 6,
+      "file": "art/exports/environments/gozd-ljudska/framing-trees.webp",
+      "width": 1984,
+      "height": 393,
+      "x": 2,
+      "y": 0,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/trnovski-gozd-parallax/layers/framing-trees.png",
+      "sourceSha1": "9ac8833d0e8efa8b55c481693e49c557c7e28fdb",
+      "previewBox": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "both sides"
+    },
+    {
+      "id": "grass-lane",
+      "order": 7,
+      "file": "art/exports/environments/gozd-ljudska/grass-lane.webp",
+      "width": 1984,
+      "height": 372,
+      "x": 2,
+      "y": 374,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/trnovski-gozd-parallax/layers/foreground-grass-lane.png",
+      "sourceSha1": "bbe1ddb353edf6e8ec8f072609eedefe433424d5",
+      "previewBox": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "both sides",
+      "laneMirroredBelow": true
+    },
+    {
+      "id": "near-rocks-grass",
+      "order": 8,
+      "file": "art/exports/environments/gozd-ljudska/near-rocks-grass.webp",
+      "width": 1988,
+      "height": 81,
+      "x": -992,
+      "y": 479,
+      "alpha": true,
+      "tileX": true,
+      "role": "foreground",
+      "source": "docs/art-benchmarks/trnovski-gozd-parallax/layers/near-foreground-rocks-grass.png",
+      "sourceSha1": "4b9483ecf2c6ee04bfe0ec2cc17abd9b65bd44cd",
+      "previewBox": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "left side"
+    }
+  ]
+}

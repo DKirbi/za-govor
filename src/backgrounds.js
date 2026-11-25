@@ -8,14 +8,15 @@
 //   a test with "live": true: one variant per install, drawn by "share" and kept in localStorage zg-ab
 //   otherwise: A
 // The variant goes into the tester statistics (src/stats.js), so the rows of A and B can be compared.
-const BGX = (() => { try { const v = JSON.parse($('#bgdata').textContent); return { tests: v.tests || {}, packs: v.packs || {}, heroes: v.heroes || {} }; } catch (e) { return { tests: {}, packs: {}, heroes: {} }; } })();
+const BGX = (() => { try { const v = JSON.parse($('#bgdata').textContent); return { tests: v.tests || {}, packs: v.packs || {}, heroes: v.heroes || {}, cards: v.cards || {}, cardTest: v.cardTest || null }; } catch (e) { return { tests: {}, packs: {}, heroes: {}, cards: {}, cardTest: null }; } })();
 const AB_KEY = 'zg-ab';
 const AB = (() => { try { const v = JSON.parse(localStorage.getItem(AB_KEY) || '{}'); return v && typeof v === 'object' && !Array.isArray(v) ? v : {}; } catch (e) { return {}; } })();
 let bgForce = (() => { try { const v = (new URLSearchParams(location.search).get('ozadje') || '').toUpperCase(); return /^[A-Z]$/.test(v) ? v : null; } catch (e) { return null; } })();
-// Nastavitve → Razvoj → Kakovost slik: 'auto' (the default) leaves the choice to the A/B test, as before. 'high' shows the
-// Codex parallax pack of the sunset (B) where the test would show A. 'low' shows the picture already in the game (A)
-// where the test would show the sunset (B). Winter (D) has no low picture yet, so it stays high. Martin Krpan follows the
-// same choice, but only 'high' changes him (see below); 'auto' and 'low' keep the sprite already in the game.
+// Nastavitve → Razvoj → Kakovost slik: 'auto' (the default) leaves the choice to the A/B test, as before. 'high' shows
+// variant B where the test would show A: in every region with one, Codex's folk parallax pack (25 Nov 2026; on Ptuj the
+// sunset pack moved to E). 'low' shows the picture already in the game (A) where the test would show B. Winter (D) has
+// no low picture yet, so it stays high. The painted skill cards follow the same choice (below). Martin Krpan follows it
+// too, but only 'high' changes him (see below); 'auto' and 'low' keep the sprite already in the game.
 const FID_KEY = 'zg-fidelity';
 const fidelity = () => { try { const v = localStorage.getItem(FID_KEY); return v === 'high' || v === 'low' ? v : 'auto'; } catch (e) { return 'auto'; } };
 const setFidelity = v => { try { if (v === 'high' || v === 'low') localStorage.setItem(FID_KEY, v); else localStorage.removeItem(FID_KEY); } catch (e) { /* no storage */ } applyHeroFidelity(); };
@@ -69,8 +70,26 @@ function bgTestVariant(key) {
   return AB[key];
 }
 const bgVariant = key => fidVariant(key, bgTestVariant(key));
-// for src/stats.js: ozadje-ptuj=B, or B(predogled) when the address chose it
-const bgStatTags = () => Object.keys(BGX.tests).map(k => `ozadje-${k}=${bgVariant(k)}${bgForced(k) ? '(predogled)' : ''}`);
+// ---------------------------------------------------------------- Codex's painted skill cards (BGX.cards, "hero:tier"; Game Director, 25 Nov 2026)
+// An A/B test like the backgrounds: A = the hand-made SVG boards in battle, B = the paintings. data/backgrounds.json
+// cardTest {live, share}; ?karte=A or ?karte=B previews one; Kakovost slik: Nizka keeps A, Visoka shows B. The hero
+// screen's collection always shows the paintings: they are the reward. Only heroes with a painting change.
+let cardForce = (() => { try { const v = (new URLSearchParams(location.search).get('karte') || '').toUpperCase(); return v === 'A' || v === 'B' ? v : null; } catch (e) { return null; } })();
+const cardsBuilt = () => Object.keys(BGX.cards).length > 0;
+function cardTestVariant() {
+  const t = BGX.cardTest;
+  if (!cardsBuilt()) return 'A';
+  if (cardForce) return cardForce;
+  if (!t || !t.live) return 'A';
+  if (!['A', 'B'].includes(AB.karte)) { AB.karte = bgDraw(t.share, ['A', 'B']); try { localStorage.setItem(AB_KEY, JSON.stringify(AB)); } catch (e) { /* no storage */ } }
+  return AB.karte;
+}
+const cardVariant = () => { const f = fidelity(); return f === 'low' ? 'A' : f === 'high' && cardsBuilt() ? 'B' : cardTestVariant(); };
+// the painting for a battle card, or null (variant A, a foe, a hero without one)
+const cardPainting = (id, tier) => cardVariant() === 'B' ? BGX.cards[`${id}:${tier}`] || null : null;
+// for src/stats.js: ozadje-ptuj=B, or B(predogled) when the address chose it; karte=B for the skill-card test
+const bgStatTags = () => Object.keys(BGX.tests).map(k => `ozadje-${k}=${bgVariant(k)}${bgForced(k) ? '(predogled)' : ''}`)
+  .concat(cardsBuilt() ? [`karte=${cardVariant()}${cardForce ? '(predogled)' : ''}`] : []);
 
 applyHeroFidelity();
 const bgMotion = () => !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -104,24 +123,30 @@ function bgLayers(scene, key, where) {
 // boxes: offsets ignore the transforms of attacks and running, so the ground does not jump with them. null when
 // nobody stands in the scene (the gallery).
 function actorFloor(sc, neck) {
-  let feet = null, nk = null;
+  let feet = null, nk = null, low = null;
   sc.querySelectorAll(':scope > .party .spr, :scope > .enemies .spr, :scope > .tv-objs > .tv-obj').forEach(el => {
     let y = 0, n = el;
     while (n && n !== sc) { y += n.offsetTop; n = n.offsetParent; }
     const h = el.offsetHeight;
     if (n !== sc || !h) return;
     if (feet === null || y + h < feet) feet = y + h;
+    if (low === null || y + h > low) low = y + h;
     if (neck != null && el.closest('.party') && (nk === null || y + h * neck < nk)) nk = y + h * neck;
   });
-  return feet === null ? null : { feet, neck: nk };
+  return feet === null ? null : { feet, neck: nk, low };
 }
-const floorKey = f => f ? `${f.feet}|${f.neck}` : '';
+const floorKey = f => f ? `${f.feet}|${f.neck}|${f.low}` : '';
+// the layers that follow the actors: a ground with `stand`, a low front layer with `below` (its top kept `below` canvas
+// pixels under the lowest feet, so near rocks and grass never cover a foot or the status lines under the enemies)
+const floorLayer = P => P.layers.find(L => L.stand != null || L.below != null);
+const floorNeck = P => { const G = P.layers.find(L => L.stand != null); return G ? G.neck : undefined; };
 function bgPlace(M, camX, progress, now) {
   const sc = M.scene, W = sc.clientWidth, H = sc.clientHeight;
   if (!H || !W) return;
-  const G = M.P.layers.find(L => L.stand != null);
-  M.floor = G ? actorFloor(sc, G.neck) : null;
-  const P = M.P, s = Math.max(H / P.canvas.h, W / P.canvas.w), cw = P.canvas.w * s, c0 = (W - cw) / 2, oy = H - P.canvas.h * s;
+  M.floor = floorLayer(M.P) ? actorFloor(sc, floorNeck(M.P)) : null;
+  // focusY: where a scene wider than the view crops it (1 = keeps its bottom, as before; less keeps more of the top, so a
+  // wide desktop scene still shows the landmark — the ground follows the actors' feet anyway)
+  const P = M.P, s = Math.max(H / P.canvas.h, W / P.canvas.w), cw = P.canvas.w * s, c0 = (W - cw) / 2, oy = (H - P.canvas.h * s) * (P.focusY ?? 1);
   const t = bgMotion() ? now / 1000 : 0;
   M.size = W + 'x' + H;
   M.els.forEach((el, i) => {
@@ -132,8 +157,10 @@ function bgPlace(M, camX, progress, now) {
     // a ground layer with `stand` follows the characters: its top `stand` canvas pixels above the highest feet, or at
     // the heroes' necks if that is higher, so they walk on it with their heads against what lies behind; it repeats
     // downwards (clipped above its top) so it reaches the bottom on any screen
+    // (riseOnly: a painted lane only rises from where its picture puts it, never sinks below it and opens a gap above)
     const F = L.stand != null && M.floor;
-    const y = F ? Math.min(F.feet - L.stand * s, F.neck ?? Infinity) : oy + L.y * s;
+    let y = F ? Math.min(F.feet - L.stand * s, F.neck ?? Infinity, L.riseOnly ? oy + L.y * s : Infinity) : oy + L.y * s;
+    if (L.below != null && M.floor) y = Math.max(y, M.floor.low + L.below * s);
     el.style.backgroundSize = `${tw}px ${Math.round(L.h * k * s)}px`;
     el.style.backgroundPosition = `${Math.round(x)}px ${Math.round(y)}px`;
     if (L.stand != null) { el.style.backgroundRepeat = 'repeat'; el.style.clipPath = `inset(${Math.max(0, Math.round(y))}px 0 0 0)`; }
@@ -147,8 +174,7 @@ const BG_STILL = new Set();
     if (!M.scene.isConnected) { BG_STILL.delete(M); return; }
     const drifts = bgMotion() && M.P.layers.some(L => L.tileX && L.drift);
     // placed again when the characters' feet move: they arrive after the layers, and a status line under an enemy lifts it
-    const G = M.P.layers.find(L => L.stand != null);
-    const moved = G && floorKey(actorFloor(M.scene, G.neck)) !== floorKey(M.floor);
+    const moved = floorLayer(M.P) && floorKey(actorFloor(M.scene, floorNeck(M.P))) !== floorKey(M.floor);
     if (drifts || moved || M.size !== M.scene.clientWidth + 'x' + M.scene.clientHeight) bgPlace(M, null, 0, now);
   });
   requestAnimationFrame(bgFrame);

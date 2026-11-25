@@ -1001,6 +1001,95 @@ def bg_predjama():
     return im
 
 
+def bg_gozd():
+    """Autumn Trnovski gozd: layered trunks, moonlit canopy and a readable path."""
+    im = Image.new('RGB', (W, H)); d = ImageDraw.Draw(im)
+    sky(d, [(22, '#202c42'), (43, '#344257'), (GY, '#59604f')])
+    # Reusable block-cloud treatment: same clustered silhouette, recoloured by scene.
+    for x, y, w in ((42, 15, 28), (170, 23, 35), (306, 12, 26)):
+        d.rectangle([x, y, x + w, y + 4], fill=rgb('#536078'))
+        d.rectangle([x + 5, y - 3, x + w - 6, y + 5], fill=rgb('#536078'))
+    d.ellipse([286, 10, 324, 42], fill=rgb('#f2d99a')); d.ellipse([295, 9, 324, 39], fill=rgb('#344257'))
+    ridge(d, 61, 8, '#394b45', 29, (144, 48, 24))
+    rnd = random.Random(44)
+    for x in range(0, W, 24):
+        h = rnd.randrange(23, 40); trunk = rnd.choice(['#382c27', '#49352a', '#51402d'])
+        d.rectangle([x + 8, 43, x + 15, GY], fill=rgb(trunk))
+        d.rectangle([x + 5, 44, x + 7, GY], fill=rgb('#68513a'))
+        for yy in range(42 - h, 52, 7):
+            d.polygon([(x - 3, yy + 10), (x + 11, yy), (x + 27, yy + 10)], fill=rgb(rnd.choice(['#304638', '#3d563c', '#66523a', '#80613b'])))
+    ground(d, '#62513a', ['#806443', '#4e4937', '#9a7044'], 27)
+    d.polygon([(164, GY), (190, GY), (224, H), (136, H)], fill=rgb('#a08a5b'))
+    return im
+
+
+def bg_barje():
+    """Warm dawn over the Ljubljana marsh and its old pile dwellings."""
+    im = Image.new('RGB', (W, H)); d = ImageDraw.Draw(im)
+    sky(d, [(18, '#687d9c'), (34, '#b08a91'), (49, '#e3ad88'), (GY, '#e7d0a4')])
+    for x, y, w in ((36, 15, 30), (142, 22, 36), (292, 12, 28)):
+        d.rectangle([x, y, x + w, y + 4], fill=rgb('#d5b6ac')); d.rectangle([x + 5, y - 3, x + w - 6, y + 5], fill=rgb('#d5b6ac'))
+    ridge(d, 60, 7, '#78816e', 4, (160, 56, 28))
+    d.rectangle([0, 55, W, GY], fill=rgb('#91a99a'))
+    rnd = random.Random(88)
+    for x in range(0, W, 5):
+        h = rnd.randrange(5, 15); d.line([(x, GY - h), (x + rnd.randrange(-2, 3), H)], fill=rgb(rnd.choice(['#59684f', '#78804e', '#a29361'])))
+    for x, y in ((60, 48), (190, 42), (278, 50)):
+        d.line([(x + 8, y + 12), (x + 8, GY + 2)], fill=rgb('#553c2a')); d.line([(x + 26, y + 12), (x + 26, GY + 2)], fill=rgb('#553c2a'))
+        d.rectangle([x, y, x + 34, y + 12], fill=rgb('#8b6742')); d.polygon([(x - 3, y), (x + 17, y - 9), (x + 37, y)], fill=rgb('#594633'))
+        d.rectangle([x + 7, y + 4, x + 11, y + 9], fill=rgb('#f4cf83'))
+    ground(d, '#58684b', ['#7e8152', '#414f43', '#a69a60'], 16)
+    return im
+
+
+def bg_ljubljanica():
+    """Summer riverfront with the Triple Bridge and castle ridge in the distance."""
+    im = Image.new('RGB', (W, H)); d = ImageDraw.Draw(im)
+    sky(d, [(20, '#6ba5d0'), (39, '#a6cce0'), (GY, '#d9d2ad')])
+    for x, y, w in ((30, 13, 30), (172, 18, 38), (310, 10, 28)):
+        d.rectangle([x, y, x + w, y + 4], fill=rgb('#edf0e5')); d.rectangle([x + 6, y - 3, x + w - 7, y + 5], fill=rgb('#edf0e5'))
+    ridge(d, 60, 10, '#7894a0', 62, (180, 56, 24))
+    d.rectangle([0, 57, W, GY], fill=rgb('#538da0'))
+    rnd = random.Random(21)
+    for _ in range(115):
+        x, y = rnd.randrange(W), rnd.randrange(59, GY); d.line([(x, y), (x + rnd.randrange(3, 12), y)], fill=rgb(rnd.choice(['#70a9b2', '#91c3be', '#3c748a'])))
+    x = 0
+    while x < W:
+        w, h = rnd.randrange(16, 28), rnd.randrange(15, 27); c = rnd.choice(['#d6b888', '#e6cfa2', '#c88f72', '#c8c5aa'])
+        d.rectangle([x, 56 - h, x + w, 60], fill=rgb(c)); d.polygon([(x - 2, 56 - h), (x + w // 2, 48 - h), (x + w + 2, 56 - h)], fill=rgb('#9c5740'))
+        d.rectangle([x + 4, 57 - h, x + 7, 61 - h], fill=rgb('#46576a')); x += w + 2
+    # Castle on the ridge and the three low bridge arches.
+    d.rectangle([267, 40, 309, 49], fill=rgb('#d8c7a4')); d.polygon([(264, 40), (285, 32), (312, 40)], fill=rgb('#984d3d'))
+    d.rectangle([149, 62, 235, 66], fill=rgb('#d9c8a5'))
+    for x in (158, 189, 220): d.arc([x - 10, 61, x + 10, 74], 0, 180, fill=rgb('#374957'), width=2)
+    ground(d, '#73755c', ['#92906c', '#5c6856', '#b0a078'], 31)
+    return im
+
+
+def bg_grad():
+    """Ljubljana Castle walls above tiled roofs at a late summer sunset."""
+    im = Image.new('RGB', (W, H)); d = ImageDraw.Draw(im)
+    sky(d, [(16, '#4a5278'), (31, '#8b617b'), (46, '#d28670'), (GY, '#e4b17b')])
+    for x, y, w in ((24, 19, 28), (156, 15, 35), (306, 24, 32)):
+        d.rectangle([x, y, x + w, y + 4], fill=rgb('#b28c91')); d.rectangle([x + 6, y - 3, x + w - 7, y + 5], fill=rgb('#b28c91'))
+    ridge(d, 63, 11, '#51564f', 13, (160, 48, 24))
+    x = 0; rnd = random.Random(14)
+    while x < W:
+        w, h = rnd.randrange(15, 25), rnd.randrange(8, 17); c = rnd.choice(['#b47b63', '#d2a77c', '#b99a78', '#9c7869'])
+        d.rectangle([x, 70 - h, x + w, 76], fill=rgb(c)); d.polygon([(x - 2, 70 - h), (x + w // 2, 64 - h), (x + w + 2, 70 - h)], fill=rgb('#70433e'))
+        for wx in range(x + 4, x + w - 2, 6): d.rectangle([wx, 72 - h, wx + 2, 75 - h], fill=rgb('#f4cd79'))
+        x += w + 1
+    # Foreground castle wall, towers and crenellations.
+    d.rectangle([107, 38, 276, 63], fill=rgb('#bca98b')); d.rectangle([111, 41, 272, 62], fill=rgb('#d5c3a0'))
+    for x in range(109, 279, 12): d.rectangle([x, 35, x + 5, 42], fill=rgb('#bca98b'))
+    for x, y, w in ((125, 29, 26), (225, 24, 32), (177, 19, 31)):
+        d.rectangle([x, y, x + w, 53], fill=rgb('#d5c3a0')); d.rectangle([x - 2, y - 3, x + w + 2, y + 2], fill=rgb('#a94f42'))
+        d.polygon([(x - 2, y - 3), (x + w // 2, y - 10), (x + w + 2, y - 3)], fill=rgb('#a94f42'))
+        for wx in range(x + 6, x + w - 3, 9): d.rectangle([wx, y + 8, wx + 3, y + 14], fill=rgb('#46506a'))
+    ground(d, '#615746', ['#817050', '#514a40', '#a48761'], 19)
+    return im
+
+
 def road():
     """A see-through strip of tufts and pebbles that scrolls under the walking party."""
     im = Image.new('RGBA', (192, 16), (0, 0, 0, 0)); d = ImageDraw.Draw(im); rnd = random.Random(1)
@@ -1014,7 +1103,7 @@ def road():
 HEROES = {'erazem': erazem, 'klepec': klepec, 'vida': vida, 'ajda': ajda, 'krosnjar': krosnjar}
 OBJECTS = {'skrinja': skrinja, 'vodnjak': vodnjak, 'plaz': plaz, 'svetisce': svetisce, 'kazipot': kazipot, 'puscice': puscice, **SHRINES}
 LEVEL_ART = {'lv-malcek': lv_malcek, 'lv-ucenjak': lv_ucenjak, 'lv-molj': lv_molj}
-BGS = {'ptuj': bg_ptuj, 'peca': bg_peca, 'triglav': bg_triglav, 'bled': bg_bled, 'piran': bg_piran, 'predjama': bg_predjama}
+BGS = {'ptuj': bg_ptuj, 'peca': bg_peca, 'triglav': bg_triglav, 'bled': bg_bled, 'gozd': bg_gozd, 'piran': bg_piran, 'predjama': bg_predjama, 'barje': bg_barje, 'ljubljanica': bg_ljubljanica, 'grad': bg_grad}
 
 
 def main():
@@ -1041,7 +1130,7 @@ def main():
         for i, f in enumerate(fr): im.alpha_composite(f.im, ((i % 10) * 48, (i // 10) * 48))
         for i, it in enumerate(world['items']): im.alpha_composite(icon(*it['icon']).im, (i * 18 + 2, 146))
         im.resize((im.width * 4, im.height * 4), Image.NEAREST).save(out / 'art-sprites.png')
-        b = Image.new('RGB', (W * 2, H * 3))
+        b = Image.new('RGB', (W * 2, H * ((len(BGS) + 1) // 2)))
         for i, fn in enumerate(BGS.values()): b.paste(fn(), ((i % 2) * W, (i // 2) * H))
         b.resize((W * 4, H * 6), Image.NEAREST).save(out / 'art-bgs.png')
 

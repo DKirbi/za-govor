@@ -17,6 +17,7 @@ Inputs:  src/index.src.html (template), src/game.css + src/title.css,
            src/skills.js (skill texts and stopnje, the skill list, Veščine where points are spent),
            src/shrines.js (svetišča izziva: prayers, the gods' gifts, the gods as challengers),
            src/save.js (the journey saved at checkpoints by Znanje, Izhod),
+           src/achievements.js (achievements, story cards and skill cards: the profile zg-dosezki, data/achievements.json),
            src/art-title.js + src/title.js (the "Za govor!" title scene, art from tools/art_title.py),
          data/lexicon.bin (word list from tools/build_lexicon.py, inlined as base64),
          data/clues.json (crossword clue bank), data/world.json (regions and items of the journey),
@@ -24,6 +25,7 @@ Inputs:  src/index.src.html (template), src/game.css + src/title.css,
          package.json (version and release stage) and git (commit) for the version line
          data/backgrounds.json (background A/B tests) and, for each pack it names, art/manifests/<pack>.json
            with the layer PNGs it lists (art/exports/...), inlined as base64 — a pack is left out until all are committed
+         art/exports/characters/skill-cards.json (Codex's painted skill cards, tools/art_skill_cards.py), inlined the same way
 Output:  dist/index.html — open it in any modern browser, no server needed.
 """
 import base64, hashlib, json, pathlib, struct, subprocess
@@ -67,6 +69,8 @@ def layer_picture(png_rel, webp_cfg, notes, pid):
     data/backgrounds.json uses the WebP copy from tools/art_bg_webp.py while it was made from this very PNG at that
     quality; otherwise, and for every other pack, the PNG."""
     png = (root / png_rel).read_bytes()
+    if png_rel.endswith('.webp'):   # an export that is a WebP already (tools/art_folk_parallax.py): embedded as it is
+        return png, 'image/webp', webp_info(png, png_rel)
     q = (webp_cfg or {}).get('quality')
     if q:
         p = pathlib.PurePosixPath(png_rel)
@@ -144,11 +148,11 @@ def background_packs():
                 assert 0 <= x and (L.get('tileX') or x + w <= cw) and 0 <= y and y + h <= ch, f"{L['file']} lies outside the {cw}×{ch} canvas"
             layers.append({'id': L['id'], 'w': w, 'h': h, 'x': x, 'y': y, 'scale': k, 'tileX': bool(L.get('tileX')),
                            'front': t.get('front', L.get('role') == 'foreground'), 'speed': t.get('speed', 0), 'drift': t.get('drift', 0), 'pan': t.get('pan', 1),
-                           **{k: t[k] for k in ('stand', 'neck') if k in t},
+                           **{k: t[k] for k in ('stand', 'neck', 'riseOnly', 'below') if k in t},
                            'src': f'data:{mime};base64,' + base64.b64encode(raw).decode('ascii')})
             size += len(raw)
         packs[pid] = {'name': pc.get('name') or man.get('name') or pid, 'version': man.get('version', ''), 'status': man.get('status', 'draft'),
-                      'canvas': {'w': cw, 'h': ch}, 'hideRoad': bool(pc.get('hideRoad')), 'layers': layers}
+                      'canvas': {'w': cw, 'h': ch}, 'hideRoad': bool(pc.get('hideRoad')), **({'focusY': pc['focusY']} if 'focusY' in pc else {}), 'layers': layers}
         fmt = ' WebP' if all(L['src'].startswith('data:image/webp') for L in layers) else ''
         notes.append(f"background pack {pid}: {len(layers)} layers, {cw}×{ch}, {size // 1024} KB{fmt}, status {packs[pid]['status']}"
                      + (' — large for a single-file build' if size > 1536 * 1024 else ''))
@@ -156,7 +160,7 @@ def background_packs():
         gone = [v for v, p in t.get('variants', {}).items() if p not in packs]
         if t.get('live') and gone:
             notes.append(f"background test {key} is live but variant {', '.join(gone)} is not built: everyone sees A")
-    return {'tests': cfg.get('tests', {}), 'packs': packs}, notes
+    return {'tests': cfg.get('tests', {}), 'packs': packs, 'cardTest': cfg.get('cardTest')}, notes
 
 
 def hero_sheets():
@@ -194,19 +198,43 @@ def hero_sheets():
     return out, notes
 
 
+def skill_cards():
+    """Codex's painted skill cards (art/exports/characters/skill-cards.json, tools/art_skill_cards.py): one WebP per hero
+    and skill number, keyed "hero:tier". Missing exports leave that card out (the hand-made SVG stays); a card whose
+    master changed since its export is still built in, with a note to export it again."""
+    rel = 'art/exports/characters/skill-cards.json'
+    if not (root / rel).is_file():
+        return {}, [f'skill cards: {rel} missing, the SVG boards only — run python3 tools/art_skill_cards.py']
+    out, notes, size = {}, [], 0
+    for key, e in json.loads(read(rel)).items():
+        if not (root / e['card']).is_file():
+            notes.append(f"skill card {key}: {e['card']} missing, left out"); continue
+        if (root / e['source']).is_file() and hashlib.sha1((root / e['source']).read_bytes()).hexdigest() != e['sourceSha1']:
+            notes.append(f"skill card {key}: its master changed — run python3 tools/art_skill_cards.py")
+        raw = (root / e['card']).read_bytes()
+        w, h, _ = webp_info(raw, e['card'])
+        out[key] = {'skill': e['skill'], 'w': w, 'h': h, 'src': 'data:image/webp;base64,' + base64.b64encode(raw).decode('ascii')}
+        size += len(raw)
+    notes.append(f'skill cards: {len(out)} paintings, {size // 1024} KB WebP')
+    return out, notes
+
+
 bgdata, bgnotes = background_packs()
+cards, cardnotes = skill_cards()
+bgdata['cards'] = cards; bgnotes += cardnotes
 heroes, heronotes = hero_sheets()
 bgdata['heroes'] = heroes; bgnotes += heronotes
 template = read('src/index.src.html')
 data = {'/*__LEX__*/': base64.b64encode((root / 'data/lexicon.bin').read_bytes()).decode('ascii'),
         '/*__CLUES__*/': read('data/clues.json'), '/*__WORLD__*/': read('data/world.json'), '/*__WORDS__*/': read('data/words.json'), '/*__MEANINGS__*/': read('data/meanings.json'),
-        '/*__BGS__*/': json.dumps(bgdata, ensure_ascii=False, separators=(',', ':'))}
+        '/*__BGS__*/': json.dumps(bgdata, ensure_ascii=False, separators=(',', ':')),
+        '/*__ACH__*/': json.dumps(json.loads(read('data/achievements.json')), ensure_ascii=False, separators=(',', ':'))}
 for name, text in data.items():
     assert '</script' not in text, f'{name} would close its <script> tag'
 
 js = read('src/game.js')
 for mark, rels in (('/*__LEXICON__*/', ['src/lexicon.js']), ('/*__ART_EXTRA__*/', ['src/art-extra.js', 'src/art-title.js']),
-                   ('/*__JOURNEY__*/', ['src/journey.js', 'src/backgrounds.js', 'src/playtest.js', 'src/mobile.js', 'src/credits.js', 'src/report.js', 'src/stats.js', 'src/menu.js', 'src/effects.js', 'src/progression.js', 'src/skills.js', 'src/shrines.js', 'src/save.js', 'src/title.js'])):
+                   ('/*__JOURNEY__*/', ['src/journey.js', 'src/backgrounds.js', 'src/playtest.js', 'src/mobile.js', 'src/credits.js', 'src/report.js', 'src/stats.js', 'src/menu.js', 'src/effects.js', 'src/progression.js', 'src/skills.js', 'src/shrines.js', 'src/save.js', 'src/achievements.js', 'src/title.js'])):
     assert js.count(mark) == 1, f'{mark} must appear exactly once in src/game.js'
     js = js.replace(mark, ''.join(read(rel) for rel in rels))
 

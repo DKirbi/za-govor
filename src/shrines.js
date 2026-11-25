@@ -139,6 +139,7 @@ function shrineKey(e) {
 // called after a word: `p` is the power of the strongest third skill the word fired
 const giftsNow = () => !S.run || !B ? [] : (S.run.gifts || []).filter(g => !(B.node.challenge && B.node.challenge.god === g));
 function giftStrike(id, p) {
+  achGift();   // a shrine's gift used on this journey (src/achievements.js: Brez božjega daru)
   const G = GOD[id], ch = CHARS.find(c => c.id === id), alive = B.enemies.filter(e => e.hp > 0);
   if (!alive.length) return;
   const card = { tier: 3, c: ch.c, name: `dar: ${G.name}`, move: ch.moves[2], portrait: godSign(id) };
@@ -245,6 +246,7 @@ function challengeWon(node) {
   gainXp(GOD_XP, null, true);
   if (C.own) { const pg = partyGod(); if (pg >= 0 && S.run) { S.heroes[pg].pts = heroPts(S.heroes[pg]) + 1; chorus(); } }   // a point for the party god (balance E: their own)
   const fresh = unlock(C.god);
+  achGodBeaten(C.god);   // src/achievements.js
   if (C.prayer) { R.challenged = true; keepNextGift(C.god); }
   return { raised, fresh };
 }

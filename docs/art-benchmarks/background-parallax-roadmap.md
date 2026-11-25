@@ -1,0 +1,67 @@
+# Folk-art backgrounds and parallax roadmap
+
+**In game (draft, 25 Nov 2026, v0.19.0, PR #38):** the six studies below (Ptuj, Peca, Triglav, Bled, Trnovski gozd,
+Ljubljanica) are built into the game as **variant B** of each region's background test (`data/backgrounds.json`,
+`live: false`: preview with `?ozadje=B` or *Kakovost slik → Visoka*). On Ptuj the folk pack is B and the earlier
+sunset pack moved to **E**. `tools/art_folk_parallax.py` makes the game layers from Codex's study PNGs, which stay
+unchanged: resized into one 996×560 view as Codex's composites place them, WebP q80. Nothing is drawn.
+
+- **Speeds** are Codex's ratios against the walking lane (1.0), measured by `tests/parallax.test.js`. Changes, all
+  reported to the Game Director: layers drawn over the lane move at least as fast as it (Game Director, 25 Nov: oak
+  0.82 → 1.1, Triglav spruces 0.72 → 1.1 and flowers 0.88 → 1.15); the Ljubljanica bridge 0.40 → 0.55 (over its river
+  at 0.50) and its road 0.90 → 1.0; skies no faster than their clouds (Ptuj and Peca sky 0.08 → 0.02, Ljubljanica
+  clouds 0.035 → 0.1); Bled's lake 0.62 → 0.36, so the island (0.36) and its reflection (0.34) stay on the water.
+- **Seams:** a tiling layer whose picture is cut by its side is joined to its mirror image (Game Director, 25 Nov);
+  landmarks clear of both sides are padded so they come round only every 2–3 view widths. Codex may deliver true
+  seamless tiles later, which would replace the mirror joins.
+- **Lanes** follow the actors' feet in battle (`stand`) but never sink below their painted place (`riseOnly`); the
+  lane's mirror image below it lets it rise. Low front layers keep under the lowest feet (`below`). `focusY` picks the
+  band a wide desktop scene shows, so the landmark stays in view.
+- **CONFIRMED (Game Director, 25 Nov): Ptuj should always be winter.** Codex's Ptuj study is not a winter scene, so a
+  winter redraw is to be requested from Codex; the folk Ptuj stands in as B until then.
+
+The campaign currently has ten implemented battle backgrounds. Their order and `bg` keys come from [`data/world.json`](../../data/world.json); [`src/game.js`](../../src/game.js) provides the background descriptions and lookup. The backgrounds currently rendered in-game are the small pixel-art scenes in the art bundle. The folk-painted panoramas in `docs/art-benchmarks/` are a separate visual direction and are not wired into the battle renderer.
+
+## Implemented campaign backgrounds
+
+| Order | Campaign region | Runtime key | Game background | Folk-art reference / next step |
+| ---: | --- | --- | --- | --- |
+| 1 | Ptuj | `ptuj` | Implemented pixel-art scene | Folk panorama already reviewed. First separate slices and motion preview are in [Ptuj parallax study](ptuj-parallax/README.md). |
+| 2 | Peca | `peca` | Implemented pixel-art scene | Approved folk panorama; first-pass layers and camera preview are in the [Peca parallax study](peca-parallax/README.md). |
+| 3 | Triglav | `triglav` | Implemented pixel-art scene | Approved side-scrolling panorama; the first slices and motion preview are in the [Triglav parallax study](triglav-parallax/README.md). |
+| 4 | Bled | `bled` | Implemented pixel-art scene | First-pass layers and rightward camera preview are in the [Bled parallax study](bled-parallax/README.md). |
+| 5 | Trnovski gozd | `gozd` | Implemented pixel-art scene | First-pass layers and near-foreground motion guide are in the [Trnovski gozd parallax study](trnovski-gozd-parallax/README.md). |
+| 6 | Piranske soline | `piran` | Implemented pixel-art scene | Make a folk-art preview, get approval, then slice. |
+| 7 | Predjamski grad | `predjama` | Implemented pixel-art scene | Make a folk-art preview, get approval, then slice. |
+| 8 | Ljubljansko barje | `barje` | Implemented pixel-art scene | Make a folk-art preview, get approval, then slice. |
+| 9 | Ljubljanica | `ljubljanica` | Implemented pixel-art scene | Existing [side-view Triple Bridge battle preview](slovenia-folk-location-previews/ljubljanica-folk-preview.png) and [parallax slice study](ljubljanica-parallax/README.md); review the scene before any production slicing. |
+| 10 | Ljubljanski grad | `grad` | Implemented pixel-art scene | Make a folk-art preview, get approval, then slice. |
+
+The folk-art panorama references currently cover Ptuj, Peca, Triglav, Bled, Trnovski gozd and Ljubljanica. The Ljubljana Barje and Castle art functions were added to the game background bundle in the `Folk-art-BGs` branch; they still need folk-art previews before they can be sliced in this visual style.
+
+## Work order
+
+- [x] Create branch `Folk-art-BGs` with the existing folk landscape references and the full ten-scene game background set.
+- [x] Finish the first Ptuj layer pass: sky, clouds, distant hills, castle hill, town, Drava water, reflections, near-bank oak and foreground path.
+- [x] Create a Ptuj layer-composite image and an interactive camera-pan preview.
+- [ ] Review the Ptuj cutout edges and layer placement during runtime integration; the current slices are art-direction references and have not replaced game assets.
+- [x] Complete the Peca first-pass layer set from the approved character/background preview and create a static composite plus an interactive camera-pan preview.
+- [x] Complete the first Triglav layer set and left-to-right travel preview. Keep the continuous grassy route faster than the scenery.
+- [x] Complete the Bled first-pass layer set: sky, clouds, Julian Alps, forested shore, castle cliff, island church, separate lake and reflections, and a broad grassy travel lane. Create a static composite and rightward camera preview.
+- [x] Complete the Trnovski gozd first-pass layer set: night sky, moon, clouds, karst ridge, doline forest, framing trees, wide grass lane, and separate near-edge rocks/grass. Create the static composite and rightward travel preview; demonstrate close foreground at 1.25× lane speed.
+- [ ] **Next: Piranske soline.** Create its folk-art preview first and wait for scene approval before slicing.
+- [ ] Continue in campaign order after Trnovski gozd: Piranske soline, Predjama, Ljubljansko barje, Ljubljanica, then Ljubljanski grad.
+- [ ] For each remaining region, create the folk-art scene preview first and pause for approval before generating its slices. The existing Ljubljanica preview still needs review before any new production slicing.
+- [ ] After each scene's slices are approved, tune parallax speeds, cloud/water/ambient motion, character staging, reduced-motion behavior, and mobile landscape/portrait framing in the battle viewport.
+
+## Layer workflow
+
+1. Start from the region's approved folk-art panorama and keep it as an untouched reference.
+2. Show the proposed scene with the relevant existing pixel-art hero/enemy sprites; settle the landmark view and battle-space composition before slicing.
+3. Create independently positionable, transparent landmark/foreground layers and separate environmental overlays such as clouds and water reflections. Keep base surfaces such as sky and water filled where appropriate.
+4. Assemble a static image and a scrub-able preview to inspect alignment before writing runtime integration notes.
+5. Keep exported concept files out of the runtime bundle until dimensions, transparency edges, mobile framing and asset budget have been reviewed.
+
+For side-scrolling roads, keep the travel lane continuous from the left edge to the right edge, broad enough for the heroes to read clearly, and place it in a foreground layer that travels faster than the distant scenery.
+
+These folk-art studies complement the in-game pixel scenes. They do not change game code by themselves, and each region should remain a preview plus slice set until its art is confirmed.
