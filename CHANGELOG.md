@@ -36,10 +36,32 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
+## 0.20.0 — 25 Nov 2026 · zaprta alfa · A party of three, two shrines, three enemies on screen
+
+Branch `feat/party-three-gods-queue` (PR #39). Prepared on 24 Nov as 0.18.0; it merged after 0.19.0 (PR #38), so it
+is released as 0.20.0 and there is no 0.18.0. Decided by the Game Director on 24 Nov. Details: `docs/progression-design.md`
+§2 and §2a, `docs/combat-system.md` §3. Not balance-tested beyond a short simulator run (below).
+
+- **A party of three at most** (four before). A journey still meets three heroes, so the third meeting asks whom to
+  leave. A save with four heroes still loads and keeps them until one leaves.
+- **Two shrines a journey** (three before), at random and never in the last region. **Each can be prayed at**, so
+  two gifts can stack (one prayer a journey before).
+- **The god wants a fair fight.** The party no longer rests before the god comes: the god heals every hero to full,
+  the fallen too, and skill points can be spent (*Veščine*) before the battle.
+- **Winning:** the god heals everyone again, gives 250 XP and is unlocked; the gift stays **to the end of this
+  journey only** (it no longer carries into the next journey; a stored one is forgotten).
+- **Losing never ends the journey,** on any Znanje, and uses no second chance: the god leaves, every hero is as
+  healthy as they came, and the gift goes out once the next region is behind the party.
+- **At most three enemies on screen.** More can wait in line; one steps into a fallen enemy's place after 2.5 s, or
+  at once when the last one on screen falls. The Lintvern's enraged wyverns wait in line instead of making five.
+- Docs: the wheel-križanka decisions (§11.4) and the bosses' health bars and timed wheel events (§12), not built yet.
+- **With 0.19.0:** the achievements already count a full party as three (*Družina ostane skupaj*, the secrets), and
+  *Brez božjega daru* counts a gift used from either shrine.
+
 ## 0.19.0 — 25 Nov 2026 · zaprta alfa · Folk skill cards, achievements and folk parallax backgrounds
 
-PR #38 (branch `codex/folk-skill-cards`, with `Folk-art-BGs`). Numbered after 0.18.0 (PR #39, a party of three), which
-is meant to merge first. Codex's art only: nothing in this release is drawn by Claude; the PNG masters are unchanged
+PR #38 (branch `codex/folk-skill-cards`, with `Folk-art-BGs`). It merged before PR #39 (a party of three), which was
+prepared as 0.18.0 and came out as 0.20.0. Codex's art only: nothing in this release is drawn by Claude; the PNG masters are unchanged
 and the game uses resized WebP copies. Decisions of 25 Nov by the Game Director.
 
 - **Codex's painted skill cards in battle**, as an **A/B test like the backgrounds**: half the testers see the

@@ -92,27 +92,41 @@ run(async () => {
   check(boss.dragon.join() === [289, 320, 480].join() && boss.wyvern === Math.round(55 * 1.5 * 1.35), 'Lintvern: 289 / 320 / 480 health on Malček / Učenjak / Knjižni molj, the most of any enemy; wyverns do not grow by region (only by Znanje)', JSON.stringify(boss));
   check(boss.adds.join(' | ') === 'lintvern | zmajcek lintvern | zmajcek lintvern zmajcek | zmajcek lintvern zmajcek', 'one wyvern per hero beyond the first, at most two', boss.adds.join(' | '));
 
-  // ---- the Lintvern in battle (Učenjak, four heroes, the castle)
-  await journey(page, 'ucenjak', ['krpan', 'kurent', 'ajda', 'erazem'], 9);
+  // ---- the Lintvern in battle (Učenjak, a full party of three, the castle)
+  await journey(page, 'ucenjak', ['krpan', 'kurent', 'ajda'], 9);
   const fight = await ev(page, () => { const Z = window.__ZG, stop = Z.S.run.stops.find(s => s.kind === 'boss'); Z.stopBattle(stop);
     const B = Z.B; B.enemies.forEach(e => { e.charge = -99; }); return { foes: B.enemies.map(e => e.key).join(), n: B.enemies.length }; });
-  check(fight.foes === 'zmajcek,lintvern,zmajcek', 'four heroes meet the Lintvern with two wyverns', fight.foes);
+  check(fight.foes === 'zmajcek,lintvern,zmajcek', 'three heroes meet the Lintvern with two wyverns', fight.foes);
   const charge = await ev(page, () => { const Z = window.__ZG, B = Z.B, e = B.enemies[1]; Z.damageEnemy(e, Math.ceil(e.maxHp * 0.36));
-    const out = { charging: !!e.charging, speed: e.speed, calmStep: e.calmStep }; Z.damageEnemy(e, Math.ceil(e.maxHp * 0.32)); out.queued = e.breathQ; out.p2 = e.phase2on; out.n = B.enemies.length; return out; });
+    const out = { charging: !!e.charging, speed: e.speed, calmStep: e.calmStep }; Z.damageEnemy(e, Math.ceil(e.maxHp * 0.32)); out.queued = e.breathQ; out.p2 = e.phase2on; out.n = B.enemies.length; out.waiting = B.queue.length; return out; });
   check(charge.charging && charge.speed === 8 && Math.abs(charge.calmStep - 1 / 3) < 1e-9, 'below 66 % he draws breath: 8 s on Učenjak (3 words in calm mode)', JSON.stringify(charge));
-  check(charge.queued === 1 && charge.p2 && charge.n === 5, 'below 33 % the next breath waits for the first; at half health he enrages and two more wyverns fly in', JSON.stringify(charge));
+  check(charge.queued === 1 && charge.p2 && charge.n === 3 && charge.waiting === 2, 'below 33 % the next breath waits for the first; at half health he enrages and two more wyverns come, but wait in line: three on screen at most (24 Nov)', JSON.stringify(charge));
   const stopIt = await ev(page, () => { const Z = window.__ZG, e = Z.B.enemies[1], c0 = e.charge; e.stone = 2; Z.delayFoe(e, 4); return { moved: +(c0 - e.charge).toFixed(4), want: +(2 / e.speed).toFixed(4), stone: e.stone }; });
   check(stopIt.moved === stopIt.want, 'delays on the Lintvern are halved (4 s moves him 2 s)', JSON.stringify(stopIt));
   const breath = await ev(page, () => { const Z = window.__ZG, B = Z.B, e = B.enemies[1], hp = Z.S.heroes.map(h => h.hp);
     B.grid.forEach(t => { t.scorch = false; t.lockWords = 0; }); Z.breathe(e);
     return { charging: !!e.charging, again: e.breathQ, hit: Z.S.heroes.map((h, k) => hp[k] - h.hp), burn: { ...B.heroBurn }, scorched: B.grid.filter(t => t.scorch).length }; });
-  check(breath.hit.every(d => d > 0) && Object.values(breath.burn).filter(n => n >= 4).length === 4 && breath.scorched === 10, 'Ognjeni dih hits and burns every hero and scorches ten letters', JSON.stringify(breath));
+  check(breath.hit.every(d => d > 0) && Object.values(breath.burn).filter(n => n >= 4).length === breath.hit.length && breath.scorched === 10, 'Ognjeni dih hits and burns every hero and scorches ten letters', JSON.stringify(breath));
   check(breath.charging && breath.again === 0, 'the waiting breath starts charging right after', JSON.stringify(breath));
   const scorch = await ev(page, () => { const Z = window.__ZG, B = Z.B, i = B.grid.findIndex(t => t.scorch); B.grid[i].owner = 1; B.heroBurn = {};
     Z.scorchedUsed([i]); const used = { ...B.heroBurn }; const lit = B.grid.filter(t => t.scorch).length, hp = Z.S.heroes[1].hp;
     Z.calmDragonWord(); return { used, faded: lit - B.grid.filter(t => t.scorch).length, burnt: hp - Z.S.heroes[1].hp }; });
   check(scorch.used[1] === 4 && Object.keys(scorch.used).length === 1, 'a scorched letter in a word burns the hero of its colour (+4)', JSON.stringify(scorch));
   check(scorch.faded === 3 && scorch.burnt === 2, 'in calm mode, after a word, burns take two and three scorched letters fade', JSON.stringify(scorch));
+  // the line (24 Nov): a fallen wyvern's place is taken after 2,5 s of game time; when the last one on screen falls,
+  // the next steps in at once; the battle is won only when nobody waits any more
+  const line = await ev(page, () => { const Z = window.__ZG, B = Z.B; B.enemies.forEach(e => { e.charge = -99; });
+    Z.damageEnemy(B.enemies[0], 99999); const right = { alive: B.enemies.filter(e => e.hp > 0).length, waiting: B.queue.length };
+    runLater(1); const early = B.enemies[0].hp > 0; runLater(2);
+    const after = { key: B.enemies[0].key, alive: B.enemies[0].hp > 0, waiting: B.queue.length, n: B.enemies.length };
+    B.enemies.forEach(e => { e.charge = -99; if (e.hp > 0) Z.damageEnemy(e, 99999); });
+    const last = { alive: B.enemies.filter(e => e.hp > 0).map(e => e.key), waiting: B.queue.length, over: B.over };
+    runLater(2); const stillOn = !B.over;
+    B.enemies.forEach(e => { if (e.hp > 0) Z.damageEnemy(e, 99999); }); runLater(1);
+    return { right, early, after, last, stillOn, over: B.over }; });
+  check(line.right.alive === 2 && line.right.waiting === 2 && !line.early && line.after.alive && line.after.key === 'zmajcek' && line.after.waiting === 1 && line.after.n === 3 &&
+    line.last.alive.join() === 'zmajcek' && line.last.waiting === 0 && line.stillOn && line.over,
+    'a fallen wyvern\'s place is taken after a short while; the last one on screen is replaced at once; the battle ends when nobody waits', JSON.stringify(line));
   await ev(page, () => { const Z = window.__ZG; Z.go('battle', Z.B.node); });
   await sleep(300); await shot('balance-01-castle');
 

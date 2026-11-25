@@ -100,8 +100,8 @@ Ljubljana castle is the last battle.
 Every region also has **one chest or trap** (since 0.17.0: never both) and a place for **a well**
 (Ljubljanica and Ljubljanski grad open with their chest or trap), and heroes wait in some regions.
 
-Only **three of the six shrines** stand on any one journey (picked at random, each for a
-different god), and only three heroes wait on the road, so no two journeys are alike. **Chests,
+Only **two of the six shrines** stand on any one journey (picked at random, each for a
+different god, never in the last region), and only three heroes wait on the road, so no two journeys are alike. **Chests,
 traps and wells are planned by chance too:** when a journey starts, each region's event becomes a
 chest with a chance set by *Znanje* (60 / 45 / 30 % on Malček / Učenjak / Knjižni molj), otherwise a
 rock slide or a wall of spikes; Ptuj's is always a chest. Wells stay with 75 / 55 / 40 %
@@ -110,8 +110,8 @@ rock slide or a wall of spikes; Ptuj's is always a chest. Wells stay with 75 / 5
 - **Walking:** press `→` (or *Naprej*) and the party walks to the next stop; a prompt offers
   what can be done there (`Enter` for the main choice, `Esc` to walk past where that is allowed).
 - **The party:** you pick one hero. On a fresh game Martin Krpan, Zeleni Jurij and Kurent
-  are known; everyone else is a silhouette until they travel with you. Up to four travel
-  together; a fifth can only take somebody's place. **Only one god** may travel with you —
+  are known; everyone else is a silhouette until they travel with you. Up to three travel
+  together; a fourth can only take somebody's place. **Only one god** may travel with you —
   gods hit harder.
 - **Heroes on the road:** a journey meets three: one always waits at Ptuj, the other two in
   regions picked at random. Each place favours its own legend (the table above), so the next
@@ -275,21 +275,23 @@ texts and above the heads of heroes and enemies for as long as the effect lasts.
 - **Shrine of challenge (*Svetišče*):** every shrine belongs to one god and has its own look
   (Perun's carved post under an oak, Svarog's forge altar, Mokoš's spring with a spindle,
   Dažbog's sun disk, Stribog's windswept cairn, Veles's horned stone in the roots). The gods
-  are not shown, only their signs: lightning, anvil, spindle, sun, wind, horns. **Pray at one
-  shrine per journey** and the god answers (*»Tvoja molitev je uslišana. Preživi pot do konca
-  in videl bom, ali si vreden te preizkušnje.«*) and lends a **gift for the rest of the
-  journey**: every word that fires a third skill (three letters of one colour) also brings the
+  are not shown, only their signs: lightning, anvil, spindle, sun, wind, horns. **Pray at
+  a shrine** (two a journey, so two gifts can stack) and the god answers (*»Zagrmelo je. Tvoja
+  molitev je uslišana. Preden zapustiš to pokrajino, bom videl, ali si vreden te
+  preizkušnje.«*) and lends a **gift**: every word that fires a third skill (three letters of one colour) also brings the
   god's power — Perun's lightning chains to every enemy, Svarog gives a big shield, Mokoš
   heals, Dažbog doubles the next word, Stribog's wind hits everyone and clears the mesh, Veles
   poisons every enemy.
-  **At the end of that region, before the signpost**, after the party has rested, **the god
-  comes for the challenge** (the shrines stand near the start of their regions): a battle
-  against a god tougher than any boss on the road who only uses their special
-  (Perun's *Nevihta* is a chain of lightning through the whole party, the first hero hit
-  hardest). Losing is like losing any battle. Win, and the god speaks a cryptic word
-  (*»Hm … tebe si bom zapomnil.«*), raises the fallen, gives every hero 250 XP, is
-  **unlocked** for later journeys (a god never just joins), and the **gift stays for the rest
-  of this journey and the whole next one**.
+  **At the end of that region, before the signpost, the god comes for the challenge** (the
+  shrines stand near the start of their regions). There is no rest first, but the god wants a
+  fair fight: every hero is healed to full, the fallen too, and skill points can be spent
+  before it. A battle against a god tougher than any boss on the road who only uses their
+  special (Perun's *Nevihta* is a chain of lightning through the whole party, the first hero
+  hit hardest). Win, and the god speaks a cryptic word (*»Hm … tebe si bom zapomnil.«*), heals
+  everyone again, gives every hero 250 XP, is **unlocked** for later journeys (a god never
+  just joins), and the **gift stays to the end of the journey**. Lose, and the journey still
+  goes on: the god leaves, every hero is as healthy as they came, and the gift goes out once
+  the next region is behind you.
   **With a god in the party**, that god's own shrine holds their **godly version**: no prayer
   and no gift, the challenge starts at once and the party god does not strike their other
   self. Winning gives the party god a skill point at once and every hero 250 XP. Other gods'

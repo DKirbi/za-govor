@@ -1,22 +1,26 @@
 
 // ============================================================ svetišča izziva: the shrines of challenge
-// Every shrine belongs to one god and has its own look (tools/art_extra.py). A journey passes three of
-// them, in regions picked at random; SHRINE_GODS says who is worshipped where. The gods are not shown at
-// the shrines, only their signs (strela, nakovalo, vreteno, sonce, veter, rogovi).
-// - Pray at one shrine (one prayer per journey). The god answers and lends a gift for the rest of the
-//   journey: every word that fires a third skill (three letters of one colour) also brings the god's gift.
+// Every shrine belongs to one god and has its own look (tools/art_extra.py). A journey passes two of
+// them (Game Director, 24 Nov 2026; three before), in regions picked at random and never in the last one;
+// SHRINE_GODS says who is worshipped where. The gods are not shown at the shrines, only their signs
+// (strela, nakovalo, vreteno, sonce, veter, rogovi).
+// - Pray at a shrine: the god answers and lends a gift: every word that fires a third skill (three letters of
+//   one colour) also brings the god's gift. Gifts of both shrines stack.
 // - The god comes for the challenge at the end of the region where the player prayed, before the signpost
-//   (Game Director, 21 Nov: "na koncu poti" meant the region's road, not the journey; the shrines stand near
-//   the start of their regions). The party rests first, as at every region's end; then a hard battle in which
-//   the god only uses their special. Losing it is losing a battle (src/game.js, afterResult). Winning: the god
-//   speaks, raises the fallen, gives everyone a big chunk of XP, is unlocked for later journeys, and the gift
-//   stays for the rest of this journey and the whole next one.
+//   (21 Nov: "na koncu poti" meant the region's road, not the journey; the shrines stand near the start of
+//   their regions). 24 Nov: no rest first. The god wants a fair fight: every hero is healed to full, the
+//   fallen too, and skill points can be spent before it (fairFight). Then a hard battle in which the god only
+//   uses their special.
+// - Winning: the god speaks, heals the party again, gives everyone a big chunk of XP, is unlocked for later
+//   journeys, and the gift stays to the end of this journey (no longer into the next one).
+// - Losing is not losing the journey, on any Znanje: the god leaves, every hero is as healthy as they came
+//   (R.godSnap), and the gift goes out once the next region is behind the party (R.giftUntil).
 // - A party that travels with a god meets that god's godly version at the god's own shrine, right away:
 //   no prayer and no gift; the party god does not strike their other self. Winning gives the party god a
 //   skill point at once and everyone a big chunk of XP. Other gods' shrines stay closed to such a party.
 const GODS = ['perun', 'svarog', 'mokos', 'dazbog', 'stribog', 'veles'];
 const SHRINE_GODS = { peca: ['svarog', 'perun'], triglav: ['perun', 'stribog'], bled: ['dazbog', 'mokos'], gozd: ['veles', 'mokos'], piran: ['stribog', 'dazbog'], barje: ['veles', 'mokos'] };
-const SHRINES_PER_RUN = 3, GOD_XP = 250;
+const SHRINES_PER_RUN = 2, GOD_XP = 250;
 // names in the cases the lines need, the shrine, the answer to a prayer, the arrival and the last word
 const GOD = {
   perun: { name: 'Perun', to: 'Perunu', acc: 'Peruna', title: 'Gromovnik Perun', sign: 'strela',
@@ -58,16 +62,37 @@ const GOD = {
 };
 const godSign = (id, cls = '') => h('img', { class: 'godsign ' + cls, src: ART['znak-' + id], alt: GOD[id].sign, draggable: 'false' });
 
-// ------------------------------------------------------------ the gift remembered for the next journey
-// A god beaten at the end of a journey lends their gift to the whole next journey (this browser only).
-function takeNextGift() {
-  try { const g = localStorage.getItem('zg-gift'); localStorage.removeItem('zg-gift'); return GOD[g] ? g : null; } catch (e) { return null; }
+// ------------------------------------------------------------ prayers and gifts on this journey (24 Nov 2026)
+// R.prayers: { god, ri, result }, result null while the god waits at the end of region ri, then 'won' or 'lost'.
+// Two shrines a journey, so two prayers and two challenges at most. R.gifts lists the gifts that work now;
+// R.giftUntil[god] = the region after which a gift goes out (a lost challenge: the next region).
+const waitingPrayer = () => (S.run && S.run.prayers || []).find(p => !p.result) || null;
+// The gift a beaten god used to lend to the whole next journey (zg-gift, 16–23 Nov) is gone: forget a stored one.
+function forgetNextGift() { try { localStorage.removeItem('zg-gift'); } catch (e) { /* no storage */ } }
+// a save from before 24 Nov: one prayer (R.prayer, R.challenged) and three shrines planned; keep the first two
+function migratePrayers(R) {
+  if (!R || R.prayers) return;
+  R.prayers = R.prayer ? [{ god: R.prayer, ri: R.ri, result: R.challenged ? 'won' : null }] : [];
+  R.giftUntil = R.giftUntil || {};
+  delete R.prayer; delete R.challenged;
+  if (R.shrines) {
+    const keep = Object.keys(R.shrines).map(Number).sort((a, b) => a - b).slice(0, SHRINES_PER_RUN);
+    Object.keys(R.shrines).forEach(k => { if (!keep.includes(+k)) delete R.shrines[k]; });
+  }
 }
-function keepNextGift(id) { try { localStorage.setItem('zg-gift', id); } catch (e) { /* no storage */ } }
+// leaving region `ri`: the gifts whose time ends with it go out; returns their gods
+function expireGifts(ri) {
+  const R = S.run; if (!R || !R.giftUntil) return [];
+  const gone = Object.keys(R.giftUntil).filter(g => R.giftUntil[g] <= ri);
+  gone.forEach(g => { delete R.giftUntil[g]; R.gifts = R.gifts.filter(x => x !== g); });
+  return gone;
+}
+const giftGoneLine = g => `Dar, ki ${GOD[g].f ? 'ti ga je posodila' : 'ti ga je posodil'} ${GOD[g].name}, je ugasnil.`;
 
 // ------------------------------------------------------------ where the shrines stand on this journey
 function planShrines(starterId) {
-  const slots = WORLD.regions.map((r, i) => r.stops.includes('god') && SHRINE_GODS[r.id] ? i : -1).filter(i => i >= 0);
+  // never in the last region: the god would come in the Lintvern's place (24 Nov)
+  const slots = WORLD.regions.map((r, i) => r.stops.includes('god') && SHRINE_GODS[r.id] && i < WORLD.regions.length - 1 ? i : -1).filter(i => i >= 0);
   const at = shuffle(slots).slice(0, SHRINES_PER_RUN).sort((a, b) => a - b), used = new Set(), out = {};
   at.forEach(i => {
     const own = SHRINE_GODS[WORLD.regions[i].id].filter(g => !used.has(g));
@@ -91,9 +116,11 @@ function shrinePrompt(stop, pass, train) {
       actions: [{ label: 'Sprejmi izziv', primary: true, fn: () => challengeOwn(stop) }, { label: 'Pojdi mimo', fn: () => pass() }, ...extra] };
   }
   if (pg >= 0) return { text: `${where} ${HEROES[pg].name} ne dovoli, da bi se klanjal ${G.f ? 'drugi boginji' : 'drugemu bogu'}.`, actions: [{ label: 'Naprej ▶', primary: true, fn: () => pass(true) }, ...extra] };
-  if (R.prayer) {
-    const p = GOD[R.prayer];
-    return { text: R.prayer === id ? `${where} ${R.challenged ? `${p.name} te je na tej poti že ${p.f ? 'preizkusila' : 'preizkusil'}.` : `Tvoja molitev je uslišana; ${p.name} te čaka na koncu pokrajine.`}` : `${where} Zaobljubil si se že ${p.f ? 'boginji' : 'bogu'} ${p.to}. Dveh izzivov na eni poti ni.`,
+  // a god already met on this journey, or one still waiting (only an older save can get here)
+  const met = (R.prayers || []).find(p => p.god === id), w = waitingPrayer();
+  if (met || w) {
+    const p = GOD[(met || w).god];
+    return { text: met && met.result ? `${where} ${p.name} te je na tej poti že ${p.f ? 'preizkusila' : 'preizkusil'}.` : `${where} ${p.name} te čaka na koncu pokrajine; dveh izzivov hkrati ni.`,
       actions: [{ label: 'Naprej ▶', primary: true, fn: () => pass(true) }, ...extra] };
   }
   return { text: `${where} Kdor se tu pomoli, izzove ${G.f ? 'boginjo' : 'boga'}.`,
@@ -107,7 +134,7 @@ function renderShrine(arg) {
   const back = () => { S.shrineArg = null; go('travel'); };
   const leave = () => { stop.passed = true; R.prompt = null; back(); };
   const pray = () => {
-    R.prayer = id; if (!R.gifts.includes(id)) R.gifts.push(id);
+    R.prayers.push({ god: id, ri: R.ri, result: null }); if (!R.gifts.includes(id)) R.gifts.push(id);
     stop.done = stop.passed = true; R.prompt = null; arg.prayed = true; chorus();
     mountShell(); renderShrine(arg);
   };
@@ -123,9 +150,9 @@ function renderShrine(arg) {
         arg.prayed
           ? h('div', { class: 'say god' }, godSign(id), h('div', {}, h('b', {}, G.name), '»' + G.answer + '«'))
           : [h('p', { class: 'lead' }, G.look),
-            h('p', {}, `Tu se ne prosi za pomoč, tu se izziva. Če se pomoliš, ti ${G.name} do konca poti posodi svoj dar: ko beseda nosi tri črke iste barve, ${G.gift}.`),
-            h('p', {}, `Na koncu te pokrajine, pred kažipotom, pride ${G.name} ${G.f ? 'sama' : 'sam'} in te preizkusi. ${G.f ? 'Boginja je močnejša' : 'Bog je močnejši'} od vsakega šefa na poti; poraz je kot vsak poraz v boju. Če ${G.f ? 'jo' : 'ga'} premagaš, ${G.f ? 'jo' : 'ga'} odkleneš za naslednje poti, ${G.f ? 'njen' : 'njegov'} dar pa te spremlja še vso naslednjo pot.`),
-            h('p', { class: 'muted' }, 'Na eni poti se lahko pomoliš le enkrat.')])),
+            h('p', {}, `Tu se ne prosi za pomoč, tu se izziva. Če se pomoliš, ti ${G.name} posodi svoj dar: ko beseda nosi tri črke iste barve, ${G.gift}.`),
+            h('p', {}, `Na koncu te pokrajine, pred kažipotom, pride ${G.name} ${G.f ? 'sama' : 'sam'} in te preizkusi. Boj mora biti pošten, zato pred njim vsem junakom vrne polno zdravje. Če ${G.f ? 'jo' : 'ga'} premagaš, ${G.f ? 'jo' : 'ga'} odkleneš za naslednje poti in ${G.f ? 'njen' : 'njegov'} dar ostane s tabo do konca poti. Če izgubiš, se pot ne konča: junaki so spet tako zdravi kot pred izzivom, dar pa ugasne, ko je za tabo še naslednja pokrajina.`),
+            h('p', { class: 'muted' }, 'Na eni poti srečaš le dve svetišči.')])),
     h('div', { class: 'row', style: { 'flex-wrap': 'wrap' } }, arg.actions.map(a => h('button', { class: 'btn' + (a.primary ? ' primary' : ''), onclick: a.fn }, a.label, h('kbd', {}, a.primary ? 'Enter' : 'Esc'))))));
   focusPage();
 }
@@ -173,7 +200,7 @@ function challengeBattle(id, ch) {
     battle: { enemies: [key], scale: null, finishers: shuffle(Object.keys(FINISHER_FX)).slice(0, 2), meterStart: 0.3, tips: [] } });
 }
 // at the god's own shrine, with the god in the party: the godly version, right away
-function challengeOwn(stop) { S.run.prompt = null; challengeBattle(stop.god, { own: true, stop }); }
+function challengeOwn(stop) { S.run.prompt = null; fairFight(); challengeBattle(stop.god, { own: true, stop }); }
 
 // the god's only attack: their special (Perun: a chain through the whole party, the first hero hit hardest)
 function godSpecial(e) {
@@ -191,11 +218,23 @@ function godSpecial(e) {
 // ------------------------------------------------------------ the end of the region: the god comes
 // After a prayer the god waits at the end of that region's road, before the signpost (src/journey.js,
 // travelTick). An older save whose prayer region is behind it meets the god at the next region's end.
-const godWaits = () => !!(S.run && S.run.prayer && !S.run.challenged && partyGod() < 0);
+const godWaits = () => !!(S.run && waitingPrayer() && partyGod() < 0);
 function godArrives() {
-  const R = S.run; R.walking = false; R.prompt = null;
-  const got = restAfterRegion();   // the party rests first, as at the end of every region
-  go('godcome', { god: R.prayer, rested: got > 0 });
+  const R = S.run, w = waitingPrayer(); R.walking = false; R.prompt = null;
+  fairFight();   // 24 Nov: no rest first; the god heals everyone for a fair fight
+  go('godcome', { god: w.god });
+}
+// The god wants a fair fight (24 Nov): every hero gets full health, the fallen too. R.godSnap keeps the health
+// they came with, which a lost challenge gives back (restoreSnap).
+function fairFight() {
+  const R = S.run; if (!R) return;
+  R.godSnap = S.heroes.map(st => ({ hp: st.hp, down: !!st.down }));
+  S.heroes.forEach(st => { st.down = false; st.hp = st.maxHp; });
+}
+function restoreSnap() {
+  const R = S.run, snap = R && R.godSnap; if (!snap) return;
+  S.heroes.forEach((st, k) => { const o = snap[k]; if (!o) return; st.down = o.down; st.hp = o.down ? 0 : clamp(o.hp, 1, st.maxHp); });
+  delete R.godSnap;
 }
 // The ending screen's way out (button, Enter, Back) goes through here.
 function leaveEnding() { resetRun(); go('title'); }
@@ -203,13 +242,15 @@ function renderGodCome(arg) {
   arg = arg || S.godArg; S.godArg = arg;
   const id = arg.god, G = GOD[id], ch = CHARS.find(c => c.id === id);
   arg.go = () => { S.godArg = null; challengeBattle(id, { prayer: true }); };
+  const train = trainAction(() => go('godcome', arg));   // skill points can be spent before the fight (24 Nov)
   SCR.append(h('div', { class: 'hm godcome', style: { '--c': ch.c } },
     h('div', {}, h('div', { class: 'kind' }, 'Izziv'), h('h2', {}, G.name, h('small', {}, G.f ? 'boginja' : 'bog'))),
     godSpirit(id, true),
     h('p', { class: 'lead' }, G.come),
-    arg.rested ? h('p', { class: 'note' }, 'Pred izzivom si junaki opomorejo do polnega zdravja.') : null,
+    h('p', { class: 'note' }, `Boj mora biti pošten: ${G.name} vsem junakom vrne polno zdravje.` + (train ? ' Točke veščin lahko porabiš še pred bojem.' : '')),
     h('div', { class: 'say god' }, godSign(id), h('div', {}, h('b', {}, G.name), G.f ? '»Rekla sem, da bom videla. Zdaj pokaži.«' : '»Rekel sem, da bom videl. Zdaj pokaži.«')),
-    h('div', { class: 'row' }, h('button', { class: 'btn primary', onclick: arg.go }, 'V boj ', h('kbd', {}, 'Enter')))));
+    h('div', { class: 'row', style: { 'flex-wrap': 'wrap' } }, h('button', { class: 'btn primary', onclick: arg.go }, 'V boj ', h('kbd', {}, 'Enter')),
+      train ? h('button', { class: 'btn', onclick: train.fn }, train.label) : null)));
   chorus(); focusPage();
 }
 
@@ -224,10 +265,11 @@ function renderGodWord(arg) {
   const notes = arg.won ? [
     arg.own ? `Družina dobi točko veščine (${HEROES[partyGod()] ? HEROES[partyGod()].name : G.name} ti jo podari).` : null,
     `Vsak junak: +${GOD_XP} XP.`,
-    arg.raised && arg.raised.length ? `${G.name} dvigne padle: ${arg.raised.join(', ')}.` : null,
+    `Pred odhodom ${G.name} vsem junakom spet vrne polno zdravje.` + (arg.raised && arg.raised.length ? ` Padli so vstali: ${arg.raised.join(', ')}.` : ''),
     arg.fresh ? `${G.name} je ${G.f ? 'odklenjena' : 'odklenjen'}: na naslednji poti ${G.f ? 'jo' : 'ga'} lahko izbereš.` : null,
-    arg.prayer ? `${G.f ? 'Njen' : 'Njegov'} dar ostane s tabo do konca poti in te spremlja še vso naslednjo pot: ko beseda nosi tri črke iste barve, ${G.gift}.` : null].filter(Boolean)
-    : [`${G.name} odide brez besede.`];
+    arg.prayer ? `${G.f ? 'Njen' : 'Njegov'} dar ostane s tabo do konca poti: ko beseda nosi tri črke iste barve, ${G.gift}.` : null].filter(Boolean)
+    : [`${G.name} odide brez besede.`, 'Pot se nadaljuje: junaki so spet tako zdravi kot pred izzivom.',
+      arg.prayer ? `${G.f ? 'Njen' : 'Njegov'} dar ostane s tabo, dokler ni za tabo še naslednja pokrajina; potem ugasne.` : null].filter(Boolean);
   SCR.append(h('div', { class: 'hm godword', style: { '--c': ch.c } },
     h('div', {}, h('div', { class: 'kind' }, arg.won ? 'Izziv je dobljen' : 'Izziv je izgubljen'), h('h2', {}, G.name, h('small', {}, G.f ? 'boginja' : 'bog'))),
     godSpirit(id, arg.won),
@@ -241,12 +283,24 @@ function renderGodWord(arg) {
 // after a challenge battle (src/game.js, showResult): rewards on a win, then what comes next
 function challengeWon(node) {
   const C = node.challenge, R = S.run, raised = [];
-  // the beaten god raises the fallen, then everyone gets a big chunk of experience
-  S.heroes.forEach((st, k) => { if (st.down) { st.down = false; st.hp = Math.max(1, Math.round(st.maxHp * 0.5)); raised.push(HEROES[k].name); } });
+  // the beaten god heals the party again, the fallen too (24 Nov; before, the fallen rose with half), then
+  // everyone gets a big chunk of experience
+  S.heroes.forEach((st, k) => { if (st.down) raised.push(HEROES[k].name); st.down = false; st.hp = st.maxHp; });
+  if (R) delete R.godSnap;
   gainXp(GOD_XP, null, true);
   if (C.own) { const pg = partyGod(); if (pg >= 0 && S.run) { S.heroes[pg].pts = heroPts(S.heroes[pg]) + 1; chorus(); } }   // a point for the party god (balance E: their own)
   const fresh = unlock(C.god);
   achGodBeaten(C.god);   // src/achievements.js
-  if (C.prayer) { R.challenged = true; keepNextGift(C.god); }
+  if (C.prayer && R) { const p = (R.prayers || []).find(x => x.god === C.god && !x.result); if (p) p.result = 'won'; }
   return { raised, fresh };
+}
+// a lost challenge (24 Nov): the god leaves, every hero is as healthy as they came, and the journey goes on on
+// every Znanje (no withdrawing, no end). After a prayer the gift stays until the next region is behind the party.
+function challengeLost(node) {
+  const C = node.challenge, R = S.run; if (!R) return;
+  restoreSnap();
+  if (C.prayer) {
+    const p = (R.prayers || []).find(x => x.god === C.god && !x.result); if (p) p.result = 'lost';
+    if (R.gifts.includes(C.god)) { R.giftUntil = R.giftUntil || {}; R.giftUntil[C.god] = R.ri + 1; }
+  }
 }
