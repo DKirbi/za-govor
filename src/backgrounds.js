@@ -8,14 +8,15 @@
 //   a test with "live": true: one variant per install, drawn by "share" and kept in localStorage zg-ab
 //   otherwise: A
 // The variant goes into the tester statistics (src/stats.js), so the rows of A and B can be compared.
-const BGX = (() => { try { const v = JSON.parse($('#bgdata').textContent); return { tests: v.tests || {}, packs: v.packs || {}, heroes: v.heroes || {} }; } catch (e) { return { tests: {}, packs: {}, heroes: {} }; } })();
+const BGX = (() => { try { const v = JSON.parse($('#bgdata').textContent); return { tests: v.tests || {}, packs: v.packs || {}, heroes: v.heroes || {}, cards: v.cards || {}, cardTest: v.cardTest || null }; } catch (e) { return { tests: {}, packs: {}, heroes: {}, cards: {}, cardTest: null }; } })();
 const AB_KEY = 'zg-ab';
 const AB = (() => { try { const v = JSON.parse(localStorage.getItem(AB_KEY) || '{}'); return v && typeof v === 'object' && !Array.isArray(v) ? v : {}; } catch (e) { return {}; } })();
 let bgForce = (() => { try { const v = (new URLSearchParams(location.search).get('ozadje') || '').toUpperCase(); return /^[A-Z]$/.test(v) ? v : null; } catch (e) { return null; } })();
-// Nastavitve → Razvoj → Kakovost slik: 'auto' (the default) leaves the choice to the A/B test, as before. 'high' shows the
-// Codex parallax pack of the sunset (B) where the test would show A. 'low' shows the picture already in the game (A)
-// where the test would show the sunset (B). Winter (D) has no low picture yet, so it stays high. Martin Krpan follows the
-// same choice, but only 'high' changes him (see below); 'auto' and 'low' keep the sprite already in the game.
+// Nastavitve → Razvoj → Kakovost slik: 'auto' (the default) leaves the choice to the A/B test, as before. 'high' shows
+// variant B where the test would show A: in every region with one, Codex's folk parallax pack (25 Nov 2026; on Ptuj the
+// sunset pack moved to E). 'low' shows the picture already in the game (A) where the test would show B. Winter (D) has
+// no low picture yet, so it stays high. The painted skill cards follow the same choice (below). Martin Krpan follows it
+// too, but only 'high' changes him (see below); 'auto' and 'low' keep the sprite already in the game.
 const FID_KEY = 'zg-fidelity';
 const fidelity = () => { try { const v = localStorage.getItem(FID_KEY); return v === 'high' || v === 'low' ? v : 'auto'; } catch (e) { return 'auto'; } };
 const setFidelity = v => { try { if (v === 'high' || v === 'low') localStorage.setItem(FID_KEY, v); else localStorage.removeItem(FID_KEY); } catch (e) { /* no storage */ } applyHeroFidelity(); };
@@ -69,8 +70,26 @@ function bgTestVariant(key) {
   return AB[key];
 }
 const bgVariant = key => fidVariant(key, bgTestVariant(key));
-// for src/stats.js: ozadje-ptuj=B, or B(predogled) when the address chose it
-const bgStatTags = () => Object.keys(BGX.tests).map(k => `ozadje-${k}=${bgVariant(k)}${bgForced(k) ? '(predogled)' : ''}`);
+// ---------------------------------------------------------------- Codex's painted skill cards (BGX.cards, "hero:tier"; Game Director, 25 Nov 2026)
+// An A/B test like the backgrounds: A = the hand-made SVG boards in battle, B = the paintings. data/backgrounds.json
+// cardTest {live, share}; ?karte=A or ?karte=B previews one; Kakovost slik: Nizka keeps A, Visoka shows B. The hero
+// screen's collection always shows the paintings: they are the reward. Only heroes with a painting change.
+let cardForce = (() => { try { const v = (new URLSearchParams(location.search).get('karte') || '').toUpperCase(); return v === 'A' || v === 'B' ? v : null; } catch (e) { return null; } })();
+const cardsBuilt = () => Object.keys(BGX.cards).length > 0;
+function cardTestVariant() {
+  const t = BGX.cardTest;
+  if (!cardsBuilt()) return 'A';
+  if (cardForce) return cardForce;
+  if (!t || !t.live) return 'A';
+  if (!['A', 'B'].includes(AB.karte)) { AB.karte = bgDraw(t.share, ['A', 'B']); try { localStorage.setItem(AB_KEY, JSON.stringify(AB)); } catch (e) { /* no storage */ } }
+  return AB.karte;
+}
+const cardVariant = () => { const f = fidelity(); return f === 'low' ? 'A' : f === 'high' && cardsBuilt() ? 'B' : cardTestVariant(); };
+// the painting for a battle card, or null (variant A, a foe, a hero without one)
+const cardPainting = (id, tier) => cardVariant() === 'B' ? BGX.cards[`${id}:${tier}`] || null : null;
+// for src/stats.js: ozadje-ptuj=B, or B(predogled) when the address chose it; karte=B for the skill-card test
+const bgStatTags = () => Object.keys(BGX.tests).map(k => `ozadje-${k}=${bgVariant(k)}${bgForced(k) ? '(predogled)' : ''}`)
+  .concat(cardsBuilt() ? [`karte=${cardVariant()}${cardForce ? '(predogled)' : ''}`] : []);
 
 applyHeroFidelity();
 const bgMotion = () => !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);

@@ -1,0 +1,170 @@
+{
+ "ajda:1": {
+  "hero": "ajda",
+  "tier": 1,
+  "skill": "Metanje skal",
+  "source": "art/source/characters/ajdovska-deklica/folk-art/skills/metanje-skal/skill-card-concept.png",
+  "sourceSha1": "226f288fa34dd1f4bf63a13e1d5eeb8cf2a49a99",
+  "card": "art/exports/characters/ajdovska-deklica/folk-art/skills/metanje-skal/card.webp"
+ },
+ "ajda:2": {
+  "hero": "ajda",
+  "tier": 2,
+  "skill": "Varstvo popotnikov",
+  "source": "art/source/characters/ajdovska-deklica/folk-art/skills/varstvo-popotnikov/skill-card-concept.png",
+  "sourceSha1": "8880f98c20a106e68377795faa0539f12cfc1b74",
+  "card": "art/exports/characters/ajdovska-deklica/folk-art/skills/varstvo-popotnikov/card.webp"
+ },
+ "ajda:3": {
+  "hero": "ajda",
+  "tier": 3,
+  "skill": "Okamnitev",
+  "source": "art/source/characters/ajdovska-deklica/folk-art/skills/okamnitev/skill-card-concept.png",
+  "sourceSha1": "4f8b8a978e89fdcf025773d5094be7f4571e68a2",
+  "card": "art/exports/characters/ajdovska-deklica/folk-art/skills/okamnitev/card.webp"
+ },
+ "erazem:1": {
+  "hero": "erazem",
+  "tier": 1,
+  "skill": "Zamah z mečem",
+  "source": "art/source/characters/erazem-predjamski/folk-art/skills/mec/skill-card-concept.png",
+  "sourceSha1": "19e39fef7d9815d6db3879db0b6370dc4d8352a2",
+  "card": "art/exports/characters/erazem-predjamski/folk-art/skills/mec/card.webp"
+ },
+ "erazem:2": {
+  "hero": "erazem",
+  "tier": 2,
+  "skill": "Češnje",
+  "source": "art/source/characters/erazem-predjamski/folk-art/skills/cesnje/skill-card-concept.png",
+  "sourceSha1": "ef1c340c3f9490004cfbdbf99a286194583c111c",
+  "card": "art/exports/characters/erazem-predjamski/folk-art/skills/cesnje/card.webp"
+ },
+ "erazem:3": {
+  "hero": "erazem",
+  "tier": 3,
+  "skill": "Skrivni rov",
+  "source": "art/source/characters/erazem-predjamski/folk-art/skills/skrivni-rov/skill-card-concept.png",
+  "sourceSha1": "a0acf88bf99c7ce919477f0d63bd3e1c9a10ef38",
+  "card": "art/exports/characters/erazem-predjamski/folk-art/skills/skrivni-rov/card.webp"
+ },
+ "kresnik:1": {
+  "hero": "kresnik",
+  "tier": 1,
+  "skill": "Ognjeni meč",
+  "source": "art/source/characters/kresnik/folk-art/skills/ognjeni-mec/skill-card-concept.png",
+  "sourceSha1": "cceedd055ff14fc7701be25612bb14b085479cbf",
+  "card": "art/exports/characters/kresnik/folk-art/skills/ognjeni-mec/card.webp"
+ },
+ "kresnik:2": {
+  "hero": "kresnik",
+  "tier": 2,
+  "skill": "Kresna strela",
+  "source": "art/source/characters/kresnik/folk-art/skills/kresna-strela/skill-card-concept.png",
+  "sourceSha1": "58676111faec7ea3a1c3b13c62e9c35985efa936",
+  "card": "art/exports/characters/kresnik/folk-art/skills/kresna-strela/card.webp"
+ },
+ "kresnik:3": {
+  "hero": "kresnik",
+  "tier": 3,
+  "skill": "Kresna moč",
+  "source": "art/source/characters/kresnik/folk-art/skills/kresna-moc/skill-card-concept.png",
+  "sourceSha1": "4b3e99bfbd16f27f9213159477030cabdd963aae",
+  "card": "art/exports/characters/kresnik/folk-art/skills/kresna-moc/card.webp"
+ },
+ "krpan:1": {
+  "hero": "krpan",
+  "tier": 1,
+  "skill": "Lipov kij",
+  "source": "art/source/characters/martin-krpan/folk-art/skills/lipov-kij/skill-card-concept.png",
+  "sourceSha1": "019aa241ece1f139ba37c5871e94730aceec91c2",
+  "card": "art/exports/characters/martin-krpan/folk-art/skills/lipov-kij/card.webp"
+ },
+ "krpan:2": {
+  "hero": "krpan",
+  "tier": 2,
+  "skill": "Kmečka moč",
+  "source": "art/source/characters/martin-krpan/folk-art/skills/kmecka-moc/skill-card-concept.png",
+  "sourceSha1": "7653c5b7ecc33244c8eda067dbaa1f9780287311",
+  "card": "art/exports/characters/martin-krpan/folk-art/skills/kmecka-moc/card.webp"
+ },
+ "krpan:3": {
+  "hero": "krpan",
+  "tier": 3,
+  "skill": "Mesarica",
+  "source": "art/source/characters/martin-krpan/folk-art/skills/mesarica/skill-card-concept.png",
+  "sourceSha1": "e47d67de1d0d47f47eab49f2ed752f2a0062b5a7",
+  "card": "art/exports/characters/martin-krpan/folk-art/skills/mesarica/card.webp"
+ },
+ "kurent:1": {
+  "hero": "kurent",
+  "tier": 1,
+  "skill": "Ježevka",
+  "source": "art/source/characters/kurent/folk-art/skills/jezevka/skill-card-concept.png",
+  "sourceSha1": "8f62c04a5b6b56b23aa09c61e166f3c06acce776",
+  "card": "art/exports/characters/kurent/folk-art/skills/jezevka/card.webp"
+ },
+ "kurent:2": {
+  "hero": "kurent",
+  "tier": 2,
+  "skill": "Zvonci",
+  "source": "art/source/characters/kurent/folk-art/skills/zvonci/skill-card-concept.png",
+  "sourceSha1": "94ef5b6588b01b4eb720db95b87f7c24c41b4eec",
+  "card": "art/exports/characters/kurent/folk-art/skills/zvonci/card.webp"
+ },
+ "kurent:3": {
+  "hero": "kurent",
+  "tier": 3,
+  "skill": "Pregon zime",
+  "source": "art/source/characters/kurent/folk-art/skills/pregon-zime/skill-card-concept.png",
+  "sourceSha1": "a7167162347d3654e3758d7a327dd231d1e71ce0",
+  "card": "art/exports/characters/kurent/folk-art/skills/pregon-zime/card.webp"
+ },
+ "matjaz:1": {
+  "hero": "matjaz",
+  "tier": 1,
+  "skill": "Meč",
+  "source": "art/source/characters/kralj-matjaz/folk-art/skills/mec/skill-card-concept.png",
+  "sourceSha1": "841f2f877dfcafbf5c249649f9bcca3d1eb3f662",
+  "card": "art/exports/characters/kralj-matjaz/folk-art/skills/mec/card.webp"
+ },
+ "matjaz:2": {
+  "hero": "matjaz",
+  "tier": 2,
+  "skill": "Kraljeva vojska",
+  "source": "art/source/characters/kralj-matjaz/folk-art/skills/kraljeva-vojska/skill-card-concept.png",
+  "sourceSha1": "74b44fa3c79d65ceb5df36c1757af8ccd9439476",
+  "card": "art/exports/characters/kralj-matjaz/folk-art/skills/kraljeva-vojska/card.webp"
+ },
+ "matjaz:3": {
+  "hero": "matjaz",
+  "tier": 3,
+  "skill": "Prebujenje",
+  "source": "art/source/characters/kralj-matjaz/folk-art/skills/prebujenje/skill-card-concept.png",
+  "sourceSha1": "8820fdca75d692293dab6cb8b0beb44d75b06765",
+  "card": "art/exports/characters/kralj-matjaz/folk-art/skills/prebujenje/card.webp"
+ },
+ "vida:1": {
+  "hero": "vida",
+  "tier": 1,
+  "skill": "Hrepenenje",
+  "source": "art/source/characters/lepa-vida/folk-art/skills/hrepenenje/skill-card-concept.png",
+  "sourceSha1": "845db472ea434696ed6547320bf1647526650085",
+  "card": "art/exports/characters/lepa-vida/folk-art/skills/hrepenenje/card.webp"
+ },
+ "vida:2": {
+  "hero": "vida",
+  "tier": 2,
+  "skill": "Morska pena",
+  "source": "art/source/characters/lepa-vida/folk-art/skills/morska-pena/skill-card-concept.png",
+  "sourceSha1": "bce01c5164b0bb313137eefe42fcc36fdcb44cc2",
+  "card": "art/exports/characters/lepa-vida/folk-art/skills/morska-pena/card.webp"
+ },
+ "vida:3": {
+  "hero": "vida",
+  "tier": 3,
+  "skill": "Pesem z obale",
+  "source": "art/source/characters/lepa-vida/folk-art/skills/pesem-z-obale/skill-card-concept.png",
+  "sourceSha1": "ac2b724780ab6092c85a68d317a2184fceba2682",
+  "card": "art/exports/characters/lepa-vida/folk-art/skills/pesem-z-obale/card.webp"
+ }
+}

@@ -1,9 +1,9 @@
 {
   "pack": "folk-skill-cards",
-  "status": "IN REVIEW",
+  "status": "IN GAME (draft) — final art review pending",
   "visualApproval": "pending-game-director-review",
   "styleReference": "docs/images/battle-desktop.png",
-  "note": "Native generated dimensions retained. Prepare game exports only after approval and renderer review.",
+  "note": "Native generated dimensions retained. Prepare game exports only after approval and renderer review. 25 Nov 2026: a 768×512 WebP export of each card is in the game (tools/art_skill_cards.py): battle cards in variant B of the card A/B test, and the collection on the hero screen. The PNG masters are unchanged.",
   "assets": [
     {
       "character": "ajdovska-deklica",
@@ -19,8 +19,19 @@
       ],
       "tileable": false,
       "processing": "none",
-      "intendedUse": "Art direction review; not runtime-ready",
-      "approvalState": "pending-game-director-review"
+      "intendedUse": "Battle card (card test variant B) and hero-screen collection; art direction review continues",
+      "approvalState": "in-game draft, final art review pending (25 Nov 2026)",
+      "gameExport": {
+        "file": "art/exports/characters/ajdovska-deklica/folk-art/skills/metanje-skal/card.webp",
+        "size": [
+          768,
+          512
+        ],
+        "format": "WebP q80",
+        "hero": "ajda",
+        "skillNumber": 1,
+        "skill": "Metanje skal"
+      }
     },
     {
       "character": "ajdovska-deklica",
@@ -36,8 +47,19 @@
       ],
       "tileable": false,
       "processing": "none",
-      "intendedUse": "Art direction review; not runtime-ready",
-      "approvalState": "pending-game-director-review"
+      "intendedUse": "Battle card (card test variant B) and hero-screen collection; art direction review continues",
+      "approvalState": "in-game draft, final art review pending (25 Nov 2026)",
+      "gameExport": {
+        "file": "art/exports/characters/ajdovska-deklica/folk-art/skills/okamnitev/card.webp",
+        "size": [
+          768,
+          512
+        ],
+        "format": "WebP q80",
+        "hero": "ajda",
+        "skillNumber": 3,
+        "skill": "Okamnitev"
+      }
     },
     {
       "character": "ajdovska-deklica",
@@ -53,8 +75,19 @@
       ],
       "tileable": false,
       "processing": "none",
-      "intendedUse": "Art direction review; not runtime-ready",
-      "approvalState": "pending-game-director-review"
+      "intendedUse": "Battle card (card test variant B) and hero-screen collection; art direction review continues",
+      "approvalState": "in-game draft, final art review pending (25 Nov 2026)",
+      "gameExport": {
+        "file": "art/exports/characters/ajdovska-deklica/folk-art/skills/varstvo-popotnikov/card.webp",
+        "size": [
+          768,
+          512
+        ],
+        "format": "WebP q80",
+        "hero": "ajda",
+        "skillNumber": 2,
+        "skill": "Varstvo popotnikov"
+      }
     },
     {
       "character": "erazem-predjamski",
@@ -70,8 +103,19 @@
       ],
       "tileable": false,
       "processing": "none",
-      "intendedUse": "Art direction review; not runtime-ready",
-      "approvalState": "pending-game-director-review"
+      "intendedUse": "Battle card (card test variant B) and hero-screen collection; art direction review continues",
+      "approvalState": "in-game draft, final art review pending (25 Nov 2026)",
+      "gameExport": {
+        "file": "art/exports/characters/erazem-predjamski/folk-art/skills/cesnje/card.webp",
+        "size": [
+          768,
+          512
+        ],
+        "format": "WebP q80",
+        "hero": "erazem",
+        "skillNumber": 2,
+        "skill": "Češnje"
+      }
     },
     {
       "character": "erazem-predjamski",
@@ -87,8 +131,19 @@
       ],
       "tileable": false,
       "processing": "none",
-      "intendedUse": "Art direction review; not runtime-ready",
-      "approvalState": "pending-game-director-review"
+      "intendedUse": "Battle card (card test variant B) and hero-screen collection; art direction review continues",
+      "approvalState": "in-game draft, final art review pending (25 Nov 2026)",
+      "gameExport": {
+        "file": "art/exports/characters/erazem-predjamski/folk-art/skills/mec/card.webp",
+        "size": [
+          768,
+          512
+        ],
+        "format": "WebP q80",
+        "hero": "erazem",
+        "skillNumber": 1,
+        "skill": "Zamah z mečem"
+      }
     },
     {
       "character": "erazem-predjamski",
@@ -104,8 +159,19 @@
       ],
       "tileable": false,
       "processing": "none",
-      "intendedUse": "Art direction review; not runtime-ready",
-      "approvalState": "pending-game-director-review"
+      "intendedUse": "Battle card (card test variant B) and hero-screen collection; art direction review continues",
+      "approvalState": "in-game draft, final art review pending (25 Nov 2026)",
+      "gameExport": {
+        "file": "art/exports/characters/erazem-predjamski/folk-art/skills/skrivni-rov/card.webp",
+        "size": [
+          768,
+          512
+        ],
+        "format": "WebP q80",
+        "hero": "erazem",
+        "skillNumber": 3,
+        "skill": "Skrivni rov"
+      }
     },
     {
       "character": "kralj-matjaz",
@@ -121,8 +187,19 @@
       ],
       "tileable": false,
       "processing": "none",
-      "intendedUse": "Art direction review; not runtime-ready",
-      "approvalState": "pending-game-director-review"
+      "intendedUse": "Battle card (card test variant B) and hero-screen collection; art direction review continues",
+      "approvalState": "in-game draft, final art review pending (25 Nov 2026)",
+      "gameExport": {
+        "file": "art/exports/characters/kralj-matjaz/folk-art/skills/kraljeva-vojska/card.webp",
+        "size": [
+          768,
+          512
+        ],
+        "format": "WebP q80",
+        "hero": "matjaz",
+        "skillNumber": 2,
+        "skill": "Kraljeva vojska"
+      }
     },
     {
       "character": "kralj-matjaz",
@@ -138,8 +215,19 @@
       ],
       "tileable": false,
       "processing": "none",
-      "intendedUse": "Art direction review; not runtime-ready",
-      "approvalState": "pending-game-director-review"
+      "intendedUse": "Battle card (card test variant B) and hero-screen collection; art direction review continues",
+      "approvalState": "in-game draft, final art review pending (25 Nov 2026)",
+      "gameExport": {
+        "file": "art/exports/characters/kralj-matjaz/folk-art/skills/mec/card.webp",
+        "size": [
+          768,
+          512
+        ],
+        "format": "WebP q80",
+        "hero": "matjaz",
+        "skillNumber": 1,
+        "skill": "Meč"
+      }
     },
     {
       "character": "kralj-matjaz",
@@ -155,8 +243,19 @@
       ],
       "tileable": false,
       "processing": "none",
-      "intendedUse": "Art direction review; not runtime-ready",
-      "approvalState": "pending-game-director-review"
+      "intendedUse": "Battle card (card test variant B) and hero-screen collection; art direction review continues",
+      "approvalState": "in-game draft, final art review pending (25 Nov 2026)",
+      "gameExport": {
+        "file": "art/exports/characters/kralj-matjaz/folk-art/skills/prebujenje/card.webp",
+        "size": [
+          768,
+          512
+        ],
+        "format": "WebP q80",
+        "hero": "matjaz",
+        "skillNumber": 3,
+        "skill": "Prebujenje"
+      }
     },
     {
       "character": "kresnik",
@@ -172,8 +271,19 @@
       ],
       "tileable": false,
       "processing": "none",
-      "intendedUse": "Art direction review; not runtime-ready",
-      "approvalState": "pending-game-director-review"
+      "intendedUse": "Battle card (card test variant B) and hero-screen collection; art direction review continues",
+      "approvalState": "in-game draft, final art review pending (25 Nov 2026)",
+      "gameExport": {
+        "file": "art/exports/characters/kresnik/folk-art/skills/kresna-moc/card.webp",
+        "size": [
+          768,
+          512
+        ],
+        "format": "WebP q80",
+        "hero": "kresnik",
+        "skillNumber": 3,
+        "skill": "Kresna moč"
+      }
     },
     {
       "character": "kresnik",
@@ -189,8 +299,19 @@
       ],
       "tileable": false,
       "processing": "none",
-      "intendedUse": "Art direction review; not runtime-ready",
-      "approvalState": "pending-game-director-review"
+      "intendedUse": "Battle card (card test variant B) and hero-screen collection; art direction review continues",
+      "approvalState": "in-game draft, final art review pending (25 Nov 2026)",
+      "gameExport": {
+        "file": "art/exports/characters/kresnik/folk-art/skills/kresna-strela/card.webp",
+        "size": [
+          768,
+          512
+        ],
+        "format": "WebP q80",
+        "hero": "kresnik",
+        "skillNumber": 2,
+        "skill": "Kresna strela"
+      }
     },
     {
       "character": "kresnik",
@@ -206,8 +327,19 @@
       ],
       "tileable": false,
       "processing": "none",
-      "intendedUse": "Art direction review; not runtime-ready",
-      "approvalState": "pending-game-director-review"
+      "intendedUse": "Battle card (card test variant B) and hero-screen collection; art direction review continues",
+      "approvalState": "in-game draft, final art review pending (25 Nov 2026)",
+      "gameExport": {
+        "file": "art/exports/characters/kresnik/folk-art/skills/ognjeni-mec/card.webp",
+        "size": [
+          768,
+          512
+        ],
+        "format": "WebP q80",
+        "hero": "kresnik",
+        "skillNumber": 1,
+        "skill": "Ognjeni meč"
+      }
     },
     {
       "character": "kurent",
@@ -223,8 +355,19 @@
       ],
       "tileable": false,
       "processing": "none",
-      "intendedUse": "Art direction review; not runtime-ready",
-      "approvalState": "pending-game-director-review"
+      "intendedUse": "Battle card (card test variant B) and hero-screen collection; art direction review continues",
+      "approvalState": "in-game draft, final art review pending (25 Nov 2026)",
+      "gameExport": {
+        "file": "art/exports/characters/kurent/folk-art/skills/jezevka/card.webp",
+        "size": [
+          768,
+          512
+        ],
+        "format": "WebP q80",
+        "hero": "kurent",
+        "skillNumber": 1,
+        "skill": "Ježevka"
+      }
     },
     {
       "character": "kurent",
@@ -240,8 +383,19 @@
       ],
       "tileable": false,
       "processing": "none",
-      "intendedUse": "Art direction review; not runtime-ready",
-      "approvalState": "pending-game-director-review"
+      "intendedUse": "Battle card (card test variant B) and hero-screen collection; art direction review continues",
+      "approvalState": "in-game draft, final art review pending (25 Nov 2026)",
+      "gameExport": {
+        "file": "art/exports/characters/kurent/folk-art/skills/pregon-zime/card.webp",
+        "size": [
+          768,
+          512
+        ],
+        "format": "WebP q80",
+        "hero": "kurent",
+        "skillNumber": 3,
+        "skill": "Pregon zime"
+      }
     },
     {
       "character": "kurent",
@@ -257,8 +411,19 @@
       ],
       "tileable": false,
       "processing": "none",
-      "intendedUse": "Art direction review; not runtime-ready",
-      "approvalState": "pending-game-director-review"
+      "intendedUse": "Battle card (card test variant B) and hero-screen collection; art direction review continues",
+      "approvalState": "in-game draft, final art review pending (25 Nov 2026)",
+      "gameExport": {
+        "file": "art/exports/characters/kurent/folk-art/skills/zvonci/card.webp",
+        "size": [
+          768,
+          512
+        ],
+        "format": "WebP q80",
+        "hero": "kurent",
+        "skillNumber": 2,
+        "skill": "Zvonci"
+      }
     }
   ]
 }

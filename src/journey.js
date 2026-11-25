@@ -295,6 +295,7 @@ function restAfterRegion() {
 function enterRegion(i) {
   const R = S.run, reg = WORLD.regions[i], gap = WORLD.stopGap;
   if (i > 0 && i !== R.ri) {
+    achRegion(R.ri, i);   // src/achievements.js
     const down = S.heroes.filter(x => x.down).length, got = restAfterRegion(), up = down - S.heroes.filter(x => x.down).length;
     if (got) toast(`${WORLD.regions[R.ri].name} je za vami: junaki so spet polno zdravi (+${got} zdravja).` + (up ? ' Padli so vstali s polovico zdravja.' : ''));
   }
@@ -499,7 +500,7 @@ function meetHero(stop, ids) {
     info: A => { const id = A.ids[A.sel], full = HEROES.length >= 4, nm = ROSTER[id].name, f = heroF(id);
       return (UNLOCKED.has(id) ? '' : `Če ${nm} gre s teboj, ${f ? 'jo' : 'ga'} odkleneš: na naslednji poti lahko začneš tudi z ${f ? 'njo' : 'njim'}. `) + (isGod(id) ? 'Bog je močnejši od ljudskih junakov, a s teboj gre le eden. ' : '') +
         (full ? `Družina je polna (štirje). Če ${f ? 'jo' : 'ga'} vzameš s seboj, se mora eden od tvojih posloviti.` : `V družini je še prostor (${HEROES.length} od 4).`); },
-    actions: A => { const id = A.ids[A.sel], hr = ROSTER[id], join = at => () => { joinHero(id, at); const fresh = unlock(id); stop.done = stop.passed = true; R.prompt = null; sfx('win', { vol: .6 }); back(); if (fresh) toast(heroF(id) ? `${hr.name} je odklenjena: na naslednji poti lahko začneš tudi z njo.` : `${hr.name} je odklenjen: na naslednji poti lahko začneš tudi z njim.`); };
+    actions: A => { const id = A.ids[A.sel], hr = ROSTER[id], join = at => () => { joinHero(id, at); const fresh = unlock(id); achRecruit(id); stop.done = stop.passed = true; R.prompt = null; sfx('win', { vol: .6 }); back(); if (fresh) toast(heroF(id) ? `${hr.name} je odklenjena: na naslednji poti lahko začneš tudi z njo.` : `${hr.name} je odklenjen: na naslednji poti lahko začneš tudi z njim.`); };
       const acts = HEROES.length < 4 ? [{ label: `${hr.name} gre s teboj`, primary: true, fn: join() }]
         : HEROES.map((x, k) => ({ label: `${S.heroes[k].down ? 'Zapusti' : 'Namesto'}: ${x.name}${S.heroes[k].down ? ' (obležal)' : ''}`, fn: join(k) }));
       return acts.concat([{ label: 'Pojdi naprej brez novega junaka', fn: leave }]); } });
@@ -529,6 +530,7 @@ function openShop(stop) {
 function renderEnding() {
   const R = S.run || { battles: 0, words: 0, gold: 0, relics: [] };
   statJourney(true);   // src/stats.js, once
+  achJourneyWon();   // src/achievements.js: the journey, Znanje, story cards (who was alive when Lintvern fell)
   R.over = true;   // a finished journey cannot be continued from the menu
   clearSave();
   SCR.append(h('div', { class: 'title ending' },

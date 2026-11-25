@@ -17,6 +17,7 @@ Inputs:  src/index.src.html (template), src/game.css + src/title.css,
            src/skills.js (skill texts and stopnje, the skill list, Veščine where points are spent),
            src/shrines.js (svetišča izziva: prayers, the gods' gifts, the gods as challengers),
            src/save.js (the journey saved at checkpoints by Znanje, Izhod),
+           src/achievements.js (achievements, story cards and skill cards: the profile zg-dosezki, data/achievements.json),
            src/art-title.js + src/title.js (the "Za govor!" title scene, art from tools/art_title.py),
          data/lexicon.bin (word list from tools/build_lexicon.py, inlined as base64),
          data/clues.json (crossword clue bank), data/world.json (regions and items of the journey),
@@ -24,6 +25,7 @@ Inputs:  src/index.src.html (template), src/game.css + src/title.css,
          package.json (version and release stage) and git (commit) for the version line
          data/backgrounds.json (background A/B tests) and, for each pack it names, art/manifests/<pack>.json
            with the layer PNGs it lists (art/exports/...), inlined as base64 — a pack is left out until all are committed
+         art/exports/characters/skill-cards.json (Codex's painted skill cards, tools/art_skill_cards.py), inlined the same way
 Output:  dist/index.html — open it in any modern browser, no server needed.
 """
 import base64, hashlib, json, pathlib, struct, subprocess
@@ -158,7 +160,7 @@ def background_packs():
         gone = [v for v, p in t.get('variants', {}).items() if p not in packs]
         if t.get('live') and gone:
             notes.append(f"background test {key} is live but variant {', '.join(gone)} is not built: everyone sees A")
-    return {'tests': cfg.get('tests', {}), 'packs': packs}, notes
+    return {'tests': cfg.get('tests', {}), 'packs': packs, 'cardTest': cfg.get('cardTest')}, notes
 
 
 def hero_sheets():
@@ -196,19 +198,43 @@ def hero_sheets():
     return out, notes
 
 
+def skill_cards():
+    """Codex's painted skill cards (art/exports/characters/skill-cards.json, tools/art_skill_cards.py): one WebP per hero
+    and skill number, keyed "hero:tier". Missing exports leave that card out (the hand-made SVG stays); a card whose
+    master changed since its export is still built in, with a note to export it again."""
+    rel = 'art/exports/characters/skill-cards.json'
+    if not (root / rel).is_file():
+        return {}, [f'skill cards: {rel} missing, the SVG boards only — run python3 tools/art_skill_cards.py']
+    out, notes, size = {}, [], 0
+    for key, e in json.loads(read(rel)).items():
+        if not (root / e['card']).is_file():
+            notes.append(f"skill card {key}: {e['card']} missing, left out"); continue
+        if (root / e['source']).is_file() and hashlib.sha1((root / e['source']).read_bytes()).hexdigest() != e['sourceSha1']:
+            notes.append(f"skill card {key}: its master changed — run python3 tools/art_skill_cards.py")
+        raw = (root / e['card']).read_bytes()
+        w, h, _ = webp_info(raw, e['card'])
+        out[key] = {'skill': e['skill'], 'w': w, 'h': h, 'src': 'data:image/webp;base64,' + base64.b64encode(raw).decode('ascii')}
+        size += len(raw)
+    notes.append(f'skill cards: {len(out)} paintings, {size // 1024} KB WebP')
+    return out, notes
+
+
 bgdata, bgnotes = background_packs()
+cards, cardnotes = skill_cards()
+bgdata['cards'] = cards; bgnotes += cardnotes
 heroes, heronotes = hero_sheets()
 bgdata['heroes'] = heroes; bgnotes += heronotes
 template = read('src/index.src.html')
 data = {'/*__LEX__*/': base64.b64encode((root / 'data/lexicon.bin').read_bytes()).decode('ascii'),
         '/*__CLUES__*/': read('data/clues.json'), '/*__WORLD__*/': read('data/world.json'), '/*__WORDS__*/': read('data/words.json'), '/*__MEANINGS__*/': read('data/meanings.json'),
-        '/*__BGS__*/': json.dumps(bgdata, ensure_ascii=False, separators=(',', ':'))}
+        '/*__BGS__*/': json.dumps(bgdata, ensure_ascii=False, separators=(',', ':')),
+        '/*__ACH__*/': json.dumps(json.loads(read('data/achievements.json')), ensure_ascii=False, separators=(',', ':'))}
 for name, text in data.items():
     assert '</script' not in text, f'{name} would close its <script> tag'
 
 js = read('src/game.js')
 for mark, rels in (('/*__LEXICON__*/', ['src/lexicon.js']), ('/*__ART_EXTRA__*/', ['src/art-extra.js', 'src/art-title.js']),
-                   ('/*__JOURNEY__*/', ['src/journey.js', 'src/backgrounds.js', 'src/playtest.js', 'src/mobile.js', 'src/credits.js', 'src/report.js', 'src/stats.js', 'src/menu.js', 'src/effects.js', 'src/progression.js', 'src/skills.js', 'src/shrines.js', 'src/save.js', 'src/title.js'])):
+                   ('/*__JOURNEY__*/', ['src/journey.js', 'src/backgrounds.js', 'src/playtest.js', 'src/mobile.js', 'src/credits.js', 'src/report.js', 'src/stats.js', 'src/menu.js', 'src/effects.js', 'src/progression.js', 'src/skills.js', 'src/shrines.js', 'src/save.js', 'src/achievements.js', 'src/title.js'])):
     assert js.count(mark) == 1, f'{mark} must appear exactly once in src/game.js'
     js = js.replace(mark, ''.join(read(rel) for rel in rels))
 
