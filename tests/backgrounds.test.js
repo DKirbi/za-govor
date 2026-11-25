@@ -1,5 +1,6 @@
 // Background A/B tests (src/backgrounds.js, data/backgrounds.json): variant A is the background in use and stays
-// exactly as it was. Variant B is the Codex pack (art/manifests/ptuj.json, #33): eight layers on a 16:9 canvas,
+// exactly as it was. Since 25 Nov 2026 Ptuj's B is Codex's folk pack (tests/parallax.test.js) and the sunset pack below
+// is variant E, beside it. Variant E is the Codex pack (art/manifests/ptuj.json, #33): eight layers on a 16:9 canvas,
 // with outer-bank trees, wall, bridge and front occlusion, placed for the game's scene by data/backgrounds.json. Variant D is the snowy companion preview. Variant C is Claude's pack (art/manifests/ptuj-vecer.json,
 // tools/art_ptuj_parallax.py): ten pixel-art layers with tiling parallax, a preview only (share 0).
 const { openGame, runner, sleep } = require('./harness');
@@ -47,10 +48,10 @@ run(async () => {
     const sum = P => P && { ids: P.layers.map(l => l.id).join(), canvas: P.canvas, status: P.status, name: P.name, tiles: P.layers.filter(l => l.tileX).map(l => l.id).join(), front: P.layers.filter(l => l.front).map(l => l.id).join() };
     return { B: sum(B), C: sum(C), road: B && B.layers.find(l => l.id === 'road-tile-tall'), castle: B && B.layers.find(l => l.id === 'castle-hill'), test: Z.BGX.tests.ptuj, v: Z.bgVariant('ptuj'), tags: Z.bgStatTags(), ab: localStorage.getItem('zg-ab') }; });
   check(built.B && built.B.ids === ORDER_B && built.B.canvas.w === 1672 && built.B.canvas.h === 560 && built.B.tiles === 'clouds,road-tile-tall' && built.B.name === 'Ptuj — sončni zahod nad Dravo',
-    'variant B is the combined seasonal pack: twelve sunset layers back to front, fitted through a 1672×560 view, clouds and road tile horizontally', JSON.stringify(built.B));
+    'the sunset pack (E) is the combined seasonal pack: twelve sunset layers back to front, fitted through a 1672×560 view, clouds and road tile horizontally', JSON.stringify(built.B));
   check(built.road.scale === 0.5 && built.road.w === 2172 && built.road.stand === 30 && built.castle.scale === 0.6 && built.castle.x === 560, 'the road is the original tile at half size and follows the characters (stand 30); the castle hill keeps Codex\'s 0.6 scale, as data/backgrounds.json places them', JSON.stringify({ road: [built.road.w, built.road.scale, built.road.y], castle: [built.castle.x, built.castle.y, built.castle.scale] }));
   check(built.C && built.C.ids === ORDER_C && built.C.canvas.w === 640 && built.C.front === 'foreground', 'variant C is Claude\'s pack: ten layers on 640×165, the foreground in front', JSON.stringify(built.C));
-  check(built.test.share.C === 0 && built.test.live === false && built.v === 'A' && built.ab === null && built.tags.join() === 'ozadje-ptuj=A',
+  check(built.test.share.C === 0 && built.test.live === false && built.v === 'A' && !('ptuj' in JSON.parse(built.ab || '{}')) && built.tags.includes('ozadje-ptuj=A') && built.tags.filter(t => t.startsWith('ozadje-')).every(t => t.endsWith('=A')),
     'the test is not live and C has no share: everyone sees A, nobody is assigned, the statistics say ozadje-ptuj=A', JSON.stringify(built.test));
 
   // ---------------------------------------------------------------- variant A, as before
@@ -62,11 +63,11 @@ run(async () => {
   check(battleA && !battleA.pbg && /data:image\/png/.test(battleA.bgimg) && /linear-gradient/.test(battleA.bgimg), 'variant A in a Ptuj battle: the dimmed picture as before', battleA && battleA.cls);
   await shot('bg-00-ptuj-battle-A');
 
-  // ---------------------------------------------------------------- variant B (preview): the road
-  await ev(() => { const Z = window.__ZG; Z.setBgForce('B'); Z.newRun('krpan'); Z.joinHero('kurent'); Z.joinHero('matjaz'); Z.go('travel'); }); await sleep(300);
-  check((await ev(() => window.__ZG.bgStatTags())).join() === 'ozadje-ptuj=B(predogled)', 'a preview is marked in the statistics, so it never counts as an assigned B');
+  // ---------------------------------------------------------------- the sunset pack (E, preview): the road
+  await ev(() => { const Z = window.__ZG; Z.setBgForce('E'); Z.newRun('krpan'); Z.joinHero('kurent'); Z.joinHero('matjaz'); Z.go('travel'); }); await sleep(300);
+  check((await ev(() => window.__ZG.bgStatTags())).includes('ozadje-ptuj=E(predogled)'), 'a preview is marked in the statistics, so it never counts as an assigned variant');
   const roadB = await sceneInfo();
-  check(roadB.pbg && roadB.layers.join() === ORDER_B && roadB.dim && roadB.bgimg === '' && roadB.roadShown === false, 'variant B on the road: the eight layers under the road dimming, without A\'s picture and road strip', roadB.layers.join());
+  check(roadB.pbg && roadB.layers.join() === ORDER_B && roadB.dim && roadB.bgimg === '' && roadB.roadShown === false, 'the sunset pack (E) on the road: the eight layers under the road dimming, without A\'s picture and road strip', roadB.layers.join());
   await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
   const at = x => ev(async x => { const Z = window.__ZG, R = Z.S.run; R.prompt = null; R.walking = false; R.x = x; await new Promise(r => setTimeout(r, 150)); return { endX: R.endX, mobile: Z.S.mobile }; }, x);
   await at(0);
@@ -82,10 +83,10 @@ run(async () => {
   check(Object.values(p1.pos).every(p => p.smooth), 'the large Codex pictures are shrunk smoothly, not aliased as pixel art', JSON.stringify(Object.fromEntries(Object.entries(p1.pos).map(([k, v]) => [k, v.smooth]))));
   await shot('bg-01-ptuj-road-B');
 
-  // ---------------------------------------------------------------- variant B: a Ptuj battle
+  // ---------------------------------------------------------------- the sunset pack (E): a Ptuj battle
   await ev(() => { const Z = window.__ZG; Z.stopBattle(Z.S.run.stops.filter(s => s.kind === 'battle')[2]); Z.B.enemies.forEach(e => { e.charge = -99; }); }); await sleep(350);
   const battleB = await sceneInfo();
-  check(battleB.pbg && battleB.layers.join() === ORDER_B && battleB.bgimg === '' && battleB.dim, 'variant B in a Ptuj battle: the layers under the battle dimming', battleB.layers.join());
+  check(battleB.pbg && battleB.layers.join() === ORDER_B && battleB.bgimg === '' && battleB.dim, 'the sunset pack (E) in a Ptuj battle: the layers under the battle dimming', battleB.layers.join());
   const feetB = await feetOnGround();
   check(feetB.feet.length >= 5 && feetB.feet.every(f => f >= feetB.ground), 'in battle the three heroes and both enemies stand on the cobbles, not on the water', JSON.stringify(feetB));
   const pb = await layerPos('ptuj'), sb = Math.max(pb.H / 560, pb.W / 1672);
@@ -106,7 +107,7 @@ run(async () => {
   // ---------------------------------------------------------------- variant C (preview only): parallax of the pixel-art pack
   await ev(() => { const Z = window.__ZG; Z.setBgForce('C'); Z.newRun('krpan'); Z.joinHero('kurent'); Z.go('travel'); }); await sleep(300);
   const roadC = await sceneInfo();
-  check(roadC.layers.join() === ORDER_C && (await ev(() => window.__ZG.bgStatTags())).join() === 'ozadje-ptuj=C(predogled)', '?ozadje=C previews Claude\'s pack, marked as a preview', roadC.layers.join());
+  check(roadC.layers.join() === ORDER_C && (await ev(() => window.__ZG.bgStatTags())).includes('ozadje-ptuj=C(predogled)'), '?ozadje=C previews Claude\'s pack, marked as a preview', roadC.layers.join());
   const stack = await ev(() => { const sc = document.querySelector('.scene'), z = s => getComputedStyle(sc.querySelector(s)).zIndex; return { fg: z('.pbg-l.front'), party: z(':scope > .party') }; });
   check(+stack.fg > +stack.party, 'its foreground stands in front of the walking party', JSON.stringify(stack));
   await at(0); const c0p = await layerPos('ptuj-vecer');
@@ -142,12 +143,13 @@ run(async () => {
   const peca = await sceneInfo();
   check(!peca.pbg && peca.layers.length === 0 && /data:image\/png/.test(peca.bgimg), 'Peca keeps its own picture with a Ptuj preview on', peca.cls);
 
-  // the gallery shows B, C and the winter companion D next to the pictures of A
+  // the gallery shows every pack variant (Ptuj B folk, C, D winter, E sunset; the other regions' folk B) next to the pictures of A
   await ev(() => window.__ZG.go('gallery')); await sleep(400);
   const gal = await ev(() => [...document.querySelectorAll('.gbg figure')].filter(f => f.querySelector('.gpbg')).map(f => ({ cap: f.textContent, layers: f.querySelectorAll('.pbg-l').length, h: f.querySelector('.gpbg').clientHeight })));
-  check(gal.length === 3 && gal[0].cap === 'Ptuj — sončni zahod nad Dravo — različica B (v pregledu)' && gal[0].layers === 12 && gal[1].cap === 'Ptuj — večer ob Dravi — različica C (v pregledu)' && gal[1].layers === 10
-    && gal[2].cap === 'Ptuj — zimski večer ob Dravi — različica D (v pregledu)' && gal[2].layers === 12 && gal.every(g => g.h > 0),
-    'Liki in karte → Ozadja shows B, C and D, each "v pregledu" until approved', JSON.stringify(gal));
+  const cap = c => gal.find(g => g.cap === c) || { layers: 0 };
+  check(gal.length === 9 && cap('Ptuj — sončni zahod nad Dravo — različica E (v pregledu)').layers === 12 && cap('Ptuj — večer ob Dravi — različica C (v pregledu)').layers === 10
+    && cap('Ptuj — zimski večer ob Dravi — različica D (v pregledu)').layers === 12 && cap('Ptuj — ljudska poslikava (Codex) — različica B (v pregledu)').layers === 9 && gal.every(g => g.h > 0 && / \(v pregledu\)$/.test(g.cap)),
+    'Liki in karte → Ozadja shows every pack variant, each "v pregledu" until approved; the sunset pack is Ptuj\'s E', JSON.stringify(gal.map(g => g.cap)));
   // the winter companion D stands in the same depth order as B: the shared bridge after the riverbank wall, never behind the sky
   const orderD = await ev(() => window.__ZG.BGX.packs['ptuj-zima'].layers.map(l => l.id).join());
   check(orderD === ORDER_B, 'variant D (winter) draws its layers in the sunset order, the bridge after the wall and in front of the river', orderD);
@@ -157,15 +159,15 @@ run(async () => {
     T.share = { A: 0, B: 100, C: 0 }; delete Z.AB.ptuj; localStorage.removeItem('zg-ab');
     const first = Z.bgVariant('ptuj'), kept = localStorage.getItem('zg-ab');
     T.share = { A: 100, B: 0, C: 0 }; const again = Z.bgVariant('ptuj'), tags = Z.bgStatTags().join();
-    const pack = Z.BGX.packs.ptuj; delete Z.BGX.packs.ptuj; const gone = Z.bgVariant('ptuj'), keptAfter = localStorage.getItem('zg-ab'); Z.BGX.packs.ptuj = pack;
+    const pack = Z.BGX.packs['ptuj-ljudska']; delete Z.BGX.packs['ptuj-ljudska']; const gone = Z.bgVariant('ptuj'), keptAfter = localStorage.getItem('zg-ab'); Z.BGX.packs['ptuj-ljudska'] = pack;
     const back = Z.bgVariant('ptuj');
     const seen = { A: 0, B: 0, C: 0 }; T.share = share;
     for (let i = 0; i < 400; i++) { delete Z.AB.ptuj; seen[Z.bgVariant('ptuj')]++; }
     T.live = false; delete Z.AB.ptuj; localStorage.removeItem('zg-ab');
     return { first, kept, again, tags, gone, keptAfter, back, seen }; });
-  check(draw.first === 'B' && draw.kept === '{"ptuj":"B"}', 'a live test draws one variant by its share and keeps it in zg-ab', JSON.stringify(draw));
-  check(draw.again === 'B' && draw.tags === 'ozadje-ptuj=B', 'the same install keeps its variant when the share changes; the statistics say B, not a preview');
-  check(draw.gone === 'A' && draw.keptAfter === '{"ptuj":"B"}' && draw.back === 'B', 'a build without a variant\'s pack shows A but keeps the assignment for when it is back');
+  check(draw.first === 'B' && JSON.parse(draw.kept).ptuj === 'B', 'a live test draws one variant by its share and keeps it in zg-ab', JSON.stringify(draw));
+  check(draw.again === 'B' && draw.tags.split(',').includes('ozadje-ptuj=B'), 'the same install keeps its variant when the share changes; the statistics say B, not a preview');
+  check(draw.gone === 'A' && JSON.parse(draw.keptAfter).ptuj === 'B' && draw.back === 'B', 'a build without a variant\'s pack shows A but keeps the assignment for when it is back');
   check(draw.seen.A > 140 && draw.seen.B > 140 && draw.seen.C === 0, 'the 50/50 share splits installs between A and B; C (share 0) is never drawn', JSON.stringify(draw.seen));
 
   // ---------------------------------------------------------------- Nastavitve → Razvoj → Kakovost slik: auto, high, low
@@ -175,7 +177,7 @@ run(async () => {
       lowB: pick('low', 'B'), lowD: pick('low', 'D'), highD: pick('high', 'D') };
     T.live = live; Z.setBgForce(null); localStorage.removeItem('zg-fidelity'); return out; });
   check(fidVar.auto === 'A' && fidVar.autoB === 'B' && fidVar.high === 'B' && fidVar.highA === 'B' && fidVar.lowB === 'A' && fidVar.lowD === 'D' && fidVar.highD === 'D',
-    'Samodejno keeps the test\'s choice; Visoka shows the sunset pack (B) and Nizka the picture in the game (A); winter (D) stays D', JSON.stringify(fidVar));
+    'Samodejno keeps the test\'s choice; Visoka shows B (Codex\'s folk pack) and Nizka the picture in the game (A); winter (D) stays D', JSON.stringify(fidVar));
   const scene = await ev(() => { const Z = window.__ZG, layered = () => !!document.querySelector('.scene [data-layer="town"]'), out = {};
     const radios = () => Object.fromEntries([...document.querySelectorAll('input.set-fid')].map(r => [r.value, r.checked]));
     Z.S.testMode = true; Z.S.mode = 'calm';
