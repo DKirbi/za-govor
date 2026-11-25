@@ -160,7 +160,7 @@ run(async () => {
 
   // 7. Dosežki in junaki: met heroes open their card, the others are silhouettes; the dev gallery is one step deeper
   await page.evaluate(() => window.__ZG.go('heroes')); await sleep(200);
-  const hr = await page.evaluate(() => ({ open: document.querySelectorAll('.herogrid button.pickcard').length, locked: document.querySelectorAll('.herogrid .pickcard.locked').length, ach: !!document.querySelector('.heroes .empty') }));
+  const hr = await page.evaluate(() => ({ open: document.querySelectorAll('.herogrid button.pickcard').length, locked: document.querySelectorAll('.herogrid .pickcard.locked').length, ach: !!document.querySelector('.heroes .achs .achlist') }));
   check(hr.open + hr.locked === 15 && hr.open >= 3 && hr.ach, 'Dosežki in junaki lists all fifteen heroes (met ones open) and a place for achievements', JSON.stringify(hr));
   await page.click('.herogrid button.pickcard'); await sleep(250);
   const card = await page.evaluate(() => ({ screen: window.__ZG.S.screen, kind: document.querySelector('.hm .kind').textContent, crumb: document.querySelector('.hm .crumb').textContent }));

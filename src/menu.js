@@ -318,9 +318,7 @@ function renderHeroes() {
   SCR.append(h('div', { class: 'page heroes' },
     crumb(),
     pageH1('Dosežki in junaki'),
-    h('section', {},
-      h('h2', {}, 'Dosežki'),
-      h('div', { class: 'empty' }, h('b', {}, 'Dosežkov še ni.'), ' Ko jih dodamo, se bodo zbirali tukaj.')),
+    achSection(),   // src/achievements.js
     h('section', {},
       h('h2', {}, 'Junaki', h('span', { class: 'tag' }, `spoznanih ${known} od ${CHARS.length}`)),
       h('p', { class: 'muted sec-lead' }, 'Na začetku poznaš tri. Ko koga srečaš na poti, ga spoznaš in z njim lahko začneš naslednjo pot. Izberi junaka za njegovo karto in zgodbo.'),

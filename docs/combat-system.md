@@ -36,7 +36,7 @@ The same interruption rule applies to both sides: hero attacks can be interrupte
 
 ## 3. Enemies on screen — at most three (Game Director, 24 Nov 2026)
 
-**Status:** CONFIRMED and IMPLEMENTED (v0.18.0, `FOE_SLOTS` and `stepIn` in `src/game.js`).
+**Status:** CONFIRMED and IMPLEMENTED (v0.20.0, prepared as v0.18.0, `FOE_SLOTS` and `stepIn` in `src/game.js`).
 
 - A battle can bring more enemies than fit, but **at most three stand on screen** at a time. The rest wait in line (`B.queue`).
 - When an enemy on screen is beaten, the next in line **steps into its place after 2.5 s** of game time (the clock stops while the game is paused or a crossword is open, as for every enemy).

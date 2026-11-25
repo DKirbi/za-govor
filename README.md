@@ -198,10 +198,17 @@ skills they know filled and the others outlined (a star for stopnja 2, two for s
 themselves, with what stopnja 2 and 3 add, are listed in *Veščine* at a well or a signpost (and in the
 codex in the menu). Tapping the hero plays the skills they know, one after another — a quiet extra that
 the game does not announce.
+*Dosežki in junaki* first lists the **achievements** (59 in six groups, bronze, silver and gold, with progress bars
+and two secrets; only real journeys count) and the **story cards** a hero earns by being alive when Lintvern falls.
+A skill's **painted folk card** (Codex) is collected the first time the skill fires in a journey battle; on a hero's
+screen *Karte veščin* shows them, and a tapped card opens full screen. In battle the paintings are an A/B test against
+the hand-made boards (`?karte=B` or *Kakovost slik → Visoka* shows them).
+
 *Dosežki in junaki* lists every hero: the ones you have unlocked open their card and
 backstory, the others are silhouettes. A developer link there
 opens the full gallery with sprites, cards, road objects, all items and the ten backgrounds.
-Achievements have their place on the same page but none exist yet.
+Achievements have their place on the same page but none exist yet; the planned catalog and
+final-battle card rewards are in [docs/achievements-design.md](docs/achievements-design.md).
 
 ### Enemies
 Enemies attack in real time, telegraphed by a glowing wind-up. Their strongest moves
@@ -483,6 +490,8 @@ CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 | `tests/lexicon.test.js` | The word list in the browser: over a million forms accepted and a common part suggested, the 217-word coverage set accepted and its non-words (Croatian, English, made up) refused, the reported words (*jasa*, *loj*, *runa*, *seks*) and *ritem*/*ritual*/*riti*, vulgar words accepted but never suggested, mythology names, *deny.json*, non-standard forms, base forms (*ljudje* → *človek*), headwords Sloleks lacks (*zborišča*, *sedemkotnik*), and at 4× slower CPU a mesh walk under 50 ms and a lookup under 20 µs |
 | `tests/title.test.js` | The title scene: the *Za govor!* heading and tab title, whole-number scaling (3× at 1280 px, 4× at 1920, 2× on a phone), square wordmark pixels, full width with no sideways scrolling (also at an odd width), starting at the top of the page (below a phone's status bar), room left for the menu, the wordmark standing still, sparks rising in whole art pixels and not restarting when the start screen is rebuilt, a still picture with reduced motion |
 | `tests/desktop.test.js` | A keyboard playthrough: c/s/z are not accepted for č/š/ž, first battle, result and hero screens, chest, finisher, Lintvern's letter lock and forced crossword, ambush, rock slide, and no console errors anywhere |
+| `tests/parallax.test.js` | Codex's folk parallax packs (variant B of six regions): built and decoded; the lane at exactly 1.0; no layer slower than the one behind it; layers at 0.2 or faster tile; after a known walk every tiling layer moved by distance × speed; in battle every actor stands on the painted lane and front layers stay under the feet, on a desktop and a phone |
+| `tests/achievements.test.js` | Achievements and folk cards: test mode and practice battles never count; the first real word and the first skill card; queued toasts; the painting on battle cards in B, the SVG board with *Nizka*; the card variant in the statistics; the page; the profile through a reload; the hero screen's skill cards and a card full screen; story cards for the heroes alive at the Lintvern win |
 | `tests/backgrounds.test.js` | Background A/B tests for Ptuj: the Codex pack built in as variant B (eight layers placed through a 1672×560 view, the road enlarged 1.3×) and Claude's pack as preview-only variant C; variant A unchanged on the road and in battle while the test is off; `?ozadje=B`/`C` previews marked in the statistics; every hero and enemy standing on the ground layer (read from the image) in battle and on the road; town, river and reflections moving together; smooth shrinking for B and hard pixels for C; a short, wide scene covered without side gaps; C's tiling speeds, drift and reduced motion; the foreground in front of the actors and under the battle UI; other regions untouched; the gallery entries; a live test assigning A or B per install by its share and never C |
 
 Screenshots from each run land in `test-output/` (ignored by git).
@@ -504,6 +513,7 @@ za-govor/
 │   ├── report.js             # Pošlji besede: missing words and Kaj pomeni?, reports to a Google Form
 │   ├── save.js               # the journey saved at checkpoints by Znanje, Izhod
 │   ├── menu.js               # the start menu and its pages: Nova pot, Dosežki in junaki, Kako igrati, O igri
+│   ├── achievements.js       # achievements, story cards and skill cards (profile zg-dosezki, data/achievements.json)
 │   ├── art-extra.js          # generated pixel art (tools/art_extra.py)
 │   ├── art-title.js          # generated title art: scene layers, wordmark, ribbon (tools/art_title.py)
 │   ├── title.js              # the title scene: whole-pixel scaling, sparks, fireflies, layout
@@ -537,6 +547,8 @@ za-govor/
 │   ├── cluebank.py           # the three clue banks; validates and builds data/clues.json
 │   ├── art_extra.py          # draws the new heroes, road objects, item icons, backgrounds and knowledge-level figures (needs Pillow)
 │   ├── art_title.py          # draws the title scene, the Za govor! wordmark and its ribbon (needs Pillow)
+│   ├── art_folk_parallax.py  # game layers (WebP) of Codex's six folk parallax studies, their manifests and placement
+│   ├── art_skill_cards.py    # game exports (WebP) of Codex's 21 painted skill cards
 │   ├── art_ptuj_parallax.py  # draws variant C of the Ptuj background: ten pixel-art parallax layers and their manifest (needs Pillow)
 │   ├── readme-shots.js       # regenerates docs/images/
 │   └── sim/                  # balance simulator: a bot plays whole journeys inside dist/index.html (node tools/sim/run.js tools/sim/plan.json)
@@ -661,6 +673,8 @@ in [docs/progression-design.md](docs/progression-design.md) and
   direction, crossword sources, open questions.
 - [Progression design](docs/progression-design.md) — party, health and levels, roster,
   cursed-god bosses, items, backgrounds.
+- [Achievements](docs/achievements-design.md) — word, combat and journey goals, plus
+  the special story cards earned by surviving the final battle.
 - [Platform roadmap](docs/platform-roadmap.md) — from browser prototype to Windows, macOS,
   Linux, Android and iOS.
 - [Playtest notes](docs/playtest-notes.md) — what each test round found and what changed

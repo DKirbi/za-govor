@@ -1,0 +1,177 @@
+{
+  "pack": "folk-skill-cards-additional",
+  "status": "IN GAME (draft) — final art review pending",
+  "visualApproval": "pending-game-director-review",
+  "styleReference": "docs/images/battle-desktop.png",
+  "note": "Additional concepts for Lepa Vida and Martin Krpan. Native generated dimensions retained; not runtime-ready. 25 Nov 2026: a 768×512 WebP export of each card is in the game (tools/art_skill_cards.py): battle cards in variant B of the card A/B test, and the collection on the hero screen. The PNG masters are unchanged.",
+  "assets": [
+    {
+      "character": "lepa-vida",
+      "skill": "hrepenenje",
+      "file": "art/source/characters/lepa-vida/folk-art/skills/hrepenenje/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Battle card (card test variant B) and hero-screen collection; art direction review continues",
+      "approvalState": "in-game draft, final art review pending (25 Nov 2026)",
+      "gameExport": {
+        "file": "art/exports/characters/lepa-vida/folk-art/skills/hrepenenje/card.webp",
+        "size": [
+          768,
+          512
+        ],
+        "format": "WebP q80",
+        "hero": "vida",
+        "skillNumber": 1,
+        "skill": "Hrepenenje"
+      }
+    },
+    {
+      "character": "lepa-vida",
+      "skill": "morska-pena",
+      "file": "art/source/characters/lepa-vida/folk-art/skills/morska-pena/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Battle card (card test variant B) and hero-screen collection; art direction review continues",
+      "approvalState": "in-game draft, final art review pending (25 Nov 2026)",
+      "gameExport": {
+        "file": "art/exports/characters/lepa-vida/folk-art/skills/morska-pena/card.webp",
+        "size": [
+          768,
+          512
+        ],
+        "format": "WebP q80",
+        "hero": "vida",
+        "skillNumber": 2,
+        "skill": "Morska pena"
+      }
+    },
+    {
+      "character": "lepa-vida",
+      "skill": "pesem-z-obale",
+      "file": "art/source/characters/lepa-vida/folk-art/skills/pesem-z-obale/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Battle card (card test variant B) and hero-screen collection; art direction review continues",
+      "approvalState": "in-game draft, final art review pending (25 Nov 2026)",
+      "gameExport": {
+        "file": "art/exports/characters/lepa-vida/folk-art/skills/pesem-z-obale/card.webp",
+        "size": [
+          768,
+          512
+        ],
+        "format": "WebP q80",
+        "hero": "vida",
+        "skillNumber": 3,
+        "skill": "Pesem z obale"
+      }
+    },
+    {
+      "character": "martin-krpan",
+      "skill": "kmecka-moc",
+      "file": "art/source/characters/martin-krpan/folk-art/skills/kmecka-moc/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Battle card (card test variant B) and hero-screen collection; art direction review continues",
+      "approvalState": "in-game draft, final art review pending (25 Nov 2026)",
+      "gameExport": {
+        "file": "art/exports/characters/martin-krpan/folk-art/skills/kmecka-moc/card.webp",
+        "size": [
+          768,
+          512
+        ],
+        "format": "WebP q80",
+        "hero": "krpan",
+        "skillNumber": 2,
+        "skill": "Kmečka moč"
+      }
+    },
+    {
+      "character": "martin-krpan",
+      "skill": "lipov-kij",
+      "file": "art/source/characters/martin-krpan/folk-art/skills/lipov-kij/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Battle card (card test variant B) and hero-screen collection; art direction review continues",
+      "approvalState": "in-game draft, final art review pending (25 Nov 2026)",
+      "gameExport": {
+        "file": "art/exports/characters/martin-krpan/folk-art/skills/lipov-kij/card.webp",
+        "size": [
+          768,
+          512
+        ],
+        "format": "WebP q80",
+        "hero": "krpan",
+        "skillNumber": 1,
+        "skill": "Lipov kij"
+      }
+    },
+    {
+      "character": "martin-krpan",
+      "skill": "mesarica",
+      "file": "art/source/characters/martin-krpan/folk-art/skills/mesarica/skill-card-concept.png",
+      "format": "PNG",
+      "width": 1536,
+      "height": 1024,
+      "colorMode": "RGB",
+      "alpha": false,
+      "layerOrder": [
+        "flattened full-frame illustration"
+      ],
+      "tileable": false,
+      "processing": "none",
+      "intendedUse": "Battle card (card test variant B) and hero-screen collection; art direction review continues",
+      "approvalState": "in-game draft, final art review pending (25 Nov 2026)",
+      "gameExport": {
+        "file": "art/exports/characters/martin-krpan/folk-art/skills/mesarica/card.webp",
+        "size": [
+          768,
+          512
+        ],
+        "format": "WebP q80",
+        "hero": "krpan",
+        "skillNumber": 3,
+        "skill": "Mesarica"
+      }
+    }
+  ]
+}
