@@ -1,0 +1,213 @@
+{
+  "pack": "Ptuj — ljudska poslikava (Codex)",
+  "version": "0.1.0",
+  "status": "review",
+  "approval": "OPEN — Game Director review required (first in-game draft, 25 Nov 2026)",
+  "canvas": {
+    "width": 996,
+    "height": 560,
+    "aspectRatio": "16:9",
+    "basis": "The 16:9 scene of Codex's docs/art-benchmarks/ptuj-parallax/preview.html at 560 px"
+  },
+  "madeBy": "tools/art_folk_parallax.py from Codex's study PNGs (unchanged masters); WebP q80",
+  "layers": [
+    {
+      "id": "sky",
+      "order": 1,
+      "file": "art/exports/environments/ptuj-ljudska/sky.webp",
+      "width": 2302,
+      "height": 650,
+      "x": -78,
+      "y": -45,
+      "alpha": false,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/ptuj-parallax/layers/sky.png",
+      "sourceSha1": "99fb4e7d9de507d1c2f423b818e9cbe22bf40ff8",
+      "previewBox": [
+        -8,
+        -8,
+        116,
+        116
+      ],
+      "fit": "fill",
+      "mirrored": "both sides"
+    },
+    {
+      "id": "clouds",
+      "order": 2,
+      "file": "art/exports/environments/ptuj-ljudska/clouds.webp",
+      "width": 1946,
+      "height": 114,
+      "x": 0,
+      "y": 18,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/ptuj-parallax/layers/clouds.png",
+      "sourceSha1": "ef4b1f1e7985788a2519772bbb0dce2fef6817df",
+      "previewBox": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "right side"
+    },
+    {
+      "id": "distant-hills",
+      "order": 3,
+      "file": "art/exports/environments/ptuj-ljudska/distant-hills.webp",
+      "width": 996,
+      "height": 75,
+      "x": 0,
+      "y": 208,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/ptuj-parallax/layers/distant-hills.png",
+      "sourceSha1": "68dce0cbb26a63a31cd2cdfc3cb6b430fc25d436",
+      "previewBox": [
+        0,
+        14.9,
+        100,
+        59.2
+      ],
+      "fit": "fill"
+    },
+    {
+      "id": "castle-hill",
+      "order": 4,
+      "file": "art/exports/environments/ptuj-ljudska/castle-hill.webp",
+      "width": 1992,
+      "height": 162,
+      "x": 0,
+      "y": 101,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/ptuj-parallax/layers/castle-hill.png",
+      "sourceSha1": "3b70e360389837f35ff9ffa59673a089b452c278",
+      "previewBox": [
+        0,
+        11.7,
+        100,
+        38.5
+      ],
+      "fit": "fill",
+      "period": 2
+    },
+    {
+      "id": "town",
+      "order": 5,
+      "file": "art/exports/environments/ptuj-ljudska/town.webp",
+      "width": 1992,
+      "height": 170,
+      "x": 0,
+      "y": 82,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/ptuj-parallax/layers/town.png",
+      "sourceSha1": "cf19833da60a95cae2a17715d1bc2473aa7af333",
+      "previewBox": [
+        0,
+        11.2,
+        100,
+        38.3
+      ],
+      "fit": "fill",
+      "period": 2
+    },
+    {
+      "id": "drava-water",
+      "order": 6,
+      "file": "art/exports/environments/ptuj-ljudska/drava-water.webp",
+      "width": 3378,
+      "height": 113,
+      "x": -347,
+      "y": 277,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/ptuj-parallax/layers/drava-water.png",
+      "sourceSha1": "4cb2d9cf40a9c61fde27fcd2505f386d9e950d28",
+      "previewBox": [
+        -35,
+        33.5,
+        170,
+        36.1
+      ],
+      "fit": "fill",
+      "mirrored": "both sides"
+    },
+    {
+      "id": "glints",
+      "order": 7,
+      "file": "art/exports/environments/ptuj-ljudska/glints.webp",
+      "width": 1693,
+      "height": 32,
+      "x": -349,
+      "y": 277,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/ptuj-parallax/layers/water-reflections.png",
+      "sourceSha1": "e032ccd251b77a7f3062ad7056fee3aeb6f6634a",
+      "previewBox": [
+        -35,
+        33.5,
+        170,
+        36.1
+      ],
+      "fit": "fill"
+    },
+    {
+      "id": "road",
+      "order": 8,
+      "file": "art/exports/environments/ptuj-ljudska/road.webp",
+      "width": 3378,
+      "height": 436,
+      "x": -675,
+      "y": 316,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/ptuj-parallax/layers/foreground-road.png",
+      "sourceSha1": "29f6dd94c18e6935b3a882ac7a6e83476bb08774",
+      "previewBox": [
+        -68,
+        -36.7,
+        170,
+        136
+      ],
+      "fit": "fill",
+      "mirrored": "both sides",
+      "laneMirroredBelow": true
+    },
+    {
+      "id": "oak",
+      "order": 9,
+      "file": "art/exports/environments/ptuj-ljudska/oak.webp",
+      "width": 2490,
+      "height": 405,
+      "x": -920,
+      "y": 0,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/ptuj-parallax/layers/foreground-oak.png",
+      "sourceSha1": "425dcd8738de7bcc113a15a625edb65b080da918",
+      "previewBox": [
+        0,
+        0,
+        92.8,
+        72.3
+      ],
+      "fit": "fill",
+      "mirrored": "left side",
+      "period": 2.5
+    }
+  ]
+}

@@ -67,6 +67,8 @@ def layer_picture(png_rel, webp_cfg, notes, pid):
     data/backgrounds.json uses the WebP copy from tools/art_bg_webp.py while it was made from this very PNG at that
     quality; otherwise, and for every other pack, the PNG."""
     png = (root / png_rel).read_bytes()
+    if png_rel.endswith('.webp'):   # an export that is a WebP already (tools/art_folk_parallax.py): embedded as it is
+        return png, 'image/webp', webp_info(png, png_rel)
     q = (webp_cfg or {}).get('quality')
     if q:
         p = pathlib.PurePosixPath(png_rel)
@@ -144,11 +146,11 @@ def background_packs():
                 assert 0 <= x and (L.get('tileX') or x + w <= cw) and 0 <= y and y + h <= ch, f"{L['file']} lies outside the {cw}×{ch} canvas"
             layers.append({'id': L['id'], 'w': w, 'h': h, 'x': x, 'y': y, 'scale': k, 'tileX': bool(L.get('tileX')),
                            'front': t.get('front', L.get('role') == 'foreground'), 'speed': t.get('speed', 0), 'drift': t.get('drift', 0), 'pan': t.get('pan', 1),
-                           **{k: t[k] for k in ('stand', 'neck') if k in t},
+                           **{k: t[k] for k in ('stand', 'neck', 'riseOnly', 'below') if k in t},
                            'src': f'data:{mime};base64,' + base64.b64encode(raw).decode('ascii')})
             size += len(raw)
         packs[pid] = {'name': pc.get('name') or man.get('name') or pid, 'version': man.get('version', ''), 'status': man.get('status', 'draft'),
-                      'canvas': {'w': cw, 'h': ch}, 'hideRoad': bool(pc.get('hideRoad')), 'layers': layers}
+                      'canvas': {'w': cw, 'h': ch}, 'hideRoad': bool(pc.get('hideRoad')), **({'focusY': pc['focusY']} if 'focusY' in pc else {}), 'layers': layers}
         fmt = ' WebP' if all(L['src'].startswith('data:image/webp') for L in layers) else ''
         notes.append(f"background pack {pid}: {len(layers)} layers, {cw}×{ch}, {size // 1024} KB{fmt}, status {packs[pid]['status']}"
                      + (' — large for a single-file build' if size > 1536 * 1024 else ''))

@@ -1367,5 +1367,6 @@ body.mobile .report .rp-send .btn, body.mobile .report .rp-close { min-height: 4
 /* a foreground layer stands in front of the heroes and enemies, never in front of the battle UI */
 .scene.pbg > .pbg-l.front { z-index: 1; }
 .scene.pbg > .partyhp, .scene.pbg > .cards, .scene.pbg > .floats { z-index: 2; }
+.scene.pbg .foewrap > :not(.spr) { position: relative; z-index: 2; }   /* an enemy's name, health and pips stay over a front layer */
 .scene.travel.pbg > .pbg-l.front { z-index: 3; }
 .gbg .gpbg { position: relative; width: 100%; overflow: hidden; border-radius: 6px; border: 1px solid var(--line); background: #1a1e2b; }

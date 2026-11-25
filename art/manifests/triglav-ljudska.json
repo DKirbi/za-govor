@@ -1,0 +1,211 @@
+{
+  "pack": "Triglav — ljudska poslikava (Codex)",
+  "version": "0.1.0",
+  "status": "review",
+  "approval": "OPEN — Game Director review required (first in-game draft, 25 Nov 2026)",
+  "canvas": {
+    "width": 996,
+    "height": 560,
+    "aspectRatio": "16:9",
+    "basis": "The 16:9 scene of Codex's docs/art-benchmarks/triglav-parallax/preview.html at 560 px"
+  },
+  "madeBy": "tools/art_folk_parallax.py from Codex's study PNGs (unchanged masters); WebP q80",
+  "layers": [
+    {
+      "id": "sky",
+      "order": 1,
+      "file": "art/exports/environments/triglav-ljudska/sky.webp",
+      "width": 996,
+      "height": 560,
+      "x": 0,
+      "y": 0,
+      "alpha": false,
+      "tileX": false,
+      "role": "background",
+      "source": "docs/art-benchmarks/triglav-parallax/layers/sky.png",
+      "sourceSha1": "f36e3c6e596ec6d3b7df55948ab2faf8a2e8f015",
+      "previewBox": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "fit": "fill"
+    },
+    {
+      "id": "clouds",
+      "order": 2,
+      "file": "art/exports/environments/triglav-ljudska/clouds.webp",
+      "width": 996,
+      "height": 191,
+      "x": 0,
+      "y": 0,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/triglav-parallax/layers/clouds.png",
+      "sourceSha1": "53a3897f90ad22aa31ba48d9332de87187e35660",
+      "previewBox": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "fit": "fill"
+    },
+    {
+      "id": "distant-foothills",
+      "order": 3,
+      "file": "art/exports/environments/triglav-ljudska/distant-foothills.webp",
+      "width": 1984,
+      "height": 218,
+      "x": 2,
+      "y": 156,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/triglav-parallax/layers/distant-foothills.png",
+      "sourceSha1": "967e10d821683763e90cae5097ccb4ff0199d7ec",
+      "previewBox": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "both sides"
+    },
+    {
+      "id": "distant-peaks",
+      "order": 4,
+      "file": "art/exports/environments/triglav-ljudska/distant-peaks.webp",
+      "width": 1992,
+      "height": 250,
+      "x": 0,
+      "y": 34,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/triglav-parallax/layers/distant-peaks.png",
+      "sourceSha1": "e5bfc68fbfcdf72d247094985ea0f58c7cce5721",
+      "previewBox": [
+        0,
+        4,
+        100,
+        55.6
+      ],
+      "fit": "fill",
+      "period": 2
+    },
+    {
+      "id": "zlatorog",
+      "order": 5,
+      "file": "art/exports/environments/triglav-ljudska/zlatorog.webp",
+      "width": 1992,
+      "height": 70,
+      "x": 199,
+      "y": 174,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/triglav-parallax/layers/zlatorog-ibex.png",
+      "sourceSha1": "dfe76e1669105bdc4da97867cb0295fc77c0304a",
+      "previewBox": [
+        20,
+        31,
+        5.5,
+        null
+      ],
+      "fit": "fill",
+      "period": 2
+    },
+    {
+      "id": "midground-forest",
+      "order": 6,
+      "file": "art/exports/environments/triglav-ljudska/midground-forest.webp",
+      "width": 2824,
+      "height": 188,
+      "x": -209,
+      "y": 174,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/triglav-parallax/layers/midground-forest.png",
+      "sourceSha1": "c5fc511710586cf60693c39369256d88d54b0e04",
+      "previewBox": [
+        -22,
+        -8,
+        144,
+        85
+      ],
+      "fit": "fill",
+      "mirrored": "both sides"
+    },
+    {
+      "id": "grass-lane",
+      "order": 7,
+      "file": "art/exports/environments/triglav-ljudska/grass-lane.webp",
+      "width": 3896,
+      "height": 443,
+      "x": -476,
+      "y": 325,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/triglav-parallax/layers/foreground-grass-lane.png",
+      "sourceSha1": "82d5f0e09811ce1f6fade07e2d0e636496429df5",
+      "previewBox": [
+        -48,
+        -14,
+        196,
+        116
+      ],
+      "fit": "fill",
+      "mirrored": "both sides",
+      "laneMirroredBelow": true
+    },
+    {
+      "id": "spruces",
+      "order": 8,
+      "file": "art/exports/environments/triglav-ljudska/spruces.webp",
+      "width": 1494,
+      "height": 280,
+      "x": 0,
+      "y": 10,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/triglav-parallax/layers/foreground-spruces.png",
+      "sourceSha1": "4715d3c1b2fafa4b86ef3853c444d8e9d117e6f9",
+      "previewBox": [
+        0,
+        -40,
+        100,
+        100
+      ],
+      "fit": "fill",
+      "period": 1.5
+    },
+    {
+      "id": "flowers",
+      "order": 9,
+      "file": "art/exports/environments/triglav-ljudska/flowers.webp",
+      "width": 1295,
+      "height": 79,
+      "x": -149,
+      "y": 469,
+      "alpha": true,
+      "tileX": true,
+      "role": "foreground",
+      "source": "docs/art-benchmarks/triglav-parallax/layers/foreground-flowers.png",
+      "sourceSha1": "7f7ae9694541ebd890a64a5932029c0513d0f199",
+      "previewBox": [
+        -15,
+        23,
+        130,
+        77
+      ],
+      "fit": "fill"
+    }
+  ]
+}

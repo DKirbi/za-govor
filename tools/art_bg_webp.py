@@ -40,7 +40,7 @@ def jobs():
             continue
         man = json.loads((ROOT / pc['manifest']).read_text(encoding='utf-8'))
         for f in layer_files(man, pc.get('season')):
-            if (ROOT / f).is_file():
+            if f.endswith('.png') and (ROOT / f).is_file():   # a WebP export (tools/art_folk_parallax.py) needs no copy
                 out[f] = q
     return out
 
