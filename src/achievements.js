@@ -35,11 +35,11 @@ function achToast(text) {
   if (achShowing) return;
   // another toast on screen (a hero unlocked, a region behind you) is read first
   const next = (waits = 0) => {
-    const other = document.querySelector('.toast:not(.ach)');
+    const other = document.querySelector('.toast:not(.ach-toast)');
     if (other && waits < 3) { achShowing = true; setTimeout(() => next(waits + 1), 1500); return; }
     const t = ACH_QUEUE.shift();
     if (!t) { achShowing = false; return; }
-    achShowing = true; toast(t); const el = document.querySelector('.toast'); if (el) el.classList.add('ach');
+    achShowing = true; toast(t); const el = document.querySelector('.toast'); if (el) el.classList.add('ach-toast');
     setTimeout(next, 3200);
   };
   next();
