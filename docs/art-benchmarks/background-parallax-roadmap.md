@@ -32,7 +32,7 @@ The campaign currently has ten implemented battle backgrounds. Their order and `
 | 4 | Bled | `bled` | Implemented pixel-art scene | First-pass layers and rightward camera preview are in the [Bled parallax study](bled-parallax/README.md). |
 | 5 | Trnovski gozd | `gozd` | Implemented pixel-art scene | First-pass layers and near-foreground motion guide are in the [Trnovski gozd parallax study](trnovski-gozd-parallax/README.md). |
 | 6 | Piranske soline | `piran` | Implemented pixel-art scene | First-pass layers and the rightward camera preview are in the [Piranske soline parallax study](piranske-soline-parallax/README.md). |
-| 7 | Predjamski grad | `predjama` | Implemented pixel-art scene | Make a folk-art preview, get approval, then slice. |
+| 7 | Predjamski grad | `predjama` | Implemented pixel-art scene | Approved [castle-in-cliff scene](slovenia-folk-location-previews/predjama-folk-preview.png), first-pass layers and a rightward camera preview are in the [Predjama parallax study](predjama-parallax/README.md). |
 | 8 | Ljubljansko barje | `barje` | Implemented pixel-art scene | Make a folk-art preview, get approval, then slice. |
 | 9 | Ljubljanica | `ljubljanica` | Implemented pixel-art scene | Existing [side-view Triple Bridge battle preview](slovenia-folk-location-previews/ljubljanica-folk-preview.png) and [parallax slice study](ljubljanica-parallax/README.md); review the scene before any production slicing. |
 | 10 | Ljubljanski grad | `grad` | Implemented pixel-art scene | Make a folk-art preview, get approval, then slice. |
@@ -50,8 +50,10 @@ The folk-art panorama references currently cover Ptuj, Peca, Triglav, Bled, Trno
 - [x] Complete the Bled first-pass layer set: sky, clouds, Julian Alps, forested shore, castle cliff, island church, separate lake and reflections, and a broad grassy travel lane. Create a static composite and rightward camera preview.
 - [x] Complete the Trnovski gozd first-pass layer set: night sky, moon, clouds, karst ridge, doline forest, framing trees, wide grass lane, and separate near-edge rocks/grass. Create the static composite and rightward travel preview; demonstrate close foreground at 1.25× lane speed.
 - [x] Complete the Piranske soline first pass: separate the basins, reflections, far shore, house, embankments, wide travel lane and close salt grass; add the rightward camera preview.
-- [ ] Continue in campaign order after Trnovski gozd: Predjama, Ljubljansko barje, Ljubljanica, then Ljubljanski grad.
-- [ ] For each remaining region, create the folk-art scene preview first and pause for approval before generating its slices. The existing Ljubljanica preview still needs review before any new production slicing.
+- [x] Create and approve the Predjamski grad scene preview with Erazem and a regional Perkmandeljc on the broad travel lane.
+- [x] Complete Predjama's first parallax pass with a castle-and-cliff landmark layer, separate sky and clouds, Karst ridge, Lokva stream, broad travel lane, near-edge rocks/grass, static composite and camera preview.
+- [ ] Continue in campaign order with a Ljubljansko barje preview; after approval, create its first-pass layers, then proceed to Ljubljanica and Ljubljanski grad.
+- [ ] For each later region, create the folk-art scene preview first and pause for approval before generating slices. The existing Ljubljanica preview still needs review before any production slicing.
 - [ ] After each scene's slices are approved, tune parallax speeds, cloud/water/ambient motion, character staging, reduced-motion behavior, and mobile landscape/portrait framing in the battle viewport.
 
 ## Layer workflow

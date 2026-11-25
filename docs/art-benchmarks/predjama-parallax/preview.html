@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Predjamski grad folk-art parallax study</title>
+<style>
+:root { color-scheme:light; font-family:Georgia,'Times New Roman',serif; background:#e9e0cd; color:#332c20; }
+* { box-sizing:border-box; }
+body { margin:0; padding:18px; }
+main { max-width:1080px; margin:0 auto; }
+h1 { margin:0 0 8px; font-size:clamp(1.25rem,2.5vw,1.8rem); font-weight:600; }
+p { margin:0 0 12px; line-height:1.45; }
+a { color:#59402d; }
+.scene { position:relative; width:100%; aspect-ratio:16/9; overflow:hidden; isolation:isolate; background:#475161; border:2px solid #54402c; }
+.layer,.actor { position:absolute; display:block; max-width:none; pointer-events:none; user-select:none; }
+.layer { left:-15%; top:0; width:130%; height:100%; }
+.sky { left:-10%; top:-2%; width:120%; height:104%; z-index:0; }
+.clouds { z-index:1; animation:cloud-drift 72s linear infinite; }
+.ridge { z-index:2; }
+.castle-cliff { z-index:3; }
+.stream { z-index:4; animation:stream-glint 4s ease-in-out infinite alternate; }
+.grass-lane { top:-.85%; height:101%; z-index:5; }
+.actor { bottom:14.4%; width:6.4%; height:auto; aspect-ratio:1; z-index:6; transition:left .12s linear; image-rendering:pixelated; }
+#hero { left:27%; }
+#foe { left:73%; }
+.actor img { display:block; width:100%; height:100%; image-rendering:pixelated; }
+.near-foreground { z-index:7; }
+.controls { display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding-top:12px; }
+.progress-control { flex:1 1 240px; display:grid; grid-template-columns:1fr auto; gap:6px 12px; align-items:center; }
+.progress-control label { font-weight:600; }
+#progress { grid-column:1/-1; width:100%; accent-color:#765131; }
+button { min-height:44px; padding:8px 14px; border:1px solid #5b4630; border-radius:6px; background:#f5efd9; color:#332c20; font:inherit; font-weight:600; }
+button:focus-visible,input:focus-visible { outline:3px solid #265d7a; outline-offset:2px; }
+#status { min-width:190px; }
+.speed-guide { margin-top:10px; font-size:.95rem; color:#4d473c; }
+@keyframes cloud-drift { from { translate:0 0; } to { translate:-17px 0; } }
+@keyframes stream-glint { from { opacity:.8; } to { opacity:1; } }
+@media(max-width:560px) { body { padding:10px; } .controls { gap:8px; } .progress-control { flex-basis:100%; } button { flex:1 1 auto; } #status { flex:1 1 100%; } }
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Approaching Predjamski grad</h1>
+  <p>Scrub or play a rightward journey through the Karst valley. The castle remains attached to its cliff while the distant beech-and-fir ridge, cave stream, grass lane and close stones pass at different depths.</p>
+  <div id="scene" class="scene" role="img" aria-label="Folk-art panorama of Predjama Castle integrated into a Karst cliff above its cave, with Erazem and Perkmandeljc on a broad grassy travel lane.">
+    <img class="layer sky" src="layers/sky.png" alt="" aria-hidden="true">
+    <img class="layer clouds" src="layers/clouds.png" alt="" aria-hidden="true">
+    <img class="layer ridge" src="layers/distant-karst-forest.png" alt="" aria-hidden="true">
+    <img class="layer castle-cliff" src="layers/castle-cliff.png" alt="" aria-hidden="true">
+    <img class="layer stream" src="layers/lokva-stream.png" alt="" aria-hidden="true">
+    <img class="layer grass-lane" src="layers/foreground-grass-lane.png" alt="" aria-hidden="true">
+    <div id="hero" class="actor"><img src="actors/predjama-erazem-idle.png" alt="" aria-hidden="true"></div>
+    <div id="foe" class="actor"><img src="actors/predjama-perkmandeljc-idle.png" alt="" aria-hidden="true"></div>
+    <img class="layer near-foreground" src="layers/near-foreground-rocks-grass.png" alt="" aria-hidden="true">
+  </div>
+  <div class="controls">
+    <div class="progress-control">
+      <label for="progress">Travel from left to right</label>
+      <output id="progress-value" for="progress">0%</output>
+      <input id="progress" type="range" min="0" max="100" step="1" value="0" aria-label="Approach Predjama Castle from left to right">
+    </div>
+    <button id="travel" type="button">Begin approach</button>
+    <span id="status" aria-live="polite">Entering the Karst valley</span>
+  </div>
+  <p class="speed-guide"><strong>How the speeds work:</strong> the grass lane is the 1.0× reference. The close rocks and plants move at 1.25×, so they pass faster and feel nearer; the distant ridge moves at 0.12×, clouds and sky around 0.02×, and the castle cliff around 0.38×. The cave stream moves just a little faster than the cliff (0.42×) to suggest water without detaching it from its cave mouth. These are first-pass art-direction ratios; reduce the near edge toward 1.1× if it feels detached from the lane.</p>
+  <p><a href="layered-composite-preview.png">Open the static layer composite</a> · <a href="../slovenia-folk-location-previews/predjama-folk-preview.png">See the approved scene preview</a></p>
+</main>
+<script>
+const scene=document.getElementById('scene');
+const progress=document.getElementById('progress');
+const value=document.getElementById('progress-value');
+const status=document.getElementById('status');
+const button=document.getElementById('travel');
+const hero=document.getElementById('hero');
+const foe=document.getElementById('foe');
+const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+const layers={
+  sky:document.querySelector('.sky'),clouds:document.querySelector('.clouds'),ridge:document.querySelector('.ridge'),
+  castleCliff:document.querySelector('.castle-cliff'),stream:document.querySelector('.stream'),grassLane:document.querySelector('.grass-lane'),
+  nearForeground:document.querySelector('.near-foreground')
+};
+const speeds={sky:.02,clouds:.025,ridge:.12,castleCliff:.38,stream:.42,grassLane:1,nearForeground:1.25};
+let frame=0,start=0,playing=false;
+function clamp(n){return Math.max(0,Math.min(1,n));}
+function render(){
+  const p=Number(progress.value)/100,travel=scene.clientWidth*.12;
+  for(const [name,factor] of Object.entries(speeds)) layers[name].style.transform=`translate3d(${-Math.round(p*travel*factor)}px,0,0)`;
+  hero.style.left=`${27+p*15}%`;
+  foe.style.left=`${73-p*9}%`;
+  value.value=`${Math.round(p*100)}%`;
+  status.textContent=p>=.82?'At the castle rock face':p>=.42?'Passing below the cave stream':'Entering the Karst valley';
+  if(p>=1&&playing)stop();
+}
+function stop(){playing=false;cancelAnimationFrame(frame);button.textContent='Replay approach';}
+function tick(now){if(!start)start=now;const p=clamp((now-start)/12000);progress.value=String(Math.round(p*100));render();if(p<1&&playing)frame=requestAnimationFrame(tick);}
+progress.addEventListener('input',()=>{stop();render();});
+window.addEventListener('resize',render);
+button.addEventListener('click',()=>{if(reduced.matches){progress.value='100';render();return;}if(playing){stop();return;}progress.value='0';start=0;playing=true;button.textContent='Pause approach';render();frame=requestAnimationFrame(tick);});
+render();
+</script>
+</body>
+</html>

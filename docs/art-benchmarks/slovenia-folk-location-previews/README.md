@@ -1,6 +1,6 @@
 # Slovenian folk-style location previews
 
-Six local art-direction concepts extend the treatment documented in [the Ptuj folk-card and background guide](../ptuj-folk-style-preview/README.md). Each panorama is shown by itself and with existing idle-frame game sprites composited over it. These are previews only: no production art manifest, runtime scene, or character sprite has been changed.
+Seven local art-direction concepts extend the treatment documented in [the Ptuj folk-card and background guide](../ptuj-folk-style-preview/README.md). Each panorama is shown by itself and with existing idle-frame game sprites composited over it. These are previews only: no production art manifest, runtime scene, or character sprite has been changed.
 
 ## Peca
 
@@ -32,6 +32,12 @@ Six local art-direction concepts extend the treatment documented in [the Ptuj fo
 
 [Background only](piran-folk-background.png) · Shallow salt basins, dividing embankments, a traditional salt-worker house, the sea at sunset, and a broad grass-topped lane set up a left-to-right battle approach. The basins and salt-worker heritage follow the [Sečovlje Salina Nature Park overview](https://www.portoroz.si/en/what-to-do/natural-landmarks/obj/13831-secovlje-salina-nature-park). Lepa Vida is the chapter's designated heroine, but her current game data has no idle battle sprite; Krpan is a party-position stand-in and Mora is from Piran's regional enemy pool. The Piran setting is a game location choice, not a claim about the ballad's origin. The first separate layers and rightward camera preview are in the [Piranske soline parallax study](../piranske-soline-parallax/README.md).
 
+## Predjamski grad — scene and parallax study
+
+![Predjama Castle folk-art scene with Erazem and Perkmandeljc](predjama-folk-preview.png)
+
+[Background only](predjama-folk-background.png) · The castle is shown integrated into the Karst cliff above a broad, clear grassy travel lane. Erazem uses his current idle sprite. Perkmandeljc uses the game's Škrat sprite with the same cool hue filter used in battle. The scene follows the official site's description of Predjama Castle within a 123-metre cliff and the Lokva disappearing underground below it; see [Postojna Cave Park's Predjama Castle overview](https://www.postojnska-jama.eu/en/predjama-castle). This is a stylized art-direction preview, not a surveyed reconstruction. The approved scene now has a first-pass layer set, static composite and [interactive parallax study](../predjama-parallax/README.md).
+
 ## Ljubljanica
 
 ![Ljubljanica folk-art scene with Zeleni Jurij and Povodni mož](ljubljanica-folk-preview.png)
@@ -42,21 +48,22 @@ Six local art-direction concepts extend the treatment documented in [the Ptuj fo
 
 - Continue the recent folk-card treatment: broad hand-painted shapes, dark confident contours, warm ochre, cream, russet and moss green, restrained board texture, and clear scene layers.
 - Keep background forms spacious and readable, with open ground for the battle party and visible landmarks behind it.
-- Use generated background art as a concept. Keep the game's existing sprites crisp, at integer scaling, and unchanged so the painterly versus pixel-art contrast remains clear.
-- Each preview uses one hero and one enemy idle frame extracted from the current `src/game.js` sprite sheet, with small ground shadows. The original location compositions remain flattened reference images.
+- Use generated background art as a concept. Keep the game's existing sprites crisp and at integer scaling; preserve their existing palette filters so the painterly versus pixel-art contrast remains clear.
+- Each preview uses current game idle-frame sprite data with small ground shadows. Erazem comes from `src/art-extra.js`; Perkmandeljc uses the in-game Škrat sprite and its existing hue filter. The original location compositions remain flattened reference images.
 - The scenic images are stylized illustrations, not surveyed reconstructions. They do not include production parallax, water animation, finalized battle coordinates, or battle UI.
 
 ## Prompt set and generation
 
-Built-in ImageGen generated the scenes as wide 16:9, character-free Slovenian folk-board panoramas. The early scenes used the Ptuj preview and an approved folk skill card as style references; the coastal Piran scene used Bled for its painted language and the Trnovski grass-lane preview for its travel-lane composition. The scene prompts were:
+Built-in ImageGen generated the scenes as wide 16:9, character-free Slovenian folk-board panoramas. The early scenes used the Ptuj preview and an approved folk skill card as style references; the coastal Piran scene used Bled for its painted language and the Trnovski grass-lane preview for its travel-lane composition; Predjama used Piran and Trnovski gozd as style and lane references. The scene prompts were:
 
 - **Peca:** wooded Karavanke mountain, rocky foothill, and a small cave entrance suggesting King Matjaž's legend.
 - **Triglav:** three alpine summits, natural limestone cliffs without a portrait, larch and spruce slopes, and a small white ibex with golden horns for Zlatorog. The current game sprites show Krpan as a party stand-in and the regional Pesjan.
 - **Bled:** side-on lake panorama with the island church, castle cliff, calm reflections, and a broad horizontal grassy shore route. The preview pairs Zeleni Jurij's party sprite with the regional Vila enemy.
 - **Trnovski gozd:** moonlit beech and fir silhouettes, high-karst doline and layered forested plateau; a later composition revision added a broad horizontal grassy lane for left-to-right travel.
 - **Piranske soline:** sunset salt pans with shallow rectangular basins, traditional salt-worker house, sea horizon, and a broad horizontal grass-topped travel lane; a small distant sail nods to the ballad's opening motif.
+- **Predjamski grad:** compact late-medieval castle integrated into a dramatic Karst cliff, a cave mouth and the Lokva disappearing underground, framed by beech and fir forest and a broad level grass lane.
 - **Ljubljanica:** river-level side elevation with the Triple Bridge spanning horizontally, arch openings visible against the water, old-town facades and the castle hill behind it. A targeted view-angle revision produced the selected background.
 
 ## Next: parallax and mobile
 
-These are reference images, not ready-to-ship game backgrounds. The [Ptuj parallax study](../ptuj-parallax/README.md), [Peca parallax study](../peca-parallax/README.md), [Triglav parallax study](../triglav-parallax/README.md), [Bled parallax study](../bled-parallax/README.md), and [Trnovski gozd parallax study](../trnovski-gozd-parallax/README.md) provide first-pass separate folk-art layer sets. Piranske soline now has a first-pass layer set and rightward camera preview in its [parallax study](../piranske-soline-parallax/README.md). The [Ljubljanica parallax study](../ljubljanica-parallax/README.md) sketches the rightward camera journey and its bridge, clouds, reflections, water, and path layers. The [background roadmap](../background-parallax-roadmap.md) lists all ten game regions and the preview-first workflow. These cutouts remain concept references: no runtime parallax layers, motion, or mobile layouts are implemented in the game.
+These are reference images, not ready-to-ship game backgrounds. The [Ptuj parallax study](../ptuj-parallax/README.md), [Peca parallax study](../peca-parallax/README.md), [Triglav parallax study](../triglav-parallax/README.md), [Bled parallax study](../bled-parallax/README.md), [Trnovski gozd parallax study](../trnovski-gozd-parallax/README.md), [Piranske soline parallax study](../piranske-soline-parallax/README.md), and [Predjama parallax study](../predjama-parallax/README.md) provide first-pass separate folk-art layer sets and camera previews. The [Ljubljanica parallax study](../ljubljanica-parallax/README.md) sketches the rightward camera journey and its bridge, clouds, reflections, water, and path layers. The [background roadmap](../background-parallax-roadmap.md) lists all ten game regions and the preview-first workflow. These cutouts remain concept references: no runtime parallax layers, motion, or mobile layouts are implemented in the game.
