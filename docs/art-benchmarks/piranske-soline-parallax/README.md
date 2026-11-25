@@ -30,7 +30,7 @@ The 1.25× foreground value is a starting point. If the plants look detached fro
 - Krpan and Mora are first-frame crops from the current game sprite sheet, enlarged with nearest-neighbor scaling to preserve the painted-versus-pixel-art contrast. Krpan stands in for the regional heroine Lepa Vida because she has no idle battle sprite in the current sheet; Mora is a Piran-region enemy.
 - Generated cutouts share a 1672×941 scene canvas. The house layer was normalized to that canvas; the water, far shore, house, pan walls, reflections and lane are aligned for this composition.
 - The reflections are kept separate for later shimmer or subtle offset. The HTML demo adds a restrained opacity shimmer and slow cloud drift; both are preview-only ambient motion.
-- Some alpha edges were cleaned after ImageGen baked checkerboard pixels into three cutouts. Review their edges against the original artwork before runtime use. The static composite is a first-pass alignment, not a measured extraction.
+- Some alpha edges were cleaned after ImageGen baked checkerboard pixels into several cutouts. Review their edges against the original artwork before runtime use. The static composite is a first-pass alignment, not a measured extraction.
 - The page respects reduced-motion preferences and works in a responsive landscape viewport. Check portrait crops, character foot clearance, layer seams and image memory before production integration.
 - No game renderer or runtime parallax code has changed. These PNGs are references until the mobile camera framing, loop strategy, and asset budget are reviewed.
 
