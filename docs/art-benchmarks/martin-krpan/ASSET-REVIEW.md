@@ -1,6 +1,6 @@
 # Martin Krpan sprite asset review
 
-**Status:** The original pack remains in review. The running, victory and downed poses below were approved for PR #34 and are integrated for *Kakovost slik = Visoka*: running on the road, victory when the last enemy falls, the kneel while Krpan is down.
+**Status:** Archived, not in the game since 0.21.0 (Game Director, 25 Nov 2026: heroes and enemies use simple pixel sprites; *Visoka* draws Krpan's pixel sprite too). The running, victory and downed poses below were approved for PR #34 and were integrated for *Kakovost slik = Visoka* until 0.20.0. The files stay in `art/` as source art; the tools that exported them (`tools/art_hero_pack.py`, `tools/art_krpan_salt_throw.py`) were removed and are in Git history.
 
 ## Included
 

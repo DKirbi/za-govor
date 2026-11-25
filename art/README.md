@@ -15,7 +15,7 @@ This directory is the canonical home for original visual assets created for **Za
 - `exports/` — game-ready exports, optimized only where needed for runtime.
 - `manifests/` — per-asset-pack metadata, layer order, dimensions, transparency, intended use and approval state.
 
-Benchmarks for the next packs: `docs/art-benchmarks/hero-sprites/README.md` (hero sprites, with `tools/art_hero_pack.py`) and `docs/art-benchmarks/region-backgrounds/README.md` (region backgrounds).
+Benchmark for the next packs: `docs/art-benchmarks/region-backgrounds/README.md` (region backgrounds). Heroes and enemies keep simple pixel sprites (Game Director, 25 Nov 2026); the hero sprite-pack convention (`docs/art-benchmarks/hero-sprites/README.md`) is superseded, and Krpan's pack under `characters/martin-krpan/` is archived source art, not built into the game.
 
 Keep each asset pack in its own named subdirectory (for example `source/environments/ptuj/` and `exports/environments/ptuj/`). Do not flatten unrelated art packs into one directory.
 

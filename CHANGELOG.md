@@ -36,6 +36,24 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
+## 0.21.0 — 26 Nov 2026 · zaprta alfa · Martin Krpan is pixel art again in every quality
+
+Branch `art/krpan-pixel-sprite`. Decided by the Game Director on 25 Nov: heroes and enemies use simple pixel sprites.
+
+- **Martin Krpan in *Kakovost slik → Visoka*** draws the pixel sprite every other quality already showed (the one in
+  `SPRITES`), with the early-handheld lunge for his attacks. Codex's 48 × 48 sheet (idle, the skill sequences,
+  running, victory, the kneel) is no longer in the game.
+- **His skills are unchanged:** Lipov kij, Kmečka moč (ranks 1–3) and Mesarica keep their damage, targets, bleed and
+  ranks (`src/progression.js`), and their painted skill cards still follow *Kakovost slik* as in 0.19.0.
+- *Visoka* now changes only the backgrounds and the painted skill cards. Heroes and enemies look the same in every
+  quality.
+- **Removed:** the hero-sheet path (`data/hero-art.json`, its part of `build.py`, `spriteEl` / `attackAnim` frames,
+  the victory salute, `.spr.hi` in `game.css`) and its two offline tools (`tools/art_hero_pack.py`,
+  `tools/art_krpan_salt_throw.py`). Codex's Krpan pack stays in `art/` as archived source art; it is not built in.
+  The single-file build is about 30 KB smaller.
+- Tests: `tests/backgrounds.test.js` checks that Krpan draws the same pixel sprite in all three qualities and lunges
+  for every skill, in place of the sheet checks.
+
 ## 0.20.0 — 25 Nov 2026 · zaprta alfa · A party of three, two shrines, three enemies on screen
 
 Branch `feat/party-three-gods-queue` (PR #39). Prepared on 24 Nov as 0.18.0; it merged after 0.19.0 (PR #38), so it

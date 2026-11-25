@@ -13,7 +13,7 @@
   "gameConvention": {
     "inspected": "src/game.js: SPR_SIZE.krpan = 48; the sprite in the game is a 96×48 strip of two 48×48 frames.",
     "runtimeSprite": "art/exports/characters/martin-krpan/martin-krpan-v2.png",
-    "integrationStatus": "Integrated for Nastavitve → Razvoj → Kakovost slik = Visoka (data/hero-art.json, src/backgrounds.js): the strip replaces SPRITES.krpan on cards and portraits; the sheet plays idle, the skills by rank, running on the road, victory when the last enemy falls and the kneel while he is down. Samodejno and Nizka keep the sprite already in the game."
+    "integrationStatus": "Not in the game since 0.21.0 (Game Director, 25 Nov 2026: heroes and enemies use simple pixel sprites). From PR #34 to 0.20.0 it was integrated for Kakovost slik = Visoka through data/hero-art.json, now removed. Archived source art."
   },
   "artDirection": "Modernized SNES/GBA-inspired pixel art, broad readable silhouette, wide hat, prominent moustache, cream shirt, red vest and sash, salt sack, dark trousers and boots, restrained warm palette and dark outline.",
   "export": {
