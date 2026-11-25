@@ -36,6 +36,37 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
+## 0.19.0 — 25 Nov 2026 · zaprta alfa · Folk skill cards, achievements and folk parallax backgrounds
+
+PR #38 (branch `codex/folk-skill-cards`, with `Folk-art-BGs`). Numbered after 0.18.0 (PR #39, a party of three), which
+is meant to merge first. Codex's art only: nothing in this release is drawn by Claude; the PNG masters are unchanged
+and the game uses resized WebP copies. Decisions of 25 Nov by the Game Director.
+
+- **Codex's painted skill cards in battle**, as an **A/B test like the backgrounds**: half the testers see the
+  paintings on the battle cards (B), half the hand-made boards (A). *Kakovost slik → Visoka* always shows the
+  paintings, *Nizka* the boards; `?karte=B` previews them. 21 cards for Krpan, Kurent, Kresnik, Kralj Matjaž, Erazem,
+  Lepa Vida and Ajdovska deklica (one 768×512 WebP each, `tools/art_skill_cards.py`).
+- **Skill cards are collected**: the first time a skill fires in a real journey battle (not practice, not test mode),
+  its card joins the collection and a short toast says *Nova karta: Lipov kij (Martin Krpan)*. On the hero screen
+  *Karte veščin* turns to the three cards (painted when collected, ??? otherwise); a tapped card opens full screen.
+- **Achievements** (Codex's catalogue, updated for the party of three): 59 in six groups (*Besede, Pošasti, Pot,
+  Druščina, Zgodbe, Skrivnost*), bronze, silver and gold, with progress bars (*Povodni mož: 4/10*) and two secrets.
+  They count only real journeys, survive new journeys (*Ponastavi dosežke* clears them) and unlock with a short toast,
+  never a dialog during a puzzle. Data in `data/achievements.json` (typed rules, for Godot later); icons are a
+  placeholder roundel until Codex's pack exists.
+- **Story cards**: a hero alive in the party when Lintvern falls earns their story card (15, one per hero, hidden
+  while the hero is unknown). The pictures are still to be painted.
+- **Folk parallax backgrounds for six regions** (Ptuj, Peca, Triglav, Bled, Trnovski gozd, Ljubljanica) from Codex's
+  studies, as variant **B** of each region's background test (not live: preview with `?ozadje=B` or *Visoka*). On Ptuj
+  the folk pack is B and the sunset pack moves to **E**. The speeds follow Codex's ratios against the walking lane
+  (1.0), measured in a test; layers drawn over the lane move at least as fast as it (oak and spruces 1.1, flowers 1.15,
+  near rocks 1.25), the Ljubljanica bridge at least as fast as its river. Layers that are not seamless tile as Codex's
+  art joined to its mirror image. The lane follows the actors' feet in battle and never sinks below its painted place.
+- **Piranske soline and Predjamski grad** use Codex's redrawn pixel backgrounds; Ljubljansko barje, Trnovski gozd,
+  Ljubljanica and Ljubljanski grad have their own pixel backgrounds (`Folk-art-BGs`).
+- **Build size:** `dist/index.html` 11.5 MB (4.4 MB in 0.17.0): +3.8 MB of background layers and +1.4 MB of cards
+  as WebP, ×4/3 as base64.
+
 ## 0.17.0 — 20 Nov 2026 · zaprta alfa · Balance E: own levels, a harder road
 
 Branch `feat/balance-e`. Decided by the Game Director on 20 Nov (the game was too easy: XP got out of hand and the

@@ -1,5 +1,25 @@
 # Folk-art backgrounds and parallax roadmap
 
+**In game (draft, 25 Nov 2026, v0.19.0, PR #38):** the six studies below (Ptuj, Peca, Triglav, Bled, Trnovski gozd,
+Ljubljanica) are built into the game as **variant B** of each region's background test (`data/backgrounds.json`,
+`live: false`: preview with `?ozadje=B` or *Kakovost slik → Visoka*). On Ptuj the folk pack is B and the earlier
+sunset pack moved to **E**. `tools/art_folk_parallax.py` makes the game layers from Codex's study PNGs, which stay
+unchanged: resized into one 996×560 view as Codex's composites place them, WebP q80. Nothing is drawn.
+
+- **Speeds** are Codex's ratios against the walking lane (1.0), measured by `tests/parallax.test.js`. Changes, all
+  reported to the Game Director: layers drawn over the lane move at least as fast as it (Game Director, 25 Nov: oak
+  0.82 → 1.1, Triglav spruces 0.72 → 1.1 and flowers 0.88 → 1.15); the Ljubljanica bridge 0.40 → 0.55 (over its river
+  at 0.50) and its road 0.90 → 1.0; skies no faster than their clouds (Ptuj and Peca sky 0.08 → 0.02, Ljubljanica
+  clouds 0.035 → 0.1); Bled's lake 0.62 → 0.36, so the island (0.36) and its reflection (0.34) stay on the water.
+- **Seams:** a tiling layer whose picture is cut by its side is joined to its mirror image (Game Director, 25 Nov);
+  landmarks clear of both sides are padded so they come round only every 2–3 view widths. Codex may deliver true
+  seamless tiles later, which would replace the mirror joins.
+- **Lanes** follow the actors' feet in battle (`stand`) but never sink below their painted place (`riseOnly`); the
+  lane's mirror image below it lets it rise. Low front layers keep under the lowest feet (`below`). `focusY` picks the
+  band a wide desktop scene shows, so the landmark stays in view.
+- **CONFIRMED (Game Director, 25 Nov): Ptuj should always be winter.** Codex's Ptuj study is not a winter scene, so a
+  winter redraw is to be requested from Codex; the folk Ptuj stands in as B until then.
+
 The campaign currently has ten implemented battle backgrounds. Their order and `bg` keys come from [`data/world.json`](../../data/world.json); [`src/game.js`](../../src/game.js) provides the background descriptions and lookup. The backgrounds currently rendered in-game are the small pixel-art scenes in the art bundle. The folk-painted panoramas in `docs/art-benchmarks/` are a separate visual direction and are not wired into the battle renderer.
 
 ## Implemented campaign backgrounds

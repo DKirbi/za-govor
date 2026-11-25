@@ -1,6 +1,8 @@
 # Achievements — catalog and progression proposal
 
-**Status:** design proposal for the browser prototype and future Godot game. Achievements are not implemented yet; the menu currently has an empty *Dosežki* section. This catalog gathers the ideas already in the project and adds replay goals that fit the journey, word play, folklore roster and planned folk-art cards.
+**Status:** **IMPLEMENTED (draft, 25 Nov 2026, v0.19.0, PR #38)** — every entry below is built from `data/achievements.json` by `src/achievements.js` and shown in *Dosežki in junaki*. Building the whole catalogue was the Game Director's choice (25 Nov). The catalogue itself is still Codex's proposal: titles, conditions and tiers can change. Updated on 25 Nov for the **party of three** (24 Nov), **two shrines** with gifts per region, and **withdrawing only on Malček**. Icons and story-card pictures do not exist yet: the page shows a tier-coloured roundel with the group's initial, and a note that the card pictures are still to come.
+
+**How it is built:** each achievement has a typed rule in `data/achievements.json` — `count` (a lifetime counter reaches `min`), `set` (every listed id seen) or `event` (one moment of a journey meeting every condition) — so the Godot game can read the same file. Counters and sets live in the profile `zg-dosezki` in the browser. Only accepted words on the **letter mesh** count as words for now (crossword entries do not).
 
 **Achievement icon art brief:** [achievement-art-spec.md](achievement-art-spec.md) defines a small folk-art emblem for every catalog entry and gives Codex the production instructions. Generate and review the Bronze, Silver and Gold preview before producing the full set.
 
@@ -58,10 +60,10 @@ The 10-win boss goals deliberately reward replaying whole journeys. They should 
 | **Čez prvi prag** | Finish the Ptuj region. | Bronze |
 | **Do gradu** | Reach Ljubljanski grad. | Bronze |
 | **Slovenija v besedah** | Complete the journey by defeating Lintvern. | Gold |
-| **Brez ovinka** | Complete the journey without withdrawing from a battle. | Silver |
-| **Družina ostane skupaj** | Defeat Lintvern with all four party members alive. | Gold |
+| **Brez ovinka** | Complete the journey without withdrawing from a battle (withdrawing exists only on *Malček*). | Silver |
+| **Družina ostane skupaj** | Defeat Lintvern with a full party, all three heroes alive (party of three, 24 Nov). | Gold |
 | **Sam na poti** | Complete the journey with a one-hero party. | Gold |
-| **Brez božjega daru** | Complete a journey without a god in the party and without claiming a god's shrine gift. | Silver |
+| **Brez božjega daru** | Complete a journey without a god in the party and without using a shrine's gift (two shrines a journey, a gift per region). | Silver |
 | **Knjigoljubov izziv** | Complete a journey on *Knjižni molj*. | Gold |
 | **Vse tri mere znanja** | Complete a journey on each *Znanje* setting. | Gold |
 | **Šest znamenj** | Win a shrine challenge against each of the six gods. | Gold |
@@ -109,9 +111,9 @@ Some titles above are working titles, not finalized claims about folklore. In pa
 
 ## The final secret
 
-**Zlatorogova zapuščina** — after collecting all 15 character cards, defeat Lintvern once more on *Knjižni molj* with all four heroes alive. Award a unique golden Zlatorog card showing the whole company around the mountain chamois. This gives the long collection a final, visible prize and asks players to master the toughest version of the last battle after they have completed the ordinary roster. The card is a game reward, not a claim that the folklore describes this company or ending.
+**Zlatorogova zapuščina** — after collecting all 15 character cards, defeat Lintvern once more on *Knjižni molj* with a full party, all three heroes alive. Award a unique golden Zlatorog card showing the whole company around the mountain chamois. This gives the long collection a final, visible prize and asks players to master the toughest version of the last battle after they have completed the ordinary roster. The card is a game reward, not a claim that the folklore describes this company or ending.
 
-As a separate hidden skill challenge, **Zadnja beseda**: defeat Lintvern on *Knjižni molj* in *realni tempo*, with all four heroes alive, and land the final blow with a nine-letter-or-longer word containing Č, Š or Ž. Award a badge/title rather than another character card, so the all-character card collection remains the biggest art reward.
+As a separate hidden skill challenge, **Zadnja beseda**: defeat Lintvern on *Knjižni molj* in *realni tempo*, with all three heroes alive, and land the final blow with a nine-letter-or-longer word containing Č, Š or Ž. Award a badge/title rather than another character card, so the all-character card collection remains the biggest art reward.
 
 ## Scope and implementation notes
 
