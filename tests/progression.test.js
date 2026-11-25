@@ -1,5 +1,5 @@
 // Reviewed heroes (src/progression.js): their own skill kits with ranks 1–3, experience from the fight
-// (attacks + damage + the enemy's level, for the whole party since balance D) and their health per level.
+// (attacks + damage + the enemy's level: each hero their own share since balance E; the whole party's in balance D) and their health per level.
 // Since balance D a reviewed hero fires every skill they know up to the number of their letters. The first check is the simplest case on
 // purpose: Kurent alone against one škrat, two short words, and the XP adds up by hand.
 // Words are three letters (×1 for length), no č/š/ž, not a hero's own word and never repeated, so a skill's
@@ -50,10 +50,10 @@ run(async () => {
   p = await play(page, 0, 1);
   const xp1 = await ev(page, () => ({ xp: window.__ZG.S.heroes[0].xp, log: window.__ZG.B.logLines.join(' | ') }));
   check(p.dmg[0] === 4 && xp1.xp === 11, 'the škrat is beaten: Kurent gets 2 attacks + 8 damage + level 1 = 11 XP', JSON.stringify({ ...p, xp: xp1.xp }));
-  check(/družina \+11 XP \(napadi 2 · škoda 8 · raven 1\)/.test(xp1.log), 'the battle log says how the party\'s XP was made', xp1.log);
+  check(/Kurent \+11 XP/.test(xp1.log), 'the battle log says what XP each hero got', xp1.log);
   await sleep(1600);
   const res = await ev(page, () => (document.querySelector('.dialog .stats') || {}).textContent || '');
-  check(/Izkušnje družine/.test(res) && /11 XP/.test(res) && /napadi 2 · škoda 8 · raven 1/.test(res), 'the battle result shows the party\'s XP and its parts', res);
+  check(/Izkušnje: Kurent/.test(res) && /11 XP/.test(res) && /napadi 2 · škoda 8 · raven 1/.test(res), 'the battle result shows each hero\'s XP and its parts', res);
   await shot('progression-01-result');
 
   // 2. Rank progression: points raise Ježevka to rank 2 (6) and rank 3 (8), and no further.
@@ -65,8 +65,8 @@ run(async () => {
   await play(page, 0, 1);
   const c2 = await ev(page, () => window.__ZG.B.enemies[0].charge);
   check(Math.abs(c2 - c1 - 0.25) < 1e-9, 'a second Ježevka before the enemy acts adds no delay', JSON.stringify({ c1, c2 }));
-  const ranks = await ev(page, () => { const Z = window.__ZG, st = Z.S.heroes[0]; Z.S.run.pts = 4;   // the party's shared pool
-    const r = [Z.spendPoint(0, 1), Z.spendPoint(0, 1), Z.spendPoint(0, 1)]; return { r, sk: st.sk.join(), pts: Z.S.run.pts }; });
+  const ranks = await ev(page, () => { const Z = window.__ZG, st = Z.S.heroes[0]; st.pts = 4;   // Kurent's own points (balance E)
+    const r = [Z.spendPoint(0, 1), Z.spendPoint(0, 1), Z.spendPoint(0, 1)]; return { r, sk: st.sk.join(), pts: st.pts }; });
   check(ranks.r.join() === 'true,true,false' && ranks.sk === '3,0,0' && ranks.pts === 2, 'two points raise Ježevka to rank 3 and no further', JSON.stringify(ranks));
   await ev(page, () => { window.__ZG.S.heroes[0].sk[0] = 2; });
   p = await play(page, 0, 1);
@@ -79,6 +79,9 @@ run(async () => {
   // Zvonci: Kurent dances for 2 s (his letters out of the mesh), the bells hit for 3 and the škrat's next blow is 3 weaker
   await ev(page, () => { window.__ZG.S.heroes[0].sk = [1, 1, 1]; window.__ZG.B.enemies[0].hp = window.__ZG.B.enemies[0].maxHp = 999; });
   p = await play(page, 0, 2);
+  // the icon above the škrat (Game Director, 20 Nov): red crossed swords with −3 while its next blow is weaker
+  const badge = await ev(page, () => { const b = document.querySelector('.enemies .actor .st .fxb.down'); return b ? { alt: b.querySelector('img').alt, v: b.textContent } : null; });
+  check(badge && badge.alt === 'šibkejši napad' && badge.v === '−3', 'above the škrat: red crossed swords with −3 until its next blow', JSON.stringify(badge));
   const bells = await ev(page, () => { const Z = window.__ZG, B = Z.B, e = B.enemies[0], st = Z.S.heroes[0], hp0 = st.hp;
     const out = { busy: B.busy[0] > B.time, weak: e.weak && e.weak.by, grey: document.querySelectorAll('.puzzle .tile.sleep').length };
     Z.hurtParty(8, e); out.took = hp0 - st.hp; out.after = e.weak; const h1 = st.hp; Z.hurtParty(8, e); out.next = h1 - st.hp; return out; });
@@ -90,12 +93,12 @@ run(async () => {
   const winter = await ev(page, () => window.__ZG.B.enemies[0].charge);
   check(p.dmg[0] === 4 + 3 + 4 && Math.abs(winter - (0.5 - 3 / 8.5 + 0.25)) < 1e-9, 'three letters fire all three: −4, −3, Pregon zime −4; the delays do not add up (the longest, 3 s, counts)', JSON.stringify({ ...p, winter }));
 
-  // 3. A hero without a reviewed specification keeps the enemy's fixed XP beside a reviewed one
+  // 3. Balance E: each hero standing gets their own share; one who did not strike gets only the enemy's level
   await battle(page, ['kurent', 'krpan']);
   await ev(page, () => { window.__ZG.B.enemies[0].hp = 4; });
   p = await play(page, 0, 1);
   const mixed = await ev(page, () => window.__ZG.S.heroes.map(st => st.xp));
-  check(p.dmg[0] === 4 && mixed[0] === 1 + 4 + 1 && mixed[1] === mixed[0], 'balance D: the party shares the XP of the fight (1 attack + 4 damage + level 1), Krpan as much as Kurent', JSON.stringify({ ...p, xp: mixed }));
+  check(p.dmg[0] === 4 && mixed[0] === 1 + 4 + 1 && mixed[1] === 1, 'balance E: Kurent gets his own share of the fight (1 attack + 4 damage + level 1), Krpan, who did not strike, only the level', JSON.stringify({ ...p, xp: mixed }));
 
   // 4. Kralj Matjaž at rank 3: Meč 18 and a shield of 6 on each hero hit; Kraljeva vojska +10 on the next attack
   //    and the next two enemy blows 3 weaker; Prebujenje raises the fallen (15 %), heals 6 and hits every enemy for 12
@@ -108,14 +111,20 @@ run(async () => {
   const krpanOwn = (await play(page, 1, 1)).dmg[0];
   p = await play(page, 0, 2);
   const rally = await ev(page, () => ({ rally: { ...window.__ZG.B.rally }, dampen: window.__ZG.B.dampen }));
+  const rallyBadge = await ev(page, () => [...document.querySelectorAll('.party .herowrap .st')].map(st => { const b = st.querySelector('.fxb.up'); return b ? b.textContent : ''; }));
   const krpanRallied = (await play(page, 1, 1)).dmg[0];
   check(p.dmg[0] === 18 && rally.rally[1] === 10 && rally.dampen.by === 3 && rally.dampen.left === 2 && krpanRallied === krpanOwn + 10,
     'two letters: Meč (18) and Kraljeva vojska at rank 3 — every hero\'s next attack +10 (Krpan hits 10 harder), the next two enemy blows −3', JSON.stringify({ krpanOwn, krpanRallied, ...rally, ...p }));
+  check(rallyBadge.length === 2 && rallyBadge.every(t => t === '+10'), 'above every hero: green crossed swords with +10 until their next attack', JSON.stringify(rallyBadge));
   const awake = await ev(page, () => { const Z = window.__ZG, st = Z.S.heroes; st[1].down = true; st[1].hp = 0; st[0].hp = st[0].maxHp - 10; Z.B.ward = 0; Z.B.rally = {}; return st[0].hp; });   // Matjaž's own +10 from Kraljeva vojska would still wait
   p = await play(page, 0, 3);
   const woke = await ev(page, () => { const st = window.__ZG.S.heroes; return { down: st[1].down, hp: st[1].hp, max: st[1].maxHp, m: st[0].hp, ward: window.__ZG.B.ward }; });
   check(!woke.down && woke.hp === Math.round(woke.max * 0.15) && woke.m === awake + 6 && woke.ward === 6 && p.dmg[0] === 18 + 12 + 10 && p.dmg[1] === 12,
     'three letters: Meč, Kraljeva vojska and Prebujenje at rank 3 — Krpan rises with 15 %, Matjaž +6, a shield of 6, every enemy −12 (the target also +10 from the army)', JSON.stringify({ ...woke, before: awake, ...p }));
+  // support XP (Game Director, 20 Nov): the 6 his shield took off a blow, Krpan's 15 % and his own 6 healed, counted on the enemy struck at
+  const sup = await ev(page, () => { const t = window.__ZG.B.enemies[0].tally || {}; return { m: (t.matjaz || {}).s, k: (t.krpan || {}).s || 0, parts: window.__ZG.foeXp(window.__ZG.B.enemies[0], 0) }; });
+  check(sup.m === 6 + woke.hp + 6 && sup.k === 0 && sup.parts.n === sup.parts.a + sup.parts.d + sup.parts.s + sup.parts.lv,
+    'healing and shields count as XP: Matjaž\'s shield (6 off a blow), Prebujenje (Krpan\'s 15 % and his own 6) go on the enemy\'s tally for him; Krpan gets none', JSON.stringify({ ...sup, risen: woke.hp }));
 
   // 5. Kresnik: the flaming sword hits a dragon 1,5× (12) and burns 2 a tick; Kresna moč gives back a quarter of the next wound, and half of that in gold
   await battle(page, ['kresnik'], ['mladic']);
@@ -163,9 +172,44 @@ run(async () => {
   // 9. Veščine shows each reviewed skill's own ranks, not the generic stopnje
   const panel = await ev(page, () => { const Z = window.__ZG; Z.S.heroes[0].pts = 1; Z.go('train', { back: () => Z.go('title') });
     return { rows: document.querySelectorAll('.train .sk').length, ups: document.querySelectorAll('.train .sk-ups li').length, text: (document.querySelector('.train .skills') || {}).textContent || '' }; });
-  check(panel.rows === 3 && panel.ups === 6 && /Metanje skal/.test(panel.text) && /Kamni v vse sovražnike \(8\)/.test(panel.text) && !/učinki trajajo/.test(panel.text),
+  check(panel.rows === 3 && panel.ups === 6 && /Metanje skal/.test(panel.text) && /vse nasprotnike, vsakega za \d+ točk/.test(panel.text) && !/sovražnik|cilj/.test(panel.text) && !/učinki/.test(panel.text),
     'Veščine lists Metanje skal, Varstvo popotnikov and Okamnitev with their own rank 2 and 3', panel.text.slice(0, 400));
+  // Game Director, 20 Nov: short texts — stopnja 1 says what the skill does, 2 and 3 only what changes; time in words;
+  // attack and defence changes as icons; the dots are explained once, not in every skill
+  const short = await ev(page, () => { const Z = window.__ZG; Z.go('title'); openSkillInfo('kurent', null); const d = document.querySelector('.skilldlg');
+    const out = { text: d.textContent, icons: [...d.querySelectorAll('img.fxi')].map(i => i.alt), legend: !!d.querySelector('.sk-legend'),
+      lines: [...d.querySelectorAll('.sk-ups li')].map(li => li.textContent) };
+    document.querySelectorAll('.overlay').forEach(o => o.remove()); Z.S.bagEl = null; Z.S.overlayKey = null; return out; });
+  check(short.legend && !/Beseda z/.test(short.text) && !/pleše|naslednji udarec/.test(short.text) && /napade 2 sekundi kasneje/.test(short.text) && /za 4 točke/.test(short.text) && !/cilj|sovražnik/.test(short.text) && !/\d s\b/.test(short.text),
+    'Kurent\'s skills: no dance, no "naslednji udarec", "nasprotnik" not "cilj", damage "za N točk", seconds in words, the dots explained once', short.text.slice(0, 300));
+  check(short.icons.filter(a => a === 'šibkejši napad').length >= 3 && short.lines[0] === 'Stopnja 2 Za 6 točk, napade 3 sekunde kasneje.',
+    'a weaker enemy attack is shown with the red swords; stopnja 2 lists only the change', JSON.stringify({ icons: short.icons, first: short.lines[0] }));
   await shot('progression-03-skills');
+
+  // 10. Martin Krpan (reviewed 18 Nov): Lipov kij 10 / 16 / 20, Kmečka moč 8×2 / 20 / 22 split between two enemies, Mesarica 10 / 14 / 20 + a bleed
+  const kp = async (sk, n, foes = ['skrat']) => { await battle(page, ['krpan'], foes);
+    await ev(page, sk => { const Z = window.__ZG; Z.S.heroes[0].sk = sk; Z.B.enemies.forEach(e => { e.hp = e.maxHp = 999; e.dot = null; }); }, sk);
+    const q = await play(page, 0, n); q.dot = await ev(page, () => window.__ZG.B.enemies.map(e => e.dot || null)); return q; };
+  let q = await kp([1, 0, 0], 1);
+  check(q.dmg[0] === 10, 'Krpan: Lipov kij rank 1 hits for 10', JSON.stringify(q));
+  q = await kp([3, 0, 0], 1);
+  check(q.dmg[0] === 20, 'Krpan: Lipov kij rank 3 hits for 20', JSON.stringify(q));
+  q = await kp([1, 1, 0], 2);
+  check(q.dmg[0] === 10 + 16, 'Krpan: Kmečka moč rank 1 is two punches of 8 on top of Lipov kij (26)', JSON.stringify(q));
+  q = await kp([1, 2, 0], 2);
+  check(q.dmg[0] === 10 + 20, 'Krpan: Kmečka moč rank 2 (the salt sacks) hits one enemy for 20', JSON.stringify(q));
+  q = await kp([1, 3, 0], 2, ['skrat', 'skrat']);
+  check(q.dmg[0] === 10 + 11 && q.dmg[1] === 11, 'Krpan: Kmečka moč rank 3 (the boulder) splits 22 between two enemies, 11 each', JSON.stringify(q));
+  q = await kp([1, 3, 0], 2);
+  check(q.dmg[0] === 10 + 22, 'Krpan: the boulder against one enemy deals all 22', JSON.stringify(q));
+  q = await kp([1, 1, 1], 3);
+  check(q.dmg[0] === 10 + 16 + 10 && q.dot[0] === 'krvavi', 'Krpan: Mesarica rank 1 hits for 10 and leaves a bleed (all three skills: 36)', JSON.stringify(q));
+  q = await kp([1, 1, 3], 3);
+  check(q.dmg[0] === 10 + 16 + 20, 'Krpan: Mesarica rank 3 hits for 20', JSON.stringify(q));
+  const bleed = await ev(page, async () => { const Z = window.__ZG, e = Z.B.enemies[0]; const t0 = e.burnTurns, b = e.burn; await new Promise(r => setTimeout(r, 2300)); return { t0, b, hp: e.hp }; });
+  check(bleed.t0 === 4 && bleed.hp === 999 - 46, 'Krpan: Mesarica rank 3 bleeds for 4 s (calm mode ticks per word, as Kresnik\'s fire does; nothing extra on the clock)', JSON.stringify(bleed));
+  const kt = await ev(page, () => { const Z = window.__ZG; Z.S.heroes[0].pts = 1; Z.go('train', { back: () => Z.go('title') }); return (document.querySelector('.train .skills') || {}).textContent || ''; });
+  check(/Lipov kij/.test(kt) && /Kmečka moč/.test(kt) && /Mesarica/.test(kt) && /dva zaporedna udarca s pestjo, vsak za 8 točk/.test(kt) && /Vreče soli: za 20 točk/.test(kt) && !/Kobilica/.test(kt), 'Veščine shows Krpan\'s new skills with their own rank text', kt.slice(0, 400));
 
   check(!errors.length, 'no page errors', errors.join(' | '));
   return ctx;

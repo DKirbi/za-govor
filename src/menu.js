@@ -78,8 +78,8 @@ function pageKey(e) {
 // ------------------------------------------------------------ Nova pot: pace and knowledge, then a hero
 // The choices are a draft (S.setup) until the journey starts (startJourney → applySetup).
 const PACE = [
-  { id: 'real', name: 'Realni čas', badge: 'priporočeno', text: 'Sovražniki napadajo sproti in počasi topijo zdravje družine.' },
-  { id: 'calm', name: 'Mirni način', text: 'Brez časovnega pritiska, sovražniki napadejo na vsakih nekaj potez. Dogodki imajo dvojni čas.' }];
+  { id: 'real', name: 'Realni čas', badge: 'priporočeno', text: 'Nasprotniki napadajo sproti in počasi topijo zdravje družine.' },
+  { id: 'calm', name: 'Mirni način', text: 'Brez časovnega pritiska, nasprotniki napadejo na vsakih nekaj potez. Dogodki imajo dvojni čas.' }];
 // Znanje is the one difficulty: puzzle help and what a lost battle and a fallen hero mean (LEVELS and DIFFS
 // in src/game.js). Težavnost was a separate choice until 0.11.0.
 const KNOW = [
@@ -155,7 +155,7 @@ const CONTROLS_DESK = [
   ['Na poti', [[['→', 'Enter'], 'hodi naprej ali sprejmi, kar ponuja postaja'], [['Esc'], 'druga izbira na postaji'], [['T'], 'torba']]],
   ['Mreža črk', [[['a–ž'], 'tipkaj besedo; pot po sosednjih črkah se poišče sama'], ['miška', 'vleci čez sosednje črke ali klikaj eno za drugo; klik na zadnjo jo pošlje'],
     [['Enter'], 'pošlji besedo'], [['Backspace', 'Del'], 'briši črko · počisti besedo'], [['presledek'], 'izreci zagovor, ko je poln'],
-    [['←', '→'], 'izberi sovražnika, ki ga napadeš'], [['1', '2', '3'], 'namig · premešaj mrežo · torba']]],
+    [['←', '→'], 'izberi nasprotnika, ki ga napadeš'], [['1', '2', '3'], 'namig · premešaj mrežo · torba']]],
   ['Križanka', [[['a–ž'], 'vpiši odgovor'], [['Tab', 'Enter'], 'naslednja beseda (Shift + Tab: prejšnja)'], [['←', '↑', '↓', '→'], 'premik po mreži'],
     [['Backspace'], 'briši črko'], [['?'], 'razkrij črko (število je omejeno)']]],
   ['Skrinja, konice in plaz', [[['a–ž'], 'tipkaj črke ali klikaj nanje'], [['Enter'], 'pošlji besedo'], [['Backspace', 'Del'], 'briši črko · počisti besedo']]],
@@ -200,9 +200,9 @@ function howtoSlides() {
   const cross = tutCross('finisher');
   return [
     { id: 'mesh', short: 'Mreža', ...T('mesh'),
-      time: 'Realni čas: sovražniki napadajo sproti, zato so hitre besede vredne več kot popolne. Mirni način: sovražniki počakajo na tvojo besedo.' },
+      time: 'Realni čas: nasprotniki napadajo sproti, zato so hitre besede vredne več kot popolne. Mirni način: nasprotniki počakajo na tvojo besedo.' },
     { id: 'cross', short: 'Križanka', title: 'Križanka', fig: cross.fig, steps: cross.steps,
-      lead: 'Križanko odpre poln zagovor (mogočen udarec), sovražnikovo zaklepanje (mreža črk je zaprta, dokler je ne rešiš) ali zaseda (udariš prvi). Vsaka pravilno rešena beseda je napad.',
+      lead: 'Križanko odpre poln zagovor (mogočen udarec), nasprotnikovo zaklepanje (mreža črk je zaprta, dokler je ne rešiš) ali zaseda (udariš prvi). Vsaka pravilno rešena beseda je napad.',
       time: 'Pri zagovoru časa ni. Pri zaklepanju in zasedi kaže rdeča črta nad križanko, koliko časa ostane; v mirnem načinu časa ni.' },
     { id: 'chest', short: 'Skrinja', ...T('chest'), time: 'Rdeča črta je čas. Ko poteče, skrinja ostane zaklenjena. V mirnem načinu je časa dvakrat več.' },
     { id: 'darts', short: 'Konice', ...T('darts'), time: 'Rdeča črta je čas. Ko poteče, se vse konice sprožijo nate. V mirnem načinu je časa dvakrat več.' },
@@ -275,7 +275,7 @@ function renderAbout(at) {
     crumb(),
     pageH1('O igri'),
     h('p', { class: 'lead' }, h('i', {}, 'Za govor!'), ' je besedna igra vlog s slovanskimi bogovi in junaki slovenskega ljudskega izročila. Junaki se bojujejo z besedami: prava beseda je napad, daljša udari močneje.'),
-    h('p', {}, 'Pot vodi po Sloveniji, od Ptuja do Ljubljanskega gradu, kjer čaka zmaj. Začneš z enim junakom. Na poti srečaš sovražnike, skrinje, plazove, vodnjake, krošnjarje, svetišča bogov in nove junake; v družini so največ štirje, bog le eden. Zdravje se po bitki ne vrne samo: junaki se pozdravijo pri vodnjaku, ob novi ravni pa se pozdravijo do konca. Zlatnike zapraviš pri krošnjarju za napoje, strupe in predmete.'),
+    h('p', {}, 'Pot vodi po Sloveniji, od Ptuja do Ljubljanskega gradu, kjer čaka zmaj. Začneš z enim junakom. Na poti srečaš nasprotnike, skrinje, plazove, vodnjake, krošnjarje, svetišča bogov in nove junake; v družini so največ štirje, bog le eden. Zdravje se po bitki ne vrne samo: junaki se pozdravijo pri vodnjaku, ob novi ravni pa se pozdravijo do konca. Zlatnike zapraviš pri krošnjarju za napoje, strupe in predmete.'),
     h('p', { class: 'muted' }, STAGE === 'zaprta alfa' ? 'Igra je v zaprti alfi: igrajo jo povabljeni preizkuševalci. Še nastaja in se po vsakem preizkusu spremeni.' : 'Igra še nastaja in se po vsakem preizkusu spremeni.'),
     versionLine('about-version'),
     sec('avtor', 'Avtor', creditAuthor()),
@@ -296,6 +296,12 @@ function renderSettings() {
     pageH1('Nastavitve'),
     h('section', {}, h('h2', {}, 'Zvok'), soundControls()),
     statsSection(),
+    h('section', {}, h('div', { class: 'devbox' }, h('span', { class: 'devtag' }, 'Razvoj'),
+      h('h2', {}, 'Kakovost slik'),
+      h('p', { class: 'muted sec-lead' }, 'Visoka: slojevito ozadje Ptuja (Codex). Nizka: slika, ki je v igri doslej. Zimska različica nima nizke kakovosti in ostane visoka. Samodejno prepusti izbiro preizkusu A/B. Velja za naslednjo sliko.'),
+      ...[['auto', 'Samodejno (privzeto)'], ['high', 'Visoka kakovost'], ['low', 'Nizka kakovost']].map(([v, label]) =>
+        h('label', { class: 'toggle' }, h('input', { type: 'radio', name: 'set-fid', class: 'set-fid', value: v, checked: fidelity() === v, onchange: () => setFidelity(v) }),
+          h('span', {}, label))))),
     S.mobile ? null : h('section', {}, h('h2', {}, 'Zaslon'),
       h('label', { class: 'toggle' },
         h('input', { type: 'checkbox', class: 'set-fs', checked: isFs(), onchange: e => {

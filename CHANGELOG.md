@@ -36,6 +36,160 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
+## 0.17.0 — 20 Nov 2026 · zaprta alfa · Balance E: own levels, a harder road
+
+Branch `feat/balance-e`. Decided by the Game Director on 20 Nov (the game was too easy: XP got out of hand and the
+party went up a level nearly every battle); numbers from simulations of the built game. Details and tables:
+`docs/progression-design.md` §4c.
+
+- **Every hero levels on their own again, and more slowly.** A beaten enemy gives each hero standing their own attacks
+  + damage on it + its level. Levels at 70 / 180 / 360 / 640 / 1000 / 1500 / 2200 / 3100 XP, **one point of their own**
+  a level (balance D: one party level, three shared points). A hero who joins arrives at the level of the party's
+  lowest hero, with the points of those levels. The battle log and result say what each hero got.
+  **Healing and shields count as XP** (Game Director): one XP per point a hero heals (raising the fallen too), per
+  point of shield they give, and per point of a blow Kralj Matjaž's shield or Ajdovska deklica's Varstvo takes off.
+- **Skill points are spent only at a well and at the signpost at a region's end**, and only there are the skills shown:
+  no Veščine after a battle, at shrines or at the pedlar, no Veščine button on the hero screens during a journey (the
+  codex keeps it), and a hero with a point glows only at a well or a signpost.
+- **Three battles in every region** from Peca to Ljubljanica (Ptuj keeps four), and **one event per region: a chest or
+  a trap, never both** (a chest 60 / 45 / 30 % of the time by Znanje, else a rock slide or spikes; Ptuj's is a chest).
+- **Enemies:** softer at Peca, Triglav and Trnovski gozd, steeper from Bled to the castle (health ×3.65 and attack
+  ×2.0 at the end; D: ×3.0 and ×1.8). The Lintvern is the toughest enemy on every Znanje: 289 / 320 / 480 health by Znanje (D: 170 / 250 / 313).
+- **Povodni mož and his vile** (Game Director): 260 health, hits 16 (221 / 260 / 390 by Znanje), less than the
+  Lintvern. The vile beside him hit at ×0.75 and every third move one heals him for 8 % of his health (*Zdravilni
+  val*), so they should fall first, as the Lintvern's wyverns should.
+- **Skill texts, short** (Game Director, from the phone): stopnja 1 says what a skill does, stopnji 2 and 3 only what
+  changes; time in words (*2 sekundi*, *5 sekund*); the dots are explained once; Kurent's texts rewritten (no dance,
+  no "naslednji udarec").
+- **Skill wording** (Game Director): the enemy is *nasprotnik* in its proper forms (no *cilj*, no *sovražnik* in
+  skills), damage *za 4 točke*, delays *kasneje*. Stopnja 1 of every reviewed skill opens with a short line from the
+  hero's legend (Pregon zime: *Kurentov ples privabi ostale kurente …*); stopnji 2 and 3 only change the numbers.
+- **The god comes at the end of the region** (Game Director): after a prayer the god arrives before that region's
+  signpost (the party rests first), not after the dragon. The shrines stand near the start of their regions, right
+  after the first battle. Losing is losing a battle (Malček withdraws to the signpost; Učenjak and Knjižni molj end
+  the journey); winning unlocks the god and the gift stays for this journey and the next. The god's lines no longer
+  mention the castle. The balance bot now fights the god too.
+- **Nasprotnik everywhere** (Game Director): the whole game calls the foe *nasprotnik*; the marker over the chosen
+  foe reads *▼ izbran*. Only Peter Klepec's legend keeps *sovražniki* (the invaders he held off).
+- **New: effect icons** (`src/effects.js`): crossed swords for attack, a shield for defence, green with an arrow up
+  for stronger, red with an arrow down for weaker; the arrow is as big as the shield. In skill texts and battle cards, and above the heads of heroes and
+  enemies for as long as the effect lasts.
+  Knjižni molj: enemy health ×1.5 (D: ×1.25), up to +35 % health and 18 % quicker attacks by the castle (D: +15 / 10 %).
+- **Measured** (the bot below, journeys won): Malček **55 %** at a word every 10 s (D: 98 %), Učenjak 49 % at 8 s
+  (D: 95 %), Knjižni molj 36 % at 6 s (D: 96 %). In boss battles the bot strikes the helpers first.
+- **New: `tools/sim/`**, a balance simulator. A bot plays whole journeys inside `dist/index.html` (headless Chrome)
+  on the game's own clock, so every rule runs as built; only the player is a model (pace, word lengths, crosswords,
+  chests and traps by chance). `node tools/sim/run.js tools/sim/plan.json`; results go to `tools/sim/out/` (ignored).
+- Tester statistics: `raven=` and `tocke=` are now hero by hero (`raven=4/3/3`).
+- Saves from 0.13.0–0.16.0 load: every hero keeps their level and the pooled points are shared out; chests and traps
+  are planned when the save loads.
+- **Art scope (Game Director, 20 Nov):** only the backgrounds are being enriched; the character designs stay as they
+  are (`docs/concept-summary.md`, `docs/art-benchmarks/ART_PRODUCTION_BENCHMARK.md` §4).
+
+## 0.16.0 — 20 Nov 2026
+
+Branch `fix/post-34-integration`: the work Codex added at the end of #34, connected and checked.
+
+- **The Ptuj road** (*Visoka*, summer and winter): the original cobbles at half size, on a thinner strip.
+  - Stones are about 38 % of their old size (scale 0.5, as chosen on 19 Nov). Codex's redrawn `road-cobbles` were
+    rejected on 20 Nov and are removed, with their generator and brief.
+  - The road's top follows the characters, on every screen: on the road it reaches up to the heroes' necks, so their
+    heads show against the water (about a third less road than before); in battle it starts just above the enemies'
+    feet (they stand higher than the heroes), a little lower than before.
+  - `tools/art_road_stack.py` makes the taller copy the small road needs from the original tile: more of its own
+    cobble rows, joined along the mortar so no straight seam shows, still seamless sideways. Nothing is redrawn.
+  - The WebP copies follow (`tools/art_bg_webp.py` now skips `previewOnly` layers and removes WebPs nothing draws).
+- **Martin Krpan, Kmečka moč rank 2** (*Visoka*): Krpan throws the salt bags alone, without the mare (Game Director,
+  20 Nov). The kneel when he is down is a little smaller than before (crouched).
+  - **Fix:** both sat 1 px above the ground line every other frame stands on (an off-by-one in
+    `tools/art_krpan_salt_throw.py`). Moved down 1 px; the art is otherwise unchanged.
+  - **Fix:** the full-pack previews (`martin-krpan-sprite-preview.png`, `animation-preview.html`) still showed the
+    mare; the manifest now points to them again, and the rank-2 previews stay as extra review files.
+- **Fix:** `tools/art_hero_pack.py` compared pictures by their alpha channel only (Pillow's `getbbox` on RGBA), so a
+  sheet whose colours changed could pass `--check`. It now compares every pixel.
+- **Fix:** `dist/index.html` on `main` was built before Codex's last commits, so the game showed neither change.
+
+## 0.15.0 — 17 Nov 2026 · zaprta alfa · Ptuj gets a second background for an A/B test
+Branch `feat/ptuj-bg-ab`, with the Codex art pack (#33). Details: `docs/art-benchmarks/ptuj-background/INTEGRATION.md`.
+- **Variant B is the Codex pack, *Ptuj — sončni zahod nad Dravo*** (`art/manifests/ptuj.json`): sunset sky,
+  clouds, distant hills, the castle hill with Ptuj Castle, the town on the Drava, the river with its
+  reflections and a road of big cobbles.
+  - The pack leaves placement open, so `data/backgrounds.json` places its layers for the game's scene: a
+    1672 × 560 view, the town and river moved up, the castle hill at Codex's 0.6 scale, and the road
+    enlarged 1.3× to reach from 58 % of the scene to the bottom.
+  - Every hero and enemy stands on the cobbles in battle and on the road. No pixel is changed.
+- **Variant A, the snowy Ptuj in use, is unchanged**, and it is what players see: the A/B test is off
+  (`live: false`). Turned on, each install keeps A or B (localStorage `zg-ab`). `?ozadje=B` previews B,
+  and *Liki in karte → Ozadja* shows it.
+- **Variant C, *Ptuj — večer ob Dravi*,** is Claude's pixel-art pack (`tools/art_ptuj_parallax.py`, 10
+  layers, 25 KB). It is a preview only (`?ozadje=C`, share 0) and has its own id, so it never touches the
+  Codex files.
+- **Backgrounds in layers** (`src/backgrounds.js`):
+  - Each layer moves at its own rate on the road, from the same centred framing as the battles.
+  - The view covers short, wide scenes without side gaps, with the ground kept at the bottom.
+  - Large pictures are shrunk smoothly, while pixel art keeps hard edges.
+  - A foreground layer stands in front of the actors and under the battle UI.
+  - Nothing drifts under reduced motion.
+- **`build.py`** reads both manifest formats, takes placement from `data/backgrounds.json`, builds a pack
+  in only when all its files are committed, and stops on a layer that contradicts its manifest.
+- **Battle statistics name the background variant** (`ozadje-ptuj=A`, or `B(predogled)` for a preview).
+  The consent text says so (*različica igre in ozadja*).
+- **Size:** the Codex layers grow the single-file build from 2.7 MB to about 9 MB. Runtime-sized
+  exports are an open question.
+- GPT's reference sheet is committed as a reference only. New test file: `tests/backgrounds.test.js`
+  (36 checks).
+- **Combined seasonal pack (PR #34)**: sunset (B) and winter (D, the Kurent background, share 0) share one depth
+  order. The shared bridge sits after the riverbank wall in both, and the outer-bank trees, the foreground
+  rocks and the separate cloud strips are in. Winter stays a preview until the Game Director assigns it.
+- **Fix:** the winter pack drew the bridge behind the sky, because the shared bridge came first in the manifest.
+  `build.py` now orders every layer by where its id first appears in the manifest.
+- **Fix:** castle hill in both packs was placed above the 560 px view and failed the build. Its y is now 0.
+- **Nastavitve → Razvoj → Kakovost slik:** *Samodejno* (the default: the A/B test chooses, as before), *Visoka*
+  (the Codex sunset pack, where the test would show A) or *Nizka* (the picture already in the game, variant A,
+  where the test would show the sunset pack). Winter has no low picture yet, so it stays on its Codex pack.
+  Stored in `zg-fidelity`. Martin Krpan's pictures are not yet part of the setting.
+- **Size:** the half-size copies of the Codex layers are removed, with `tools/art_ptuj_lowfi.py`. They were not
+  the low tier. The single-file build is 18 MB, down from 21.8 MB.
+- **Readable labels in the scene (19 Nov, Game Director):** the HP numbers, rank tags and enemy names under the
+  heroes and enemies have a 1 px dark outline. On snow (winter Ptuj and the picture already in the game) the grey
+  numbers were almost invisible. Only labels on the scene change; the same numbers on dark panels stay as they were.
+- **The Ptuj layers ship as WebP (19 Nov, Game Director):** the single-file build is **4.0 MB, down from 18.5 MB**.
+  `tools/art_bg_webp.py` writes a quality-90 WebP of every layer into `webp/` next to its PNG export (11.5 MB of
+  PNG becomes 0.9 MB for both seasons). Alpha stays exact, the road tile still joins without a seam, and side by
+  side on a phone the scenes look the same. The PNG exports stay as the lossless masters for a PC build.
+  - A pack opts in with `"webp": {"quality": 90}` in `data/backgrounds.json`. Each `webp/index.json` records which
+    PNG a WebP was made from; when a PNG changes, `build.py` embeds that PNG instead and says to rerun the tool
+    (`--check` lists stale ones). `build.py` still needs only the Python standard library.
+
+- **Martin Krpan follows *Kakovost slik* too** (Codex pack `codex/martin-krpan-sprite-assets`, merged into this branch).
+  - *Visoka* draws his Codex sprites; *Samodejno* and *Nizka* keep the sprite already in the game.
+  - Every state has its own row in one 192 × 432 sheet (`martin-krpan-sheet.png/.json`, embedded by `build.py`):
+    idle, Lipov kij, Kmečka moč R1 / R2 / R3, Mesarica, and the approved running, victory and downed poses.
+  - **Running** loops while the party walks the road. **Victory** (a raised bare fist) plays once when the last
+    enemy falls, before *Zmaga!*. **Downed** holds the kneel, greyed like every fallen hero, in battle, on the road
+    and on his hero screen. Reduced motion shows each state's first frame.
+  - **Fix:** the first export of running, victory and downed fitted every frame to 44 px on its own. Krpan grew
+    by about a quarter when he ran or cheered, the run lost its bob, and the kneel stood taller than idle. They are
+    re-exported from the same atlases at the pack's scale. The poses are unchanged.
+- **Hero sprites are data, ready for the rest of the roster:** `data/hero-art.json` names each hero's pack and
+  which sequence the game plays for idle, running, victory, down and each skill rank. `tools/art_hero_pack.py`
+  exports frames from the source atlases, packs the sheet, writes the review previews and validates a pack
+  (`--check`). It replaces `tools/art_krpan_sheet.py` and Codex's two Krpan exporters (`.ps1` and `.py`). The
+  convention for the next heroes is `docs/art-benchmarks/hero-sprites/README.md`; for the next regions,
+  `docs/art-benchmarks/region-backgrounds/README.md`.
+- **Removed as redundant** (17.5 MB): byte-identical copies (`previews/…/ptuj/assembled.*` = `sunset-assembled.*`;
+  the mare-lift export = its source), the PNG twins of the JPG previews, two old previews in
+  `art/source/environments/ptuj/`, the three Krpan-only tools and `docs/collaboration/GITHUB_WRITE_PERMISSION_TEST.md`.
+- **Krpan's skills are now the reviewed ones** (a reviewed hero, like Kurent or Kresnik; `src/progression.js`),
+  replacing Zamah, Kobilica and Lipov kij:
+  - **Lipov kij** 10 / 16 / 20.
+  - **Kmečka moč** (Game Director, 18 Nov): rank 1 two punches of 8, rank 2 the sacks for 20 at one enemy, rank 3 the
+    boulder for 22 split between up to two enemies.
+  - **Mesarica** 10 / 14 / 20 and a bleed of 2 a second for 2 / 3 / 4 s, as in the specification. A bleed and a burn
+    share the enemy's one damage-over-time slot.
+  - Balance impact is untested: Krpan is the main starting hero and his old attacks (7 / 18 / 38, the last one
+    stunning) are gone.
+
 ## 0.14.0 — 17 Nov 2026 · zaprta alfa · Znanje cards fold their details
 - **Nova pot:** each Znanje card shows its figure, name and one line. What losing and a fallen hero
   mean is folded behind **Podrobnosti** beside the *Znanje* heading; it opens all three cards at once

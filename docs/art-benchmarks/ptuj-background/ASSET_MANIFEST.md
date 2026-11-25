@@ -1,13 +1,13 @@
 # Ptuj background asset manifest
 
-- **Status:** OPEN — parallax concept slices prepared; production pack not yet delivered
-- **Visual owner:** GPT
-- **Approval:** Game Director
-- **Technical integration:** Claude
+**Status:** DELIVERED for review — the Codex pack (#33), integrated as variant B of the Ptuj background test (#32). Not approved.  
+**Visual owner:** GPT (generated with Codex)  
+**Approval:** Game Director  
+**Technical integration:** Claude
 
-This manifest is a checklist and destination map for the production paths below. The concept slices listed next are separate references; they do not yet fulfill those production paths.
+This was the checklist and destination map before delivery. The delivered files and their properties are in `art/manifests/ptuj.json`; how the game places them is in `INTEGRATION.md`.
 
-## Prototype slice references
+## Folk parallax slice references (Folk-art-BGs study)
 
 The first folk-art slice set has been generated from the reviewed panorama. These files are concept references for composition and parallax tuning; they do not fulfill the production paths below or update the in-game background.
 
@@ -29,14 +29,14 @@ See the [Ptuj layer and motion preview](../ptuj-parallax/README.md) for the comp
 
 | Layer | Planned path | Required properties | Status |
 |---|---|---|---|
-| Sky | `art/source/environments/ptuj/sky.png` | Full-width background layer | OPEN |
-| Distant hills | `art/source/environments/ptuj/distant-hills.png` | Independent layer, transparent outside silhouette | OPEN |
-| Castle hill | `art/source/environments/ptuj/castle-hill.png` | Independent layer including Ptuj Castle | OPEN |
-| Town | `art/source/environments/ptuj/town.png` | Independent town silhouette | OPEN |
-| Reflections | `art/source/environments/ptuj/reflections.png` | Separate water reflection layer | OPEN |
-| Drava water | `art/source/environments/ptuj/drava-water.png` | Seamless horizontal loop where appropriate | OPEN |
-| Foreground road | `art/source/environments/ptuj/road-tile.png` | Long, simple, seamless horizontal tile | OPEN |
-| Clouds | `art/source/environments/ptuj/clouds.png` | Independent transparent overlay | OPEN |
+| Sky | `art/source/environments/ptuj/sky.png` | Full-width background layer | DELIVERED (review) |
+| Distant hills | `art/source/environments/ptuj/distant-hills.png` | Independent layer, transparent outside silhouette | DELIVERED (review) |
+| Castle hill | `art/source/environments/ptuj/castle-hill.png` | Independent layer including Ptuj Castle | DELIVERED (review) |
+| Town | `art/source/environments/ptuj/town.png` | Independent town silhouette | DELIVERED (review) |
+| Reflections | `art/source/environments/ptuj/reflections.png` | Separate water reflection layer | DELIVERED (review) |
+| Drava water | `art/source/environments/ptuj/drava-water.png` | Seamless horizontal loop where appropriate | DELIVERED (review); a still, not a loop |
+| Foreground road | `art/source/environments/ptuj/road-tile.png` | Long, simple, seamless horizontal tile | DELIVERED (review) |
+| Clouds | `art/source/environments/ptuj/clouds.png` | Independent transparent overlay | DELIVERED (review) |
 
 ## Planned runtime exports
 

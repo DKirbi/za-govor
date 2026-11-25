@@ -53,7 +53,8 @@ async function openGame({ phone = false, width = 1100, height = 1000, intros = f
   await page.waitForFunction(() => !!window.__ZG);
   if (!intros) await page.evaluate(() => { window.__ZG.S.tutOn = false; });
   // chests and wells stand on a journey by chance (data/world.json → chance); tests that walk the road want every one there
-  if (!randomStops) await page.evaluate(() => { const C = window.__ZG.WORLD.chance || {}; Object.values(C).forEach(o => Object.keys(o).forEach(k => { o[k] = 1; })); });
+  // (balance E: every event slot is then a chest; `traps` and `firstChest` are left alone)
+  if (!randomStops) await page.evaluate(() => { const C = window.__ZG.WORLD.chance || {}; Object.values(C).forEach(o => { if (o && typeof o === 'object' && !Array.isArray(o)) Object.keys(o).forEach(k => { o[k] = 1; }); }); });
   await sleep(400);
   const shot = name => page.screenshot({ path: path.join(OUT_DIR, name + '.png') });
   return { browser, page, errors, shot };

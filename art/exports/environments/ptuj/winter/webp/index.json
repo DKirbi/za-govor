@@ -1,0 +1,123 @@
+{
+ "castle-hill.png": {
+  "webp": "castle-hill.webp",
+  "sha1": "fae6c9a27c8d52bceca23a7c4cab5b43e13ee06a",
+  "quality": 90,
+  "size": [
+   1578,
+   329
+  ],
+  "pngBytes": 891326,
+  "webpBytes": 121518
+ },
+ "clouds.png": {
+  "webp": "clouds.webp",
+  "sha1": "86eb89afcc891f3f6719a0adc41968a9135f14e7",
+  "quality": 90,
+  "size": [
+   1672,
+   332
+  ],
+  "pngBytes": 418085,
+  "webpBytes": 42550
+ },
+ "distant-hills.png": {
+  "webp": "distant-hills.webp",
+  "sha1": "b51ca0847317c2cd992ce345dc12b27e5f1ad2e2",
+  "quality": 90,
+  "size": [
+   1672,
+   158
+  ],
+  "pngBytes": 329521,
+  "webpBytes": 18642
+ },
+ "drava-water.png": {
+  "webp": "drava-water.webp",
+  "sha1": "5cb30c0f943b4bf9920a04cc6a11efb3abc3f456",
+  "quality": 90,
+  "size": [
+   1672,
+   365
+  ],
+  "pngBytes": 755813,
+  "webpBytes": 34874
+ },
+ "foreground.png": {
+  "webp": "foreground.webp",
+  "sha1": "06117b4a69b9ba8984a19491440c6ba2e3ecb6d1",
+  "quality": 90,
+  "size": [
+   1654,
+   102
+  ],
+  "pngBytes": 152745,
+  "webpBytes": 21496
+ },
+ "reflections.png": {
+  "webp": "reflections.webp",
+  "sha1": "c97f34700e0a9f3443ef60ea60eccf27a3ceb7e4",
+  "quality": 90,
+  "size": [
+   1534,
+   178
+  ],
+  "pngBytes": 384494,
+  "webpBytes": 21348
+ },
+ "riverbank-trees.png": {
+  "webp": "riverbank-trees.webp",
+  "sha1": "3cf0608bd6f40e3b9d4731de8ea2c5cf5b4b2f84",
+  "quality": 90,
+  "size": [
+   1590,
+   142
+  ],
+  "pngBytes": 88250,
+  "webpBytes": 9936
+ },
+ "riverbank-wall.png": {
+  "webp": "riverbank-wall.webp",
+  "sha1": "f0aeb36b71d4d0e3fe9ef6cf8e03edac8b005fdd",
+  "quality": 90,
+  "size": [
+   1653,
+   52
+  ],
+  "pngBytes": 197077,
+  "webpBytes": 28714
+ },
+ "road-tile-tall.png": {
+  "webp": "road-tile-tall.webp",
+  "sha1": "15db72f9a416bd779b3939c53a59472616e57479",
+  "quality": 90,
+  "size": [
+   2172,
+   663
+  ],
+  "pngBytes": 2255695,
+  "webpBytes": 262498
+ },
+ "sky.png": {
+  "webp": "sky.webp",
+  "sha1": "bdb654a6ea4055b0b83694dcefcaafb7967b065a",
+  "quality": 90,
+  "size": [
+   1672,
+   941
+  ],
+  "pngBytes": 1746242,
+  "webpBytes": 56828
+ },
+ "town.png": {
+  "webp": "town.webp",
+  "sha1": "dd3a2171b826d692c54dcedee6f217448049df58",
+  "quality": 90,
+  "size": [
+   1574,
+   269
+  ],
+  "pngBytes": 582903,
+  "webpBytes": 77706
+ }
+}

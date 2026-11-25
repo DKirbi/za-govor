@@ -1,10 +1,11 @@
-# Za govor — journey and progression design (updated 17 Nov 2026, v0.13.0)
+# Za govor — journey and progression design (updated 20 Nov 2026, v0.17.0)
 
 Prototype: https://claude.ai/artifact/NTdMnud7X8Um2p38G1fVnb
 
 This replaces the earlier "three starters and cursed-god bosses" proposal. Everything below is built in the browser prototype unless marked *not built*.
 
 ## Status at a glance
+- **20 Nov — v0.17.0, branch `feat/balance-e` (built, balance E from simulations of the real game, §4c):** every hero levels on their own and more slowly, with one point of their own a level; skill points are spent, and skills shown, only at wells and signposts; three battles a region and one chest or trap; enemies steeper in the second half, tougher bosses, Knjižni molj steeper. Malček is won about half the time at a word every 10 s (balance D: 98 %). A simulator that plays the built game (`tools/sim/`).
 - **17 Nov — v0.13.0, branch `feat/balance-d` (built, balance version D from the simulations):** the party levels together and shares its skill points; a reviewed hero fires every skill they know up to the number of their letters; enemies grow by region, with a third enemy from Bled and strong enemies from Trnovski gozd; Ptuj is the same tutorial on every Znanje; Knjižni molj steepens towards the castle; Povodni mož and a new Lintvern with three attacks, scorched letters and wyverns; opt-in battle statistics for testers (§4b). Monsters and gods get their own review later; D is the working balance until then.
 - **Decided by the user (11 Nov):** the 2D side-scrolling journey is the point of the game; the levels are places in Slovenia visited one after another, with no level list; the dragon at Ljubljana castle is the final battle; healing happens only at special places such as wells; the player starts with one character; four is the most in a party; only one god per play, and gods are stronger; Erasmus of Lueg (Erazem Predjamski) is a new character and more should be explored; all characters are unlocked; there are items with mythical Slavic names; merchants sell potions, poisons and attack boosts; traps, chests and wells have their own sprites; the web prototype is expanded for fast testing and Godot stays the end goal.
 - **16 Nov, late — v0.11.0, branch `0.11.0-alpha-fixes` (built, after testing #16):** *Težavnost* merged into *Znanje* (§3c); **starter-help words** in the letter mesh (§11.3); a new level heals fully (§4); **finishing a region heals the party** (§3); **malček: one second chance per journey at full health** (§3c); **chests and wells by chance in every region**, by Znanje (§1).
@@ -31,21 +32,23 @@ One road, walked left to right. The party stands still and the world scrolls pas
 
 | # | Region | Landmark in the background | Hero of the place (6× more likely to wait there) | Stops | Enemies |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Ptuj | castle above the snowy town | Kurent | battle, hero, chest\*, well\*, battle | Škrat, Vešča |
-| 2 | Peca | King Matjaž's cave | Kralj Matjaž | battle, rock slide, chest\*, hero, well\*, shrine, battle | Perkmandeljc, Škrat, Pesjan |
-| 3 | Triglav | the three peaks | Ajdovska deklica | battle, chest\*, rock slide, hero, pedlar, well\*, shrine, battle | Pesjan, Perkmandeljc, Vešča |
-| 4 | Bled | island church, castle on the cliff | — (Kresnik has no home and turns up anywhere) | battle, chest\*, shrine, well\*, battle | Vodna vila, Vešča, Škrat |
-| 5 | Trnovski gozd | moonlit forest | Martin Krpan | battle, chest\*, spikes, hero, well\*, shrine, battle | Mora, Volkodlak, Vešča |
-| 6 | Piranske soline | salt pans, Piran at sunset | Lepa Vida | battle, chest\*, pedlar, hero, well\*, shrine, battle | Vodna vila, Pesjan, Mora |
-| 7 | Predjamski grad | the castle in the cliff | Erazem Predjamski | battle, spikes, hero, rock slide, chest\*, well\*, ambush | Zmajev mladič, Perkmandeljc, Volkodlak |
-| 8 | Ljubljansko barje | pile dwellings in the mist | Zeleni Jurij | battle, chest\*, hero, pedlar, well\*, shrine, battle | Škrat, Mora, Volkodlak, Vodna vila |
-| 9 | Ljubljanica | Tromostovje | Peter Klepec | chest\*, battle, hero, well\*, **boss: Povodni mož** | Vodna vila, Mora |
-| 10 | Ljubljanski grad | the castle wall at sunset | — | chest\*, pedlar, rock slide, spikes, well\*, **boss: Lintvern** | — |
+| 1 | Ptuj | castle above the snowy town | Kurent | battle, hero, battle, chest, battle, well\*, battle | Škrat, Vešča |
+| 2 | Peca | King Matjaž's cave | Kralj Matjaž | battle, shrine, chest or trap†, battle, hero, well\*, battle | Perkmandeljc, Škrat, Pesjan |
+| 3 | Triglav | the three peaks | Ajdovska deklica | battle, shrine, chest or trap†, hero, battle, pedlar, well\*, battle | Pesjan, Perkmandeljc, Vešča |
+| 4 | Bled | island church, castle on the cliff | — (Kresnik has no home and turns up anywhere) | battle, shrine, chest or trap†, battle, well\*, battle | Vodna vila, Vešča, Škrat |
+| 5 | Trnovski gozd | moonlit forest | Martin Krpan | battle, shrine, chest or trap†, hero, battle, well\*, battle | Mora, Volkodlak, Vešča |
+| 6 | Piranske soline | salt pans, Piran at sunset | Lepa Vida | battle, shrine, chest or trap†, pedlar, hero, battle, well\*, battle | Vodna vila, Pesjan, Mora |
+| 7 | Predjamski grad | the castle in the cliff | Erazem Predjamski | battle, chest or trap†, hero, battle, well\*, ambush | Zmajev mladič, Perkmandeljc, Volkodlak |
+| 8 | Ljubljansko barje | pile dwellings in the mist | Zeleni Jurij | battle, shrine, chest or trap†, hero, battle, pedlar, well\*, battle | Škrat, Mora, Volkodlak, Vodna vila |
+| 9 | Ljubljanica | Tromostovje | Peter Klepec | chest or trap†, battle, hero, battle, well\*, **boss: Povodni mož** | Vodna vila, Mora |
+| 10 | Ljubljanski grad | the castle wall at sunset | — | chest or trap†, pedlar, well\*, **boss: Lintvern** | — |
 
-- **Random enemies:** each battle draws its enemies from the region's pool. One enemy while the party is a single hero, two after that. The very first fight is always one Škrat with the tutorial tips.
-- **Scaling:** enemy health +10 % and attack +6 % per region (bosses are fixed).
+- **Stops since balance E (20 Nov, v0.17.0, Game Director):** every region from Peca on has **three battles** (the ambush at Predjamski grad and Povodni mož count; the Lintvern stands alone at the castle) and **one event: a chest or a trap, never both** (†). Before, a region could hold a chest, a rock slide and spikes at once.
+- **Random enemies:** each battle draws its enemies from the region's pool. One enemy while the party is a single hero, two after that, three from Bled with three or more heroes (§4b). The very first fight is always one Škrat with the tutorial tips.
+- **Scaling:** by region, from `data/world.json → balance` (§4c; bosses have their own numbers).
 - **Three heroes per journey (13 Nov):** a hero always waits at Ptuj; two more regions with a hero stop are picked at random and the other hero stops are left out, so one journey never meets everyone. At a hero stop the hero of the place is six times as likely as anyone else, and heroes not yet unlocked twice as likely; if nobody is left, the stop becomes a well. **(16 Nov, stricter — see §11.2: at most one recruitable hero per region, randomized among the region's own heroes when several belong there. *Not built.*)**
 - **Shrines and heroes are planned per journey:** only three of the six shrines and three of the hero stops stay on any one journey (sections 1 and 2a).
+- **Chests and traps (20 Nov, v0.17.0; † in the table):** every region has one event slot. When a journey starts it becomes a chest with the chance of the chest line below (60 / 45 / 30 % by Znanje), otherwise a trap: a rock slide or a wall of spikes, half and half (`chance.traps`). Ptuj's is always a chest (`firstChest`). The plan is kept in the save (`eventAt`); an older save gets one when it loads. *The rest of this bullet describes v0.11.0–0.16.0, where chests were a slot of their own.*
 - **Chests and wells by chance (16 Nov, v0.11.0; \* in the table):** every region has a place for a chest and a place for a well. When a journey starts, each place stays with a chance set by **Znanje** — chests 60 / 45 / 30 %, wells 75 / 55 / 40 % on malček / učenjak / knjižni molj (`data/world.json → chance`), on average about 6 / 4.5 / 3 chests and 7.5 / 5.5 / 4 wells. A journey always keeps at least one chest, and **a well in each half of the road**. The plan is kept in the save (`chestAt`, `wellAt`); a 0.10.0 save gets its wells planned when it loads. (In v0.10.0 only six regions had a chest, by Težavnost 90 / 70 / 50 %.)
 - **Data:** regions, stop order, enemy pools, items and save checkpoints live in `data/world.json`, the words of each region in `data/words.json`, so the Godot game can read the same files.
 
@@ -54,7 +57,7 @@ One road, walked left to right. The party stands still and the world scrolls pas
 - **Joining unlocks (13 Nov):** a hero is unlocked for later journeys only when they join the party; greeting them and walking on leaves them unknown, so a full party has to choose whom to leave. A god is unlocked by beating them in the challenge after praying at their shrine. (Test mode shows everyone.)
 - **At most four** travel together. A fifth can only take somebody's place; a hero who has fallen can be left behind this way ("Zapusti").
 - **One god per journey.** A god never joins on the road: a god beaten in a challenge is unlocked and can **start** a later journey.
-- **A hero who joins** brings half the party's average experience (and the skill points of the levels it gives); they know only skill 1.
+- **A hero who joins** arrives at the level of the party's lowest hero (the one they replace does not count), knowing only skill 1, with the skill points of those levels to spend at the next well or signpost (v0.17.0; v0.13.0–0.16.0: the party's level; before: half the party's average experience).
 - **Gods are stronger:** attack ×1.35 (Veles ×1.5) and about a quarter more health than folk heroes.
 - **Letter mesh:** the share of coloured tiles grows with the party (30 % with one hero, 46 %, 56 %, 62 % with four).
 
@@ -63,15 +66,15 @@ One road, walked left to right. The party stands still and the world scrolls pas
 - **Where:** Peca (Svarog or Perun), Triglav (Perun or Stribog), Bled (Dažbog or Mokoš), Trnovski gozd (Veles or Mokoš), Piranske soline (Stribog or Dažbog), Ljubljansko barje (Veles or Mokoš). A journey keeps **three** of these at random, each for a different god. A god who starts the journey always finds their own shrine on it.
 - **The page** is titled *Svetišče* ("posvečeno bogu Perunu"), with the shrine, the god's sign above it, what praying means and two buttons: *Pomoli se* / *Pojdi naprej*.
 - **One prayer per journey.** The god answers at once (Perun: *»Zagrmelo je. Tvoja molitev je uslišana. Preživi pot do konca in videl bom, ali si vreden te preizkušnje.«*) and lends a **gift for the rest of the journey**: every word that fires a third skill (three letters of one colour) also brings the god's power — Perun: lightning on every enemy (1.5× the strike's power); Svarog: shield (2.5×, cap 30); Mokoš: heals the party (3×, up to 70 %); Dažbog: the next word ×2; Stribog: hits everyone (1.2×) and clears locked letters and sleep; Veles: poisons every enemy. The battle header shows "dar: *god*". Other shrines on the same journey only let you bow.
-- **The challenge comes when the journey ends:** leaving the ending screen (button, Enter or Back) brings the god (*»Rekel sem, da bom videl. Zdaj pokaži.«*) and a battle against them in their holy light: 260 + 26 health per region (494 at the castle, against the dragon's 180), scaled by the difficulty; attack 5 + a third of the region; **only their special**:
+- **The challenge comes at the end of the region where you prayed (Game Director, 21 Nov; supersedes "when the journey ends"):** *na koncu poti* meant the region's road, before the player goes on to the next place. **The shrines now stand near the start of their regions, right after the first battle** (the table above), so the gift helps through the region and the god comes **before the signpost**: the party first rests as at every region's end (full health; on Učenjak the fallen rise with half), then the god arrives (*»Rekel sem, da bom videl. Zdaj pokaži.«*; arrival lines no longer mention the castle, e.g. *Pred kažipotom nebo potemni in zagrmi.*). The god's answer at the shrine says so: *»Preden zapustiš to pokrajino, bom videl …«*. If the game is reloaded at the region's end with the god still waiting, the road offers *Sprejmi izziv* instead of the signpost; an older save whose prayer region is behind it meets the god at the next region's end. A later shrine of the same god says *Perun te je na tej poti že preizkusil.* The battle, in their holy light: 260 + 26 health per region (`GOD_BAL` in `src/shrines.js`), scaled by the difficulty; attack 5 + a third of the region; **only their special**:
   - Perun, *Nevihta*: a chain of lightning through the whole party, 1.4× the attack on the first hero, then 0.3 less for each next (at least 0.4×).
   - Svarog, *Nebeška kovačnica*: 2× on the first hero, 0.6× on the rest, three letters red-hot (locked).
   - Mokoš, *Materina roka*: 0.8× on everyone; she takes the damage back as health.
   - Dažbog, *Sončni voz*: 0.75× on everyone; the sun climbs and every blow is 1 stronger.
   - Stribog, *Vihar*: 0.75× on everyone and the mesh is shuffled.
   - Veles, *Korenine sveta*: 0.6× on everyone and four letters overgrown (locked).
-- **Losing is losing a battle;** at the end of a journey the god leaves without a word and the journey is over.
-- **Winning:** the god speaks a cryptic line (Perun: *»Hm … tebe si bom zapomnil. Ko bo naslednjič zagrmelo, se ozri v nebo.«*), **raises the fallen** (half health), gives every hero **250 XP**, is **unlocked** (never joins by themselves), and the **gift lasts the whole next journey** (stored in this browser as `zg-gift`, used up when the next journey starts).
+- **Losing is losing a battle:** the god leaves without a word (no unlock, no gift for the next journey; the gift lent at the prayer stays for the rest of this journey). Then the usual rule: on Malček the party withdraws with full health and walks on to the signpost (the god does not come again); on Učenjak and Knjižni molj the journey is over. *(PROPOSED, 21 Nov: the gift staying after a loss follows the earlier rule "lent for the rest of the journey"; OPEN whether a lost challenge should take it away.)*
+- **Winning:** the god speaks a cryptic line (Perun: *»Hm … tebe si bom zapomnil. Ko bo naslednjič zagrmelo, se ozri v nebo.«*), **raises the fallen** (half health), gives every hero **250 XP**, is **unlocked** (never joins by themselves), and the **gift stays for the rest of this journey and lasts the whole next one**; the road then goes on to the signpost (stored in this browser as `zg-gift`, used up when the next journey starts).
 - **A god in the party:** at that god's own shrine the party meets the **godly version** at once — no prayer and no gift. The party god does not strike their other self (their letters only count for the party's common blow; the chip says "ne udari"). Winning gives the party god **a skill point at once** and every hero 250 XP; losing follows the difficulty. Other gods' shrines are closed to a party that travels with a god.
 
 ## 3. Health, falling and healing
@@ -96,7 +99,7 @@ One road, walked left to right. The party stands still and the world scrolls pas
 - *Poskusi znova* after a lost battle is only offered in practice battles and the test mode.
 
 ## 3a. Rewards
-- **Experience comes only from beaten enemies (13 Nov; since v0.13.0 it goes to the party, §4b):** every defeated enemy drops gold at once (4 + a share of its XP) and gives its full XP to every hero still standing. Words, crosswords, chests, rock slides and darts give no XP.
+- **Experience comes only from beaten enemies (13 Nov; v0.13.0–0.16.0 it went to the party, §4b; since v0.17.0 each hero standing gets their own share, §4c):** every defeated enemy drops gold at once (4 + a share of its XP) and gives XP to every hero still standing. Words, crosswords, chests, rock slides and darts give no XP.
 - **Reviewed heroes earn XP from the fight (v0.12.0, first test):** for Ajdovska deklica, Erazem, Kralj Matjaž, Kresnik and Kurent a beaten enemy gives **attacks + damage + the enemy's level**: one XP for every skill they fired at it, one for every point of health they took off it (hits, their burns, counterattacks), plus its level (the region's number, 1–10; 1 in practice battles). Only heroes still standing when it falls get anything, as before. The weights are `XP_RULE` in `src/progression.js` (all 1 for this test). Other heroes keep the enemy's fixed XP. The log and the battle result show the parts (*napadi 2 · škoda 8 · raven 1*).
 - **Chest (one word):** the hidden word, or any real word from all the letters, opens it: 15–25 gold, one item, and a half-full zagovor in the next battle. A real word that leaves letters unused ends the chest with a share of the gold (no item). Running out of time gives nothing. **(v0.10.0: the word comes from the region's list in `data/words.json` and never repeats on one journey; the clue shows by Znanje; ✕ and Pošlji sit next to the word — §11.7.)**
 - **Rock slide (one word):** the rocks whose letters are in the word break (3 gold per rock); the others graze the party for half damage (4 each). A word with every letter breaks the whole slide. If no word is sent, every rock lands with full force (8 each). **(v0.10.0: region rock words, 22 s to fall, the rule stated in the panel; the full redesign — §11.6 — is *not built*.)**
@@ -116,7 +119,7 @@ One road, walked left to right. The party stands still and the world scrolls pas
 
 | | malček → Lahka | učenjak → Srednja | knjižni molj → Težka |
 | --- | --- | --- | --- |
-| Enemy health (journey only) | ×0.85 | ×1 | ×1.25 |
+| Enemy health (journey only) | ×0.85 | ×1 | ×1.5 (×1.25 until v0.16.0) |
 | Lost battle | **the first time on a journey — withdraw:** everyone gets up with **full health** (v0.11.0; before, a third); the enemies still block the road (a god's godly version goes back into the shrine). **The second time the journey ends** (`withdraw: 1`, counted in `S.run.rescues`, kept in the save) | the journey ends | the journey ends |
 | A hero down when a battle is won | gets up with a quarter of their health | stays down | **leaves the party** |
 | A hero down when a region ends (v0.13.0) | (already up) | **gets up with half health** (`regionRise`) | stays gone |
@@ -127,18 +130,18 @@ On knjižni molj only a healer's skill or *Mrtva voda* during the battle (or a b
 
 ## 4. Levels, skill points and skills (16 Nov — reviewed-hero testing scope)
 
-- **Levels 1–9.** *Since v0.13.0 the party levels together at 0, 45, 110, 220, 360, 540, 760, 1020 and 1350 XP and each level puts **three points in a shared pool** (§4b).* Each level adds 8 % health and 4 % attack, a little extra attack for long words (up to +10 % per letter beyond the fourth at level 9), and **heals the heroes still standing fully** (v0.11.0). Until v0.12.0 each hero levelled alone at 0, 60, 140, 240, 360, 500, 660, 840 and 1050 XP with one point a level.
+- **Levels 1–9.** *Since v0.17.0 (balance E, §4c) every hero levels on their own at 0, 70, 180, 360, 640, 1000, 1500, 2200 and 3100 XP, with **one point of their own** a level; v0.13.0–0.16.0 the party levelled together at 0, 45, 110, 220, 360, 540, 760, 1020 and 1350 XP with three shared points a level (§4b).* Each level adds 8 % health and 4 % attack, a little extra attack for long words (up to +10 % per letter beyond the fourth at level 9), and **heals the hero fully** (v0.11.0). Until v0.12.0 each hero levelled alone at 0, 60, 140, 240, 360, 500, 660, 840 and 1050 XP with one point a level.
 - **Skill trigger remains based on the hero's own letters in the submitted word**, not total word length: one, two or three of that hero's letters selects skill 1, 2 or 3. *Since v0.13.0 a reviewed hero fires every skill they know up to that number, each at its own rank (§4b); the rest of this bullet holds for heroes whose reviews are pending.* If the selected skill is not yet known, the strongest known skill below it is used, with +15 % power for every letter beyond the selected skill's threshold. Skill 1 is known from the start.
 - **Reviewed heroes — character-specific skill progression for testing:** skill 2 and skill 3 are learned in order, one skill point each. Every learned skill can then be upgraded through its documented ranks (rank 1 → 2 → 3), one skill point per rank. The rank values and effects come from that hero's reviewed character specification. **Do not apply the old generic `RANK_POW`, `RANK_DUR` or `SKILL_UPS` bonuses on top of those values** unless a character specification explicitly says so. The reviewed rank 1–3 definitions are the source of truth for what each skill does at each rank.
 - **Heroes whose character reviews are still pending:** they continue to gain levels and receive the normal health and attack increases above. Their existing attacks remain flat for now: no skill-point upgrades, rank scaling, or additional skill effects. Do not redesign or rebalance their existing attacks as part of this testing pass.
-- **Skill-point spending location:** the existing *Veščine* flow at a well, shrine or pedlar remains the intended place to learn and upgrade skills; since v0.13.0 also the hero screen after a battle and the region's end (§4b). The skill screen should show which skills are learned and the current rank of each.
-- **A hero with a point to spend glows:** a ring of light rises from the head (CSS `.hero.spr.glow`), seen in the party on the road, in battle and on the hero screens, and a short synthesised chorus (`chorus()` in `src/game.js`) sings when the point arrives.
+- **Skill-point spending location (Game Director, 20 Nov, v0.17.0):** points are spent **only at a well and at the signpost at a region's end** (*Veščine* in the prompt there), and on a journey the skills are **shown only there**: no Veščine button on the hero screens (the codex in the menu keeps it), none after a battle, at shrines or at the pedlar. *(v0.13.0–0.16.0 also after every battle, at shrines and at the pedlar.)* The skill screen shows which skills are learned and the current rank of each.
+- **A hero with a point to spend glows** (a ring of light from the head, CSS `.hero.spr.glow`) **only at a well or a signpost** since v0.17.0 (`trainHere` in `src/journey.js`); before, on the road, in battle and on the hero screens too. A short synthesised chorus (`chorus()` in `src/game.js`) still sings at every new level.
 - **Outside a journey** (practice battles, the gallery, the codex), every skill is available at rank 1 for testing, unless the relevant test mode explicitly overrides this.
-- **Built in v0.12.0:** see §4a for the five reviewed heroes' rank values as implemented, the choices made where their specifications are OPEN, and §3a for their XP. Heroes whose reviews are pending were left exactly as they were (they still use the generic stopnje), as decided for this test.
+- **Built in v0.12.0:** see §4a for the reviewed heroes' rank values as implemented, the choices made where their specifications are OPEN, and §3a for their XP. Heroes whose reviews are pending were left exactly as they were (they still use the generic stopnje), as decided for this test.
 - **Scope note:** this is a focused testing pass for reviewed heroes' bespoke skill kits and their rank progression. It does not author new skills or upgrade effects for unreviewed heroes, and it does not change enemy progression or the separate god skill designs.
 
 ## 4a. Reviewed heroes in the game (v0.12.0, testing pass)
-Built in `src/progression.js` from the reviewed specifications (`docs/characters/*/character.md` on `docs/reviewed-character-specifications`). Only these five changed; every other hero, god and enemy works as before (they keep `RANK_POW`, `RANK_DUR` and `SKILL_UPS`). Animations, art and folk-art cards are not part of this pass.
+Built in `src/progression.js` from the reviewed specifications (`docs/characters/*/character.md` on `docs/reviewed-character-specifications`). Only these six changed (Martin Krpan joined on 18 Nov, see below); every other hero, god and enemy works as before (they keep `RANK_POW`, `RANK_DUR` and `SKILL_UPS`). Animations, art and folk-art cards are not part of this pass.
 
 **How the numbers are read.** Damage values are the base for a three-letter word at level 1; the word still multiplies them (length, šumnik, repeats, relics and potions, the hero's own words, the level's attack). Healing, shields, bonuses, reductions, delays, durations and charges are exact. A counterattack (no word) uses the level's attack only. **TEST** = the specification leaves the number OPEN; it is a placeholder for this test.
 
@@ -148,6 +151,7 @@ Built in `src/progression.js` from the reviewed specifications (`docs/characters
 | Kralj Matjaž | **Meč** 6 / 12 / 18; ranks 2–3: each hero hit by the next enemy attack takes 3 / 6 less | **Kraljeva vojska**: every hero's next attack +3 / +6 / +10; rank 3: the next two enemy blows −3 on each hero hit | **Prebujenje**: each standing hero +3 / +6 / +6 health, the fallen rise with 15 %, ward 3 / 6 / 6; rank 3: 12 damage to every enemy |
 | Kresnik (rebalanced) | **Ognjeni meč** (name OPEN) 5 / 7 / 9, ×1.5 on dragons (Lintvern, Zmajev mladič); burns 2 a second for 2 / 3 / 4 s | **Kresna strela** 10 / 13 / 16, burns 2/s for 3 s; rank 3 jumps to the enemy beside the target for 6 | **Kresna moč** (name OPEN): a flame on every enemy 5 / 7 / 9; the next 1 / 2 / 3 enemy blows that hurt him give back 25 / 50 / 70 % (rounded up, up to full health) and half of that in gold |
 | Erazem | **Zamah z mečem** 7 / 11 / 15 (TEST) | **Češnje** 5 / 7 / 9 (TEST, one target); the heroes beside him +1 / +2 / +3 (TEST), not Erazem | **Skrivni rov**: the next attack that reaches him misses; rank 2 counterattack 1.5× Zamah z mečem, rank 3 the hero beside him evades too and the counter is 1.75× |
+| Martin Krpan (18 Nov) | **Lipov kij** 10 / 16 / 20 | **Kmečka moč**: rank 1 two punches of 8 (two hits); rank 2 Krpan throws the bags of salt, 20 at one enemy; rank 3 the boulder, 22 split between up to two enemies (11 each) | **Mesarica** 10 / 14 / 20; bleeds 2 a second for 2 / 3 / 4 s |
 | Ajdovska deklica | **Metanje skal** 6 at one enemy; ranks 2 / 3: 5 / 8 at every enemy (TEST) | **Varstvo popotnikov**: the next 1 / 2 / 3 enemy attacks on the others land on her, halved (rounded up) | **Okamnitev**: 1 / 2 / 2 enemies skip their next 1 / 1 / 2 attacks; burns and poison go on |
 
 **Rebalance of Kurent and Kresnik (16 Nov, from the simulations).** With the reviewed values Kresnik's skill 1 dealt about 15 / 21 / 28 per four-letter word (Matjaž 8 / 15 / 22, Erazem 9 / 13 / 19) and carried a fresh party; Kurent's delays stacked into a near stun-lock; and skills 2 and 3 of both dealt no damage, so learning them made the hero weaker in battle. Now each skill does at least as much as the one below it at the same rank, and the new values replace the specification's numbers for testing (the character specifications still hold the old ones and need updating if this stays). Measured per four-letter word at level 1 (damage on two enemies / enemy attacks per minute out of 12):
@@ -177,6 +181,8 @@ Built in `src/progression.js` from the reviewed specifications (`docs/characters
 **Not in this pass:** Ajdovska deklica only at Triglav and Kralj Matjaž only at Peca (recruitment), the final-boss story cards, enemy affinity tags beyond Mora, animations and art.
 
 ## 4b. Balance D — the party levels together, enemies follow a curve (17 Nov, v0.13.0)
+> **SUPERSEDED in part by balance E (§4c, 20 Nov, v0.17.0):** the party's shared levels and points, Veščine after every battle, the enemy numbers by region, Povodni mož's and the Lintvern's health and Knjižni molj's steepening. Still in force from D: skills firing together, the halved zagovor bonus, three enemies from Bled, strong enemies, the Lintvern's attacks, Ptuj's rules and the tester statistics.
+
 The simulations of 16–17 Nov (a Python model of the whole road, ten regions and every Znanje; tables in the project doc *zagovor-balance-simulations*) showed the difficulty upside down: Peca was the hardest place on Malček, while Povodni mož and the Lintvern almost never won. Four versions were compared; **D** is built. It stays the working balance until monsters and gods are reviewed.
 
 **The party levels together.** Every beaten enemy gives **attacks + damage + its level** (the whole party's attacks and damage on it, `foeXp` in `src/progression.js`) to the party's pool, `S.run.pxp`. Levels at 0, 45, 110, 220, 360, 540, 760, 1020 and 1350 XP (`LV_XP`); each level gives every hero the level's health and attack, heals the heroes standing (the fallen stay down) and puts **three points** (`PTS_PER_LV`) in a shared pool, `S.run.pts`, which any hero can spend, including one who hit nothing. A hero who joins arrives at the party's level, knowing skill 1. Points can be spent at wells, shrines and the pedlar as before, **and on the hero screen after every battle** (a *Veščine · N točke* button next to *Na pot*). The road glows while points wait. A save from before 0.13.0 loads with the best hero's XP for the party and every unspent point in the pool.
@@ -215,12 +221,94 @@ Ptuj has **four battles, 1, 1, 2 and 2 enemies**, so the party is level 3 with s
 
 **Battle statistics for testers (opt-in, `src/stats.js`).** Off until the player agrees, once on *Nova pot* (a card under the options, not a dialog) and any time in *Nastavitve → Pomoč pri uravnoteženju*. Then one row per journey battle and one when a journey ends go to the word-report Google Form with *Opomba* `statistika`: win or loss, region and kind, the enemies (strong ones marked `*`), Znanje, pace, device, version, duration, words, seconds per word on the letter mesh (crosswords and pauses left out), the longest word's length, party level and unspent points, heroes with their skill ranks, health at the start and the end, the fallen, what was left of the enemies and the second chances used. None of the words typed are sent, and the only id is a random one per journey. Rows wait on the device while offline (at most 300); saying no drops them. **This is data collection: declare it in Google Play's Data safety form, Apple's privacy label and the privacy policy** (§11.9, `docs/platform-roadmap.md`).
 
-**Still open:** the review of monsters and gods; Lepa Vida's and Martin Krpan's reviews (on `main` as documents, not in the game); the character specifications still hold the old Kurent and Kresnik numbers (§4a).
+**Still open:** the review of monsters and gods; Lepa Vida's review (on `main` as a document, not in the game; Martin Krpan's is in the game since 18 Nov); the character specifications still hold the old Kurent and Kresnik numbers (§4a).
+
+## 4c. Balance E — every hero levels on their own, a harder road (20 Nov, v0.17.0)
+**Why:** the Game Director found the game too easy: XP got out of hand and "the family gets more and more levels each turn". Driven by the real game (below), balance D was won **98 %** of the time on Malček at a word every 10 s (Učenjak 95 % at 8 s, Knjižni molj 96 % at 6 s); the party reached level 9 by Ljubljansko barje and lost under a tenth of its health per battle after Peca. The earlier Python model said 72 %: it left out potions, relics, chests and the gods' gifts.
+
+**Decided by the Game Director (20 Nov) — CONFIRMED:**
+- Every hero **gains XP and levels on their own**, and **more slowly**.
+- **Skill points are spent only at wells and at the signpost at a region's end**, and the skills (*Veščine*) are **only shown there**: too much information elsewhere.
+- **One chest or one trap per region**, never both, and **more enemies**.
+- **Enemies grow in health, and somewhat in attack,** now that the heroes grow stronger with their skills.
+- **Target:** of ten journeys on the easiest Znanje, **at least four are lost**.
+- *(Art, same day: only the backgrounds are being enriched; the character designs stay as they are. `docs/concept-summary.md`.)*
+
+**How it is built (IMPLEMENTED in v0.17.0):**
+
+| | Balance D (0.13.0–0.16.0) | Balance E (0.17.0) |
+| --- | --- | --- |
+| XP | the whole party's attacks + damage + enemy level, into one pool | each hero standing gets **their own** attacks + damage + **support** on the beaten enemy + its level (`awardFoeXp`, `src/progression.js`); a fallen hero gets nothing. Support (Game Director, 20 Nov): one XP per point healed (raising the fallen too), per point of party shield given, and per point of a blow taken off by Kralj Matjaž's shield and army or by Ajdovska deklica's Varstvo popotnikov (`noteSupport`); weakening and dodges do not count |
+| Levels | one party level at 45 / 110 / 220 / 360 / 540 / 760 / 1020 / 1350 XP | each hero's own at **70 / 180 / 360 / 640 / 1000 / 1500 / 2200 / 3100** XP (`LV_XP`) |
+| Points | 3 a level into a shared pool | **1 a level, the hero's own** (`st.pts`, `PTS_PER_LV`) |
+| Where points are spent | after every battle, wells, shrines, the pedlar | **wells and the signpost** only |
+| Skills shown / glow | hero screens, battle, road | only at a well or the signpost (`trainHere`); the codex in the menu still shows every skill |
+| A hero who joins | at the party's level | at the **lowest level in the party**, with that many points (minus one) to spend |
+| Battles per region | 2 (Ptuj 4) | **3** from Peca to Ljubljanica (the ambush and Povodni mož count), Ptuj 4, the Lintvern alone |
+| Chests and traps | a chest by chance, plus fixed rock slides and spikes | **one event per region**: a chest (60 / 45 / 30 % by Znanje), else a rock slide or spikes; Ptuj always a chest (`chance` in `data/world.json`) |
+| A god's challenge won | 250 XP to the party, a point to the pool | 250 XP to every hero, a point to the party god |
+| Tester statistics | `raven=` party level, `tocke=` pool | `raven=` and `tocke=` hero by hero (`4/3/3`) |
+
+Saves from 0.13.0–0.16.0 load: every hero keeps their level (starting it on the new curve) and the pooled points are shared out; their chests and traps are planned on loading (`src/save.js`).
+
+**Enemies (data/world.json → balance; tuned by simulation):**
+
+| Region | Ptuj | Peca | Triglav | Bled | Trnovski gozd | Piranske soline | Predjamski grad | Ljubljansko barje | Ljubljanica | Ljubljanski grad |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Health × (D) | 1 (1) | **0.7** (0.95) | **1.0** (1.2) | **1.6** (1.45) | **1.6** (1.75) | **2.05** (1.8) | **2.4** (2.3) | **3.05** (2.7) | **3.65** (3.0) | **3.65** (3.0) |
+| Attack × (D) | 1 (1) | **0.8** (1) | **0.95** (1.1) | **1.15** (1.2) | **1.2** (1.3) | **1.35** (1.4) | 1.5 (1.5) | **1.75** (1.65) | **2.0** (1.8) | **2.0** (1.8) |
+
+- **The bosses (Game Director, 20 Nov):** the Lintvern is the toughest enemy on every Znanje, and each boss has helpers that should fall first.
+  - **Povodni mož** 260 health, hits 16 (221 / 260 / 390 by Znanje; D: 240 / 12). **His two vile** (`reka.escort` in `data/world.json`) hit at ×0.75 (6 on Malček instead of 8), and every third move (*Val*, *Poplava*, ***Zdravilni val***) one heals him for 8 % of his health (18 on Malček) while she and he stand; with him unhurt or down she strikes instead.
+  - **Lintvern** 289 / 320 / 480 by Znanje (`hpBy` 340 / 320 / 320 times the Znanje factor; D: 170 / 250 / 313). His wyverns add their own blows (one per hero beyond the first, at most two, and as many again when he enrages): strike them first.
+  - Tried on the way: Povodni mož at 400 / 16 (more health than the Lintvern, dropped); at 220 / 14 with the vile at ×0.6 Ljubljanica became a walkover; the vile's heal at 5 / 8 / 12 % hardly changes the result. Once the bot struck the helpers first, every Znanje got easier (Malček 63 %), so Povodni mož went back up to 260 / 16.
+- **Knjižni molj:** enemy health ×1.5 (D: ×1.25) and steeper towards the castle: up to +35 % health and 18 % quicker attacks (D: +15 % / 10 %).
+- Unchanged from D: a third enemy from Bled with three or more heroes, strong enemies from Trnovski gozd (40 %), at most one Pesjan, Ptuj the same tutorial on every Znanje, Malček's second chance and its retry at the Lintvern, Učenjak's fallen rising at a region's end.
+
+**The simulator (`tools/sim/`, new):** a bot plays whole journeys **inside the built game** (headless Chrome, `dist/index.html`) on the game's own clock, so every rule of the game runs as it is: kits, potions, relics, chests, traps, wells, the pedlar, gods' gifts, withdrawing and the bosses. Only the player is a model (all assumptions, to be replaced by the testers' statistics):
+- a word every *pace* seconds (each gap 0.6–1.4 × pace), chosen among the words really in the mesh, lengths 3 / 4 / 5 / 6 / 7 letters in 25 / 35 / 25 / 12 / 3 %, no base form twice in a battle; no hints;
+- the zagovor is spoken as soon as it is full; a crossword entry takes one pace;
+- chests open 80 % of the time (10 % in part); rock slides and spikes end by chance (most words break 3–4 rocks or close 4–6 slots);
+- the first shrine is prayed at; every hero met joins while there is room; the pedlar sells by a fixed list (Živa voda, Alatir, Perunova sekira …);
+- skill points: the next skill first, then the lowest rank, wherever the game allows;
+- in a boss battle it strikes the helpers first (both vile, both wyverns, the wyverns that come when the Lintvern enrages), then the boss (Game Director, 20 Nov); elsewhere the game's own target, the first enemy standing.
+`node tools/sim/run.js tools/sim/plan.json` runs the table below (about 25 minutes on two cores); `--dist` points to another build for comparisons.
+
+**Measured (balance E as built, with support XP; journeys won, ±95 % interval):**
+
+| Znanje | design pace | at the design pace | faster | slower | battle time per journey |
+| --- | --- | --- | --- | --- | --- |
+| Malček | 10 s | **55 % (±6), 300 journeys** — about 4.5 of 10 lost | 85 % at 8 s* | 17 % at 12 s* | 29 min (D: 20) |
+| Učenjak | 8 s | **49 % (±8), 150** | 86 % at 6 s* | 6 % at 10 s* | 23 min |
+| Knjižni molj | 6 s | **36 % (±8), 150** | 68 % at 5 s* | 0 % at 8 s* | 23 min |
+
+Measured with the bosses as built and the bot striking boss helpers first. \* measured on an earlier build of the same day; the changes since cancel out at the design paces, so the slope should hold.
+
+Where Malček journeys end (of 300; 139 lost): Ptuj 0 · Peca 3 · Triglav 4 · Bled 5 · Trnovski gozd 11 · Piranske soline 24 · Predjamski grad 23 · Ljubljansko barje 27 · Ljubljanica 35 · Ljubljanski grad 7. First-try wins per battle: 96–99 % up to Bled, 91–94 % from Trnovski gozd, 84 % against the Lintvern. Several tuning rounds before this (shown in the project doc *zagovor-balance-simulations*) put the losses at Peca and Triglav; the version built moves them to the second half and the bosses.
+
+**Levels (Malček, 10 s):** the highest hero reaches about 2.6 at Peca, 4.7 at Trnovski gozd and 7.8 at the castle; the lowest about 5.5. By hero at Ljubljanica: Martin Krpan 7.8, Kresnik and Kralj Matjaž 6.4, Erazem, Ajdovska deklica and Kurent 6.2, Zeleni Jurij 5.8, Peter Klepec 5.4, Lepa Vida 5.0. The gap between a party's highest and lowest hero grows to about 2.3 levels (2.5 before support XP; Zeleni Jurij gained most, +0.9 levels). Heroes who only weaken (Lepa Vida) and late recruits still stay behind.
+
+**Findings and open questions (PROPOSED / OPEN — for the Game Director):**
+1. **The starter decides a lot.** On Malček at 10 s: starting with Martin Krpan wins 74 %, Kurent 46 %, Zeleni Jurij 41 %. Krpan's reviewed kit (Lipov kij 10 / 16 / 20) carries a fresh party. A review of the three starters together would even this out better than enemy numbers can.
+2. **Pace dominates.** From 8 s to 12 s a word Malček goes from 85 % to 17 % won. The target holds for the assumed player only; the testers' statistics (seconds per word, `s/besedo`) should set the design pace of each Znanje.
+3. **Support XP — DECIDED and built (Game Director, 20 Nov):** healing and shields count as XP (see the table above). Weakening (Lepa Vida's song, Kurent's bells) and Erazem's dodge still earn nothing; Lepa Vida stays the lowest hero.
+4. **Učenjak and Knjižni molj lose some journeys early** (Peca and Triglav end 15 % of Učenjak journeys): one loss ends them. Their numbers sit below Malček's as they should, but nobody has asked for them; they are a proposal to review.
+5. The model player never uses hints, the word proposals or the planted starter words, and solves every crossword at word pace; real Malček players get more help than the bot, real Knjižni molj players have harder crosswords.
+
+## 4d. Skill texts and effect icons (20 Nov, v0.17.0)
+**Game Director, 20 Nov (from the phone):** the skills had too much text; *s* means nothing, write the time; Kurent's sounded illogical; say the effect once and let stopnji 2 and 3 say only what changes; "−4" alone means nothing in Slovene; show stronger and weaker attack and defence with pictures, in the texts and above the heads for as long as the effect lasts.
+
+- **Texts** (`RANK_TEXT` in `src/progression.js`, `SKILL_TEXT` and `UP_TAG` in `src/skills.js`): stopnja 1 says what the skill does, damage as *Udarec N* (superseded the same day by *za N točk*, below), then effects; stopnji 2 and 3 list only the new numbers or the new effect. Time in words with the Slovene forms (*2 sekundi*, *3 sekunde*, *5 sekund*). "Beseda z eno črko te barve" is gone from every skill; one line at the top explains the dots. Kurent: no dance in the text, Zvonci *napadejo cilj / 2 sovražnika / 3 sovražnike*, "naslednji udarec je 3 šibkejši" became the red swords with −3.
+- **Wording, second pass (Game Director, 20 Nov):** the enemy in a skill is always *nasprotnik* with its Slovene forms (*nasprotnika*, *2 nasprotnika*, *3 nasprotniki*, *vse nasprotnike*), never *cilj* or *sovražnik*. Damage is *za N točk* (*za 1 točko*, *2 točki*, *3 točke*, *5 točk*; helper `tock()`), delays *napade N sekund kasneje*. **Stopnja 1 gives one well-written line of context from the hero's legend** and then the numbers; stopnji 2 and 3 only update the numbers (or name the new form, e.g. Krpan's *Vreče soli* and *Ogromna skala*). Pregon zime uses the Game Director's own wording: *Kurentov ples privabi ostale kurente, katerih zvonovi odženejo mraz in zlo. Vsi nasprotniki utrpijo 4 točke škode in napadejo 3 sekunde kasneje.* The context lines are game fiction drawn from each character specification (Krpan's club from the empress's linden, Erazem's cherries and the siege tunnel, the giantess guiding travellers through the snow above Prisank, Matjaž's army under Peca); the folklore claims stay as cautious as the specifications. Skill battle cards, Lepa Vida's role line and the zagovor finisher lines (*Strele udarijo vse nasprotnike!*) follow.
+- **Nasprotnik everywhere (Game Director, 21 Nov):** *cilj* and *sovražnik* are wrong terms for the foe anywhere in the game. Every player-facing text now says *nasprotnik* (tutorial, Kako igrati, the pace and difficulty lines, item and god texts, the codex heading *Nasprotniki*, battle results and the log). The marker over the chosen foe reads **▼ izbran** and the keyboard hint *← → izberi nasprotnika*. Two exceptions stay on purpose: Peter Klepec's legend (*branil dolino pred sovražniki*, the real invaders) and the crossword clue for DAKAR (*cilj znanega relija*, a finish line). `tests/menu.test.js` fails if a string in the game calls the foe *sovražnik* or *cilj* again.
+- **Icons** (`src/effects.js`, drawn in code as 16-pixel pixel art): **crossed swords = attack, a shield = defence; green with an arrow up = stronger, red with an arrow down = weaker.** The swords have gold hilts so they read as swords at 16 px. **The arrow is as tall as the swords or the shield and as wide as the shield** (an 11-pixel head and a 5-pixel shaft; Game Director, 21 Nov: the small arrow could hardly be seen). In texts and battle cards they are tokens (`{atk-} −3`).
+- **Above the heads**, for as long as the effect lasts, stacked upwards: enemies with a weaker attack (Kurent's bells until their next blow, Pregon zime's ½, Lepa Vida's song, Volčja jagoda, Oslabitev) or a stronger one (the Volkodlak fed on repeated words); heroes with a stronger next attack (Kraljeva vojska +N, Perunova medica ×1,5, Dažbog ×2, Peter Klepec's growth) or a better defence (Matjaž's shield and army +N, the party's shield, Varstvo popotnikov on the others, Skrivni rov). "šibkejši" under enemies and "ščit N na junaka" / "vojska +N" under the party's health are gone; *varstvo ×N* and *vojska ×N* stay (charges the icons do not show).
+- Not covered: delays (*napade pozneje*), burns, sleep and stone keep their words; no effect lowers a hero's attack or defence yet, but the red shield and red swords for heroes are ready for when one does.
 
 ## 5. Roster — all playable
 | | Hero | Health | What they do | Moves (1 → 3 tiles) |
 | --- | --- | --- | --- | --- |
-| Folk | Martin Krpan | 36 | Heavy single hits; the big move stuns | Zamah → Kobilica → Lipov kij |
+| Folk | Martin Krpan | 36 | Heavy physical hits; the sword leaves a bleed (reviewed, 18 Nov, §4a) | Lipov kij → Kmečka moč → Mesarica |
 | Folk | Zeleni Jurij | 26 | Small heals; unlocks letters; revives once per journey | Popek → Brstenje → Jurjevo |
 | Folk | Kurent | 30 | Delays the target's next attack; his bells weaken enemies; Pregon zime delays everyone (v0.12.0, §4a) | Ježevka → Zvonci → Pregon zime |
 | Folk | Kresnik | 28 | Fire that keeps burning, 1.5× on dragons; wins back part of a wound (v0.12.0, §4a) | Ognjeni meč → Kresna strela → Kresna moč |

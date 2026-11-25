@@ -1,6 +1,6 @@
 // The journey: one hero sets out, walks from stop to stop, fights, meets heroes (only a hero who joins
 // is unlocked), opens a chest, drinks at a well, buys from the pedlar, uses an item in battle, levels up
-// and spends skill points (glowing while they wait), prays at a shrine and faces the god when the journey
+// and spends skill points at a well (glowing there while they wait), prays at a shrine and faces the god when the journey
 // ends, meets a party god's godly version, loses under each difficulty, and walks past the wall of spikes.
 const { openGame, runner, sleep } = require('./harness');
 const { check, run } = runner('Journey (side-scrolling road, party, items, skills, shrine)');
@@ -90,9 +90,11 @@ run(async () => {
   const foe0 = await page.evaluate(() => window.__ZG.B.enemies[0].xp);
   await winBattle(page);
   const hpAfter = (await state(page)).hp[0], xpAfter = (await state(page)).xp[0];
-  // balance D: the party's XP comes from the fight (attacks + damage + the enemy's level), not the enemy's fixed XP
-  const pxp = await page.evaluate(() => ({ pxp: window.__ZG.S.run.pxp, log: (window.__ZG.B.logLines || []).join(' | ') }));
-  check(xpAfter === pxp.pxp && pxp.pxp > 0 && /družina \+\d+ XP \(napadi \d+ · škoda \d+ · raven 1\)/.test(pxp.log), 'the beaten enemy gives the party XP from the fight: attacks + damage + its level', `${xpAfter} vs ${pxp.pxp} (fixed ${foe0}) ${pxp.log.slice(0, 160)}`);
+  // balance E: each hero standing gets XP from their own part of the fight (attacks + damage + the enemy's level)
+  const ownXp = await page.evaluate(() => ({ log: (window.__ZG.B.logLines || []).join(' | '), rows: [...document.querySelectorAll('.dialog .stats > div')].map(d => d.textContent) }));
+  const xpRow = ownXp.rows.indexOf('Izkušnje: Martin Krpan');
+  check(xpAfter > 0 && /Martin Krpan \+\d+ XP/.test(ownXp.log) && xpRow >= 0 && new RegExp(`^${xpAfter} XP \\(napadi \\d+ · škoda \\d+ · raven 1\\)`).test(ownXp.rows[xpRow + 1]),
+    'the beaten enemy gives the hero XP from their own part of the fight: attacks + damage + its level', `${xpAfter} (fixed ${foe0}) ${ownXp.log.slice(0, 160)} ${JSON.stringify(ownXp.rows)}`);
   for (let i = 0; i < 4 && (await state(page)).screen !== 'travel'; i++) { await page.keyboard.press('Enter'); await sleep(450); }
   s = await state(page);
   check(s.screen === 'travel' && s.gold > 20, 'a won battle pays gold and leads back to the road', `gold ${s.gold}`);
@@ -114,8 +116,8 @@ run(async () => {
   check(s.party.length === 2 && s.party[0] === 'krpan' && !['krpan', 'jurij', 'kurent'].includes(met.id) && !met.god, 'a random folk hero not yet known joins the party at Ptuj', s.party.join());
   check(met.unlocked && met.stored.includes(met.id), 'the hero who joins is unlocked as a starter (remembered in the browser)', met.stored);
   check(met.st.sk.join() === '1,0,0', 'a newcomer knows only the first skill too', JSON.stringify(met.st));
-  const lvls = await page.evaluate(() => { const Z = window.__ZG; return { party: Z.S.run.plvl, heroes: Z.S.heroes.map(st => st.lvl), xp: Z.S.heroes.map(st => st.xp), pxp: Z.S.run.pxp }; });
-  check(lvls.heroes.every(l => l === lvls.party) && lvls.xp.every(x => x === lvls.pxp), 'a newcomer arrives at the party\'s level and shares its experience', JSON.stringify(lvls));
+  const lvls = await page.evaluate(() => { const Z = window.__ZG; return { heroes: Z.S.heroes.map(st => st.lvl), xp: Z.S.heroes.map(st => st.xp), pts: Z.S.heroes.map(st => st.pts) }; });
+  check(lvls.heroes[1] === Math.min(lvls.heroes[0], 9) && lvls.pts[1] === lvls.heroes[1] - 1, 'a newcomer arrives at the level of the party\'s lowest hero, with the points of those levels', JSON.stringify(lvls));
 
   // balance D: Ptuj has four battles (1, 1, 2 and 2 enemies); the second one comes right after the hero
   const ptuj = await page.evaluate(() => { const R = window.__ZG.S.run; return { next: (R.stops.find(x => !x.passed) || {}).kind, sizes: R.stops.filter(x => x.kind === 'battle').map(x => x.enemies.length) }; });
@@ -155,15 +157,17 @@ run(async () => {
   check(heal.capped === Math.floor(heal.max * 0.7), 'a hero\'s healing skill stops at 70 % of health', `${heal.capped}/${heal.max}`);
   check(heal.drank && heal.after > 5 && heal.after < heal.max && heal.left === 0, 'a hero under 30 % drinks Živa voda and the flask is gone', JSON.stringify(heal));
   // a level brings a point; the well offers Veščine
-  // balance D: the party levels together and every new level puts three points in a shared pool
-  const lv = await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run, st = Z.S.heroes[0], hp0 = st.hp, spent = R.pts; R.pts = 0; R.pxp = 0; R.plvl = 1;
-    Z.S.heroes.forEach(h => { h.lvl = 1; h.xp = 0; }); Z.gainXp(Z.LV_XP[2], 0);
-    const out = { lvl: st.lvl, lvls: Z.S.heroes.map(h => h.lvl), pts: R.pts, xp: st.xp, hp0, hp: st.hp, max: st.maxHp }; R.pts = 2; return out; });   // the rest of this walk spends two
-  check(lv.lvl === 3 && lv.lvls.every(l => l === 3) && lv.pts === 6, 'every new level of the party brings three shared skill points; everyone has the party\'s level', JSON.stringify(lv));
+  // balance E: every hero levels on their own, one point of their own a level
+  const lv = await page.evaluate(() => { const Z = window.__ZG, st = Z.S.heroes[0], hp0 = st.hp;
+    Z.S.heroes.forEach(h => { h.lvl = 1; h.xp = 0; h.pts = 0; }); Z.gainXp(Z.LV_XP[2], 0);
+    const out = { lvl: st.lvl, lvls: Z.S.heroes.map(h => h.lvl), pts: Z.S.heroes.map(h => h.pts), xp: st.xp, hp0, hp: st.hp, max: st.maxHp }; st.pts = 2; return out; });   // the rest of this walk spends two
+  check(lv.lvl === 3 && lv.lvls.slice(1).every(l => l === 1) && lv.pts[0] === 2 && lv.pts.slice(1).every(p => p === 0), 'experience lifts only the hero who earned it; each new level brings that hero one point of their own', JSON.stringify(lv));
   check(lv.hp0 === 3 && lv.hp === lv.max, 'a new level heals the hero fully', JSON.stringify(lv));
   await walk(page);
   const wellActs = await page.evaluate(() => window.__ZG.S.run.prompt.actions.map(a => a.label));
   check(wellActs.some(l => /^Veščine · 2 točki/.test(l)), 'with points to spend the well offers Veščine', wellActs.join(' | '));
+  check(await page.evaluate(() => { const sp = [...document.querySelectorAll('.travel .party .hero.spr')]; return sp[0].classList.contains('glow') && !sp[1].classList.contains('glow'); }),
+    'at the well the hero with points glows, the others do not');
   await page.evaluate(() => window.__ZG.S.run.prompt.actions.find(a => /^Veščine/.test(a.label)).fn()); await sleep(300);
   const train = await page.evaluate(() => ({ screen: window.__ZG.S.screen, btns: [...document.querySelectorAll('.train .sk-act .btn')].map(b => b.textContent), states: [...document.querySelectorAll('.train .sk')].map(e => e.className) }));
   check(train.screen === 'train' && train.btns.length === 2 && train.btns[0].startsWith('Na stopnjo 2') && train.btns[1].startsWith('Nauči se') && /off/.test(train.states[2]),
@@ -171,7 +175,7 @@ run(async () => {
   await shot('journey-03-skills');
   await page.evaluate(() => [...document.querySelectorAll('.train .sk-act .btn')][1].click()); await sleep(150);
   await page.evaluate(() => [...document.querySelectorAll('.train .sk-act .btn')][2].click()); await sleep(150);
-  const spent = await page.evaluate(() => { const st = window.__ZG.S.heroes[0]; return { pts: window.__ZG.S.run.pts, sk: st.sk.join() }; });
+  const spent = await page.evaluate(() => { const st = window.__ZG.S.heroes[0]; return { pts: st.pts, sk: st.sk.join() }; });
   check(spent.pts === 0 && spent.sk === '1,1,1', 'two points learn skills 2 and 3', JSON.stringify(spent));
   await page.keyboard.press('Escape'); await sleep(300);
   s = await state(page);
@@ -185,8 +189,12 @@ run(async () => {
   await page.evaluate(() => { const st = window.__ZG.S.heroes[1]; st.down = false; st.hp = st.maxHp; });   // raised by other means for the rest of the walk
   await page.keyboard.press('Enter'); await sleep(200);
 
-  // Triglav: the pedlar
+  // Triglav: the pedlar (balance E: no Veščine here, even with points to spend)
+  await page.evaluate(() => { window.__ZG.S.heroes[0].pts = 1; });
   await skipTo(page, 'shop'); await walk(page);
+  const shopActs = await page.evaluate(() => { const Z = window.__ZG; return { acts: Z.S.run.prompt.actions.map(a => a.label), glow: !!document.querySelector('.travel .party .hero.spr.glow') }; });
+  check(!shopActs.acts.some(l => /Veščine/.test(l)) && !shopActs.glow, 'the pedlar offers no Veščine and nobody glows there, even with a point to spend', JSON.stringify(shopActs));
+  await page.evaluate(() => { window.__ZG.S.heroes[0].pts = 0; });
   await page.keyboard.press('Enter'); await sleep(400);
   const stock = await page.evaluate(() => document.querySelectorAll('.dialog.bag .itemrow').length);
   check(stock === 6, 'the pedlar offers four potions or poisons and two relics', String(stock));
@@ -227,29 +235,27 @@ run(async () => {
     st.sk[0] = 2; const more = await play();
     Math.random = rnd; return { w, base, more, tags: Z.upTags(0, 1) };
   });
-  check(cmp.more > cmp.base && cmp.tags.length === 1, 'a skill at stopnja 2 hits harder with the same word and gains its first extra effect', JSON.stringify(cmp));
+  // Martin Krpan is a reviewed hero since 18 Nov: his ranks come from RK (Lipov kij 10 / 16 / 20), not from the generic extra-effect tags
+  check(cmp.more > cmp.base && cmp.tags.length === 0, 'a reviewed hero\'s skill at stopnja 2 hits harder with the same word (Lipov kij 16 against 10); no generic extra-effect tag', JSON.stringify(cmp));
   // stopnje: a point raises a known skill up to stopnja 3 and no further
-  const ranks = await page.evaluate(() => { const Z = window.__ZG, st = Z.S.heroes[0]; st.sk = [1, 0, 0]; Z.S.run.pts = 5;
-    const r = [Z.spendPoint(0, 1), Z.spendPoint(0, 1), Z.spendPoint(0, 1), Z.spendPoint(0, 3), Z.spendPoint(0, 2)]; const out = { r, sk: st.sk.join(), pts: Z.S.run.pts }; st.sk = [1, 1, 1]; Z.S.run.pts = 0; return out; });
+  const ranks = await page.evaluate(() => { const Z = window.__ZG, st = Z.S.heroes[0]; st.sk = [1, 0, 0]; st.pts = 5;
+    const r = [Z.spendPoint(0, 1), Z.spendPoint(0, 1), Z.spendPoint(0, 1), Z.spendPoint(0, 3), Z.spendPoint(0, 2)]; const out = { r, sk: st.sk.join(), pts: st.pts }; st.sk = [1, 1, 1]; st.pts = 0; return out; });
   check(ranks.r.join() === 'true,true,false,false,true' && ranks.sk === '3,1,0' && ranks.pts === 2, 'points raise skill 1 to stopnja 3 (no further); skill 3 waits for skill 2', JSON.stringify(ranks));
   const pre = await state(page), foeXp = await page.evaluate(() => { const B = window.__ZG.B; B.enemies.forEach(e => { e.maxHp = 40; }); return B.enemies.map(e => e.xp); });
+  const preDown = await page.evaluate(() => window.__ZG.S.heroes.map(h => h.down));
   await winBattle(page);
   s = await state(page);
-  // balance D: the party's XP is every hero's attacks + damage on the beaten enemies + their levels
-  const why = await page.evaluate(() => window.__ZG.B.xpWhy.party || { n: 0, a: 0, d: 0, lv: 0 });
-  check(s.xp.every((x, i) => x - pre.xp[i] === why.n) && why.n === why.a + why.d + why.lv && why.lv === 2 * (pre.ri + 1) && s.gold > pre.gold,
-    'both defeated enemies drop gold and give the party XP: attacks + damage + their levels', JSON.stringify({ xp: s.xp, was: pre.xp, foeXp, why, gold: [pre.gold, s.gold] }));
-  // the hero screen after a battle: the Veščine button, skills on the card, tap the hero for a skill
+  // balance E: each hero standing gets their own attacks + damage on the beaten enemies + their levels; a fallen hero nothing
+  const why = await page.evaluate(() => { const Z = window.__ZG; return Z.HEROES.map(h => Z.B.xpWhy[h.id] || { n: 0, a: 0, d: 0, lv: 0 }); });
+  check(s.xp.every((x, i) => x - pre.xp[i] === why[i].n) && why.every((w, i) => preDown[i] ? w.n === 0 : w.n === w.a + w.d + w.lv && w.lv === 2 * (pre.ri + 1)) && s.gold > pre.gold,
+    'both defeated enemies drop gold and give each hero standing their own XP: attacks + damage + their levels', JSON.stringify({ xp: s.xp, was: pre.xp, foeXp, why, preDown, gold: [pre.gold, s.gold] }));
+  // the hero screen after a battle: no Veščine button on a journey (balance E: only at wells and signposts), skills on the card, tap the hero for a skill
   for (let i = 0; i < 3 && (await state(page)).screen !== 'hero'; i++) { await page.keyboard.press('Enter'); await sleep(450); }
-  const after = await page.evaluate(() => ({ btn: !!document.querySelector('.hm .skillbtn'), pills: [...document.querySelectorAll('.hm .face.front .mv em')].map(e => e.className) }));
-  check(after.btn && after.pills.length === 3, 'after a battle the hero has a Veščine button and the card lists the three skills', JSON.stringify(after));
+  const after = await page.evaluate(() => ({ btn: !!document.querySelector('.hm .skillbtn'), foot: [...document.querySelectorAll('.hm .hm-foot .btn')].map(b => b.textContent), pills: [...document.querySelectorAll('.hm .face.front .mv em')].map(e => e.className) }));
+  check(!after.btn && !after.foot.some(t => /Veščine/.test(t)) && after.pills.length === 3, 'after a battle the hero screen shows no Veščine (only wells and signposts do); the card lists the three skills', JSON.stringify(after));
   check(await page.evaluate(() => !document.querySelector('.spirit-tip') && !/tapni junaka|klikni junaka/.test(document.body.textContent)), 'the hero screen does not tell the player to tap the hero');
   await page.click('.hm .spirit-hit'); await sleep(300);
   check(await page.evaluate(() => document.querySelectorAll('.hm .spirit .cards .card').length) === 1, 'tapping the hero plays a skill card');
-  await page.click('.hm .skillbtn'); await sleep(250);
-  const info = await page.evaluate(() => ({ rows: document.querySelectorAll('.skilldlg .sk').length, ups: document.querySelectorAll('.skilldlg .sk-ups li').length, xp: (document.querySelector('.skilldlg .sk-sum') || {}).textContent || '' }));
-  check(info.rows === 3 && info.ups === 6 && /do naslednje še \d+ XP/.test(info.xp), 'Veščine lists three skills, each with stopnja 2 and 3, and the XP to the next level', JSON.stringify(info));
-  await page.keyboard.press('Escape'); await sleep(150);
   for (let i = 0; i < 4 && (await state(page)).screen !== 'travel'; i++) { await page.keyboard.press('Enter'); await sleep(450); }
 
   // Bled: Perun's shrine (pinned above). Svetišče shows the god's sign, not the god; praying lends his gift
@@ -283,15 +289,21 @@ run(async () => {
   check(/dar: Perun/.test(gift.meta) && gift.card && gift.hurt.every(d => d > 0), 'with the gift, a third skill also chains Perun\'s lightning to every enemy', JSON.stringify(gift));
   await winBattle(page);
   for (let i = 0; i < 4 && (await state(page)).screen !== 'travel'; i++) { await page.keyboard.press('Enter'); await sleep(450); }
-  // the journey ends; leaving the ending brings Perun for the challenge
-  await page.evaluate(() => { const Z = window.__ZG; Z.S.run.ri = Z.WORLD.regions.length - 1; Z.go('ending'); }); await sleep(300);
-  await page.keyboard.press('Enter'); await sleep(400);
-  const come = await page.evaluate(() => ({ screen: window.__ZG.S.screen, god: !!document.querySelector('.godcome .hero.spr'), lead: (document.querySelector('.godcome .lead') || {}).textContent }));
-  check(come.screen === 'godcome' && come.god && /Perun je prišel po svoje/.test(come.lead || ''), 'leaving the ending, Perun comes for the challenge', JSON.stringify(come));
+  // Game Director, 21 Nov: the god comes at the end of the region where you prayed, before the signpost (not after
+  // the dragon); the party rests first, as at every region's end. Bled's shrine stands right after its first battle.
+  check(await page.evaluate(() => { const Z = window.__ZG; return Z.WORLD.regions.filter(r => r.stops.includes('god')).every(r => r.stops.indexOf('god') === 1); }),
+    'every shrine stands near the start of its region, right after the first battle');
+  await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run; R.stops.forEach(st => { st.passed = true; }); R.prompt = null; Z.S.heroes[0].hp = 1; Z.go('travel'); });
+  await page.keyboard.press('ArrowRight');
+  for (let i = 0; i < 60 && (await state(page)).screen !== 'godcome'; i++) await sleep(200);
+  const come = await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run; return { screen: Z.S.screen, ri: R.ri, god: !!document.querySelector('.godcome .hero.spr'), lead: (document.querySelector('.godcome .lead') || {}).textContent,
+    note: (document.querySelector('.godcome .note') || {}).textContent || '', rested: Z.S.heroes[0].hp === Z.S.heroes[0].maxHp, prompt: R.prompt }; });
+  check(come.screen === 'godcome' && come.ri === 3 && come.god && /Perun je prišel po svoje/.test(come.lead || '') && come.rested && /opomorejo/.test(come.note) && !come.prompt,
+    'at the end of Bled, before the signpost, Perun comes for the challenge; the party has rested first', JSON.stringify(come));
   await shot('journey-08-godcome');
   await page.keyboard.press('Enter'); await sleep(900);
-  const fight = await page.evaluate(() => { const Z = window.__ZG, B = Z.B; return { screen: Z.S.screen, foes: B.enemies.map(e => e.name), hp: B.enemies[0].maxHp, pattern: B.enemies[0].pattern.join(), boss: Math.max(...['lintvern'].map(k => Z.ENEMIES[k].hp)) }; });
-  check(fight.screen === 'battle' && fight.foes.join() === 'Gromovnik Perun' && fight.pattern === 'special' && fight.hp > fight.boss, 'Perun fights alone, far tougher than the dragon, with only his special', JSON.stringify(fight));
+  const fight = await page.evaluate(() => { const Z = window.__ZG, B = Z.B; return { screen: Z.S.screen, foes: B.enemies.map(e => e.name), hp: B.enemies[0].maxHp, pattern: B.enemies[0].pattern.join(), }; });
+  check(fight.screen === 'battle' && fight.foes.join() === 'Gromovnik Perun' && fight.pattern === 'special' && fight.hp > 250, 'Perun fights alone, tougher than any boss on the road, with only his special', JSON.stringify(fight));
   // his special is a chain: every hero is hit, the first hardest
   const chain = await page.evaluate(() => { const Z = window.__ZG, B = Z.B; Z.S.heroes.forEach(h => { h.down = false; h.hp = h.maxHp = 200; }); B.shield = 0; B.evade = 0;
     enemyAct(B.enemies[0]); return Z.S.heroes.map(h => 200 - h.hp); });
@@ -302,12 +314,19 @@ run(async () => {
   await page.keyboard.press('Enter'); await sleep(500);
   const word = await page.evaluate(() => ({ screen: window.__ZG.S.screen, say: (document.querySelector('.godword .say') || {}).textContent || '', notes: [...document.querySelectorAll('.godword .note')].map(n => n.textContent).join(' | '),
     unlocked: window.__ZG.UNLOCKED.has('perun'), next: localStorage.getItem('zg-gift'), raised: window.__ZG.S.heroes.every(h => !h.down) }));
-  check(word.screen === 'godword' && /zapomnil/.test(word.say) && word.unlocked && word.next === 'perun' && word.raised && /\+250 XP/.test(word.notes),
-    'beaten, Perun speaks, raises the fallen, gives XP, is unlocked, and his gift waits for the next journey', JSON.stringify(word));
+  check(word.screen === 'godword' && /zapomnil/.test(word.say) && word.unlocked && word.next === 'perun' && word.raised && /\+250 XP/.test(word.notes) && /do konca poti/.test(word.notes),
+    'beaten, Perun speaks, raises the fallen, gives XP, is unlocked; his gift stays for this journey and waits for the next', JSON.stringify(word));
   await shot('journey-09-godword');
-  await page.keyboard.press('Enter'); await sleep(300);
-  const next = await page.evaluate(() => { const Z = window.__ZG; const t = Z.S.screen; Z.S.testMode = true; Z.newRun('krpan'); Z.go('travel'); return { t, gifts: Z.S.run.gifts.slice(), left: localStorage.getItem('zg-gift') }; });
-  check(next.t === 'title' && next.gifts.join() === 'perun' && next.left === null, 'the next journey carries Perun\'s gift from start to end', JSON.stringify(next));
+  // after his word the road goes on: the signpost of Bled, and a later shrine of Perun only lets you bow
+  for (let i = 0; i < 4 && !(await state(page)).prompt; i++) { await page.keyboard.press('Enter'); await sleep(500); }
+  const atSign = await state(page);
+  check(atSign.screen === 'travel' && atSign.ri === 3 && /^Kažipot kaže naprej/.test(atSign.prompt || '') && await page.evaluate(() => !window.__ZG.godWaits()), 'after the challenge the road goes on to Bled\'s signpost; the god does not come twice', JSON.stringify(atSign));
+  await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run; R.stops = [{ kind: 'god', god: 'perun', x: R.x + 300, done: false, passed: false }]; R.endX = R.x + 900; R.prompt = null; Z.go('travel'); });
+  await walk(page);
+  const laterS = await state(page);
+  check(/že preizkusil/.test(laterS.prompt || ''), 'a later shrine of Perun says he has already tested you', JSON.stringify(laterS));
+  const next = await page.evaluate(() => { const Z = window.__ZG; Z.S.testMode = true; Z.newRun('krpan'); Z.go('travel'); return { gifts: Z.S.run.gifts.slice(), left: localStorage.getItem('zg-gift') }; });
+  check(next.gifts.join() === 'perun' && next.left === null, 'the next journey carries Perun\'s gift from start to end', JSON.stringify(next));
   check(await page.evaluate(() => /dar: Perun/.test((() => { const Z = window.__ZG; return Z.S.run.gifts.map(g => 'dar: ' + Z.GOD[g].name).join(); })())), 'the gift is named after the god');
 
   // a party god at their own shrine meets their godly version at once; the party god does not strike it
@@ -327,17 +346,20 @@ run(async () => {
     return { title: B.node.title, foe: B.enemies[0].name, chip, common: /Skupni udarec/.test(cards) };
   });
   check(own.title === 'Izziv' && own.foe === 'Gromovnik Perun' && /ne udari/.test(own.chip) && own.common, 'Perun in the party does not strike his godly version (a word of his letters is only the party\'s common blow)', JSON.stringify(own));
-  const pts = await page.evaluate(() => window.__ZG.S.run.pts);
+  const pts = await page.evaluate(() => window.__ZG.S.heroes[0].pts);
   await winBattle(page);
   await page.keyboard.press('Enter'); await sleep(500);
-  const ownWon = await page.evaluate(() => ({ screen: window.__ZG.S.screen, pts: window.__ZG.S.run.pts, xp: window.__ZG.S.heroes.map(h => h.xp), notes: [...document.querySelectorAll('.godword .note')].map(n => n.textContent).join(' | ') }));
-  check(ownWon.screen === 'godword' && ownWon.pts > pts && /točko veščine/.test(ownWon.notes) && ownWon.xp.every(x => x >= 250), 'beating the godly version gives the party a skill point at once and a chunk of XP', JSON.stringify({ ...ownWon, before: pts }));
-  // a hero with a point to spend glows: in the party on the road and on the hero screens
+  const ownWon = await page.evaluate(() => ({ screen: window.__ZG.S.screen, pts: window.__ZG.S.heroes[0].pts, xp: window.__ZG.S.heroes.map(h => h.xp), notes: [...document.querySelectorAll('.godword .note')].map(n => n.textContent).join(' | ') }));
+  check(ownWon.screen === 'godword' && ownWon.pts > pts && /točko veščine/.test(ownWon.notes) && ownWon.xp.every(x => x >= 250), 'beating the godly version gives the party god a skill point at once and every hero a chunk of XP', JSON.stringify({ ...ownWon, before: pts }));
+  // balance E: a hero with a point to spend glows only where it can be spent, at a well or a signpost
   await page.keyboard.press('Enter'); await sleep(400);
-  check(await page.evaluate(() => window.__ZG.S.screen === 'hero' && !!document.querySelector('.hm .spirit .hero.spr.glow')), 'after the battle the hero with points glows');
+  check(await page.evaluate(() => window.__ZG.S.screen === 'hero' && !document.querySelector('.hm .spirit .hero.spr.glow')), 'after the battle nobody glows: the points wait for a well or a signpost');
   for (let i = 0; i < 3 && (await state(page)).screen !== 'travel'; i++) { await page.keyboard.press('Enter'); await sleep(450); }
-  check(await page.evaluate(() => { const Z = window.__ZG, sp = [...document.querySelectorAll('.travel .party .hero.spr')]; return sp.length === Z.HEROES.length && sp.every((el, k) => el.classList.contains('glow') === Z.canGrow(Z.S.heroes[k])); }),
-    'on the road exactly the heroes with points to spend glow');
+  check(await page.evaluate(() => { const Z = window.__ZG; return Z.S.heroes.some(h => Z.canGrow(h)) && !document.querySelector('.travel .party .hero.spr.glow'); }), 'on the road nobody glows, even with points to spend');
+  await walk(page);
+  const sign = await page.evaluate(() => { const Z = window.__ZG, sp = [...document.querySelectorAll('.travel .party .hero.spr')];
+    return { text: Z.S.run.prompt && Z.S.run.prompt.text, acts: Z.S.run.prompt ? Z.S.run.prompt.actions.map(a => a.label) : [], glow: sp.length === Z.HEROES.length && sp.every((el, k) => el.classList.contains('glow') === Z.canGrow(Z.S.heroes[k])) }; });
+  check(/Kažipot/.test(sign.text || '') && sign.acts.some(l => /^Veščine · \d+ točk/.test(l)) && sign.glow, 'at the signpost Veščine is offered and exactly the heroes with points to spend glow', JSON.stringify(sign));
   await shot('journey-09b-glow');
   // another god's shrine stays closed to a party that travels with a god
   check(await page.evaluate(() => /ne dovoli/.test(shrinePrompt({ kind: 'god', god: 'veles' }, () => {}, null).text)), 'another god\'s shrine stays closed while a god travels with you');
@@ -376,6 +398,33 @@ run(async () => {
   check(easy2.btns.join() === 'Konec poti Enter' && /že drugič/.test(easy2.said) && easy2.screen === 'title' && !easy2.run, 'Malček (Lahka): a second lost battle on the same journey ends it', JSON.stringify(easy2));
   const hard = await lose('srednja');
   check(hard.btns.join() === 'Konec poti Enter' && hard.screen === 'title' && !hard.run, 'Učenjak (Srednja): a lost battle ends the journey (no retrying outside the test mode)', JSON.stringify(hard));
+  // losing to the god at a region's end is losing a battle: on Malček the god leaves and the party withdraws to the
+  // signpost; on Učenjak the journey is over
+  const loseGod = async d => {
+    await page.evaluate(d => { const Z = window.__ZG; Z.setDiff(d); Z.S.testMode = false; Z.newRun('krpan'); Z.joinHero('kurent'); Z.enterRegion(3); const R = Z.S.run;
+      R.prayer = 'perun'; R.gifts.push('perun'); R.stops.forEach(x => { x.passed = true; }); R.x = R.endX - 5; R.prompt = null; Z.go('travel'); }, d);
+    await page.keyboard.press('ArrowRight');
+    for (let i = 0; i < 40 && (await state(page)).screen !== 'godcome'; i++) await sleep(200);
+    await page.keyboard.press('Enter'); await sleep(900);
+    await page.evaluate(() => { const Z = window.__ZG; Z.S.heroes.forEach((h, k) => woundHero(k, 9999)); checkEnd(); }); await sleep(1600);
+    const said = await page.evaluate(() => (document.querySelector('.overlay .dialog .muted') || {}).textContent);
+    await page.keyboard.press('Enter'); await sleep(500);
+    const word = await page.evaluate(() => ({ screen: window.__ZG.S.screen, note: [...document.querySelectorAll('.godword .note')].map(n => n.textContent).join(' | '), btn: (document.querySelector('.godword .btn') || {}).textContent }));
+    await page.keyboard.press('Enter'); await sleep(500);
+    return { said, word, ...(await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run; return { screen: Z.S.screen, run: !!R, challenged: R && R.challenged, prompt: R && R.prompt && R.prompt.text, unlocked: Z.UNLOCKED.has('perun') }; })) };
+  };
+  await page.evaluate(() => { const Z = window.__ZG; Z.UNLOCKED.delete('perun'); });
+  const godEasy = await loseGod('lahka');
+  check(/Perun je močnejši/.test(godEasy.said) && godEasy.word.screen === 'godword' && /odide brez besede/.test(godEasy.word.note) && godEasy.run && godEasy.challenged && /umakne/.test(godEasy.prompt || '') && !godEasy.unlocked,
+    'Malček: lost to Perun at the region\'s end, he leaves and the party withdraws (no unlock); he does not come again', JSON.stringify(godEasy));
+  await page.keyboard.press('Enter'); await sleep(200);
+  for (let i = 0; i < 40 && !(await state(page)).prompt; i++) await sleep(200);
+  check(/^Kažipot kaže naprej/.test((await state(page)).prompt || ''), 'after withdrawing from the god the road goes on to the signpost', (await state(page)).prompt);
+  const atEnd = await page.evaluate(() => { const Z = window.__ZG; Z.setDiff('lahka'); Z.newRun('krpan'); Z.enterRegion(3); const R = Z.S.run;
+    R.prayer = 'perun'; R.stops.forEach(x => { x.passed = true; }); R.x = R.endX; R.prompt = null; Z.go('travel'); return { prompt: R.prompt && R.prompt.text, label: R.prompt && R.prompt.actions[0].label }; });
+  check(/te čaka Perun/.test(atEnd.prompt || '') && atEnd.label === 'Sprejmi izziv', 'back at the region\'s end with the god still waiting (a reload), the road offers his challenge, not the signpost', JSON.stringify(atEnd));
+  const godHard = await loseGod('srednja');
+  check(/Pot je končana/.test(godHard.said) && /Konec poti/.test(godHard.word.btn || '') && godHard.screen === 'title' && !godHard.run, 'Učenjak: losing to the god at the region\'s end ends the journey, like any lost battle', JSON.stringify(godHard));
   // balance D: at Ptuj (the tutorial) a lost battle never ends the journey and costs no rescue, on any Znanje;
   // on Malček the Lintvern can always be fought once more, rescue or not
   const free = await page.evaluate(() => { const Z = window.__ZG; Z.setDiff('srednja'); Z.newRun('krpan'); const node = { stop: Z.S.run.stops.find(x => x.enemies) };

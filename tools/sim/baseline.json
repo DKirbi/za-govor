@@ -1,0 +1,6 @@
+[
+  { "name": "D-malcek-10", "know": "malcek", "pace": 10, "n": 150 },
+  { "name": "D-malcek-12", "know": "malcek", "pace": 12, "n": 100 },
+  { "name": "D-ucenjak-8", "know": "ucenjak", "pace": 8, "n": 100 },
+  { "name": "D-molj-6", "know": "molj", "pace": 6, "n": 100 }
+]

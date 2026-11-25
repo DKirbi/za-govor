@@ -598,15 +598,15 @@ const CHARS = [
     note: 'Bela peča z žitnim vencem, vezena bluza in predpasnik, preslica z volno. Ko zdravi, pošlje vodo; na največji karti stoji pod mavrico med žitom, kravo in čebelnjakom.' },
   { id: 'kresnik', name: 'Kresnik', c: 'var(--kresnik)', sub: 'sončni junak · ogenj', moves: ['Ognjeni meč', 'Kresna strela', 'Kresna moč'], words: ['KRES', 'ISKRA', 'POLETJE'], vals: ['−5 · gori', '−10 · gori', '−5 vsem · povrne četrtino rane'], extra: 'zlatniki iz povrnjene moči',
     note: 'Zlati lasje kot plamen, rdeč telovnik, bakla. Največja karta je kresna noč: kres, goreče kolo, ki se vali po hribu, in praprotni cvet.' },
-  { id: 'veles', name: 'Veles', c: 'var(--veles)', sub: 'gospodar živine in spodnjega sveta', moves: ['Kačji pik', 'Medvedja šapa', 'Korenine sveta'], words: ['ROG', 'MEDVED', 'KORENINE'], vals: ['−10 · strup', '−24', '−50'], extra: 'kača ovije vse sovražnike',
+  { id: 'veles', name: 'Veles', c: 'var(--veles)', sub: 'gospodar živine in spodnjega sveta', moves: ['Kačji pik', 'Medvedja šapa', 'Korenine sveta'], words: ['ROG', 'MEDVED', 'KORENINE'], vals: ['−10 · strup', '−24', '−50'], extra: 'kača ovije vse nasprotnike',
     note: 'Rogovi, medvedji kožuh, palica s kačo in zelene oči. Perunov večni nasprotnik, zato je zemeljski in temen, kjer je Perun nebesen in svetel. Najmočnejši med vsemi: večja postava, najtrši udarci. Zaigraš ga lahko šele po koncu zgodbe.' },
 ];
 CHARS.push(
-  { id: 'krpan', name: 'Martin Krpan', c: '#c59a62', sub: 'silak z Vrha · močan, počasen udar', moves: ['Zamah', 'Kobilica', 'Lipov kij'], words: ['SOL', 'KOBILA', 'BRDAVS'], vals: ['−7', '−18', '−38'], extra: 'omami šefa',
+  { id: 'krpan', name: 'Martin Krpan', c: '#c59a62', sub: 'silak z Vrha · močan, počasen udar', moves: ['Lipov kij', 'Kmečka moč', 'Mesarica'], words: ['SOL', 'KOBILA', 'BRDAVS'], vals: ['−10', '−8 · dvakrat', '−10 · krvavi 2 s'], extra: 'rana krvavi',
     note: 'Širok klobuk, brki, telovnik, na hrbtu vreča soli, v roki lipov kij. Na srednji karti dvigne kobilico s ceste, na največji premaga Brdavsa.' },
   { id: 'jurij', name: 'Zeleni Jurij', c: '#4fae5a', sub: 'znanilec pomladi · zdravi malo in pogosto', moves: ['Popek', 'Brstenje', 'Jurjevo'], words: ['LIST', 'BREZA', 'POMLAD'], vals: ['+4 zdravja', '+10 zdravja', '+22 zdravja'], extra: 'odklene vse črke',
     note: 'Od glave do kolen oblečen v brezovo zelenje s cvetjem, v roki brezova veja. Na največji karti prijezdi na belem konju.' },
-  { id: 'kurent', name: 'Kurent', c: '#d9cfae', sub: 'preganjalec zime · zamik in hrup', moves: ['Ježevka', 'Zvonci', 'Pregon zime'], words: ['ZVON', 'MASKA', 'PUST'], vals: ['−4 · zamik 2 s', '−3 · udarec −3', '−4 vsem · zamik 3 s'], extra: 'vsi sovražniki zamudijo napad',
+  { id: 'kurent', name: 'Kurent', c: '#d9cfae', sub: 'preganjalec zime · zamik in hrup', moves: ['Ježevka', 'Zvonci', 'Pregon zime'], words: ['ZVON', 'MASKA', 'PUST'], vals: ['−4 · zamik 2 s', '−3 · udarec −3', '−4 vsem · zamik 3 s'], extra: 'vsi nasprotniki zamudijo napad',
     note: 'Ovčji kožuh, usnjena maska z dolgim rdečim jezikom, rogovi s trakovi, zvonci za pasom in ježevka. Na največji karti kurenti preženejo zimo.' },
   { id: 'matjaz', name: 'Kralj Matjaž', c: '#d84a5a', sub: 'speči kralj · ščit in vojska', moves: ['Meč', 'Kraljeva vojska', 'Prebujenje'], words: ['MEČ', 'KRONA', 'KRALJ'], vals: ['−6', 'naslednji napad +3', '+3 zdravja · ščit 3'], extra: 'padli vstanejo',
     note: 'Krona, dolga siva brada, rdeč plašč s hermelinom, meč. Na največji karti se prebudi pod Peco: brada je ovita okrog mize, krokarji letijo, lipa ozeleni.' },
@@ -619,9 +619,9 @@ CHARS.push(
     note: 'Odprta čelada z rdečo perjanico, brki, oklep z rdečo suknjo in ščit. Ob napadu zamahne z mečem in na oblegovalce letijo sveže češnje, kakor pripoveduje izročilo.' },
   { id: 'klepec', name: 'Peter Klepec', c: '#b8a04a', sub: 'pastir iz Osilnice · moč, ki raste', moves: ['Pastirska palica', 'Izruvano drevo', 'Vilin dar'], words: ['PAŠA', 'DREVO', 'OSILNICA'], vals: ['−6', '−15', '−30 · moč +'], extra: 'vsak Vilin dar ga okrepi do konca bitke',
     note: 'Slamnik, svetli lasje, bela srajca, telovnik, bos. V roki drži izruvano drevo; ob napadu zamahne z njim in listje leti.' },
-  { id: 'vida', name: 'Lepa Vida', c: '#5fa8d9', sub: 'pesem z obale · slabi sovražnike', moves: ['Hrepenenje', 'Morska pena', 'Pesem z obale'], words: ['MORJE', 'OBALA', 'HREPENI'], vals: ['−5', '−12 · napad −1', '−24'], extra: 'vsi sovražniki napadajo šibkeje',
+  { id: 'vida', name: 'Lepa Vida', c: '#5fa8d9', sub: 'pesem z obale · slabi nasprotnike', moves: ['Hrepenenje', 'Morska pena', 'Pesem z obale'], words: ['MORJE', 'OBALA', 'HREPENI'], vals: ['−5', '−12 · napad −1', '−24'], extra: 'vsi nasprotniki napadajo šibkeje',
     note: 'Dolgi temni lasje z rdečim trakom, bela bluza, modro krilo, v roki perilo. Ob napadu dvigne roko in iz morja se dvigne pena.' },
-  { id: 'ajda', name: 'Ajdovska deklica', c: '#9fb0be', sub: 'okamnela velikanka s Prisanka · varuhinja', moves: ['Metanje skal', 'Varstvo popotnikov', 'Okamnitev'], words: ['GORA', 'SKALA', 'PRISANK'], vals: ['−6', 'prestreže napad', 'okamni cilj'], extra: 'sovražnik izpusti napad',
+  { id: 'ajda', name: 'Ajdovska deklica', c: '#9fb0be', sub: 'okamnela velikanka s Prisanka · varuhinja', moves: ['Metanje skal', 'Varstvo popotnikov', 'Okamnitev'], words: ['GORA', 'SKALA', 'PRISANK'], vals: ['−6', 'prestreže napad', 'okamni nasprotnika'], extra: 'nasprotnik izpusti napad',
     note: 'Večja od drugih, s svetlo kito in planiko v laseh. Ena roka, lice in rob krila so že iz skale; ob napadu udari s kamnito pestjo.' });
 // Folk heroes can start a journey and join on the road; gods are stronger, and only one god may travel with the party.
 const CHAR_ST = { krpan: 'junak', jurij: 'junak', kurent: 'junak', kresnik: 'junak', matjaz: 'junak', erazem: 'junak', klepec: 'junak', vida: 'junak', ajda: 'junak', mokos: 'bog', svarog: 'bog', stribog: 'bog', dazbog: 'bog', perun: 'bog', veles: 'bog' };
@@ -717,13 +717,22 @@ function setSound(on) {
 }
 let SEL_N = 0, CARD_Z = 10;
 function spriteEl(id, c, cls = '') {
-  return h('div', { class: 'actor hero spr ' + cls, style: { '--c': c, '--art': SPR_SIZE[id] } }, h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[id]})`, 'animation-delay': (-rnd(12) / 10) + 's' } }));
+  // Visoka (src/backgrounds.js): a hero with frames plays them from the sheet (game.css .spr.hi); the others use their strip.
+  // The sheet's rows for idle, running, victory and down go on the element; hi-run, hi-win, hi-down say which it has.
+  const hi = heroHi(id), H = hi && BGX.heroes[id], rows = hi ? heroStateRows(id) : null;
+  const has = rows ? [['--rr', 'hi-run'], ['--rw', 'hi-win'], ['--rd', 'hi-down']].filter(([v]) => v in rows).map(([, k]) => k).join(' ') : '';
+  return h('div', { class: 'actor hero spr ' + (hi ? `hi ${has} ` : '') + cls, 'data-hero': id, style: hi ? { '--c': c, '--art': SPR_SIZE[id], '--cols': H.cols, '--rows': H.rows, ...rows } : { '--c': c, '--art': SPR_SIZE[id] } },
+    h('i', { class: 'sp', style: { 'background-image': `url(${hi ? H.sheet : SPRITES[id]})`, 'animation-delay': (-rnd(12) / 10) + 's' } }));
 }
 function replay(el, ...cls) { el.classList.remove(...cls); void el.offsetWidth; el.classList.add(...cls); }
-function attackAnim(el, tier, sceneEl) {
+function attackAnim(el, tier, sceneEl, rank) {
   if (!el || !el.classList.contains('spr')) return;
+  // a hero with frames (Visoka): the sequence of this skill and rank, four frames in 0,72 s, instead of the lunge (--ra, game.css)
+  const row = el.classList.contains('hi') ? heroSeqRow(el.dataset.hero, tier, rank) : null;
+  // spriteEl gives the layer a random negative delay so the idles are out of step; a sequence must start at its first frame
+  if (row !== null) { el.style.setProperty('--ra', row); const sp = el.querySelector('.sp'); if (sp) sp.style.animationDelay = '0s'; }
   replay(el, ...(tier === 3 ? ['atk', 'atk3'] : ['atk'])); if (tier !== 3) el.classList.remove('atk3');
-  clearTimeout(el._atk); el._atk = setTimeout(() => el.classList.remove('atk', 'atk3'), tier === 3 ? 650 : 430);
+  clearTimeout(el._atk); el._atk = setTimeout(() => el.classList.remove('atk', 'atk3'), row !== null ? 740 : tier === 3 ? 650 : 430);
   if (tier === 3 && sceneEl) { replay(sceneEl, 'flash'); clearTimeout(sceneEl._fl); sceneEl._fl = setTimeout(() => sceneEl.classList.remove('flash'), 420); }
 }
 
@@ -736,13 +745,13 @@ const KIT = {
   veles:   { ini: 'Ve', kit: 'venom', role: 'strup, zadene vse', domain: ['rog', 'medved', 'kača', 'korenina', 'živina', 'volna', 'čreda', 'zaklad', 'tema', 'pesem'] },
   dazbog:  { ini: 'Da', kit: 'light', role: 'luč: naslednja beseda močnejša', domain: ['dan', 'zarja', 'sonce', 'jutro', 'voz', 'žarek', 'svetloba', 'zlato', 'nebo', 'dar'] },
   stribog: { ini: 'St', kit: 'wind', role: 'zadene vse', domain: ['veter', 'burja', 'vihar', 'sapa', 'piš', 'zrak', 'oblak', 'jadro', 'krilo', 'pero'] },
-  krpan:   { ini: 'Kp', kit: 'heavy', role: 'težek udar', domain: ['sol', 'kobila', 'kij', 'lipa', 'cesar', 'voz', 'mesar', 'tovor', 'cesta', 'pismo'] },
+  krpan:   { ini: 'Kp', kit: 'reviewed', role: 'težek udar', domain: ['sol', 'kobila', 'kij', 'lipa', 'cesar', 'voz', 'mesar', 'tovor', 'cesta', 'pismo'] },
   jurij:   { ini: 'Ju', kit: 'bloom', role: 'zdravi malo + šibek udar', domain: ['list', 'breza', 'pomlad', 'trava', 'cvet', 'veja', 'zelenje', 'konj', 'rosa', 'popek'] },
   kurent:  { ini: 'Ku', kit: 'reviewed', role: 'zamik in hrup', domain: ['zvon', 'zvonec', 'maska', 'pust', 'kožuh', 'zima', 'ples', 'krof', 'hrup', 'jež'] },
   matjaz:  { ini: 'Ma', kit: 'reviewed', role: 'ščit in vojska', domain: ['meč', 'krona', 'kralj', 'vojska', 'brada', 'gora', 'miza', 'lipa', 'krokar', 'spanje'] },
   erazem:  { ini: 'Er', kit: 'reviewed', role: 'meč, češnje, izmik', domain: ['grad', 'vitez', 'jama', 'rov', 'češnja', 'oklep', 'stolp', 'skala', 'obleganje', 'top'] },
   klepec:  { ini: 'Kl', kit: 'grow', role: 'moč raste', domain: ['pastir', 'ovca', 'drevo', 'paša', 'vila', 'moč', 'koza', 'palica', 'reka', 'hrib'] },
-  vida:    { ini: 'Vi', kit: 'song', role: 'slabi sovražnike', domain: ['morje', 'obala', 'val', 'pesem', 'ladja', 'pena', 'galeb', 'sol', 'plenica', 'jadro'] },
+  vida:    { ini: 'Vi', kit: 'song', role: 'slabi nasprotnike', domain: ['morje', 'obala', 'val', 'pesem', 'ladja', 'pena', 'galeb', 'sol', 'plenica', 'jadro'] },
   ajda:    { ini: 'Aj', kit: 'reviewed', role: 'varstvo, okamnitev', domain: ['gora', 'skala', 'kamen', 'vrh', 'planika', 'gams', 'okno', 'sneg', 'stena', 'pot'] },
 };
 const ROSTER = Object.fromEntries(CHARS.map(ch => [ch.id, { id: ch.id, name: ch.name, c: ch.c, moves: ch.moves, god: isGod(ch.id), ...KIT[ch.id] }]));
@@ -758,16 +767,17 @@ const ENEMIES = {
   volkodlak: { name: 'Volkodlak', hp: 45, atk: 6, speed: 11, calmStep: 0.25, size: 76, xp: 40, feedsOnRepeat: true,
     pattern: ['attack'], moves: { attack: 'Zobje' } },
   vila: { name: 'Vodna vila', f: true, hp: 30, atk: 4, speed: 9, calmStep: 0.34, size: 64, xp: 30,
-    pattern: ['attack', 'flood'], moves: { attack: 'Val', flood: 'Poplava' } },
-  povodni: { name: 'Povodni mož', hp: 240, atk: 12, speed: 12.5, calmStep: 0.25, size: 100, xp: 90, boss: true, cwlock: 'vrtinec',
+    pattern: ['attack', 'flood'], moves: { attack: 'Val', flood: 'Poplava', heal: 'Zdravilni val' } },
+  povodni: { name: 'Povodni mož', hp: 260, atk: 16, speed: 12.5, calmStep: 0.25, size: 100, xp: 90, boss: true, cwlock: 'vrtinec',
     pattern: ['attack', 'attack', 'cwlock'], moves: { attack: 'Objem vode', cwlock: 'Vrtinec' } },
   // Lintvern (balance D, 17 Nov 2026): three attacks of his own — Kremplji (one hero), Topot (everyone a little, and
   // heroes knocked out of the letter mesh for a while) and his signature, Ognjeni dih: at 66 % and 33 % of his health
   // he draws breath for a long, visible moment (longer on Malček, shorter on Knjižni molj), then burns every hero
   // and scorches letters that fade one by one; a scorched letter used in a word burns that hero again. Nothing
   // stops his attacks (stuns, Okamnitev) and delays on him are halved. At half health he enrages: faster, Zmajeva
-  // uganka, and as many wyverns again as he started with (data/world.json → grad.adds). Health by Znanje (hpBy).
-  lintvern: { name: 'Lintvern', tags: ['zmaj'], hp: 250, hpBy: { lahka: 200, srednja: 250, tezka: 250 }, atk: 11, speed: 11.5, calmStep: 0.25, size: 100, xp: 150, boss: true, cwlock: 'zmaj', unstoppable: true,
+  // uganka, and as many wyverns again as he started with (data/world.json → grad.adds). Health by Znanje (hpBy): the toughest
+  // enemy of the road on every Znanje (Game Director, 20 Nov 2026), above Povodni mož; his wyverns are meant to fall first.
+  lintvern: { name: 'Lintvern', tags: ['zmaj'], hp: 250, hpBy: { lahka: 340, srednja: 320, tezka: 320 }, atk: 11, speed: 11.5, calmStep: 0.25, size: 100, xp: 150, boss: true, cwlock: 'zmaj', unstoppable: true,
     pattern: ['scratch', 'scratch', 'stomp'],
     phase2: { at: 0.5, pattern: ['scratch', 'stomp', 'scratch', 'cwlock'], speed: 10, calmStep: 0.34, summon: true },
     breath: { at: [0.66, 0.33], sec: { lahka: 14, srednja: 8, tezka: 6 }, words: { lahka: 4, srednja: 3, tezka: 2 }, hit: 1.2, burn: 4, scorch: 10, fade: 2.5, fadeWords: 3, use: 4 },
@@ -795,13 +805,13 @@ const foeArt = e => e.art || e.key;
 // from data/world.json; these stay for the automated tests and the README screenshots.
 const NODES = [
   { id: 'barje', type: 'battle', title: 'Barje', sub: 'Bitka · dva škrata',
-    teach: 'Mreža črk, barve junakov, moč napada, izbira cilja.',
+    teach: 'Mreža črk, barve junakov, moč napada, izbira nasprotnika.',
     battle: { enemies: ['skrat', 'skrat'], finishers: ['perun'], meterStart: 0, tips: [
       { until: 1, text: 'Vpiši besedo na tipkovnici ali vleci z miško čez sosednje črke, nato pritisni Pošlji ali Enter.',
         m: 'Vleci s prstom čez sosednje črke in spusti: beseda se pošlje sama. Če črke pritiskaš eno za drugo, pritisni Pošlji ob besedi.' },
       { until: 3, text: 'Barvne črke sprožijo junake: ena črka junakove barve sproži prvo veščino, dve drugo, tri tretjo. Daljša beseda pomeni večji množitelj.' },
-      { until: 5, text: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Klikni sovražnika ali uporabi ←/→ za izbiro cilja.',
-        m: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Za cilj izbereš sovražnika s pritiskom nanj.' },
+      { until: 5, text: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Nasprotnika izbereš s klikom ali s tipkama ←/→.',
+        m: 'Zlata pika označuje šumnik (Č, Š, Ž) — kritični udarec. Nasprotnika izbereš s pritiskom nanj.' },
       { until: 99, text: 'Poskusi različne oblike: »volk«, »volka« in »volkom« so vse veljavne, a ponovitve iste besede so šibkejše.' } ] } },
   { id: 'skrinja', type: 'chest', title: 'Skrinja', sub: 'Dogodek na čas',
     teach: 'Iz premešanih črk sestavi skrito besedo, preden se ključavnica zatakne.' },
@@ -823,7 +833,7 @@ const NODES = [
     teach: 'Šefovski boj: kremplji, topot, ognjeni dih z ožganimi črkami in, ko pobesni, zmajeva uganka.',
     battle: { enemies: ['lintvern'], finishers: ['triglav', 'kres'], meterStart: 0.3, tips: [
       { until: 4, text: 'Ko Lintvern zajema sapo, ga nič ne ustavi: ognjeni dih ožge črke — kdor jih uporabi, se opeče. Pod polovico zdravja pobesni in te sili v zmajevo uganko.' },
-      { until: 99, text: 'Triglavski zagovor omami sovražnika — prihrani ga za drugo fazo.' } ] } },
+      { until: 99, text: 'Triglavski zagovor omami nasprotnika — prihrani ga za drugo fazo.' } ] } },
 ];
 
 const CHESTS = [
@@ -874,7 +884,7 @@ const LV = () => LEVELS[S.know] || LEVELS.malcek;
 const DIFFS = {
   lahka: { name: 'Lahka', foeHp: 0.85, withdraw: 1, rise: 0.25, leave: false, finalRetry: true, text: 'Prvi poraz ni konec poti: družina si opomore do polnega zdravja in poskusi znova. Drugi poraz konča pot, a Lintverna lahko vedno izzoveš še enkrat. Padli po zmagi vstanejo.' },
   srednja: { name: 'Srednja', foeHp: 1, withdraw: 0, rise: 0, regionRise: 0.5, leave: false, text: 'Poraz konča pot. Padli obležijo do konca pokrajine, nato vstanejo s polovico zdravja.' },
-  tezka: { name: 'Težka', foeHp: 1.25, withdraw: 0, rise: 0, leave: true, text: 'Močnejši sovražniki, ki so proti koncu poti vse hitrejši. Poraz konča pot. Kdor pade in ga do konca bitke nihče ne obudi, zapusti družino.' },
+  tezka: { name: 'Težka', foeHp: 1.5, withdraw: 0, rise: 0, leave: true, text: 'Močnejši nasprotniki, ki so proti koncu poti vse hitrejši. Poraz konča pot. Kdor pade in ga do konca bitke nihče ne obudi, zapusti družino.' },
 };
 const DIFF = () => DIFFS[LV().diff] || DIFFS.srednja;
 // a lost battle on this journey still has a rescue left (Malček: the first one)
@@ -889,10 +899,10 @@ const canWithdraw = node => !!(S.run && (freeRetry(node) || (DIFF().withdraw && 
 const MINW = () => LV().minWord;
 
 const FINISHER_FX = {
-  perun: { text: 'Strele udarijo vse sovražnike!', heroId: 'perun', move: 'Strela zagovora' },
-  kres: { text: 'Ogenj zajame vse sovražnike!', heroId: 'kresnik', move: 'Kresni plamen' },
+  perun: { text: 'Strele udarijo vse nasprotnike!', heroId: 'perun', move: 'Strela zagovora' },
+  kres: { text: 'Ogenj zajame vse nasprotnike!', heroId: 'kresnik', move: 'Kresni plamen' },
   mokos: { text: 'Zagovor okrepi družino, črke se očistijo!', heroId: 'mokos', move: 'Materin blagoslov' },
-  triglav: { text: 'Gora omami sovražnike!', heroId: 'ajda', move: 'Gorski udar' },
+  triglav: { text: 'Gora omami nasprotnike!', heroId: 'ajda', move: 'Gorski udar' },
 };
 // who speaks the zagovor: the themed hero if they travel with you, otherwise whoever struck last
 function fxHero(fx) {
@@ -912,13 +922,14 @@ const HERO_HP = { krpan: 36, jurij: 26, kurent: 30, matjaz: 34, kresnik: 28, era
 // skill 1, 2 or 3 if the hero knows it; otherwise the strongest skill they know below it. Skill 1 is known
 // from the start; a skill point learns skill 2 (then 3) or raises a known skill to stopnja 2 and 3:
 // a stronger attack, effects that last longer (×1,5, ×2) and one extra effect each.
-// Points are spent at wells, shrines and pedlars (screen "Veščine", src/skills.js).
 // Outside a journey (practice battles, the gallery) every skill is known at stopnja 1.
-// Balance D (17 Nov 2026): on a journey the party levels together. XP comes from the fight (src/progression.js:
-// attacks + damage + the enemy's level) into one pool; every hero has the party's level, and each new level adds
-// PTS_PER_LV skill points to a shared pool that any hero can spend (src/skills.js). Curve from the road simulations
-// (docs/progression-design.md §4b): level 3 by the end of Ptuj, level 9 before the last two bosses.
-const MAX_LV = 9, LV_XP = [0, 45, 110, 220, 360, 540, 760, 1020, 1350], PTS_PER_LV = 3;
+// Balance E (20 Nov 2026, Game Director): on a journey every hero levels on their own again. A beaten enemy gives
+// each hero still standing their own share (src/progression.js: their attacks on it + the damage they dealt + its
+// level); each new level brings that hero PTS_PER_LV skill point of their own. The curve is slower than balance D's
+// party curve (the party went up a level nearly every battle). Points are spent only at wells and at the signpost
+// at a region's end (screen "Veščine", src/skills.js), and the skills are only shown there.
+// Curve from the road simulations of 20 Nov (docs/progression-design.md §4c; the simulator: tools/sim/).
+const MAX_LV = 9, LV_XP = [0, 70, 180, 360, 640, 1000, 1500, 2200, 3100], PTS_PER_LV = 1;
 const lvHp = lvl => 1 + 0.08 * (lvl - 1), lvAtk = lvl => 1 + 0.04 * (lvl - 1), lvLong = lvl => 0.0125 * (lvl - 1);
 // reviewed heroes (src/progression.js): Ajdovska deklica gains a little more health per level (TEST: +10 % for +8 %),
 // Kurent never less than +1 a level
@@ -928,9 +939,11 @@ const levelFor = xp => { let l = 1; while (l < MAX_LV && xp >= LV_XP[l]) l++; re
 const heroMaxHp = (id, lvl) => Math.round(baseHpAt(id, lvl) * (has('alatir') ? 1.2 : 1));
 // sk[t]: 0 = skill t+1 not learned yet, 1–3 = its stopnja (rank)
 const heroState = (id, lvl = 1) => ({ id, hp: heroMaxHp(id, lvl), maxHp: heroMaxHp(id, lvl), lvl, xp: LV_XP[lvl - 1], pts: 0, sk: [1, 0, 0], down: false, leveled: false });
-// the shared pool of skill points on a journey, and whether hero `st` still has a skill to learn or raise
-const poolPts = () => (S.run && S.run.pts) || 0;
-const canGrow = st => !!(S.run && st && poolPts() > 0 && st.sk.some((r, i) => r ? r < MAX_RANK : i === 0 || st.sk[i - 1] > 0));
+// a hero's own unspent skill points on a journey, and whether hero `st` can spend one (a skill to learn or raise)
+const heroPts = st => (S.run && st && st.pts) || 0;
+const canGrow = st => !!(S.run && st && heroPts(st) > 0 && st.sk.some((r, i) => r ? r < MAX_RANK : i === 0 || st.sk[i - 1] > 0));
+// the party's unspent points, all heroes together (the signpost's and the well's Veščine button)
+const poolPts = () => S.run ? S.heroes.reduce((a, st) => a + (canGrow(st) ? heroPts(st) : 0), 0) : 0;
 const ptsWord = n => n === 1 ? 'točka veščin' : n === 2 ? 'točki veščin' : n < 5 ? 'točke veščin' : 'točk veščin';
 const MAX_RANK = 3;
 const RANK_POW = [0, 1, 1.2, 1.4], RANK_DUR = [0, 1, 1.5, 2];   // power and effect length by stopnja
@@ -943,9 +956,12 @@ function firedTier(k, n) { const st = S.heroes[k]; let t = clamp(n, 1, 3); while
 function setParty(ids) { HEROES.length = 0; ids.forEach(id => HEROES.push(ROSTER[id])); S.heroes = ids.map(id => heroState(id)); S.lastHero = 0; }
 // a hero joins: in a free place, or instead of the one at index `at`
 function joinHero(id, at) {
-  // on a journey a newcomer arrives at the party's level and knows skill 1; the shared points pay for the rest
-  const R = S.run, xp = R ? R.pxp || 0 : Math.floor(S.heroes.reduce((a, x) => a + x.xp, 0) / Math.max(1, S.heroes.length) / 2);
-  const st = heroState(id, R ? R.plvl || 1 : levelFor(xp)); st.xp = xp;
+  // on a journey a newcomer arrives at the level of the party's lowest hero (the one they replace does not count),
+  // knowing skill 1, with the points of those levels to spend at the next well or signpost (balance E)
+  const R = S.run, others = S.heroes.filter((_, k) => k !== at);
+  const half = Math.floor(S.heroes.reduce((a, x) => a + x.xp, 0) / Math.max(1, S.heroes.length) / 2);   // outside a journey: as before
+  const lvl = R ? Math.max(1, Math.min(MAX_LV, ...others.map(x => x.lvl || 1))) : levelFor(half);
+  const st = heroState(id, lvl); if (R) st.pts = lvl - 1; else st.xp = half;
   if (at == null || at < 0) { HEROES.push(ROSTER[id]); S.heroes.push(st); } else { HEROES[at] = ROSTER[id]; S.heroes[at] = st; }
   S.lastHero = 0;
   if (S.run && typeof fitGroups === 'function') fitGroups();   // battles ahead in this region match the new party size
@@ -1086,7 +1102,7 @@ const LORE = {
     meet: 'Kladivo je toplo, nakovalo čaka. Kujmo.', after: 'Dobro kovano drži.', thanks: 'Peč v meni spet gori s pravim ognjem. Hvala vam. Ko se naslednjič srečamo, bo moje kladivo vaše.' },
   mokos: { story: ['Mokoš je mati vlažna zemlja, zavetnica predic, vode in žetve. Bila je edina boginja med kipi kneza Vladimirja v Kijevu.', 'V slovenskem izročilu se je ohranila v pripovedki o Mokoški. Kjer prede Mokoš, se nit ne strga in rane se zacelijo.'],
     meet: 'Pridi bliže, otrok. Zemlja pomni vsako besedo.', after: 'Pijte in počivajte.', thanks: 'Voda v meni je spet čista. Hvala vam, otroci. Ko se naslednjič srečamo, vas bo zdravila moja roka.' },
-  stribog: { story: ['Stribog je ded vetrov. V Pesmi o Igorjevem pohodu so vetrovi imenovani Stribogovi vnuki, ki s puščicami pihajo z morja.', 'V igri je njegova sapa burja: upogne bore, premeša črke in zadene vse sovražnike hkrati.'],
+  stribog: { story: ['Stribog je ded vetrov. V Pesmi o Igorjevem pohodu so vetrovi imenovani Stribogovi vnuki, ki s puščicami pihajo z morja.', 'V igri je njegova sapa burja: upogne bore, premeša črke in zadene vse nasprotnike hkrati.'],
     meet: 'Vsak veter je moj vnuk. Kam naj zapiham?', after: 'Razpihali smo jih.', thanks: 'Vetrovi me spet ubogajo. Hvala vam. Ko se naslednjič srečamo, bo burja pihala za vas.' },
   dazbog: { story: ['Dažbog je sonce, bog, ki daje. Stari zapisi ga imenujejo Svarogov sin.', 'Vsako jutro se s sončnim vozom pripelje čez nebo. V igri njegova luč podvoji moč naslednje besede.'],
     meet: 'Kjer sem jaz, je dan. Naj se vidi vsaka črka.', after: 'Jutro je vedno pametnejše.', thanks: 'Tema mi je padla z oči. Hvala vam. Ko se naslednjič srečamo, vam bom svetil na pot.' },
@@ -1108,15 +1124,16 @@ function renderHeroMoment(arg) {
   const demo = () => {
     if (hs && hs.down) return;
     const t = knownT[(arg.demo = ((arg.demo || 0) % knownT.length)) ]; arg.demo++;
-    attackAnim(heroEl, t, ctx.scene);
+    attackAnim(heroEl, t, ctx.scene, sst && S.run ? sst.sk[t - 1] : 1);
     spawnCard(heroEl, { tier: t, c: ch.c, name: ch.name, move: ch.moves[t - 1], word: ch.words[t - 1], value: ch.vals[t - 1], extra: t === 3 ? ch.extra : null, art: id }, ctx);
   };
   const spirit = h('div', { class: 'spirit' + (kind === 'freed' ? ' cursed' : '') + (hs && hs.down ? ' down' : '') + (id === 'veles' ? ' grand' : ''), ref: el => ctx.scene = el },
-    h('button', { class: 'spirit-hit', 'aria-label': `${ch.name}: pokaži veščino`, title: 'Pokaži veščino', onclick: demo }, heroEl = spriteEl(id, ch.c, canGrow(sst) && !(hs && hs.down) ? 'glow' : '')),
+    h('button', { class: 'spirit-hit', 'aria-label': `${ch.name}: pokaži veščino`, title: 'Pokaži veščino', onclick: demo }, heroEl = spriteEl(id, ch.c, '')),
     [18, 34, 52, 68, 82].map((x, i) => h('span', { class: 'mote', style: { left: x + '%', 'animation-delay': (-i * .8) + 's', 'animation-duration': (3.4 + (i % 3) * .7) + 's' } })),
     h('div', { class: 'cards', ref: el => ctx.cards = el }),
-    h('button', { class: 'btn small skillbtn', onclick: () => openSkillInfo(id, sst) },
-      h('span', { class: 'i', 'aria-hidden': 'true' }, 'i'), 'Veščine', canGrow(sst) ? h('span', { class: 'ptsbadge', title: 'neporabljene točke družine' }, poolPts()) : null));
+    // balance E: on a journey the skills are only shown at wells and signposts (src/skills.js); the codex shows them
+    S.run && kind !== 'codex' ? null : h('button', { class: 'btn small skillbtn', onclick: () => openSkillInfo(id, sst) },
+      h('span', { class: 'i', 'aria-hidden': 'true' }, 'i'), 'Veščine'));
   const flip = h('div', { class: 'flip' });
   const front = h('div', { class: 'face front' }); front.innerHTML = CardArt.svg(id, 1);
   // the skills on the card: filled when known, outlined when not yet; a star for stopnja 2, two for stopnja 3
@@ -1131,7 +1148,7 @@ function renderHeroMoment(arg) {
   const wrap = h('div', { class: 'hm', style: { '--c': ch.c } },
     arg.crumb ? crumb(arg.crumb, () => arg.next()) : null,
     h('div', {}, h('div', { class: 'kind' }, HM_KIND[kind]), h('h2', {}, ch.name, h('small', {}, ch.sub)),
-      hs ? h('div', { class: 'hstat' }, hs.down ? 'Obležal. Obudi ga junak z zdravilno močjo, mrtva voda ali premagan bog; vodnjak ne.' : [`Raven ${hs.lvl} · zdravje ${hs.hp}/${hs.maxHp}`, hs.leveled ? h('b', {}, ` · nova raven družine: polno zdravje, +${PTS_PER_LV} točke za veščine!`) : null,
+      hs ? h('div', { class: 'hstat' }, hs.down ? 'Obležal. Obudi ga junak z zdravilno močjo, mrtva voda ali premagan bog; vodnjak ne.' : [`Raven ${hs.lvl} · zdravje ${hs.hp}/${hs.maxHp}`, hs.leveled ? h('b', {}, ' · nova raven: polno zdravje!') : null,
         hs.lvl < MAX_LV ? ` · do naslednje ravni še ${LV_XP[hs.lvl] - hs.xp} XP` : ' · najvišja raven']) : null),
     // what this moment means (unlocked, room in the party, a freed god) comes first, before the pictures
     kind === 'freed' ? h('div', { class: 'note' }, CHAR_ST[id] === 'konec' ? `${ch.name} se ti pridruži šele po koncu zgodbe — takrat lahko zaigraš tudi z njim.` : `${ch.name} se ti ne pridruži takoj: svojo moč ti posodi, ko se srečata na naslednji poti.`) : null,
@@ -1155,7 +1172,7 @@ function renderGallery() {
   const wrap = h('div', { class: 'gallery' },
     crumb('Nazaj na junake', () => go('heroes')),
     h('h1', { class: 'logo page-h1', tabindex: '-1', style: { 'font-size': '30px' } }, 'Liki in karte'),
-    h('p', { class: 'lead' }, 'Piksel sličice so narisane na mreži 48 × 48 (šefa 64 × 64) z dvema sličicama: mirovanje in napad. Napad je namenoma preprost, kot na prvih ročnih konzolah: lik skoči naprej, tarča utripne. Nad napadalcem se dvigne poslikana deska v slogu panjskih končnic in ostane do tri sekunde; močnejša beseda pokaže večjo in bogatejšo sliko. Sovražnikove karte imajo temen okvir.'));
+    h('p', { class: 'lead' }, 'Piksel sličice so narisane na mreži 48 × 48 (šefa 64 × 64) z dvema sličicama: mirovanje in napad. Napad je namenoma preprost, kot na prvih ročnih konzolah: lik skoči naprej, tarča utripne. Nad napadalcem se dvigne poslikana deska v slogu panjskih končnic in ostane do tri sekunde; močnejša beseda pokaže večjo in bogatejšo sliko. Nasprotnikove karte imajo temen okvir.'));
   const frames = (id, cursed) => h('div', { class: 'gframes' },
     cursed ? h('figure', {}, h('div', { class: 'fr cursed', style: { 'background-image': `url(${SPRITES[id]})` } }), 'zaklet (šef)') : null,
     h('figure', {}, h('div', { class: 'fr', style: { 'background-image': `url(${SPRITES[id]})` } }), 'mirovanje'),
@@ -1163,7 +1180,7 @@ function renderGallery() {
   const board = (id, t, cap) => { const f = h('figure', { class: 'gboard' }); f.innerHTML = CardArt.svg(id, t); f.append(h('figcaption', {}, cap)); return f; };
   wrap.append(h('p', { class: 'lead' }, 'Vsi liki so igralni. Pot začneš z enim, drugi se ti pridružijo na poti; v družini so največ štirje. Bogovi so močnejši od ljudskih junakov, zato gre s teboj le eden. Oznaka ob imenu pove, kam kdo sodi.'));
   renderGalleryExtras(wrap);
-  wrap.append(h('h2', {}, 'Ozadja'), h('div', { class: 'gbg' }, BG_INFO.map(([k, cap]) => h('figure', {}, h('img', { src: BG[k], alt: cap }), cap))));
+  wrap.append(h('h2', {}, 'Ozadja'), h('div', { class: 'gbg' }, BG_INFO.map(([k, cap]) => h('figure', {}, h('img', { src: BG[k], alt: cap }), cap)), bgGalleryFigures()));
   wrap.append(h('h2', {}, 'Junaki'));
   CHARS.forEach(ch => {
     const ctx = {};
@@ -1183,7 +1200,7 @@ function renderGallery() {
       h('p', {}, ch.note), frames(ch.id, false),
       h('div', { class: 'gboards' }, [1, 2, 3].map(t => board(ch.id, t, `${['', '1 črka', '2 črki', '3 črke'][t]} · ${ch.moves[t - 1]}`)))));
   });
-  wrap.append(h('h2', {}, 'Sovražniki'));
+  wrap.append(h('h2', {}, 'Nasprotniki'));
   FOE_CHARS.forEach(ch => {
     const ctx = {}, c = '#c0506a';
     const foe = spriteEl(ch.id, c, 'flip'), dummy = spriteEl('dummy', '#8a8f6a');
@@ -1220,7 +1237,8 @@ function makeEnemy(key, i, sc, strong) {
   const base = run && t.hpBy ? t.hpBy[LV().diff] || t.hp : t.hp;
   const hp = Math.round(base * (s ? s.hp : 1) * tier * (1 + steep[0] * ri / last) * (el ? el.hp : 1));
   const name = el ? (t.f ? 'Silna ' : 'Silni ') + t.name[0].toLowerCase() + t.name.slice(1) : t.name;
-  return { key, i, ...t, name, strong: !!el, lvl: run ? run.ri + 1 : 1, atk: Math.round(t.atk * (s ? s.atk : 1) * (el ? el.atk : 1)), speed: t.speed * slow, calmStep: t.calmStep / slow,
+  const atk = Math.round(t.atk * (s ? s.atk : 1) * (el ? el.atk : 1));
+  return { key, i, ...t, name, strong: !!el, lvl: run ? run.ri + 1 : 1, atk, atkBase: atk, speed: t.speed * slow, calmStep: t.calmStep / slow,
     pattern: t.pattern.slice(), maxHp: hp, hp, charge: Math.random() * 0.25, step: 0,
     stunUntil: 0, stunWords: 0, burn: null, burnAcc: 0, burnTurns: 0, burnPer: 0, phase2on: false, el: null };
 }
@@ -1237,6 +1255,10 @@ function startBattle(node) {
     stats: { words: 0, longest: '', best: 0, cw: 0, xp: 0, gold: 0 }, lastFinisher: null,
   };
   S.meterBonus = 0;
+  // Povodni mož's vile (Game Director, 20 Nov 2026; data/world.json → reka.escort): beside the boss they hit weaker and
+  // every third move heal him, so the fight asks who to strike first
+  const esc = def.escort;
+  if (esc) B.enemies.forEach(e => { if (e.key !== esc.key) return; e.atk = e.atkBase = Math.max(1, Math.round(e.atk * (esc.atk || 1))); e.pattern = esc.pattern.slice(); e.healOf = esc.of; e.healPart = esc.heal; });
   B.enemies.forEach(e => {
     if (has('stribogova-piscal')) { e.speed *= 1.15; e.calmStep /= 1.15; if (e.phase2) e.phase2 = { ...e.phase2, speed: e.phase2.speed * 1.15 }; }
     if (has('kurentov-zvonec')) e.charge = -0.6;
@@ -1289,6 +1311,7 @@ function buildBattleDom() {
       h('div', { class: 'puzzle', ref: el => UI.puzzle = el }),
       h('aside', { class: 'side', ref: el => UI.side = el })),
     h('div', { class: 'log', ref: el => UI.log = el })));
+  bgLayers(UI.scene, nodeBg(B.node), 'battle');   // a background being A/B tested (src/backgrounds.js); variant A leaves the scene as built
   // the phone layout sizes the battle to the space below the top bar (see .battle in game.css)
   battle.style.setProperty('--battle-top', Math.round(battle.getBoundingClientRect().top + scrollY) + 'px');
   renderMeta(); renderParty(); renderEnemies(); renderPuzzle(); renderSide(); renderWord(); renderCoach(); renderLog();
@@ -1305,8 +1328,8 @@ function renderParty() {
   UI.party.innerHTML = ''; UI.heroBars = [];
   UI.heroEls = HEROES.map((hr, i) => {
     const st = S.heroes[i], sleeping = !!B.sleep[i] && !st.down;
-    const el = spriteEl(hr.id, hr.c, st.down ? 'down' : sleeping ? 'asleep' : canGrow(st) ? 'glow' : '');
-    el.title = hr.name; el.append(h('span', { class: 'st' }, st.down ? '' : sleeping ? (B.sleep[i] && B.sleep[i].why === 'topot' ? 'omamljen' : 'spi') : busy(i) ? 'pleše' : ''));
+    const el = spriteEl(hr.id, hr.c, st.down ? 'down' : sleeping ? 'asleep' : '');   // no glow in battle: points wait for a well or a signpost
+    el.title = hr.name; el.append(h('span', { class: 'st' }));
     const bar = {};
     UI.party.append(h('div', { class: 'herowrap' + (st.down ? ' isdown' : ''), ref: w => bar.wrap = w }, el,
       h('div', { class: 'hpbar', ref: b => bar.bar = b }, h('i', { ref: f => bar.fill = f })),
@@ -1314,6 +1337,14 @@ function renderParty() {
     UI.heroBars.push(bar); return el;
   });
   renderPartyHp();
+}
+// what shows above a hero: attack and defence icons (src/effects.js), then asleep, knocked out or dancing
+function renderHeroSt() {
+  (UI.heroEls || []).forEach((el, i) => {
+    const st = S.heroes[i], box = el && el.querySelector('.st'); if (!box || !st) return;
+    const sleeping = !!B.sleep[i] && !st.down, text = st.down ? '' : sleeping ? (B.sleep[i].why === 'topot' ? 'omamljen' : 'spi') : busy(i) ? 'pleše' : '';
+    box.innerHTML = ''; box.append(...fxBadges(heroFx(i)), ...(text ? [h('span', {}, text)] : []));
+  });
 }
 function renderPartyHp() {
   (UI.heroBars || []).forEach((bar, i) => {
@@ -1325,6 +1356,7 @@ function renderPartyHp() {
   UI.partyhp.innerHTML = '';
   if (B.shield) UI.partyhp.append(h('span', { class: 'sh' }, `ščit družine ${B.shield}`));
   reviewedPartyNotes().forEach(t => UI.partyhp.append(h('span', { class: 'sh' }, t)));
+  renderHeroSt();
 }
 function renderEnemies() {
   UI.enemies.innerHTML = '';
@@ -1339,12 +1371,13 @@ function renderEnemies() {
     e.el = h('div', { class: 'actor foe spr' + (atk ? (e.atkTier === 3 ? ' atk atk3' : ' atk') : '') + (e.boss ? ' boss' : '') + (e.strong ? ' strong' : '') + (e.charging && e.hp > 0 ? ' charging' : '') + (e.hp <= 0 ? ' dead' : '') + (isT ? ' target' : '') +
         (statuses.includes('omamljen') ? ' stunned' : '') + (e.hp > 0 && performance.now() - (e.hitT || -1e9) < 250 ? ' hit' : ''),
       style: { '--art': Math.round(SPR_SIZE[foeArt(e)] * (e.scale || 1) * (e.strong ? 1.12 : 1)) }, title: e.name, onclick: () => setTarget(i) },
-      h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[foeArt(e)]})`, filter: e.tint || '', 'animation-delay': atk ? (-since) + 'ms' : (-(i * 400)) + 'ms' } }), h('span', { class: 'st' }, statuses.join(' · ')));
+      h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[foeArt(e)]})`, filter: e.tint || '', 'animation-delay': atk ? (-since) + 'ms' : (-(i * 400)) + 'ms' } }),
+      h('span', { class: 'st' }, fxBadges(foeFx(e)), statuses.length ? h('span', {}, statuses.join(' · ')) : null));   // attack up or down: icons (src/effects.js)
     const pips = S.mode === 'calm' && e.hp > 0 ? (() => {
       const steps = Math.round(1 / e.calmStep), on = Math.round(e.charge / e.calmStep);
       return h('div', { class: 'pips', title: 'Napade, ko so vse pike polne' }, Array.from({ length: steps }, (_, k) => h('i', { class: k < on ? 'on' : '' })));
     })() : null;
-    UI.enemies.append(h('div', { class: 'foewrap' }, isT ? h('span', { class: 'tg' }, '▼ cilj') : null, e.el,
+    UI.enemies.append(h('div', { class: 'foewrap' }, isT ? h('span', { class: 'tg' }, '▼ izbran') : null, e.el,
       h('span', { class: 'foename' }, e.name),
       h('div', { class: 'hpbar', style: { width: Math.max(44, SPR_SIZE[foeArt(e)] * (S.mobile ? 1 : 2)) + 'px' } }, h('i', { style: { width: (100 * e.hp / e.maxHp) + '%' } })),
       h('span', { class: 'hpnum' }, `${e.hp}/${e.maxHp}`),
@@ -1401,7 +1434,7 @@ function renderSide() {
         h('span', { class: 'zz' }, S.heroes[i].down ? 'padel' : busy(i) && !B.sleep[i] ? 'pleše' : asleep(i) ? (B.sleep[i] && B.sleep[i].why === 'topot' ? 'omamljen' : 'spi') : ''))))),
     h('div', { class: 'box keys' },
       h('kbd', {}, 'Enter'), h('span', {}, 'potrdi'), h('kbd', {}, 'Del'), h('span', {}, 'počisti'), h('kbd', {}, 'Esc'), h('span', {}, 'premor'),
-      h('kbd', {}, '← →'), h('span', {}, 'cilj')));
+      h('kbd', {}, '← →'), h('span', {}, 'izberi nasprotnika')));
 }
 
 // ------------------------------------------------------------ feedback + log
@@ -1444,16 +1477,16 @@ function spawnCard(actorEl, o, ctx = UI) {
     const pic = h('div', { class: 'pic' }); pic.innerHTML = CardArt.svg(o.art, o.tier);
     const cap = h('div', { class: 'cap' }, h('b', {}, o.move));
     if (o.tier > 1 && o.word) cap.append(' ', h('span', { class: 'wd' }, o.word));
-    if (o.value != null) cap.append(' ', h('span', { class: 'vl' }, o.value));
-    if (o.tier === 3 && o.extra) cap.append(h('span', { class: 'ex' }, o.extra));
+    if (o.value != null) cap.append(' ', h('span', { class: 'vl' }, fxText(o.value)));
+    if (o.tier === 3 && o.extra) cap.append(h('span', { class: 'ex' }, fxText(o.extra)));
     card.append(pic, cap);
-  } else if (o.tier === 1) card.append(`${o.name} · ${o.move}`, o.value != null ? ` · ${o.value}` : '');
+  } else if (o.tier === 1) card.append(`${o.name} · ${o.move}`, ...(o.value != null ? [' · ', ...fxText(o.value)] : []));
   else {
     if (o.tier === 3) card.append(h('div', { class: 'pt' }, o.portrait || o.name[0]));
     card.append(h('div', { class: 'mv' }, o.move), h('div', {}, o.name));
     if (o.word) card.append(h('div', { class: 'wd' }, o.word));
-    if (o.value != null) card.append(h('div', { class: 'vl' }, o.value));
-    if (o.extra) card.append(h('div', { style: { 'font-size': '11.5px' } }, o.extra));
+    if (o.value != null) card.append(h('div', { class: 'vl' }, fxText(o.value)));
+    if (o.extra) card.append(h('div', { style: { 'font-size': '11.5px' } }, fxText(o.extra)));
   }
   ctx.cards.append(card);
   // keep the whole card inside the scene: never over the grid, never cut off
@@ -1937,13 +1970,13 @@ function heroAct(a, w) {
   }
   const hero = HEROES[a.k], el = UI.heroEls[a.k];
   const card = { tier: a.tier, c: hero.c, name: hero.name, move: hero.moves[a.tier - 1], word: UP(w), portrait: hero.ini, stack: a.n, art: hero.id };
-  attackAnim(el, a.tier, UI.scene); S.lastHero = a.k;
+  attackAnim(el, a.tier, UI.scene, a.rank); S.lastHero = a.k;
   // Ajdovska deklica, Erazem, Kralj Matjaž, Kresnik and Kurent: their own kits with ranks 1–3 (src/progression.js)
   if (hero.kit === 'reviewed') { reviewedAct(a, target, card); spawnCard(el, card); renderEnemies(); return; }
   noteAttack(target, a.k);   // the party's XP counts every hero's attacks (src/progression.js)
   const others = () => B.enemies.filter(e => e !== target && e.hp > 0), alive = () => B.enemies.filter(e => e.hp > 0);
   const hit = (m, e = target) => damageEnemy(e, m * p + rallyBonus(a.k, e === target), { crit: a.crit, by: a.k });   // + Kraljeva vojska's bonus, once
-  const shield = m => { const sh = Math.round(m * p); B.shield = Math.min(30, B.shield + sh); renderPartyHp(); floatOn(UI.party, `ščit +${sh}`, 'info'); return sh; };
+  const shield = m => { const sh = Math.round(m * p), was = B.shield; B.shield = Math.min(30, B.shield + sh); noteSupport(target, a.k, B.shield - was); renderPartyHp(); floatOn(UI.party, `ščit +${sh}`, 'info'); return sh; };
   // a skill at a higher stopnja lasts longer: stuns, burns, poison, weakening and dodges (×1,5 and ×2)
   const dur = RANK_DUR[a.rank || 1];
   const stun = (e, sec, words) => { if (e.unstoppable) { floatOn(e.el, 'neustavljiv', 'info'); return; } if (S.mode === 'real') e.stunUntil = Math.max(e.stunUntil, B.time + sec * dur); else e.stunWords = Math.max(e.stunWords, Math.round(words * dur)); };
@@ -1957,12 +1990,13 @@ function heroAct(a, w) {
   const heal = m => {
     const amount = Math.round(m * p), got = healParty(amount, HEAL_CAP);
     const over = Math.max(0, Math.min(30 - B.shield, Math.round((amount - got) / 2))); B.shield += over;   // overheal turns into shield (cap 30)
+    noteSupport(target, a.k, got + over);   // support XP: health given back and shield given
     renderPartyHp();
     if (got) floatOn(UI.party, `+${got}`, 'heal');
     if (over) floatOn(UI.party, `ščit +${over}`, 'info');
     card.value = got ? `+${got} zdravja` + (over ? ` · ščit +${over}` : '') : `ščit +${over}`;
   };
-  const revive = () => { const dk = S.heroes.findIndex(x => x.down); if (dk < 0) return false; reviveHero(dk); card.extra = `obudi: ${HEROES[dk].name}`; sfx('win', { delay: .2, vol: .7 }); return true; };
+  const revive = () => { const dk = S.heroes.findIndex(x => x.down); if (dk < 0) return false; reviveHero(dk); noteSupport(target, a.k, S.heroes[dk].hp); card.extra = `obudi: ${HEROES[dk].name}`; sfx('win', { delay: .2, vol: .7 }); return true; };
   switch (hero.kit) {
     case 'burst': {          // Perun: burst, tier 3 chains to everyone
       const d = hit(4);
@@ -1982,7 +2016,7 @@ function heroAct(a, w) {
     case 'venom': {          // Veles: the hardest single hit, poison; tier 3 strikes everyone
       const d = hit(4.2); burn(target, 1.2 * p, 'zastrupljen');
       if (a.tier === 3) others().forEach(e => { hit(2.2, e); burn(e, 1.2 * p, 'zastrupljen'); });
-      card.value = `−${d} · strup`; if (a.tier === 3) card.extra = 'kača ovije vse sovražnike'; break; }
+      card.value = `−${d} · strup`; if (a.tier === 3) card.extra = 'kača ovije vse nasprotnike'; break; }
     case 'light': {          // Dažbog: his light makes the next word stronger
       const d = hit(3); card.value = `−${d}`;
       if (a.tier >= 2) { B.double = a.tier === 3 ? 2 : 1.5; card.extra = `naslednja beseda ×${num(B.double)}`; }
@@ -1994,7 +2028,7 @@ function heroAct(a, w) {
       break; }
     case 'heavy': {          // Krpan: slow and heavy; tier 3 stuns
       const d = hit(4.2); card.value = `−${d}`;
-      if (a.tier === 3) { stun(target, 5, 2); card.extra = 'cilj je omamljen'; }
+      if (a.tier === 3) { stun(target, 5, 2); card.extra = 'nasprotnik je omamljen'; }
       break; }
     case 'grow': {           // Peter Klepec: every Vilin dar makes him stronger for the rest of the battle
       const d = hit(3 * (1 + 0.12 * B.grow)); card.value = `−${d}`;
@@ -2003,8 +2037,8 @@ function heroAct(a, w) {
     case 'song': {           // Lepa Vida: her song takes the strength out of enemies
       const d = hit(2.4); card.value = `−${d}`;
       const weaken = (e, n) => { e.atk = Math.max(1, e.atk - Math.round(n * dur)); };
-      if (a.tier === 2) { weaken(target, 1); card.extra = 'cilj napada šibkeje'; }
-      if (a.tier === 3) { alive().forEach(e => weaken(e, 2)); card.extra = 'vsi sovražniki napadajo šibkeje'; }
+      if (a.tier === 2) { weaken(target, 1); card.extra = '{atk-} nasprotnik'; }
+      if (a.tier === 3) { alive().forEach(e => weaken(e, 2)); card.extra = '{atk-} vsi nasprotniki'; }
       break; }
     default: card.value = `−${hit(3)}`;
   }
@@ -2013,11 +2047,11 @@ function heroAct(a, w) {
     const said = a.krit ? ['kritično'] : [];
     a.ups.forEach(t => {
       if (t === 'vsi') { let d = 0; others().forEach(e => { d = Math.max(d, hit(1.2, e)); }); if (d) said.push(`vsem −${d}`); }
-      else if (t === 'zdravi') { const got = healParty(Math.round(1.5 * p), HEAL_CAP); if (got) { floatOn(UI.party, `+${got}`, 'heal'); said.push(`+${got} zdravja`); } }
+      else if (t === 'zdravi') { const got = healParty(Math.round(1.5 * p), HEAL_CAP); noteSupport(target, a.k, got); if (got) { floatOn(UI.party, `+${got}`, 'heal'); said.push(`+${got} zdravja`); } }
       else if (t === 'scit') said.push(`ščit +${shield(1.5)}`);
       else if (t === 'omama' && target.hp > 0) { stun(target, 3, 1); said.push('omama'); }
       else if (t === 'ogenj' && target.hp > 0) { burn(target, 0.6 * p); said.push('gori'); }
-      else if (t === 'slabi' && target.hp > 0) { target.atk = Math.max(1, target.atk - 1); said.push('napad −1'); }
+      else if (t === 'slabi' && target.hp > 0) { target.atk = Math.max(1, target.atk - 1); said.push('{atk-} −1'); }
     });
     if (said.length) card.value = [card.value, ...said].filter(Boolean).join(' · ');
     renderPartyHp();
@@ -2112,43 +2146,25 @@ function heroFalls(k) {
 
 function gainXp(n, k, each, noStat) {   // k = hero index; without it the XP is split among the heroes still standing, or with `each` everyone gets all of it
   if (B && !noStat) B.stats.xp += n;
-  if (S.run) return gainPartyXp(n);   // on a journey the party levels together (balance D)
   const who = k != null && k >= 0 ? [k] : living();
-  who.forEach(i => {
-    const st = S.heroes[i]; if (st.down) return;
-    st.xp += (k != null && k >= 0) || each ? n : Math.ceil(n / who.length);
-    while (st.lvl < MAX_LV && st.xp >= LV_XP[st.lvl]) {
-      st.lvl++; st.leveled = true; st.pts = (st.pts || 0) + 1;
-      // a new level heals fully (16 Nov 2026): more health, and all of it
-      const mh = heroMaxHp(HEROES[i].id, st.lvl); st.maxHp = mh; st.hp = mh;
-      chorus();
-      if (B) { log(`${HEROES[i].name}: raven ${st.lvl}! Polno zdravje in +1 točka veščine (porabiš jo pri vodnjaku, svetišču ali krošnjarju).`); fb(`${HEROES[i].name} doseže raven ${st.lvl}: polno zdravje, +1 točka veščine!`, 'ok');
-        if (UI.heroEls && UI.heroEls[i]) { floatOn(UI.heroEls[i], `raven ${st.lvl}`, 'heal'); UI.heroEls[i].classList.add('glow'); } renderPartyHp(); }
-    }
-  });
+  who.forEach(i => { if (!S.heroes[i].down) addXp(i, (k != null && k >= 0) || each ? n : Math.ceil(n / who.length)); });
   renderMeta();
 }
-
-// The party's experience on a journey: one pool, one level for everyone, PTS_PER_LV shared points a level.
-// A new level heals every hero still standing; the fallen get the new maximum and stay down.
-function gainPartyXp(n) {
-  const R = S.run; R.pxp = (R.pxp || 0) + n; R.plvl = R.plvl || 1;
-  let up = 0;
-  while (R.plvl < MAX_LV && R.pxp >= LV_XP[R.plvl]) { R.plvl++; up++; }
-  S.heroes.forEach(st => { st.xp = R.pxp; });
-  if (up) {
-    const pts = up * PTS_PER_LV; R.pts = (R.pts || 0) + pts;
-    HEROES.forEach((hr, i) => { const st = S.heroes[i]; st.lvl = R.plvl; st.leveled = true; st.maxHp = heroMaxHp(hr.id, st.lvl); if (!st.down) st.hp = st.maxHp; });
+// One hero's experience (balance E: on a journey too, every hero levels on their own). Each new level brings
+// PTS_PER_LV skill point of their own (spent at a well or the signpost, src/skills.js) and heals them fully.
+// The level-up says nothing about the point: the skills are only shown where they can be learned.
+function addXp(i, n) {
+  const st = S.heroes[i]; if (!st || n <= 0) return;
+  st.xp = (st.xp || 0) + n;
+  while (st.lvl < MAX_LV && st.xp >= LV_XP[st.lvl]) {
+    st.lvl++; st.leveled = true; st.pts = (st.pts || 0) + PTS_PER_LV;
+    // a new level heals fully (16 Nov 2026): more health, and all of it
+    const mh = heroMaxHp(HEROES[i].id, st.lvl); st.maxHp = mh; if (!st.down) st.hp = mh;
     if (B) B.leveled = true;
     chorus();
-    if (B) {
-      log(`Družina doseže raven ${R.plvl}! Polno zdravje in +${pts} ${ptsWord(pts)} (porabiš jih po bitki, pri vodnjaku, v svetišču ali pri krošnjarju).`);
-      fb(`Raven ${R.plvl}: polno zdravje in +${pts} ${ptsWord(pts)}!`, 'ok');
-      HEROES.forEach((_, i) => { if (UI.heroEls && UI.heroEls[i] && !S.heroes[i].down) { floatOn(UI.heroEls[i], `raven ${R.plvl}`, 'heal'); UI.heroEls[i].classList.add('glow'); } });
-      renderPartyHp();
-    }
+    if (B) { log(`${HEROES[i].name}: raven ${st.lvl}! Polno zdravje.`); fb(`${HEROES[i].name} doseže raven ${st.lvl}: polno zdravje!`, 'ok');
+      if (UI.heroEls && UI.heroEls[i]) floatOn(UI.heroEls[i], `raven ${st.lvl}`, 'heal'); renderPartyHp(); }
   }
-  if (B) renderMeta();
 }
 
 // ------------------------------------------------------------ enemies
@@ -2161,6 +2177,16 @@ function enemyAct(e) {
   if (e.stone > 0) { e.stone--; floatOn(e.el, 'okamnel', 'info'); log(`${e.name} je okamnel${e.f ? 'a' : ''} — napad izostane.`); renderEnemies(); return; }
   let act = e.pattern[e.step % e.pattern.length]; e.step++;
   if (act === 'cwlock' && B.cw && B.cw.kind !== 'finisher') act = 'attack';
+  // a vila beside Povodni mož heals him (escort); with him down or unhurt she strikes instead
+  const healed = act === 'heal' ? B.enemies.find(x => x.hp > 0 && x.key === e.healOf && x.hp < x.maxHp) : null;
+  if (act === 'heal' && !healed) act = 'attack';
+  if (healed) {
+    const n = Math.min(healed.maxHp - healed.hp, Math.max(1, Math.round(healed.maxHp * (e.healPart || 0.05)))); healed.hp += n;
+    floatOn(healed.el, `+${n}`, 'heal'); sfx('heal', { vol: .6 });
+    spawnCard(e.el, { tier: 2, foe: true, name: e.name, move: e.moves.heal, value: `${healed.name} +${n}` });
+    log(`${e.name}: ${e.moves.heal} — ${healed.name} +${n} zdravja.`);
+    renderEnemies(); return;
+  }
   const mv = e.moves[act] || e.moves.attack;
   e.atkT = performance.now(); e.atkTier = act === 'attack' ? 1 : 3;
   if (act !== 'attack' && UI.scene) { replay(UI.scene, 'flash'); setTimeout(() => UI.scene && UI.scene.classList.remove('flash'), 420); }
@@ -2395,7 +2421,7 @@ function shuffleGrid(byPlayer) {
   B.hint = null;
   B.grid.forEach((t, i) => { if (!isLocked(t)) B.grid[i] = newTile(); });
   ensureSolvable(); clearWord();
-  fb('Mreža premešana.' + (S.mode === 'calm' && byPlayer ? ' Sovražniki so izkoristili trenutek.' : ''), 'warn');
+  fb('Mreža premešana.' + (S.mode === 'calm' && byPlayer ? ' Nasprotniki so izkoristili trenutek.' : ''), 'warn');
   if (S.mode === 'calm' && byPlayer) calmAfterWord();
   renderPuzzle();
 }
@@ -2768,7 +2794,7 @@ function cwEntrySolved(e, hidden = 0, aided = false) {
       card.value = got ? `+${got} zdravja` : 'več ne zaceli — do vodnjaka';
     } else if (t) {
       card.value = `−${damageEnemy(t, 3 * len * lv * pw)}`;
-      if (C.id === 'kres') { applyBurn(t, 1.5); card.extra = 'cilj gori'; }
+      if (C.id === 'kres') { applyBurn(t, 1.5); card.extra = 'nasprotnik gori'; }
     }
     spawnCard(UI.heroEls[hk], card);
   } else if (C.kind === 'ambush') {
@@ -2813,7 +2839,7 @@ function cwComplete() {
     B.enemies.filter(e => e.hp > 0).forEach(e => damageEnemy(e, d));
     B.meter = Math.min(METER_MAX, B.meter + 12);
     spawnCard(leadEl(), { tier: 3, c: 'var(--water)', name: 'Družina', move: 'Zaseda uspela', value: `−${d} vsem`, extra: 'zagovor +12', portrait: '!' });
-    log('Zaseda uspela: vsi sovražniki prejmejo še en udarec.');
+    log('Zaseda uspela: vsi nasprotniki prejmejo še en udarec.');
   } else {
     const e = C.enemy;
     if (e && e.hp > 0) {
@@ -2845,7 +2871,12 @@ function checkEnd() {
   if (!B || B.over || S.screen !== 'battle') return;
   const b = B;   // timers must act on this battle only, even if the player has moved on
   if (!living().length) { B.over = true; later(() => { if (B === b) showResult(false); }, 700); }
-  else if (B.enemies.every(e => e.hp <= 0)) { B.over = true; if (B.cw) closeCrossword(); later(() => { if (B === b) showResult(true); }, 900); }
+  else if (B.enemies.every(e => e.hp <= 0)) { B.over = true; if (B.cw) closeCrossword(); cheerParty(); later(() => { if (B === b) showResult(true); }, 900); }
+}
+// the last enemy is down: a hero with a victory sequence (Visoka, game.css .spr.hi.cheer) plays it once before the result
+function cheerParty() {
+  (UI.heroEls || []).forEach((el, k) => { if (!el || !el.classList.contains('hi-win') || (S.heroes[k] && S.heroes[k].down)) return;
+    clearTimeout(el._atk); el.classList.remove('atk', 'atk3'); const sp = el.querySelector('.sp'); if (sp) sp.style.animationDelay = '0s'; replay(el, 'cheer'); });
 }
 function showResult(win) {
   sfx(win ? 'win' : 'lose', { delay: .3 });
@@ -2868,14 +2899,14 @@ function showResult(win) {
   B.result = { god, left, saved };
   const hurt = S.heroes.some(x => !x.down && x.hp < x.maxHp), down = S.heroes.some(x => x.down);
   const lost = !R ? 'Vsi junaki so obležali. Poskusi znova.'
-    : C && C.final ? `Vsi junaki so obležali. ${GOD[C.god].name} je ${GOD[C.god].f ? 'močnejša' : 'močnejši'}.`
+    : C && C.prayer ? `Vsi junaki so obležali. ${GOD[C.god].name} je ${GOD[C.god].f ? 'močnejša' : 'močnejši'}. ` + (canWithdraw(node) ? 'Družina se umakne in si opomore do polnega zdravja. To je edina druga priložnost na tej poti.' : 'Pot je končana.')
     : freeRetry(node) === 'ptuj' ? 'Vsi junaki so obležali. Na Ptuju se šele učiš: družina si opomore do polnega zdravja in poskusi znova.'
     : freeRetry(node) === 'final' ? 'Vsi junaki so obležali. Pred zadnjim bojem dobiš še eno priložnost: družina si opomore do polnega zdravja.'
     : canWithdraw(node) ? 'Vsi junaki so obležali. Družina se umakne in si opomore do polnega zdravja. To je edina druga priložnost na tej poti.'
     : D.withdraw ? 'Vsi junaki so obležali že drugič. Pot je končana.' : 'Vsi junaki so obležali. Pot je končana.';
   const ov = h('div', { class: 'overlay' }, h('div', { class: 'dialog' },
     h('h2', {}, win ? 'Zmaga!' : 'Poraz'),
-    h('div', { class: 'muted' }, win ? (C ? `${GOD[C.god].name} je ${GOD[C.god].f ? 'premagana' : 'premagan'}.` : R ? (hurt || down ? 'Sovražniki so premagani. Rane ostanejo: junaki se pozdravijo pri vodnjaku ali na koncu pokrajine.' : 'Sovražniki so premagani.') : 'Sovražniki so premagani.') : lost),
+    h('div', { class: 'muted' }, win ? (C ? `${GOD[C.god].name} je ${GOD[C.god].f ? 'premagana' : 'premagan'}.` : R ? (hurt || down ? 'Nasprotniki so premagani. Rane ostanejo: junaki se pozdravijo pri vodnjaku ali na koncu pokrajine.' : 'Nasprotniki so premagani.') : 'Nasprotniki so premagani.') : lost),
     left.length ? h('p', { class: 'note' }, leftLine(left)) : null,
     saved ? h('p', { class: 'savednote', role: 'status' }, h('b', {}, 'Shranjeno.'), ' Pot lahko zdaj zapustiš in jo pozneje nadaljuješ od tod.') : null,
     win && B.found ? newWordsRow(B.found, 'mreza') : null,
@@ -2894,7 +2925,7 @@ function showResult(win) {
       !win && (!R || S.testMode) ? h('button', { class: 'btn', onclick: () => {
         ov.remove(); S.heroes = JSON.parse(B.snap); if (R && B.snapBag) { R.bag = JSON.parse(B.snapBag); R.gold = B.snapGold; } go('battle', node); } }, 'Poskusi znova') : null,
       h('button', { class: 'btn primary', onclick: () => { ov.remove(); afterResult(win); } },
-        win ? 'Naprej ' : !R ? 'Nazaj ' : C && C.final ? 'Naprej ' : canWithdraw(node) ? 'Umakni se ' : 'Konec poti ', h('kbd', {}, 'Enter')))));
+        win ? 'Naprej ' : !R ? 'Nazaj ' : canWithdraw(node) ? 'Umakni se ' : 'Konec poti ', h('kbd', {}, 'Enter')))));
   document.body.append(ov);
   S.screen = 'result'; S.resultEl = ov; S.resultNode = node;
 }
@@ -2911,22 +2942,25 @@ function afterResult(win) {
   const node = S.resultNode, R = S.run, D = DIFF(), C = node && node.challenge, res = (B && B.result) || {};
   if (!win) {
     if (!R) return go('title');
-    // the god's challenge at the end of the journey: the god leaves, the journey is over either way
-    if (C && C.final) return go('godword', { god: C.god, won: false, final: true, next: () => { resetRun(); go('title'); }, nextLabel: 'Nova pot ' });
+    // the god's challenge at a region's end: the god leaves; then it is any lost battle (withdraw or the end)
+    if (C && C.prayer) {
+      R.challenged = true;
+      const on = canWithdraw(node);
+      return go('godword', { god: C.god, won: false, next: () => on ? withdraw(node) : (statJourney(false), resetRun(), go('title')), nextLabel: on ? 'Naprej ' : 'Konec poti ' });
+    }
     if (canWithdraw(node)) return withdraw(node);
     statJourney(false); resetRun(); return go('title');
   }
   const last = R && node && node.stop && node.stop.kind === 'boss' && R.ri === WORLD.regions.length - 1;
   const done = () => { S.heroes.forEach(x => x.leveled = false); go(last ? 'ending' : R ? 'travel' : 'title'); };
-  // balance D: with points in the party's pool (a new level brings PTS_PER_LV) Veščine opens right here, after the battle
-  const footer = R && !last ? A => { const t = trainAction(() => go('hero', A)); return (t ? [{ label: t.label, fn: t.fn }] : []).concat([{ label: A.nextLabel, primary: true, fn: () => A.next() }]); } : null;
+  // balance E: points are spent only at wells and signposts (balance D opened Veščine here, after every battle)
   const after = () => go('hero', { kind: 'after', ids: HEROES.map(x => x.id), sel: clamp(S.lastHero || 0, 0, HEROES.length - 1), next: done,
-    nextLabel: last ? 'Konec poti ' : R ? 'Na pot ' : 'Nazaj ', info: res.left && res.left.length ? () => leftLine(res.left) : null, actions: footer });
+    nextLabel: last ? 'Konec poti ' : R ? 'Na pot ' : 'Nazaj ', info: res.left && res.left.length ? () => leftLine(res.left) : null });
   if (R && C) {
-    // the god speaks first; after the final challenge the journey is over
+    // the god speaks first; after a prayer's challenge the road goes on to the signpost
     const g = res.god || {};
-    return go('godword', { god: C.god, won: true, final: !!C.final, own: !!C.own, raised: g.raised, fresh: g.fresh,
-      next: C.final ? () => { resetRun(); go('title'); } : after, nextLabel: C.final ? 'Nova pot ' : 'Naprej ' });
+    return go('godword', { god: C.god, won: true, prayer: !!C.prayer, own: !!C.own, raised: g.raised, fresh: g.fresh,
+      next: after, nextLabel: 'Naprej ' });   // back on the road the party stands at the signpost (renderTravel)
   }
   after();
 }
@@ -2937,7 +2971,7 @@ function withdraw(node) {
   if (free === 'final') R.finalRetry = true; else if (!free) R.rescues = (R.rescues || 0) + 1;   // Ptuj and the final retry cost no rescue
   S.heroes.forEach(x => { x.down = false; x.hp = x.maxHp; x.leveled = false; });
   const on = { label: 'Naprej ▶', primary: true, fn: () => { R.prompt = null; R.walking = true; renderTravelPanel(); } };
-  if (C || !stop) { if (stop) stop.passed = true; R.prompt = { text: C ? `${GOD[C.god].name} se vrne v svetišče. Družina se umakne in nadaljuje pot.` : 'Družina se umakne.', actions: [on], keep: true }; }
+  if (C || !stop) { if (stop) stop.passed = true; R.prompt = { text: C && C.prayer ? `Družina se umakne in si opomore: vsi junaki so spet polno zdravi.${canWithdraw(node) ? '' : ' Drugi poraz konča pot.'}` : C ? `${GOD[C.god].name} se vrne v svetišče. Družina se umakne in nadaljuje pot.` : 'Družina se umakne.', actions: [on], keep: true }; }
   else {
     const names = stop.enemies.map(k => ENEMIES[k].name).join(' in ');
     const after = free === 'ptuj' ? 'Na Ptuju poraz ne konča poti.' : free === 'final' ? 'To je zadnja priložnost.' : canWithdraw(node) ? '' : 'Drugi poraz konča pot.';
@@ -3259,6 +3293,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, stopBattle, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, gainPartyXp, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, cheerParty, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, noteSupport, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, godWaits, godArrives, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 
