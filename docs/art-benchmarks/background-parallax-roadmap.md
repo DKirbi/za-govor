@@ -35,9 +35,9 @@ The campaign currently has ten implemented battle backgrounds. Their order and `
 | 7 | Predjamski grad | `predjama` | Implemented pixel-art scene | Approved [castle-in-cliff scene](slovenia-folk-location-previews/predjama-folk-preview.png), first-pass layers and a rightward camera preview are in the [Predjama parallax study](predjama-parallax/README.md). |
 | 8 | Ljubljansko barje | `barje` | Implemented pixel-art scene | Approved [dawn wetland scene](slovenia-folk-location-previews/barje-folk-preview.png), first-pass layers and a rightward travel preview are in the [Barje parallax study](barje-parallax/README.md). |
 | 9 | Ljubljanica | `ljubljanica` | Implemented pixel-art scene | Approved [side-view Triple Bridge scene](slovenia-folk-location-previews/ljubljanica-folk-preview.png) and first-pass layers/camera preview in the [Ljubljanica parallax study](ljubljanica-parallax/README.md); review before runtime integration. |
-| 10 | Ljubljanski grad | `grad` | Implemented pixel-art scene | Make a folk-art preview, get approval, then slice. |
+| 10 | Ljubljanski grad | `grad` | Implemented pixel-art scene | Approved [sunset castle scene](slovenia-folk-location-previews/ljubljanski-grad-folk-preview.png); first-pass layers and a rightward camera preview are in the [Ljubljanski grad parallax study](ljubljanski-grad-parallax/README.md). |
 
-Nine of the ten campaign regions now have folk-art panorama references: Ptuj, Peca, Triglav, Bled, Trnovski gozd, Piranske soline, Predjama, Ljubljansko barje and Ljubljanica. Ljubljanski grad is the remaining region that needs a folk-art preview before it can be sliced in this style.
+All ten campaign regions now have folk-art panorama references and first-pass parallax studies: Ptuj, Peca, Triglav, Bled, Trnovski gozd, Piranske soline, Predjama, Ljubljansko barje, Ljubljanica and Ljubljanski grad. Runtime integration, mobile framing and final speed tuning remain future work.
 
 ## Work order
 
@@ -55,7 +55,7 @@ Nine of the ten campaign regions now have folk-art panorama references: Ptuj, Pe
 - [x] Create and approve the Ljubljansko barje scene preview with Zeleni Jurij and a regional Vila on a broad grass lane.
 - [x] Complete Barje's first parallax pass with a separate dawn sky and clouds, low wetland ridge, far-meadow transition, willows and pile dwellings, reed-lined channels, water highlights, wide travel lane, near-edge sedges, static composite and rightward camera preview.
 - [x] Preserve the existing approved Ljubljanica side-view scene and first-pass slice study; review its alignment before runtime integration.
-- [ ] Create a folk-art preview for Ljubljanski grad, get approval, then complete its first parallax pass.
+- [x] Create and approve the Ljubljanski grad sunset scene preview; complete the first layer set with separate sky, clouds, distant hills, old-town roofs, connected castle hill, edge trees, wide grass lane, near flowers, static composite and interactive approach preview.
 - [ ] After each scene's slices are approved, tune parallax speeds, cloud/water/ambient motion, character staging, reduced-motion behavior, and mobile landscape/portrait framing in the battle viewport.
 
 ## Layer workflow

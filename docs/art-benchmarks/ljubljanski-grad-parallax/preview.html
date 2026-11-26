@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ljubljanski grad folk-art parallax study</title>
+<style>
+:root { color-scheme:light; font-family:Georgia,'Times New Roman',serif; background:#e9e0cd; color:#332c20; }
+* { box-sizing:border-box; }
+body { margin:0; padding:18px; }
+main { max-width:1080px; margin:0 auto; }
+h1 { margin:0 0 8px; font-size:clamp(1.25rem,2.5vw,1.8rem); font-weight:600; }
+p { margin:0 0 12px; line-height:1.45; }
+a { color:#59402d; }
+.scene { position:relative; width:100%; aspect-ratio:16/9; overflow:hidden; isolation:isolate; background:#4c5d76; border:2px solid #54402c; }
+.layer,.actor { position:absolute; display:block; max-width:none; pointer-events:none; user-select:none; }
+.layer { left:-15%; top:0; width:130%; height:100%; }
+.sky { z-index:0; }
+.clouds { z-index:1; animation:cloud-drift 80s linear infinite alternate; }
+.distant-hills { z-index:2; }
+.old-town { z-index:3; }
+.castle-hill { z-index:4; }
+.tree-frame { z-index:5; }
+.grass-lane { z-index:6; }
+.actor { bottom:14.2%; height:auto; transition:left .12s linear; image-rendering:pixelated; }
+#hero { left:25%; width:6.45%; z-index:7; }
+#boss { left:76%; width:9.6%; z-index:7; }
+.actor img { display:block; width:100%; height:100%; image-rendering:pixelated; }
+.actor::after { content:""; position:absolute; z-index:-1; left:15%; bottom:-4%; width:70%; height:13%; border-radius:50%; background:rgba(55,44,29,.38); filter:blur(2px); }
+.near-flowers { z-index:8; }
+.controls { display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding-top:12px; }
+.progress-control { flex:1 1 240px; display:grid; grid-template-columns:1fr auto; gap:6px 12px; align-items:center; }
+.progress-control label { font-weight:600; }
+#progress { grid-column:1/-1; width:100%; accent-color:#765131; }
+button { min-height:44px; padding:8px 14px; border:1px solid #5b4630; border-radius:6px; background:#f5efd9; color:#332c20; font:inherit; font-weight:600; }
+button:focus-visible,input:focus-visible { outline:3px solid #265d7a; outline-offset:2px; }
+#status { min-width:190px; }
+.speed-guide { margin-top:10px; font-size:.95rem; color:#4d473c; }
+@keyframes cloud-drift { from { translate:0 0; } to { translate:-14px 0; } }
+@media(max-width:560px) { body { padding:10px; } .controls { gap:8px; } .progress-control { flex-basis:100%; } button { flex:1 1 auto; } #status { flex:1 1 100%; } }
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Approaching Ljubljanski grad</h1>
+  <p>Scrub or play a rightward approach along the wide grass lane. The rooftops and castle hill move at different depths while the close trees and flowers pass a little faster.</p>
+  <div id="scene" class="scene" role="img" aria-label="Folk-art sunset panorama of Ljubljana Castle on its wooded hill above the old town, with a broad grassy lane, Krpan and the Lintvern boss.">
+    <img class="layer sky" src="layers/sky.png" alt="" aria-hidden="true">
+    <img class="layer clouds" src="layers/clouds.png" alt="" aria-hidden="true">
+    <img class="layer distant-hills" src="layers/distant-basin-hills.png" alt="" aria-hidden="true">
+    <img class="layer old-town" src="layers/ljubljana-old-town.png" alt="" aria-hidden="true">
+    <img class="layer castle-hill" src="layers/castle-hill-and-fortress.png" alt="" aria-hidden="true">
+    <img class="layer tree-frame" src="layers/near-foreground-tree-frame.png" alt="" aria-hidden="true">
+    <img class="layer grass-lane" src="layers/foreground-grass-lane.png" alt="" aria-hidden="true">
+    <div id="hero" class="actor"><img src="actors/krpan-idle.png" alt="" aria-hidden="true"></div>
+    <div id="boss" class="actor"><img src="actors/lintvern-idle.png" alt="" aria-hidden="true"></div>
+    <img class="layer near-flowers" src="layers/near-foreground-flowers.png" alt="" aria-hidden="true">
+  </div>
+  <div class="controls">
+    <div class="progress-control">
+      <label for="progress">Travel toward the castle</label>
+      <output id="progress-value" for="progress">0%</output>
+      <input id="progress" type="range" min="0" max="100" step="1" value="0" aria-label="Travel rightward toward Ljubljana Castle">
+    </div>
+    <button id="travel" type="button">Begin journey</button>
+    <span id="status" aria-live="polite">Leaving the outer meadows</span>
+  </div>
+  <p class="speed-guide"><strong>How the speeds work:</strong> the grass lane is the 1.0× reference. The edge trees move at 1.08× and flowers at 1.22×. The connected castle hill moves at 0.38×, old-town roofs at 0.22×, distant hills at 0.12×, and sky at 0.02×. The clouds also drift slowly on their own.</p>
+  <p><a href="layered-composite-preview.png">Open the static layer composite</a> · <a href="../slovenia-folk-location-previews/ljubljanski-grad-folk-preview.png">See the approved scene preview</a></p>
+</main>
+<script>
+const scene=document.getElementById('scene');
+const progress=document.getElementById('progress');
+const value=document.getElementById('progress-value');
+const status=document.getElementById('status');
+const button=document.getElementById('travel');
+const hero=document.getElementById('hero');
+const boss=document.getElementById('boss');
+const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+const layers={
+  sky:document.querySelector('.sky'),clouds:document.querySelector('.clouds'),distantHills:document.querySelector('.distant-hills'),
+  oldTown:document.querySelector('.old-town'),castleHill:document.querySelector('.castle-hill'),treeFrame:document.querySelector('.tree-frame'),
+  grassLane:document.querySelector('.grass-lane'),nearFlowers:document.querySelector('.near-flowers')
+};
+const speeds={sky:.02,clouds:.025,distantHills:.12,oldTown:.22,castleHill:.38,treeFrame:1.08,grassLane:1,nearFlowers:1.22};
+let frame=0,start=0,playing=false;
+function clamp(n){return Math.max(0,Math.min(1,n));}
+function render(){
+  const p=Number(progress.value)/100,travel=scene.clientWidth*.12;
+  for(const [name,factor] of Object.entries(speeds)) layers[name].style.transform=`translate3d(${-Math.round(p*travel*factor)}px,0,0)`;
+  hero.style.left=`${25+p*25}%`;
+  boss.style.left=`${76-p*11}%`;
+  value.value=`${Math.round(p*100)}%`;
+  status.textContent=p>=.78?'Closing in on the castle approach':p>=.38?'Passing Ljubljana’s old-town roofs':'Leaving the outer meadows';
+  if(p>=1&&playing)stop();
+}
+function stop(){playing=false;cancelAnimationFrame(frame);button.textContent='Replay journey';}
+function tick(now){if(!start)start=now;const p=clamp((now-start)/12000);progress.value=String(Math.round(p*100));render();if(p<1&&playing)frame=requestAnimationFrame(tick);}
+progress.addEventListener('input',()=>{stop();render();});
+window.addEventListener('resize',render);
+button.addEventListener('click',()=>{if(reduced.matches){progress.value='100';render();return;}if(playing){stop();return;}progress.value='0';start=0;playing=true;button.textContent='Pause journey';render();frame=requestAnimationFrame(tick);});
+render();
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # Slovenian folk-style location previews
 
-Eight local art-direction concepts extend the treatment documented in [the Ptuj folk-card and background guide](../ptuj-folk-style-preview/README.md). Each panorama is shown by itself and with existing idle-frame game sprites composited over it. These are previews only: no production art manifest, runtime scene, or character sprite has been changed.
+Nine local art-direction concepts extend the treatment documented in [the Ptuj folk-card and background guide](../ptuj-folk-style-preview/README.md). Each panorama is shown by itself and with existing idle-frame game sprites composited over it. These are previews only: no production art manifest, runtime scene, or character sprite has been changed.
 
 ## Peca
 
@@ -50,6 +50,12 @@ Eight local art-direction concepts extend the treatment documented in [the Ptuj 
 
 [Background only, side-view version](ljubljanica-folk-background.png) · The river, historic embankment, side-on Triple Bridge and castle hill set up a scene with the existing Zeleni Jurij hero sprite and Povodni mož. **Zeleni Jurij is a visual stand-in:** the campaign chapter's hero is Peter Klepec, but his sprite is not present in the current game sprite sheet. The revised view makes the bridge arches visible from across the river. It remains an art-direction sketch, not a measured architectural elevation; the official landmark description identifies a central bridge with two pedestrian side bridges. See [Visit Ljubljana's bridge overview](https://www.visitljubljana.com/en/poi/triple-bridge).
 
+## Ljubljanski grad — first parallax pass
+
+![Ljubljana Castle folk-art scene with Krpan and Lintvern](ljubljanski-grad-folk-preview.png)
+
+[Background only](ljubljanski-grad-folk-background.png) · A sunset view places the castle and its wooded hill above Ljubljana's rooftops, with a wide grass lane for the left-to-right approach. Krpan is a party-sprite stand-in and Lintvern is the existing boss sprite used for staging. The first separate layers and interactive approach preview are in the [Ljubljanski grad parallax study](../ljubljanski-grad-parallax/README.md). The composition is a stylized concept guided by [Visit Ljubljana's castle overview](https://www.visitljubljana.com/en/poi/ljubljana-castle), not a surveyed reconstruction.
+
 ## Shared art direction
 
 - Continue the recent folk-card treatment: broad hand-painted shapes, dark confident contours, warm ochre, cream, russet and moss green, restrained board texture, and clear scene layers.
@@ -70,7 +76,8 @@ Built-in ImageGen generated the scenes as wide 16:9, character-free Slovenian fo
 - **Predjamski grad:** compact late-medieval castle integrated into a dramatic Karst cliff, a cave mouth and the Lokva disappearing underground, framed by beech and fir forest and a broad level grass lane.
 - **Ljubljansko barje:** a dawn wetland panorama with shallow channels, reed beds, low mist, distant hedgerows, stylized timber pile dwellings, and a wide continuous grassy travel lane.
 - **Ljubljanica:** river-level side elevation with the Triple Bridge spanning horizontally, arch openings visible against the water, old-town facades and the castle hill behind it. A targeted view-angle revision produced the selected background.
+- **Ljubljanski grad:** sunset panorama of the castle joined to its wooded hill above the Ljubljana roofline, framed by close trees and a broad continuous grassy approach lane.
 
 ## Next: parallax and mobile
 
-These are reference images, not ready-to-ship game backgrounds. The [Ptuj parallax study](../ptuj-parallax/README.md), [Peca parallax study](../peca-parallax/README.md), [Triglav parallax study](../triglav-parallax/README.md), [Bled parallax study](../bled-parallax/README.md), [Trnovski gozd parallax study](../trnovski-gozd-parallax/README.md), [Piranske soline parallax study](../piranske-soline-parallax/README.md), [Predjama parallax study](../predjama-parallax/README.md), and [Ljubljansko barje parallax study](../barje-parallax/README.md) provide first-pass separate folk-art layer sets and camera previews. The [Ljubljanica parallax study](../ljubljanica-parallax/README.md) sketches the rightward camera journey and its bridge, clouds, reflections, water, and path layers. The [background roadmap](../background-parallax-roadmap.md) lists all ten game regions and the preview-first workflow. These cutouts remain concept references: no runtime parallax layers, motion, or mobile layouts are implemented in the game.
+These are reference images, not ready-to-ship game backgrounds. The [Ptuj parallax study](../ptuj-parallax/README.md), [Peca parallax study](../peca-parallax/README.md), [Triglav parallax study](../triglav-parallax/README.md), [Bled parallax study](../bled-parallax/README.md), [Trnovski gozd parallax study](../trnovski-gozd-parallax/README.md), [Piranske soline parallax study](../piranske-soline-parallax/README.md), [Predjama parallax study](../predjama-parallax/README.md), [Ljubljansko barje parallax study](../barje-parallax/README.md), and [Ljubljanski grad parallax study](../ljubljanski-grad-parallax/README.md) provide first-pass separate folk-art layer sets and camera previews. The [Ljubljanica parallax study](../ljubljanica-parallax/README.md) sketches the rightward camera journey and its bridge, clouds, reflections, water, and path layers. The [background roadmap](../background-parallax-roadmap.md) lists all ten game regions and the preview-first workflow. These cutouts remain concept references: no runtime parallax layers, motion, or mobile layouts are implemented in the game.
