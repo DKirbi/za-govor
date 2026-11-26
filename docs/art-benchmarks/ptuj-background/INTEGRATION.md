@@ -54,8 +54,8 @@ Cloud drift uses the existing renderer's tiled-layer movement and respects reduc
   `?ozadje=D` shows it until the Game Director assigns it.
 - The Codex pack's low copies were removed: they were half-size Codex layers, not the lower tier.
 - Martin Krpan's sprites followed this setting from 18 Nov to 0.20.0 (Codex's sheet in *Visoka*). Since 0.21.0
-  (Game Director, 25 Nov 2026) heroes and enemies draw their pixel sprites in every setting; *Kakovost slik* changes
-  only the backgrounds and the painted skill cards.
+  (Game Director, 25 Nov 2026) heroes and enemies draw their pixel sprites in every setting, and (26 Nov 2026) the painted skill
+  cards are the default in every setting too: *Kakovost slik* changes only the backgrounds.
 
 ## The road: smaller cobbles, a thinner strip
 
