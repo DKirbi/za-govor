@@ -59,10 +59,50 @@
         "B": 50
       }
     },
+    "piran": {
+      "live": false,
+      "variants": {
+        "B": "piran-ljudska"
+      },
+      "share": {
+        "A": 50,
+        "B": 50
+      }
+    },
+    "predjama": {
+      "live": false,
+      "variants": {
+        "B": "predjama-ljudska"
+      },
+      "share": {
+        "A": 50,
+        "B": 50
+      }
+    },
+    "barje": {
+      "live": false,
+      "variants": {
+        "B": "barje-ljudska"
+      },
+      "share": {
+        "A": 50,
+        "B": 50
+      }
+    },
     "ljubljanica": {
       "live": false,
       "variants": {
         "B": "ljubljanica-ljudska"
+      },
+      "share": {
+        "A": 50,
+        "B": 50
+      }
+    },
+    "grad": {
+      "live": false,
+      "variants": {
+        "B": "grad-ljudska"
       },
       "share": {
         "A": 50,
@@ -618,6 +658,249 @@
           "speed": 1,
           "stand": 40,
           "riseOnly": true
+        }
+      }
+    },
+    "grad-ljudska": {
+      "manifest": "art/manifests/grad-ljudska.json",
+      "name": "Ljubljanski grad — ljudska poslikava (Codex)",
+      "hideRoad": true,
+      "view": {
+        "width": 996,
+        "height": 560
+      },
+      "focusY": 0.82,
+      "layers": {
+        "sky": {
+          "x": 2,
+          "y": 0,
+          "speed": 0.02
+        },
+        "clouds": {
+          "x": 0,
+          "y": 16,
+          "speed": 0.025,
+          "drift": -0.5
+        },
+        "distant-basin-hills": {
+          "x": 2,
+          "y": 240,
+          "speed": 0.12
+        },
+        "ljubljana-old-town": {
+          "x": 0,
+          "y": 245,
+          "speed": 0.22
+        },
+        "castle-hill-and-fortress": {
+          "x": 0,
+          "y": 83,
+          "speed": 0.38
+        },
+        "near-foreground-tree-frame": {
+          "x": 2,
+          "y": 0,
+          "speed": 1.08
+        },
+        "foreground-grass-lane": {
+          "x": 2,
+          "y": 365,
+          "speed": 1,
+          "stand": 40,
+          "riseOnly": true
+        },
+        "near-foreground-flowers": {
+          "x": 2,
+          "y": 488,
+          "speed": 1.22,
+          "front": true,
+          "below": 4
+        }
+      }
+    },
+    "piran-ljudska": {
+      "manifest": "art/manifests/piran-ljudska.json",
+      "name": "Piranske soline — ljudska poslikava (Codex)",
+      "hideRoad": true,
+      "view": {
+        "width": 996,
+        "height": 560
+      },
+      "focusY": 0.9,
+      "layers": {
+        "sky": {
+          "x": -98,
+          "y": -11,
+          "speed": 0.02
+        },
+        "sun": {
+          "x": -149,
+          "y": 153,
+          "speed": 0.03
+        },
+        "clouds": {
+          "x": -149,
+          "y": 27,
+          "speed": 0.025,
+          "drift": -0.25
+        },
+        "hills": {
+          "x": -1440,
+          "y": 260,
+          "speed": 0.12
+        },
+        "water": {
+          "x": -147,
+          "y": 213,
+          "speed": 0.5
+        },
+        "far-shore": {
+          "x": -147,
+          "y": 224,
+          "speed": 0.24
+        },
+        "house": {
+          "x": -149,
+          "y": 135,
+          "speed": 0.32
+        },
+        "embankments": {
+          "x": -147,
+          "y": 236,
+          "speed": 0.5
+        },
+        "reflections": {
+          "x": -149,
+          "y": 221,
+          "speed": 0.54
+        },
+        "grass-lane": {
+          "x": -147,
+          "y": 355,
+          "speed": 1,
+          "stand": 40,
+          "riseOnly": true
+        },
+        "near-grass": {
+          "x": -141,
+          "y": 494,
+          "speed": 1.25,
+          "front": true,
+          "below": 4
+        }
+      }
+    },
+    "predjama-ljudska": {
+      "manifest": "art/manifests/predjama-ljudska.json",
+      "name": "Predjamski grad — ljudska poslikava (Codex)",
+      "hideRoad": true,
+      "view": {
+        "width": 996,
+        "height": 560
+      },
+      "focusY": 0.8,
+      "layers": {
+        "sky": {
+          "x": -98,
+          "y": -11,
+          "speed": 0.02
+        },
+        "clouds": {
+          "x": -149,
+          "y": 10,
+          "speed": 0.025,
+          "drift": -0.25
+        },
+        "ridge": {
+          "x": -147,
+          "y": 301,
+          "speed": 0.12
+        },
+        "castle-cliff": {
+          "x": -149,
+          "y": 4,
+          "speed": 0.38
+        },
+        "stream": {
+          "x": -149,
+          "y": 365,
+          "speed": 0.42
+        },
+        "grass-lane": {
+          "x": -147,
+          "y": 386,
+          "speed": 1,
+          "stand": 40,
+          "riseOnly": true
+        },
+        "near-foreground": {
+          "x": -149,
+          "y": 476,
+          "speed": 1.25,
+          "front": true,
+          "below": 4
+        }
+      }
+    },
+    "barje-ljudska": {
+      "manifest": "art/manifests/barje-ljudska.json",
+      "name": "Ljubljansko barje — ljudska poslikava (Codex)",
+      "hideRoad": true,
+      "view": {
+        "width": 996,
+        "height": 560
+      },
+      "focusY": 0.82,
+      "layers": {
+        "sky": {
+          "x": -147,
+          "y": 0,
+          "speed": 0.02
+        },
+        "clouds": {
+          "x": -149,
+          "y": 7,
+          "speed": 0.025,
+          "drift": -0.2
+        },
+        "ridge": {
+          "x": -147,
+          "y": 157,
+          "speed": 0.12
+        },
+        "far-meadow": {
+          "x": -147,
+          "y": 206,
+          "speed": 0.2
+        },
+        "channels": {
+          "x": -149,
+          "y": 223,
+          "speed": 0.46
+        },
+        "landmarks": {
+          "x": -1440,
+          "y": 7,
+          "speed": 0.38
+        },
+        "reflections": {
+          "x": -149,
+          "y": 256,
+          "speed": 0.48
+        },
+        "grass-lane": {
+          "x": -147,
+          "y": 348,
+          "speed": 1,
+          "stand": 40,
+          "riseOnly": true
+        },
+        "near-foreground": {
+          "x": -1434,
+          "y": 489,
+          "speed": 1.22,
+          "front": true,
+          "below": 4
         }
       }
     }

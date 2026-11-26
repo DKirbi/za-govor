@@ -2,7 +2,7 @@
 
 This first pass separates the approved sunset panorama into a painted sky, independent clouds, distant basin hills and Ljubljana's old-town roofline. The castle stays joined to its wooded hill so the landmark does not drift away from the terrain. The broad grass lane, edge trees and near-camera flowers are separate layers.
 
-Open the [interactive rightward approach preview](preview.html) to scrub or play the scene. The [static layer composite](layered-composite-preview.png) checks the full stack with the current game sprites. The original [background-only illustration](../slovenia-folk-location-previews/ljubljanski-grad-folk-background.png) and [approved scene preview](../slovenia-folk-location-previews/ljubljanski-grad-folk-preview.png) remain unchanged references. This is an art-direction study; it does not replace the game's pixel-art battle scene or add runtime parallax.
+Open the [interactive rightward approach preview](preview.html) to scrub or play the scene. The [full-size layer composite](layered-composite-preview.png) checks the stack with the current game sprites, and the [996×560 runtime-pack composite](runtime-pack-composite.png) shows the exported layers at the game's scene size. The original [background-only illustration](../slovenia-folk-location-previews/ljubljanski-grad-folk-background.png) and [approved scene preview](../slovenia-folk-location-previews/ljubljanski-grad-folk-preview.png) remain unchanged references. The folk pack is an opt-in variant B, previewable with `?ozadje=B` or the high-quality setting; it is not randomized by the disabled A/B test.
 
 ## Layer stack and first-pass speeds
 
@@ -24,6 +24,7 @@ Speeds are relative to the grass lane during the same camera move. The lane is t
 - The scrubber demonstrates a 12-second rightward approach. Krpan moves toward the Lintvern boss while the painted landscape slides left at depth-based speeds.
 - Krpan is a party-sprite stand-in for staging this location; Lintvern is the existing game boss sprite. Both remain crisp at integer-scaled pixel dimensions.
 - Each of the eight scene layers shares a 1672×941 canvas. Transparent cutouts are aligned interpretations of the approved panorama, not pixel-perfect extractions.
+- The runtime pack contains eight WebP layers (about 590 KB combined) generated from the unchanged PNG masters. It is registered as `grad-ljudska`, variant B for the `grad` region. The A/B test is disabled, so this pack is not randomly assigned.
 - Clouds drift slowly as a separate ambient motion. This inland scene has no water or reflection layer.
 - Ljubljana Castle is presented on a wooded hill above the city's roofs, based on [Visit Ljubljana's castle overview](https://www.visitljubljana.com/en/poi/ljubljana-castle) and the [castle's history page](https://www.ljubljanskigrad.si/en/why-to-the-castle/history-of-the-castle-en-us/). The image is a stylized concept, not a surveyed reconstruction.
-- No game renderer or runtime parallax code has changed. Review layer seams, landmark placement, actor foot clearance, mobile framing, asset memory and image budget before runtime integration.
+- Review layer seams, landmark placement, actor foot clearance and mobile framing before considering this draft for a live assignment. The runtime renderer and scene behavior are shared with the existing folk packs; no new rendering logic was added.

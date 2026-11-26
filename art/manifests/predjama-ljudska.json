@@ -1,0 +1,168 @@
+{
+  "pack": "Predjamski grad — ljudska poslikava (Codex)",
+  "version": "0.1.0",
+  "status": "review",
+  "approval": "OPEN — Game Director review required (first runtime draft, 26 Nov 2026)",
+  "canvas": {
+    "width": 996,
+    "height": 560,
+    "aspectRatio": "16:9",
+    "basis": "The 16:9 scene of Codex's docs/art-benchmarks/predjama-parallax/preview.html at 560 px"
+  },
+  "madeBy": "tools/art_folk_parallax.py from Codex's study PNGs (unchanged masters); WebP q80",
+  "layers": [
+    {
+      "id": "sky",
+      "order": 1,
+      "file": "art/exports/environments/predjama-ljudska/sky.webp",
+      "width": 2382,
+      "height": 582,
+      "x": -98,
+      "y": -11,
+      "alpha": false,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\predjama-parallax\\layers\\sky.png",
+      "sourceSha1": "32f9a6e6aae461d9b0ccb94ade6fb3de262511c5",
+      "previewBox": [
+        -10,
+        -2,
+        120,
+        104
+      ],
+      "fit": "fill",
+      "mirrored": "both sides"
+    },
+    {
+      "id": "clouds",
+      "order": 2,
+      "file": "art/exports/environments/predjama-ljudska/clouds.webp",
+      "width": 1295,
+      "height": 214,
+      "x": -149,
+      "y": 10,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\predjama-parallax\\layers\\clouds.png",
+      "sourceSha1": "a3a06af6167f02c6badca1f08821a13dd588224b",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill"
+    },
+    {
+      "id": "ridge",
+      "order": 3,
+      "file": "art/exports/environments/predjama-ljudska/ridge.webp",
+      "width": 2582,
+      "height": 99,
+      "x": -147,
+      "y": 301,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\predjama-parallax\\layers\\distant-karst-forest.png",
+      "sourceSha1": "249668511c9e1debe0595655cb914b5fcc3abaf5",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "both sides"
+    },
+    {
+      "id": "castle-cliff",
+      "order": 4,
+      "file": "art/exports/environments/predjama-ljudska/castle-cliff.webp",
+      "width": 1992,
+      "height": 427,
+      "x": -149,
+      "y": 4,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\predjama-parallax\\layers\\castle-cliff.png",
+      "sourceSha1": "d9fe7e7f411df60a1b44619c9021fda830c08b17",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill",
+      "period": 2
+    },
+    {
+      "id": "stream",
+      "order": 5,
+      "file": "art/exports/environments/predjama-ljudska/stream.webp",
+      "width": 1992,
+      "height": 64,
+      "x": -149,
+      "y": 365,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\predjama-parallax\\layers\\lokva-stream.png",
+      "sourceSha1": "c1c681d93e5f33a765e7650bd3b8cf97d9814a91",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill",
+      "period": 2
+    },
+    {
+      "id": "grass-lane",
+      "order": 6,
+      "file": "art/exports/environments/predjama-ljudska/grass-lane.webp",
+      "width": 2582,
+      "height": 350,
+      "x": -147,
+      "y": 386,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\predjama-parallax\\layers\\foreground-grass-lane.png",
+      "sourceSha1": "110d9816ad40c2ac09d617d27aa9ee70fa7a0c1a",
+      "previewBox": [
+        -15,
+        -0.85,
+        130,
+        101
+      ],
+      "fit": "fill",
+      "mirrored": "both sides",
+      "laneMirroredBelow": true
+    },
+    {
+      "id": "near-foreground",
+      "order": 7,
+      "file": "art/exports/environments/predjama-ljudska/near-foreground.webp",
+      "width": 1295,
+      "height": 77,
+      "x": -149,
+      "y": 476,
+      "alpha": true,
+      "tileX": true,
+      "role": "foreground",
+      "source": "docs\\art-benchmarks\\predjama-parallax\\layers\\near-foreground-rocks-grass.png",
+      "sourceSha1": "0145dc7109ce1f65bbec773bb35ccf427e83ce3d",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill"
+    }
+  ]
+}

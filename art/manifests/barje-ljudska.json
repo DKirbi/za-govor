@@ -1,0 +1,213 @@
+{
+  "pack": "Ljubljansko barje — ljudska poslikava (Codex)",
+  "version": "0.1.0",
+  "status": "review",
+  "approval": "OPEN — Game Director review required (first runtime draft, 26 Nov 2026)",
+  "canvas": {
+    "width": 996,
+    "height": 560,
+    "aspectRatio": "16:9",
+    "basis": "The 16:9 scene of Codex's docs/art-benchmarks/barje-parallax/preview.html at 560 px"
+  },
+  "madeBy": "tools/art_folk_parallax.py from Codex's study PNGs (unchanged masters); WebP q80",
+  "layers": [
+    {
+      "id": "sky",
+      "order": 1,
+      "file": "art/exports/environments/barje-ljudska/sky.webp",
+      "width": 2582,
+      "height": 560,
+      "x": -147,
+      "y": 0,
+      "alpha": false,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\barje-parallax\\layers\\sky.png",
+      "sourceSha1": "306396cb46111e527fb8c133c5609b504192cd75",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "both sides"
+    },
+    {
+      "id": "clouds",
+      "order": 2,
+      "file": "art/exports/environments/barje-ljudska/clouds.webp",
+      "width": 2586,
+      "height": 137,
+      "x": -149,
+      "y": 7,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\barje-parallax\\layers\\clouds.png",
+      "sourceSha1": "4e26e94cf0a995f7132bd44a7281c21beb82b763",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "right side"
+    },
+    {
+      "id": "ridge",
+      "order": 3,
+      "file": "art/exports/environments/barje-ljudska/ridge.webp",
+      "width": 2582,
+      "height": 64,
+      "x": -147,
+      "y": 157,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\barje-parallax\\layers\\distant-wetland-ridge.png",
+      "sourceSha1": "939724725c66653447e8aced2cabd63173da18a7",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "both sides"
+    },
+    {
+      "id": "far-meadow",
+      "order": 4,
+      "file": "art/exports/environments/barje-ljudska/far-meadow.webp",
+      "width": 2582,
+      "height": 39,
+      "x": -147,
+      "y": 206,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\barje-parallax\\layers\\far-meadow-transition.png",
+      "sourceSha1": "96640ed50429679e3218c0f970deb6faaf09b6e4",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "both sides"
+    },
+    {
+      "id": "channels",
+      "order": 5,
+      "file": "art/exports/environments/barje-ljudska/channels.webp",
+      "width": 1295,
+      "height": 139,
+      "x": -149,
+      "y": 223,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\barje-parallax\\layers\\wetland-channels-reeds.png",
+      "sourceSha1": "a6b83fc170cffb239fdd859e1380ad3f41a357a8",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill"
+    },
+    {
+      "id": "landmarks",
+      "order": 6,
+      "file": "art/exports/environments/barje-ljudska/landmarks.webp",
+      "width": 2586,
+      "height": 263,
+      "x": -1440,
+      "y": 7,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\barje-parallax\\layers\\willows-and-pile-dwellings.png",
+      "sourceSha1": "dbc8884271da1ec7a7795caf323d0ec89b6f1193",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "left side",
+      "period": 2
+    },
+    {
+      "id": "reflections",
+      "order": 7,
+      "file": "art/exports/environments/barje-ljudska/reflections.webp",
+      "width": 1295,
+      "height": 80,
+      "x": -149,
+      "y": 256,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\barje-parallax\\layers\\water-reflections.png",
+      "sourceSha1": "125304da466debea0c24f66ef5ccec9aa19de272",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill"
+    },
+    {
+      "id": "grass-lane",
+      "order": 8,
+      "file": "art/exports/environments/barje-ljudska/grass-lane.webp",
+      "width": 2582,
+      "height": 408,
+      "x": -147,
+      "y": 348,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\barje-parallax\\layers\\foreground-grass-lane.png",
+      "sourceSha1": "b28069f70a41da76310b1e4d0296d3b7816750e5",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "both sides",
+      "laneMirroredBelow": true
+    },
+    {
+      "id": "near-foreground",
+      "order": 9,
+      "file": "art/exports/environments/barje-ljudska/near-foreground.webp",
+      "width": 2580,
+      "height": 66,
+      "x": -1434,
+      "y": 489,
+      "alpha": true,
+      "tileX": true,
+      "role": "foreground",
+      "source": "docs\\art-benchmarks\\barje-parallax\\layers\\near-foreground-sedges.png",
+      "sourceSha1": "f2bdc6235a4ee980982d1830b0c45d2f6d9a9eb1",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "left side"
+    }
+  ]
+}

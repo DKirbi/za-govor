@@ -1,0 +1,256 @@
+{
+  "pack": "Piranske soline — ljudska poslikava (Codex)",
+  "version": "0.1.0",
+  "status": "review",
+  "approval": "OPEN — Game Director review required (first runtime draft, 26 Nov 2026)",
+  "canvas": {
+    "width": 996,
+    "height": 560,
+    "aspectRatio": "16:9",
+    "basis": "The 16:9 scene of Codex's docs/art-benchmarks/piranske-soline-parallax/preview.html at 560 px"
+  },
+  "madeBy": "tools/art_folk_parallax.py from Codex's study PNGs (unchanged masters); WebP q80",
+  "layers": [
+    {
+      "id": "sky",
+      "order": 1,
+      "file": "art/exports/environments/piran-ljudska/sky.webp",
+      "width": 2382,
+      "height": 582,
+      "x": -98,
+      "y": -11,
+      "alpha": false,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\sky.png",
+      "sourceSha1": "9944ea246e82ae8412e10bdf5bfaee2a0080f113",
+      "previewBox": [
+        -10,
+        -2,
+        120,
+        104
+      ],
+      "fit": "fill",
+      "mirrored": "both sides"
+    },
+    {
+      "id": "sun",
+      "order": 2,
+      "file": "art/exports/environments/piran-ljudska/sun.webp",
+      "width": 1992,
+      "height": 37,
+      "x": -149,
+      "y": 153,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\setting-sun.png",
+      "sourceSha1": "13c284af77ed1ebdac5bcb30325caa63e8128501",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill",
+      "period": 2
+    },
+    {
+      "id": "clouds",
+      "order": 3,
+      "file": "art/exports/environments/piran-ljudska/clouds.webp",
+      "width": 1295,
+      "height": 126,
+      "x": -149,
+      "y": 27,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\clouds.png",
+      "sourceSha1": "98e75ccd081b22544e20392baf63b957321a8cf7",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill"
+    },
+    {
+      "id": "hills",
+      "order": 4,
+      "file": "art/exports/environments/piran-ljudska/hills.webp",
+      "width": 2586,
+      "height": 77,
+      "x": -1440,
+      "y": 260,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\distant-istrian-hills.png",
+      "sourceSha1": "93caa2b9d29933e1c8d6dc20590ce876da4be80a",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "left side"
+    },
+    {
+      "id": "water",
+      "order": 5,
+      "file": "art/exports/environments/piran-ljudska/water.webp",
+      "width": 2582,
+      "height": 163,
+      "x": -147,
+      "y": 213,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\salt-pan-water.png",
+      "sourceSha1": "79a9c045b14186031ef368ef668aab4369ecf3cb",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "both sides"
+    },
+    {
+      "id": "far-shore",
+      "order": 6,
+      "file": "art/exports/environments/piran-ljudska/far-shore.webp",
+      "width": 2582,
+      "height": 33,
+      "x": -147,
+      "y": 224,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\salt-pan-far-shore.png",
+      "sourceSha1": "0298aa3631d6c3a935d35f7dead82daa0790dcb4",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "both sides"
+    },
+    {
+      "id": "house",
+      "order": 7,
+      "file": "art/exports/environments/piran-ljudska/house.webp",
+      "width": 1992,
+      "height": 104,
+      "x": -149,
+      "y": 135,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\salt-worker-house.png",
+      "sourceSha1": "6e4e2ad64c5991e051984efbb2631d934c456801",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill",
+      "period": 2
+    },
+    {
+      "id": "embankments",
+      "order": 8,
+      "file": "art/exports/environments/piran-ljudska/embankments.webp",
+      "width": 2582,
+      "height": 140,
+      "x": -147,
+      "y": 236,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\salt-pan-embankments.png",
+      "sourceSha1": "b06de538fc3d95823fecd9a437c5d41c2b134591",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "both sides"
+    },
+    {
+      "id": "reflections",
+      "order": 9,
+      "file": "art/exports/environments/piran-ljudska/reflections.webp",
+      "width": 1295,
+      "height": 144,
+      "x": -149,
+      "y": 221,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\sunset-reflections.png",
+      "sourceSha1": "ef3a4bec79367d12a0f4533ad4a02d6dd8ad0673",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill"
+    },
+    {
+      "id": "grass-lane",
+      "order": 10,
+      "file": "art/exports/environments/piran-ljudska/grass-lane.webp",
+      "width": 2582,
+      "height": 402,
+      "x": -147,
+      "y": 355,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\foreground-grass-lane.png",
+      "sourceSha1": "f1adbde9b6973f38987df90629c1f795e33d894d",
+      "previewBox": [
+        -15,
+        -0.85,
+        130,
+        101
+      ],
+      "fit": "fill",
+      "mirrored": "both sides",
+      "laneMirroredBelow": true
+    },
+    {
+      "id": "near-grass",
+      "order": 11,
+      "file": "art/exports/environments/piran-ljudska/near-grass.webp",
+      "width": 2558,
+      "height": 60,
+      "x": -141,
+      "y": 494,
+      "alpha": true,
+      "tileX": true,
+      "role": "foreground",
+      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\near-foreground-salt-grass.png",
+      "sourceSha1": "a356360661879abbf3da0bb80dd4e1e9097ebe73",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "both sides"
+    }
+  ]
+}

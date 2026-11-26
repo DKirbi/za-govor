@@ -2,7 +2,7 @@
 
 This first pass separates the approved Predjama panorama into a painted sky, slow clouds, distant Karst forest, and a single castle-and-cliff layer. The Lokva stream, broad grass travel lane, and near-edge rocks and plants remain separate for depth motion. Keeping the castle attached to its cliff preserves the landmark's geography as the camera travels.
 
-Open the [interactive rightward approach preview](preview.html) to scrub or play the scene. The [static layer composite](layered-composite-preview.png) pairs the layers with Erazem and Perkmandeljc. The approved flattened [background](../slovenia-folk-location-previews/predjama-folk-background.png) and [character preview](../slovenia-folk-location-previews/predjama-folk-preview.png) remain unchanged. These are art-direction references; they do not replace the game's pixel-art battle scene or add runtime parallax.
+Open the [interactive rightward approach preview](preview.html) to scrub or play the scene. The [static layer composite](layered-composite-preview.png) pairs the layers with Erazem and Perkmandeljc; the [runtime-pack composite](runtime-pack-composite.png) shows the exported art at game size. The approved flattened [background](../slovenia-folk-location-previews/predjama-folk-background.png) and [character preview](../slovenia-folk-location-previews/predjama-folk-preview.png) remain unchanged. This folk scene is available as an opt-in variant B through `?ozadje=B` or the high-quality setting; the disabled A/B test does not randomize it.
 
 ## Layer stack and first-pass speeds
 
@@ -24,7 +24,7 @@ The ratios measure how far each layer moves relative to the lane during the same
 - Erazem uses his current 48×48 idle sprite. Perkmandeljc uses the game's Škrat sprite crop with the same hue rotation and palette treatment used by the game.
 - All seven scene layers share a 1672×941 canvas. Their first-pass alignment follows the approved background composition; they are not measured pixel extractions.
 - The page adds very slow cloud drift and a restrained stream glint. Both are preview-only ambient motion.
-- The page respects reduced-motion preferences and keeps the scene in a responsive landscape frame. Review mobile landscape and portrait crops, cliff placement, actor foot clearance, layer seams and image memory before runtime integration.
-- No game renderer or runtime parallax code has changed. These PNGs remain art-direction references until the camera, loop strategy, mobile framing and asset budget are reviewed.
+- The page respects reduced-motion preferences and keeps the scene in a responsive landscape frame. Review mobile landscape and portrait crops, cliff placement, actor foot clearance, layer seams and image memory before a live assignment.
+- The `predjama-ljudska` runtime pack has seven WebP layers (about 480 KB combined), generated from the unchanged PNG masters. Its background test remains disabled. Review the camera, loop strategy, mobile framing and asset budget before considering a live assignment.
 
 The castle's cliff setting and the Lokva disappearing underground below it follow the [official Predjama Castle overview from Postojna Cave Park](https://www.postojnska-jama.eu/en/predjama-castle). This folk-art panorama is a stylized scene, not a surveyed reconstruction.

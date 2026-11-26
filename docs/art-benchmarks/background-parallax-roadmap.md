@@ -1,8 +1,7 @@
 # Folk-art backgrounds and parallax roadmap
 
-**In game (draft, 25 Nov 2026, v0.19.0, PR #38):** the six studies below (Ptuj, Peca, Triglav, Bled, Trnovski gozd,
-Ljubljanica) are built into the game as **variant B** of each region's background test (`data/backgrounds.json`,
-`live: false`: preview with `?ozadje=B` or *Kakovost slik → Visoka*). On Ptuj the folk pack is B and the earlier
+**In game (draft, 26 Nov 2026):** all ten folk studies are built as **variant B** of each region's background test (`data/backgrounds.json`, `live: false`:
+preview with `?ozadje=B` or *Kakovost slik → Visoka*). On Ptuj the folk pack is B and the earlier
 sunset pack moved to **E**. `tools/art_folk_parallax.py` makes the game layers from Codex's study PNGs, which stay
 unchanged: resized into one 996×560 view as Codex's composites place them, WebP q80. Nothing is drawn.
 
@@ -20,24 +19,24 @@ unchanged: resized into one 996×560 view as Codex's composites place them, WebP
 - **CONFIRMED (Game Director, 25 Nov): Ptuj should always be winter.** Codex's Ptuj study is not a winter scene, so a
   winter redraw is to be requested from Codex; the folk Ptuj stands in as B until then.
 
-The campaign currently has ten implemented battle backgrounds. Their order and `bg` keys come from [`data/world.json`](../../data/world.json); [`src/game.js`](../../src/game.js) provides the background descriptions and lookup. The backgrounds currently rendered in-game are the small pixel-art scenes in the art bundle. The folk-painted panoramas in `docs/art-benchmarks/` are a separate visual direction and are not wired into the battle renderer.
+The campaign currently has ten implemented battle backgrounds. Their order and `bg` keys come from [`data/world.json`](../../data/world.json); [`src/game.js`](../../src/game.js) provides the background descriptions and lookup. Variant A remains the normal-quality pixel-art scene. All ten reviewed folk packs are available as variant B through `?ozadje=B` or the high-quality setting; their background tests are disabled, so they are not randomly assigned.
 
 ## Implemented campaign backgrounds
 
 | Order | Campaign region | Runtime key | Game background | Folk-art reference / next step |
 | ---: | --- | --- | --- | --- |
-| 1 | Ptuj | `ptuj` | Implemented pixel-art scene | Folk panorama already reviewed. First separate slices and motion preview are in [Ptuj parallax study](ptuj-parallax/README.md). |
-| 2 | Peca | `peca` | Implemented pixel-art scene | Approved folk panorama; first-pass layers and camera preview are in the [Peca parallax study](peca-parallax/README.md). |
-| 3 | Triglav | `triglav` | Implemented pixel-art scene | Approved side-scrolling panorama; the first slices and motion preview are in the [Triglav parallax study](triglav-parallax/README.md). |
-| 4 | Bled | `bled` | Implemented pixel-art scene | First-pass layers and rightward camera preview are in the [Bled parallax study](bled-parallax/README.md). |
-| 5 | Trnovski gozd | `gozd` | Implemented pixel-art scene | First-pass layers and near-foreground motion guide are in the [Trnovski gozd parallax study](trnovski-gozd-parallax/README.md). |
-| 6 | Piranske soline | `piran` | Implemented pixel-art scene | First-pass layers and the rightward camera preview are in the [Piranske soline parallax study](piranske-soline-parallax/README.md). |
-| 7 | Predjamski grad | `predjama` | Implemented pixel-art scene | Approved [castle-in-cliff scene](slovenia-folk-location-previews/predjama-folk-preview.png), first-pass layers and a rightward camera preview are in the [Predjama parallax study](predjama-parallax/README.md). |
-| 8 | Ljubljansko barje | `barje` | Implemented pixel-art scene | Approved [dawn wetland scene](slovenia-folk-location-previews/barje-folk-preview.png), first-pass layers and a rightward travel preview are in the [Barje parallax study](barje-parallax/README.md). |
-| 9 | Ljubljanica | `ljubljanica` | Implemented pixel-art scene | Approved [side-view Triple Bridge scene](slovenia-folk-location-previews/ljubljanica-folk-preview.png) and first-pass layers/camera preview in the [Ljubljanica parallax study](ljubljanica-parallax/README.md); review before runtime integration. |
-| 10 | Ljubljanski grad | `grad` | Implemented pixel-art scene | Approved [sunset castle scene](slovenia-folk-location-previews/ljubljanski-grad-folk-preview.png); first-pass layers and a rightward camera preview are in the [Ljubljanski grad parallax study](ljubljanski-grad-parallax/README.md). |
+| 1 | Ptuj | `ptuj` | Implemented pixel-art scene | Folk panorama, first separate slices, motion preview and opt-in runtime variant B are in the [Ptuj parallax study](ptuj-parallax/README.md). The winter variant remains a separate art-direction requirement. |
+| 2 | Peca | `peca` | Implemented pixel-art scene | Approved folk panorama, first-pass layers, camera preview and opt-in runtime variant B are in the [Peca parallax study](peca-parallax/README.md). |
+| 3 | Triglav | `triglav` | Implemented pixel-art scene | Approved side-scrolling panorama, first slices, motion preview and opt-in runtime variant B are in the [Triglav parallax study](triglav-parallax/README.md). |
+| 4 | Bled | `bled` | Implemented pixel-art scene | First-pass layers, rightward camera preview and opt-in runtime variant B are in the [Bled parallax study](bled-parallax/README.md). |
+| 5 | Trnovski gozd | `gozd` | Implemented pixel-art scene | First-pass layers, near-foreground motion guide and opt-in runtime variant B are in the [Trnovski gozd parallax study](trnovski-gozd-parallax/README.md). |
+| 6 | Piranske soline | `piran` | Implemented pixel-art scene | Approved layers and rightward preview plus opt-in runtime variant B are in the [Piranske soline parallax study](piranske-soline-parallax/README.md). |
+| 7 | Predjamski grad | `predjama` | Implemented pixel-art scene | Approved [castle-in-cliff scene](slovenia-folk-location-previews/predjama-folk-preview.png), layers, rightward preview and opt-in runtime variant B are in the [Predjama parallax study](predjama-parallax/README.md). |
+| 8 | Ljubljansko barje | `barje` | Implemented pixel-art scene | Approved [dawn wetland scene](slovenia-folk-location-previews/barje-folk-preview.png), layers, rightward preview and opt-in runtime variant B are in the [Barje parallax study](barje-parallax/README.md). |
+| 9 | Ljubljanica | `ljubljanica` | Implemented pixel-art scene | Approved [side-view Triple Bridge scene](slovenia-folk-location-previews/ljubljanica-folk-preview.png), first-pass layers/camera preview and opt-in runtime variant B in the [Ljubljanica parallax study](ljubljanica-parallax/README.md). |
+| 10 | Ljubljanski grad | `grad` | Implemented pixel-art scene | Approved [sunset castle scene](slovenia-folk-location-previews/ljubljanski-grad-folk-preview.png); first-pass layers, rightward camera preview and opt-in runtime variant B are in the [Ljubljanski grad parallax study](ljubljanski-grad-parallax/README.md). |
 
-All ten campaign regions now have folk-art panorama references and first-pass parallax studies: Ptuj, Peca, Triglav, Bled, Trnovski gozd, Piranske soline, Predjama, Ljubljansko barje, Ljubljanica and Ljubljanski grad. Runtime integration, mobile framing and final speed tuning remain future work.
+All ten campaign regions now have folk-art panorama references, first-pass parallax studies and opt-in runtime packs. The A/B tests remain disabled. Mobile framing, actor placement, seam review and final speed tuning remain future work.
 
 ## Work order
 
@@ -54,8 +53,10 @@ All ten campaign regions now have folk-art panorama references and first-pass pa
 - [x] Complete Predjama's first parallax pass with a castle-and-cliff landmark layer, separate sky and clouds, Karst ridge, Lokva stream, broad travel lane, near-edge rocks/grass, static composite and camera preview.
 - [x] Create and approve the Ljubljansko barje scene preview with Zeleni Jurij and a regional Vila on a broad grass lane.
 - [x] Complete Barje's first parallax pass with a separate dawn sky and clouds, low wetland ridge, far-meadow transition, willows and pile dwellings, reed-lined channels, water highlights, wide travel lane, near-edge sedges, static composite and rightward camera preview.
+- [x] Export Piranske soline, Predjama and Barje as review-only runtime packs with separate WebP layers, preserve their PNG masters, keep their tests disabled and create game-size composites.
 - [x] Preserve the existing approved Ljubljanica side-view scene and first-pass slice study; review its alignment before runtime integration.
 - [x] Create and approve the Ljubljanski grad sunset scene preview; complete the first layer set with separate sky, clouds, distant hills, old-town roofs, connected castle hill, edge trees, wide grass lane, near flowers, static composite and interactive approach preview.
+- [x] Add Ljubljanski grad as a review-only runtime pack: export eight WebP layers, keep the PNG masters, add variant B with the test disabled, and create a game-size composite.
 - [ ] After each scene's slices are approved, tune parallax speeds, cloud/water/ambient motion, character staging, reduced-motion behavior, and mobile landscape/portrait framing in the battle viewport.
 
 ## Layer workflow

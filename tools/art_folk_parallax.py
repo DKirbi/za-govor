@@ -22,9 +22,9 @@ The PNG masters stay where Codex delivered them and are never changed. Only the 
   python3 tools/art_folk_parallax.py               all regions
   python3 tools/art_folk_parallax.py gozd peca      some regions (by pack key)
   python3 tools/art_folk_parallax.py --check        report exports that are missing or older than their masters
-  python3 tools/art_folk_parallax.py --composite    also write a check composite of each pack to /tmp/<pack>.png
+  python3 tools/art_folk_parallax.py --composite    also write a check composite to the system temp folder
 """
-import hashlib, io, json, pathlib, sys
+import hashlib, io, json, pathlib, sys, tempfile
 from PIL import Image, ImageOps
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -113,6 +113,48 @@ STUDIES = {
             ('grass-lane', 'foreground-grass-lane.png', (0, 4, 100, 100), 'fill', {'tile': True, 'stand': True}),
         ],
     },
+    'piran': {
+        'study': 'piranske-soline', 'name': 'Piranske soline — ljudska poslikava (Codex)',
+        'layers': [
+            ('sky', 'sky.png', (-10, -2, 120, 104), 'fill', {'tile': True}),
+            ('sun', 'setting-sun.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'period': 2}),
+            ('clouds', 'clouds.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
+            ('hills', 'distant-istrian-hills.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
+            ('water', 'salt-pan-water.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
+            ('far-shore', 'salt-pan-far-shore.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
+            ('house', 'salt-worker-house.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'period': 2}),
+            ('embankments', 'salt-pan-embankments.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
+            ('reflections', 'sunset-reflections.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
+            ('grass-lane', 'foreground-grass-lane.png', (-15, -0.85, 130, 101), 'fill', {'tile': True, 'stand': True}),
+            ('near-grass', 'near-foreground-salt-grass.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'front': True}),
+        ],
+    },
+    'predjama': {
+        'study': 'predjama', 'name': 'Predjamski grad — ljudska poslikava (Codex)',
+        'layers': [
+            ('sky', 'sky.png', (-10, -2, 120, 104), 'fill', {'tile': True}),
+            ('clouds', 'clouds.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
+            ('ridge', 'distant-karst-forest.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
+            ('castle-cliff', 'castle-cliff.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'period': 2}),
+            ('stream', 'lokva-stream.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'period': 2}),
+            ('grass-lane', 'foreground-grass-lane.png', (-15, -0.85, 130, 101), 'fill', {'tile': True, 'stand': True}),
+            ('near-foreground', 'near-foreground-rocks-grass.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'front': True}),
+        ],
+    },
+    'barje': {
+        'study': 'barje', 'name': 'Ljubljansko barje — ljudska poslikava (Codex)',
+        'layers': [
+            ('sky', 'sky.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
+            ('clouds', 'clouds.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
+            ('ridge', 'distant-wetland-ridge.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
+            ('far-meadow', 'far-meadow-transition.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
+            ('channels', 'wetland-channels-reeds.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
+            ('landmarks', 'willows-and-pile-dwellings.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'period': 2}),
+            ('reflections', 'water-reflections.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
+            ('grass-lane', 'foreground-grass-lane.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'stand': True}),
+            ('near-foreground', 'near-foreground-sedges.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'front': True}),
+        ],
+    },
     'ljubljanica': {
         'study': 'ljubljanica', 'name': 'Ljubljanica — ljudska poslikava (Codex)',
         'layers': [
@@ -123,6 +165,19 @@ STUDIES = {
             ('glints', 'water-reflections.png', (-14, 52, 140, 42), 'fill', {'tile': True}),   # glints on the river
             ('bridge', 'bridge.png', (-5, 46, 110, 35), 'fill', {'tile': True, 'period': 2}),
             ('road', 'foreground-road.png', (-68, None, 170, None), 'fill', {'tile': True, 'stand': True}),
+        ],
+    },
+    'grad': {
+        'study': 'ljubljanski-grad', 'name': 'Ljubljanski grad — ljudska poslikava (Codex)',
+        'layers': [   # aligned 1672x941 cutouts; keep the fortress attached to its wooded hill
+            ('sky', 'sky.png', (0, 0, 100, 100), 'fill', {'tile': True}),
+            ('clouds', 'clouds.png', (0, 0, 100, 100), 'fill', {'tile': True}),
+            ('distant-basin-hills', 'distant-basin-hills.png', (0, 0, 100, 100), 'fill', {'tile': True}),
+            ('ljubljana-old-town', 'ljubljana-old-town.png', (0, 0, 100, 100), 'fill', {'tile': True, 'period': 2}),
+            ('castle-hill-and-fortress', 'castle-hill-and-fortress.png', (0, 0, 100, 100), 'fill', {'tile': True, 'period': 2}),
+            ('near-foreground-tree-frame', 'near-foreground-tree-frame.png', (0, 0, 100, 100), 'fill', {'tile': True, 'period': 2.5}),
+            ('foreground-grass-lane', 'foreground-grass-lane.png', (0, 0, 100, 100), 'fill', {'tile': True, 'stand': True}),
+            ('near-foreground-flowers', 'near-foreground-flowers.png', (0, 0, 100, 100), 'fill', {'tile': True, 'front': True}),
         ],
     },
 }
@@ -258,14 +313,14 @@ def build(key, composite=False):
                        **({'mirrored': 'both sides' if cut_l and cut_r else 'left side' if cut_l else 'right side'} if mirror else {}), **({'period': period} if period else {}),
                        **({'laneMirroredBelow': True} if opt.get('stand') else {})})
     man = {'pack': cfg['name'], 'version': '0.1.0', 'status': 'review',
-           'approval': 'OPEN — Game Director review required (first in-game draft, 25 Nov 2026)',
+           'approval': 'OPEN — Game Director review required (first runtime draft, 26 Nov 2026)',
            'canvas': {'width': VIEW_W, 'height': VIEW_H, 'aspectRatio': '16:9',
                       'basis': f'The 16:9 scene of Codex\'s docs/art-benchmarks/{cfg["study"]}-parallax/preview.html at {VIEW_H} px'},
            'madeBy': 'tools/art_folk_parallax.py from Codex\'s study PNGs (unchanged masters); WebP q%d' % QUALITY,
            'layers': layers}
     (ROOT / 'art/manifests' / f'{pack}.json').write_text(json.dumps(man, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     if composite:
-        comp.convert('RGB').save(f'/tmp/{pack}.png')
+        comp.convert('RGB').save(pathlib.Path(tempfile.gettempdir()) / f'{pack}.png')
     # placement into data/backgrounds.json, keeping every hand-tuned value
     dp = ROOT / 'data/backgrounds.json'
     data = json.loads(dp.read_text(encoding='utf-8'))

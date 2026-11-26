@@ -2,7 +2,7 @@
 
 This first layer set uses the approved Trnovski gozd preview with its broad, continuous grassy travel lane. It separates the moon and clouds, the high-karst ridge, the doline forest, the framing trees, the lane, and the close rocks and grass at the near edge.
 
-Open the [interactive rightward travel preview](preview.html) to scrub or play the scene. The [static layer composite](layered-composite-preview.png) shows the first assembly with the existing Martin Krpan and Volkodlak idle sprites. These are art-direction references; they do not replace the game's pixel-art battle scene or add runtime parallax.
+Open the [interactive rightward travel preview](preview.html) to scrub or play the scene. The [static layer composite](layered-composite-preview.png) shows the first assembly with the existing Martin Krpan and Volkodlak idle sprites. This panorama is available as opt-in runtime variant B; variant A remains the default pixel-art battle scene.
 
 ## Layer stack and first-pass speeds
 
@@ -27,4 +27,4 @@ The 1.25× value is a starting point, not a fixed rule. If the rocks look detach
 - Krpan and Volkodlak are first-frame crops from the current game sprite sheets, shown with pixelated scaling to preserve the painted/pixel contrast.
 - Generated cutouts are full-scene transparent layers aligned for this study, not exact pixel extractions. Review their overlap edges, the lane horizon, and the foreground drift at the beginning, middle, and end of the pan.
 - The page respects reduced-motion preferences. Check landscape and portrait crops, character floor clearance, layer seams and image memory before production use.
-- No game renderer or runtime parallax code has been changed.
+- Runtime rendering is handled by the shared parallax system; this study remains the camera-motion reference.

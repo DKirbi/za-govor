@@ -2,7 +2,7 @@
 
 This first parallax pass separates the approved sunset Piranske soline panorama into a sky, slow clouds and sun, Istrian hills, shallow basin water, a salt-worker house and far shore, embankments, reflections, a wide grassy travel lane, and low salt-marsh plants at the near edge.
 
-Open the [interactive rightward travel preview](preview.html) to scrub or play the scene. The [static layer composite](layered-composite-preview.png) shows the assembled pass with current Martin Krpan and Mora idle sprites. The approved flattened [background](../slovenia-folk-location-previews/piran-folk-background.png) and [character preview](../slovenia-folk-location-previews/piran-folk-preview.png) remain unchanged. These are art-direction references; they do not replace the game's pixel-art battle scene or add runtime parallax.
+Open the [interactive rightward travel preview](preview.html) to scrub or play the scene. The [static layer composite](layered-composite-preview.png) shows the assembled pass with current Martin Krpan and Mora idle sprites; the [runtime-pack composite](runtime-pack-composite.png) shows the exported art at game size. The approved flattened [background](../slovenia-folk-location-previews/piran-folk-background.png) and [character preview](../slovenia-folk-location-previews/piran-folk-preview.png) remain unchanged. This folk scene is available as an opt-in variant B through `?ozadje=B` or the high-quality setting; the disabled A/B test does not randomize it.
 
 ## Layer stack and first-pass speeds
 
@@ -30,8 +30,8 @@ The 1.25× foreground value is a starting point. If the plants look detached fro
 - Krpan and Mora are first-frame crops from the current game sprite sheet, enlarged with nearest-neighbor scaling to preserve the painted-versus-pixel-art contrast. Krpan stands in for the regional heroine Lepa Vida because she has no idle battle sprite in the current sheet; Mora is a Piran-region enemy.
 - Generated cutouts share a 1672×941 scene canvas. The house layer was normalized to that canvas; the water, far shore, house, pan walls, reflections and lane are aligned for this composition.
 - The reflections are kept separate for later shimmer or subtle offset. The HTML demo adds a restrained opacity shimmer and slow cloud drift; both are preview-only ambient motion.
-- Some alpha edges were cleaned after ImageGen baked checkerboard pixels into several cutouts. Review their edges against the original artwork before runtime use. The static composite is a first-pass alignment, not a measured extraction.
+- Some alpha edges were cleaned after ImageGen baked checkerboard pixels into several cutouts. Review their edges against the original artwork before a live assignment. The static composite is a first-pass alignment, not a measured extraction.
 - The page respects reduced-motion preferences and works in a responsive landscape viewport. Check portrait crops, character foot clearance, layer seams and image memory before production integration.
-- No game renderer or runtime parallax code has changed. These PNGs are references until the mobile camera framing, loop strategy, and asset budget are reviewed.
+- The `piran-ljudska` runtime pack has eleven WebP layers (about 793 KB combined), generated from the unchanged PNG masters. Its background test remains disabled. Review the camera framing, loop strategy and asset budget before considering a live assignment.
 
 The coastal setting cues the shallow salt basins, channels and salt-worker heritage described by the [Sečovlje Salina Nature Park overview](https://www.portoroz.si/en/what-to-do/natural-landmarks/obj/13831-secovlje-salina-nature-park). The game places Lepa Vida here as a chapter setting; this is not a claim about the ballad's origin.

@@ -2,7 +2,7 @@
 
 This first slice pass is based on the Bled panorama and sprite pairing in [the Slovenia folk-location previews](../slovenia-folk-location-previews/README.md). It separates the Julian Alps, forested shore, castle cliff, island church, lake, reflections, clouds and the broad grassy travel lane.
 
-Open the [interactive rightward travel preview](preview.html) to scrub or play the scene. The [static layer composite](layered-composite-preview.png) shows the first assembly with Zeleni Jurij and Vila. These images are art-direction references; they do not replace the game's pixel-art battle scene or add runtime parallax.
+Open the [interactive rightward travel preview](preview.html) to scrub or play the scene. The [static layer composite](layered-composite-preview.png) shows the first assembly with Zeleni Jurij and Vila. This panorama is available as opt-in runtime variant B; variant A remains the default pixel-art battle scene.
 
 ## Layer stack
 
@@ -26,4 +26,4 @@ The ratios are relative to a rightward camera journey; the scene layers translat
 - Zeleni Jurij and Vila are idle-frame crops from the current game sprite data, displayed with pixelated scaling to preserve the painterly and pixel-art contrast.
 - The cutouts are generated and aligned visual slices, not exact pixel extractions. Inspect edge masks, overlap at the castle cliff and island waterline, and the full camera path before using them in a renderer.
 - The page respects reduced-motion preferences. Check landscape and portrait mobile crops, character floor clearance and image memory before production use.
-- This study does not wire the panorama or movement into game code.
+- Runtime rendering is handled by the shared parallax system; this study remains the camera-motion reference.
