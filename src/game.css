@@ -500,6 +500,11 @@ body.mobile .card.folk.t1 { width: 100px; } body.mobile .card.folk.t2 { width: 1
 /* Codex's painted skill cards (variant B of the card test, src/backgrounds.js): the whole 3:2 painting with its own
    painted frame, a little narrower than the SVG boards so a card stays about as tall over the scene */
 .card.folk .pic.paint img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; pointer-events: none; }
+/* a hero's skill without Codex's painting yet: an empty board with ??? (Game Director, 26 Nov 2026) */
+.card.folk .pic.paint .tbd { display: grid; place-items: center; aspect-ratio: 3 / 2; font: 800 20px/1 Georgia, serif; letter-spacing: .12em; color: #6e6253;
+  background: radial-gradient(ellipse at 50% 40%, #2c2620, #15120f); box-shadow: inset 0 0 0 3px #3a2c1f; }
+.card.folk.t1 .pic.paint .tbd { font-size: 15px; } .card.folk.t3 .pic.paint .tbd { font-size: 26px; }
+.gboard.skill img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 3px; box-shadow: 0 2px 0 #1c110b, 0 6px 14px rgba(0,0,0,.4); }
 .card.folk.paint.t1 { width: 100px; } .card.folk.paint.t2 { width: 150px; } .card.folk.paint.t3 { width: 204px; }
 body.mobile .card.folk.paint.t1 { width: 86px; } body.mobile .card.folk.paint.t2 { width: 124px; } body.mobile .card.folk.paint.t3 { width: 170px; }
 .card.folk.foecard .cap .vl { color: #ff9a9a; }

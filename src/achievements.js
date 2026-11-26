@@ -212,7 +212,6 @@ const heroHasPaintings = id => [1, 2, 3].some(t => BGX.cards[skillCardKey(id, t)
 const skillCardText = (id, t) => fxText(isReviewed(id) ? rankText(id, t, 1) : SKILL_TEXT[id][t - 1]);
 function heroCardBox(id, flip, flipBtn) {
   const box = h('div', { class: 'hm-card' }, flip);
-  if (!heroHasPaintings(id)) { box.append(h('div', { class: 'hm-actions' }, flipBtn)); return box; }
   const grid = skillCardsView(id);
   grid.hidden = true;
   const toggle = h('button', { class: 'btn', 'aria-pressed': 'false', onclick: () => {
@@ -224,12 +223,14 @@ function heroCardBox(id, flip, flipBtn) {
   return box;
 }
 function skillCardsView(id) {
+  // a skill without Codex's painting yet is an empty board with ??? (Game Director, 26 Nov 2026), like one still to collect
   const ch = CHARS.find(c => c.id === id), n = [1, 2, 3].filter(t => hasSkillCard(id, t)).length;
   return h('div', { class: 'skillcards', style: { '--c': ch.c } },
-    h('p', { class: 'muted sc-lead' }, `Karte veščin: ${n} od 3. Karto dobiš, ko junak veščino prvič uporabi v bitki na poti.`),
+    h('p', { class: 'muted sc-lead' }, heroHasPaintings(id) ? `Karte veščin: ${n} od 3. Karto dobiš, ko junak veščino prvič uporabi v bitki na poti.` : 'Karte veščin tega junaka še nastajajo.'),
     h('ul', {}, [1, 2, 3].map(t => {
       const P = BGX.cards[skillCardKey(id, t)];
-      if (!P) return null;
+      if (!P) return h('li', { class: 'sc locked tbd' }, h('div', { class: 'sc-board', 'aria-hidden': 'true' }, '???'),
+        h('div', { class: 'sc-cap' }, h('b', {}, '???'), h('span', {}, `Veščina ${t} · karta še nastaja`)));
       if (!hasSkillCard(id, t)) return h('li', { class: 'sc locked' }, h('div', { class: 'sc-board', 'aria-hidden': 'true' }, '???'),
         h('div', { class: 'sc-cap' }, h('b', {}, '???'), h('span', {}, `Veščina ${t} · še ni zbrana`)));
       return h('li', { class: 'sc' }, h('button', { class: 'sc-open', 'aria-label': `${ch.moves[t - 1]}: odpri karto čez ves zaslon`, onclick: () => openSkillCard(id, t) },
@@ -253,7 +254,7 @@ function galleryPaintedCards() {
   const keys = Object.keys(BGX.cards);
   if (!keys.length) return [];
   return [h('h2', {}, 'Ljudske karte veščin (Codex)'),
-    h('p', { class: 'lead' }, `Vseh ${keys.length} slik kart veščin. V bitki jih pokaže različica B preizkusa kart (Nastavitve → Razvoj → Kakovost slik → Visoka ali ?karte=B); na zaslonu junaka se zbirajo.`),
+    h('p', { class: 'lead' }, `Vseh ${keys.length} slik kart veščin. V bitki jih junaki pokažejo pri vsaki kakovosti slik; veščina brez slike pokaže prazno karto z ???. Na zaslonu junaka se zbirajo.`),
     h('div', { class: 'gpaint' }, CHARS.filter(c => heroHasPaintings(c.id)).map(c => [1, 2, 3].map(t => {
       const P = BGX.cards[skillCardKey(c.id, t)]; if (!P) return null;
       return h('figure', {}, h('button', { class: 'sc-open', onclick: () => openSkillCard(c.id, t) }, h('img', { src: P.src, alt: '', loading: 'lazy' })),

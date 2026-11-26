@@ -160,7 +160,7 @@ def background_packs():
         gone = [v for v, p in t.get('variants', {}).items() if p not in packs]
         if t.get('live') and gone:
             notes.append(f"background test {key} is live but variant {', '.join(gone)} is not built: everyone sees A")
-    return {'tests': cfg.get('tests', {}), 'packs': packs, 'cardTest': cfg.get('cardTest')}, notes
+    return {'tests': cfg.get('tests', {}), 'packs': packs}, notes
 
 
 def skill_cards():

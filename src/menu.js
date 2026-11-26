@@ -298,7 +298,7 @@ function renderSettings() {
     statsSection(),
     h('section', {}, h('div', { class: 'devbox' }, h('span', { class: 'devtag' }, 'Razvoj'),
       h('h2', {}, 'Kakovost slik'),
-      h('p', { class: 'muted sec-lead' }, 'Visoka: slojevito ozadje Ptuja (Codex). Nizka: slika, ki je v igri doslej. Zimska različica nima nizke kakovosti in ostane visoka. Samodejno prepusti izbiro preizkusu A/B. Velja za naslednjo sliko.'),
+      h('p', { class: 'muted sec-lead' }, 'Velja samo za ozadja. Visoka: slojevita ozadja (Codex). Nizka: slike, ki so v igri doslej. Zimska različica Ptuja nima nizke kakovosti in ostane visoka. Samodejno prepusti izbiro preizkusu A/B. Velja za naslednjo sliko.'),
       ...[['auto', 'Samodejno (privzeto)'], ['high', 'Visoka kakovost'], ['low', 'Nizka kakovost']].map(([v, label]) =>
         h('label', { class: 'toggle' }, h('input', { type: 'radio', name: 'set-fid', class: 'set-fid', value: v, checked: fidelity() === v, onchange: () => setFidelity(v) }),
           h('span', {}, label))))),
