@@ -33,11 +33,11 @@ The campaign currently has ten implemented battle backgrounds. Their order and `
 | 5 | Trnovski gozd | `gozd` | Implemented pixel-art scene | First-pass layers and near-foreground motion guide are in the [Trnovski gozd parallax study](trnovski-gozd-parallax/README.md). |
 | 6 | Piranske soline | `piran` | Implemented pixel-art scene | First-pass layers and the rightward camera preview are in the [Piranske soline parallax study](piranske-soline-parallax/README.md). |
 | 7 | Predjamski grad | `predjama` | Implemented pixel-art scene | Approved [castle-in-cliff scene](slovenia-folk-location-previews/predjama-folk-preview.png), first-pass layers and a rightward camera preview are in the [Predjama parallax study](predjama-parallax/README.md). |
-| 8 | Ljubljansko barje | `barje` | Implemented pixel-art scene | Make a folk-art preview, get approval, then slice. |
-| 9 | Ljubljanica | `ljubljanica` | Implemented pixel-art scene | Existing [side-view Triple Bridge battle preview](slovenia-folk-location-previews/ljubljanica-folk-preview.png) and [parallax slice study](ljubljanica-parallax/README.md); review the scene before any production slicing. |
+| 8 | Ljubljansko barje | `barje` | Implemented pixel-art scene | Approved [dawn wetland scene](slovenia-folk-location-previews/barje-folk-preview.png), first-pass layers and a rightward travel preview are in the [Barje parallax study](barje-parallax/README.md). |
+| 9 | Ljubljanica | `ljubljanica` | Implemented pixel-art scene | Approved [side-view Triple Bridge scene](slovenia-folk-location-previews/ljubljanica-folk-preview.png) and first-pass layers/camera preview in the [Ljubljanica parallax study](ljubljanica-parallax/README.md); review before runtime integration. |
 | 10 | Ljubljanski grad | `grad` | Implemented pixel-art scene | Make a folk-art preview, get approval, then slice. |
 
-The folk-art panorama references currently cover Ptuj, Peca, Triglav, Bled, Trnovski gozd, Piranske soline and Ljubljanica. The Ljubljana Barje and Castle art functions were added to the game background bundle in the `Folk-art-BGs` branch; they still need folk-art previews before they can be sliced in this visual style.
+Nine of the ten campaign regions now have folk-art panorama references: Ptuj, Peca, Triglav, Bled, Trnovski gozd, Piranske soline, Predjama, Ljubljansko barje and Ljubljanica. Ljubljanski grad is the remaining region that needs a folk-art preview before it can be sliced in this style.
 
 ## Work order
 
@@ -52,8 +52,10 @@ The folk-art panorama references currently cover Ptuj, Peca, Triglav, Bled, Trno
 - [x] Complete the Piranske soline first pass: separate the basins, reflections, far shore, house, embankments, wide travel lane and close salt grass; add the rightward camera preview.
 - [x] Create and approve the Predjamski grad scene preview with Erazem and a regional Perkmandeljc on the broad travel lane.
 - [x] Complete Predjama's first parallax pass with a castle-and-cliff landmark layer, separate sky and clouds, Karst ridge, Lokva stream, broad travel lane, near-edge rocks/grass, static composite and camera preview.
-- [ ] Continue in campaign order with a Ljubljansko barje preview; after approval, create its first-pass layers, then proceed to Ljubljanica and Ljubljanski grad.
-- [ ] For each later region, create the folk-art scene preview first and pause for approval before generating slices. The existing Ljubljanica preview still needs review before any production slicing.
+- [x] Create and approve the Ljubljansko barje scene preview with Zeleni Jurij and a regional Vila on a broad grass lane.
+- [x] Complete Barje's first parallax pass with a separate dawn sky and clouds, low wetland ridge, far-meadow transition, willows and pile dwellings, reed-lined channels, water highlights, wide travel lane, near-edge sedges, static composite and rightward camera preview.
+- [x] Preserve the existing approved Ljubljanica side-view scene and first-pass slice study; review its alignment before runtime integration.
+- [ ] Create a folk-art preview for Ljubljanski grad, get approval, then complete its first parallax pass.
 - [ ] After each scene's slices are approved, tune parallax speeds, cloud/water/ambient motion, character staging, reduced-motion behavior, and mobile landscape/portrait framing in the battle viewport.
 
 ## Layer workflow
