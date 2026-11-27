@@ -16,6 +16,27 @@ Each character has an individual folder containing their approved character spec
 | Lepa Vida | Folk-ballad heroine | Piranske soline — designated location; also eligible for generic recruitment | [Character specification](./lepa-vida/character.md) |
 | Martin Krpan | Literary / literary-folklore hero | Starting character | [Character specification](./martin-krpan/character.md) |
 
+## Play-style roles on the hero picker
+
+**PROPOSED** by Claude on 27 Nov 2026, at the Game Director's request ("categorize every character as Damage Dealer,
+Support, Healer etc."); awaiting approval. One role per character, shown with an icon on *Kdo gre na pot?* and in
+*Dosežki in junaki*. The roles follow each specification's combat role where one exists, and otherwise what the kit
+does in the game today. Data: `ROLES` and `PLAYSTYLE` in `src/game.js`.
+
+| Role | Masculine / feminine | Meaning | Characters |
+|---|---|---|---|
+| napad | Napadalec / Napadalka | deals the damage | Martin Krpan (*heavy physical attacker*), Erazem Predjamski (*sword fighter*), Peter Klepec, Kresnik (*fire mage*), Perun, Veles, Stribog |
+| obramba | Branilec / Branilka | protects the party, takes the blows | Ajdovska deklica (*defensive support*), Svarog |
+| zdravje | Zdravilec / Zdravilka | heals | Zeleni Jurij, Mokoš |
+| podpora | Podpornik / Podpornica | makes the party stronger | Kralj Matjaž (*party-support defender*), Dažbog |
+| ovira | Oviralec / Oviralka | slows and weakens enemies | Kurent (*crowd control and disruption*), Lepa Vida (*support and disruption*) |
+
+Borderline readings worth a decision: Kralj Matjaž (*podpora* or *obramba*), Erazem (*napad*, though his spec also
+calls him resourceful support), Lepa Vida (*ovira* or *podpora*).
+
+The picker's **Posebni učinek** lines (a few plain words with an icon, e.g. *nasprotnik krvavi*, *izmik in
+protinapad*) describe what each kit does today; the individual specifications stay authoritative for the mechanics.
+
 ## Documentation rules
 
 - Individual character folders are the source of truth for that character.

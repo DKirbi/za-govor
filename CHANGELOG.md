@@ -36,7 +36,7 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
-## 0.22.0 — 27 Nov 2026 · zaprta alfa · ten folk parallax backgrounds for review, measured on phones; the phone's tip behind a ? button
+## 0.22.0 — 27 Nov 2026 · zaprta alfa · ten folk parallax backgrounds for review, measured on phones; the phone's tip behind a ? button; a clearer hero picker
 
 Branch `review/folk-backgrounds`: PRs #40, #41, #43, #44 and #45 (Codex's four later parallax studies and their runtime
 packs) and #42 (0.21.0, below) in one pull request for the Game Director to confirm. Those six PRs are closed in
@@ -83,6 +83,32 @@ favour of it.
   the repository: the pose atlases, the 48 × 48 frames, the sheet and strip, the previews and the asset review.
   `art/manifests/martin-krpan.json` keeps only the mare-lift folk illustration and says where the pack is in Git
   history (`main` at 99c2d99). His painted skill cards are a separate pack and stay.
+
+**Kdo gre na pot? and the hero's card (Game Director, 27 Nov 2026)**
+- **The hero picker** has no lead text any more. The chosen hero comes first, above the list, in one row on every
+  screen: the sprite takes 40 %, the details 60 %. On a 360 px phone the sprite shrinks a little to fit its column
+  instead of being cut.
+- **The details:** the name; the hero's **role** with its icon and the health with a heart; who they are (*silak z
+  Vrha*); **Napadi** as chips, with no arrows between them; **Posebni učinek** (*Posebni učinki* when there are
+  more), which replaces *Največji napad*, in a few plain words with an icon each (*nasprotnik krvavi*, *zdravi
+  družino*, *izmik in protinapad* …); and the hero's words as chips, *Njene besede* for the heroines.
+- **Roles (PROPOSED, for the Game Director):** *Napadalec*, *Branilec*, *Zdravilec*, *Podpornik* and *Oviralec*, with
+  the feminine forms for Lepa Vida, Ajdovska deklica and Mokoš. They come from the combat roles in the character
+  specifications and what each kit does today: Krpan, Erazem, Klepec, Kresnik, Perun, Veles and Stribog *napad*;
+  Ajda and Svarog *obramba*; Zeleni Jurij and Mokoš *zdravje*; Kralj Matjaž and Dažbog *podpora*; Kurent and Vida
+  *ovira*. Every card in the list and in *Dosežki in junaki* shows its role instead of the old short description.
+  Data: `ROLES` and `PLAYSTYLE` in `src/game.js`.
+- **New pixel icons** (`src/effects.js`, drawn like the attack and defence icons): a heart, healing, bleeding, poison,
+  fire, an hourglass, an open padlock, a spark, a dodge, a stone, a hit on all, and the role icons (a sword, a shield,
+  a banner).
+- A hero tapped low in the list scrolls the details back into view at the top.
+- **The hero's card** (after a battle, on meeting a hero, in *Dosežki in junaki*): the name was pushed up over the
+  painting on phones, because the card had a fixed height and its plate overflowed. The front now sizes to the
+  painting and its plate, and shows **only the name and the skills**, the name on the plate under the painting. Who
+  the hero is (*vitez iz Predjame · meč, češnje, izmik*) moved to the **back** of the card, above the story.
+- **New `tests/picker.test.js`** (23 checks): no lead text, the hero above the list, 40/60 in one row on a desktop
+  and at 360 and 412 px with the sprite whole, chips without arrows, effects with icons, the roles and their feminine
+  forms, and the card's name on its plate under the painting at all three widths.
 
 ## 0.21.0 — 26 Nov 2026 · zaprta alfa · Kakovost slik is about the backgrounds only
 
