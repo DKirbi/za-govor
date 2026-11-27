@@ -2,7 +2,8 @@
 
 **Status:** SUPERSEDED (Game Director, 25 Nov 2026): heroes and enemies use simple pixel sprites, so no hero gets a
 sprite pack. Krpan's pack left the game in 0.21.0, with `data/hero-art.json` and `tools/art_hero_pack.py`; both are in Git
-history (0.20.0) if the Game Director reopens this. Kept as a record of the convention.
+history (0.20.0) if the Game Director reopens this. On 27 Nov 2026 the Game Director discarded Krpan's pack completely:
+its files and asset review left the repository too (Git history: `main` at 99c2d99). Kept only as a record of the convention.
 
 **Former status:** PROPOSED convention, derived from the Martin Krpan pack (PR #34). Krpan's running, victory and downed
 poses are approved for Krpan only; nothing here approves another hero's art. The Game Director approves each pack.
@@ -69,7 +70,7 @@ Outputs: frames in `art/exports/characters/<pack>/animations/<sequence>/frame-NN
 
 ## 5. Manifest (`art/manifests/<pack>.json`)
 
-Copy `art/manifests/martin-krpan.json`. Required for the tool: `pack`, `status`, `export {frame, baselineRow,
+Copy `art/manifests/martin-krpan.json` as it was at 99c2d99 (its sprite sections are gone since 27 Nov 2026). Required for the tool: `pack`, `status`, `export {frame, baselineRow,
 alphaThreshold, palette, scale}`, `sequences[] {id, label, sourceAtlas, sourceLayout, framesBackToFront}`,
 `runtimeSheet {path, frameOrder}`, `preview`, `animationPreview`. Also record the approval state, open decisions and
 sources, as in Krpan's.
