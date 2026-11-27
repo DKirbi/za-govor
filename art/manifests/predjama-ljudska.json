@@ -22,7 +22,7 @@
       "alpha": false,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\predjama-parallax\\layers\\sky.png",
+      "source": "docs/art-benchmarks/predjama-parallax/layers/sky.png",
       "sourceSha1": "32f9a6e6aae461d9b0ccb94ade6fb3de262511c5",
       "previewBox": [
         -10,
@@ -44,7 +44,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\predjama-parallax\\layers\\clouds.png",
+      "source": "docs/art-benchmarks/predjama-parallax/layers/clouds.png",
       "sourceSha1": "a3a06af6167f02c6badca1f08821a13dd588224b",
       "previewBox": [
         -15,
@@ -65,7 +65,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\predjama-parallax\\layers\\distant-karst-forest.png",
+      "source": "docs/art-benchmarks/predjama-parallax/layers/distant-karst-forest.png",
       "sourceSha1": "249668511c9e1debe0595655cb914b5fcc3abaf5",
       "previewBox": [
         -15,
@@ -87,7 +87,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\predjama-parallax\\layers\\castle-cliff.png",
+      "source": "docs/art-benchmarks/predjama-parallax/layers/castle-cliff.png",
       "sourceSha1": "d9fe7e7f411df60a1b44619c9021fda830c08b17",
       "previewBox": [
         -15,
@@ -109,7 +109,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\predjama-parallax\\layers\\lokva-stream.png",
+      "source": "docs/art-benchmarks/predjama-parallax/layers/lokva-stream.png",
       "sourceSha1": "c1c681d93e5f33a765e7650bd3b8cf97d9814a91",
       "previewBox": [
         -15,
@@ -131,7 +131,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\predjama-parallax\\layers\\foreground-grass-lane.png",
+      "source": "docs/art-benchmarks/predjama-parallax/layers/foreground-grass-lane.png",
       "sourceSha1": "110d9816ad40c2ac09d617d27aa9ee70fa7a0c1a",
       "previewBox": [
         -15,
@@ -154,7 +154,7 @@
       "alpha": true,
       "tileX": true,
       "role": "foreground",
-      "source": "docs\\art-benchmarks\\predjama-parallax\\layers\\near-foreground-rocks-grass.png",
+      "source": "docs/art-benchmarks/predjama-parallax/layers/near-foreground-rocks-grass.png",
       "sourceSha1": "0145dc7109ce1f65bbec773bb35ccf427e83ce3d",
       "previewBox": [
         -15,

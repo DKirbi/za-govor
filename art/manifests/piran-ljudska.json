@@ -22,7 +22,7 @@
       "alpha": false,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\sky.png",
+      "source": "docs/art-benchmarks/piranske-soline-parallax/layers/sky.png",
       "sourceSha1": "9944ea246e82ae8412e10bdf5bfaee2a0080f113",
       "previewBox": [
         -10,
@@ -44,7 +44,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\setting-sun.png",
+      "source": "docs/art-benchmarks/piranske-soline-parallax/layers/setting-sun.png",
       "sourceSha1": "13c284af77ed1ebdac5bcb30325caa63e8128501",
       "previewBox": [
         -15,
@@ -66,7 +66,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\clouds.png",
+      "source": "docs/art-benchmarks/piranske-soline-parallax/layers/clouds.png",
       "sourceSha1": "98e75ccd081b22544e20392baf63b957321a8cf7",
       "previewBox": [
         -15,
@@ -87,7 +87,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\distant-istrian-hills.png",
+      "source": "docs/art-benchmarks/piranske-soline-parallax/layers/distant-istrian-hills.png",
       "sourceSha1": "93caa2b9d29933e1c8d6dc20590ce876da4be80a",
       "previewBox": [
         -15,
@@ -99,17 +99,17 @@
       "mirrored": "left side"
     },
     {
-      "id": "water",
+      "id": "sea",
       "order": 5,
-      "file": "art/exports/environments/piran-ljudska/water.webp",
+      "file": "art/exports/environments/piran-ljudska/sea.webp",
       "width": 2582,
-      "height": 163,
+      "height": 34,
       "x": -147,
       "y": 213,
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\salt-pan-water.png",
+      "source": "docs/art-benchmarks/piranske-soline-parallax/layers/salt-pan-water.png",
       "sourceSha1": "79a9c045b14186031ef368ef668aab4369ecf3cb",
       "previewBox": [
         -15,
@@ -118,7 +118,11 @@
         100
       ],
       "fit": "fill",
-      "mirrored": "both sides"
+      "mirrored": "both sides",
+      "rows": [
+        0,
+        247
+      ]
     },
     {
       "id": "far-shore",
@@ -131,7 +135,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\salt-pan-far-shore.png",
+      "source": "docs/art-benchmarks/piranske-soline-parallax/layers/salt-pan-far-shore.png",
       "sourceSha1": "0298aa3631d6c3a935d35f7dead82daa0790dcb4",
       "previewBox": [
         -15,
@@ -153,7 +157,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\salt-worker-house.png",
+      "source": "docs/art-benchmarks/piranske-soline-parallax/layers/salt-worker-house.png",
       "sourceSha1": "6e4e2ad64c5991e051984efbb2631d934c456801",
       "previewBox": [
         -15,
@@ -165,8 +169,34 @@
       "period": 2
     },
     {
-      "id": "embankments",
+      "id": "water",
       "order": 8,
+      "file": "art/exports/environments/piran-ljudska/water.webp",
+      "width": 2582,
+      "height": 122,
+      "x": -147,
+      "y": 254,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/piranske-soline-parallax/layers/salt-pan-water.png",
+      "sourceSha1": "79a9c045b14186031ef368ef668aab4369ecf3cb",
+      "previewBox": [
+        -15,
+        0,
+        130,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "both sides",
+      "rows": [
+        254,
+        null
+      ]
+    },
+    {
+      "id": "embankments",
+      "order": 9,
       "file": "art/exports/environments/piran-ljudska/embankments.webp",
       "width": 2582,
       "height": 140,
@@ -175,7 +205,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\salt-pan-embankments.png",
+      "source": "docs/art-benchmarks/piranske-soline-parallax/layers/salt-pan-embankments.png",
       "sourceSha1": "b06de538fc3d95823fecd9a437c5d41c2b134591",
       "previewBox": [
         -15,
@@ -188,7 +218,7 @@
     },
     {
       "id": "reflections",
-      "order": 9,
+      "order": 10,
       "file": "art/exports/environments/piran-ljudska/reflections.webp",
       "width": 1295,
       "height": 144,
@@ -197,7 +227,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\sunset-reflections.png",
+      "source": "docs/art-benchmarks/piranske-soline-parallax/layers/sunset-reflections.png",
       "sourceSha1": "ef3a4bec79367d12a0f4533ad4a02d6dd8ad0673",
       "previewBox": [
         -15,
@@ -209,7 +239,7 @@
     },
     {
       "id": "grass-lane",
-      "order": 10,
+      "order": 11,
       "file": "art/exports/environments/piran-ljudska/grass-lane.webp",
       "width": 2582,
       "height": 402,
@@ -218,7 +248,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\foreground-grass-lane.png",
+      "source": "docs/art-benchmarks/piranske-soline-parallax/layers/foreground-grass-lane.png",
       "sourceSha1": "f1adbde9b6973f38987df90629c1f795e33d894d",
       "previewBox": [
         -15,
@@ -232,7 +262,7 @@
     },
     {
       "id": "near-grass",
-      "order": 11,
+      "order": 12,
       "file": "art/exports/environments/piran-ljudska/near-grass.webp",
       "width": 2558,
       "height": 60,
@@ -241,7 +271,7 @@
       "alpha": true,
       "tileX": true,
       "role": "foreground",
-      "source": "docs\\art-benchmarks\\piranske-soline-parallax\\layers\\near-foreground-salt-grass.png",
+      "source": "docs/art-benchmarks/piranske-soline-parallax/layers/near-foreground-salt-grass.png",
       "sourceSha1": "a356360661879abbf3da0bb80dd4e1e9097ebe73",
       "previewBox": [
         -15,

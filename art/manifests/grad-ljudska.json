@@ -22,7 +22,7 @@
       "alpha": false,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\ljubljanski-grad-parallax\\layers\\sky.png",
+      "source": "docs/art-benchmarks/ljubljanski-grad-parallax/layers/sky.png",
       "sourceSha1": "6bd9bbf5e484eef63333035deedeffe256e9230b",
       "previewBox": [
         0,
@@ -44,7 +44,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\ljubljanski-grad-parallax\\layers\\clouds.png",
+      "source": "docs/art-benchmarks/ljubljanski-grad-parallax/layers/clouds.png",
       "sourceSha1": "3ff0b37f27b7bbb97ca1944a97fcced14392f43b",
       "previewBox": [
         0,
@@ -65,7 +65,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\ljubljanski-grad-parallax\\layers\\distant-basin-hills.png",
+      "source": "docs/art-benchmarks/ljubljanski-grad-parallax/layers/distant-basin-hills.png",
       "sourceSha1": "ba83bd4525e515a83935adeccd81481caf301ec6",
       "previewBox": [
         0,
@@ -87,7 +87,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\ljubljanski-grad-parallax\\layers\\ljubljana-old-town.png",
+      "source": "docs/art-benchmarks/ljubljanski-grad-parallax/layers/ljubljana-old-town.png",
       "sourceSha1": "1e2c98e85d6b7914f1690dbca72e28186baa385d",
       "previewBox": [
         0,
@@ -109,7 +109,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\ljubljanski-grad-parallax\\layers\\castle-hill-and-fortress.png",
+      "source": "docs/art-benchmarks/ljubljanski-grad-parallax/layers/castle-hill-and-fortress.png",
       "sourceSha1": "903f464d533a25fb08a8a55fcb02c7fe278df1c0",
       "previewBox": [
         0,
@@ -131,7 +131,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\ljubljanski-grad-parallax\\layers\\near-foreground-tree-frame.png",
+      "source": "docs/art-benchmarks/ljubljanski-grad-parallax/layers/near-foreground-tree-frame.png",
       "sourceSha1": "521136625641b18d03708350615b342369b31f09",
       "previewBox": [
         0,
@@ -153,7 +153,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\ljubljanski-grad-parallax\\layers\\foreground-grass-lane.png",
+      "source": "docs/art-benchmarks/ljubljanski-grad-parallax/layers/foreground-grass-lane.png",
       "sourceSha1": "a7846113fe00779fbdfe6d3104335f9043dab582",
       "previewBox": [
         0,
@@ -176,7 +176,7 @@
       "alpha": true,
       "tileX": true,
       "role": "foreground",
-      "source": "docs\\art-benchmarks\\ljubljanski-grad-parallax\\layers\\near-foreground-flowers.png",
+      "source": "docs/art-benchmarks/ljubljanski-grad-parallax/layers/near-foreground-flowers.png",
       "sourceSha1": "cf9587f0f91195285e20e8fb8be03992b38a2ef6",
       "previewBox": [
         0,

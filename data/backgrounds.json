@@ -672,7 +672,7 @@
           "x": 0,
           "y": 16,
           "speed": 0.025,
-          "drift": -0.5
+          "drift": -1.2
         },
         "distant-basin-hills": {
           "x": 2,
@@ -692,7 +692,7 @@
         "near-foreground-tree-frame": {
           "x": 2,
           "y": 0,
-          "speed": 1.08
+          "speed": 1
         },
         "foreground-grass-lane": {
           "x": 2,
@@ -728,33 +728,38 @@
         "sun": {
           "x": -149,
           "y": 153,
-          "speed": 0.03
+          "speed": 0.02
         },
         "clouds": {
           "x": -149,
           "y": 27,
           "speed": 0.025,
-          "drift": -0.25
+          "drift": -1.2
         },
         "hills": {
           "x": -1440,
           "y": 260,
           "speed": 0.12
         },
-        "water": {
+        "sea": {
           "x": -147,
           "y": 213,
-          "speed": 0.5
+          "speed": 0.2
         },
         "far-shore": {
           "x": -147,
           "y": 224,
-          "speed": 0.24
+          "speed": 0.28
         },
         "house": {
           "x": -149,
           "y": 135,
-          "speed": 0.32
+          "speed": 0.28
+        },
+        "water": {
+          "x": -147,
+          "y": 254,
+          "speed": 0.5
         },
         "embankments": {
           "x": -147,
@@ -801,7 +806,7 @@
           "x": -149,
           "y": 10,
           "speed": 0.025,
-          "drift": -0.25
+          "drift": -1.2
         },
         "ridge": {
           "x": -147,
@@ -816,7 +821,7 @@
         "stream": {
           "x": -149,
           "y": 365,
-          "speed": 0.42
+          "speed": 0.38
         },
         "grass-lane": {
           "x": -147,
@@ -853,7 +858,7 @@
           "x": -149,
           "y": 7,
           "speed": 0.025,
-          "drift": -0.2
+          "drift": -1.2
         },
         "ridge": {
           "x": -147,
@@ -873,7 +878,7 @@
         "landmarks": {
           "x": -1440,
           "y": 7,
-          "speed": 0.38
+          "speed": 0.46
         },
         "reflections": {
           "x": -149,

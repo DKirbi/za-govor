@@ -41,7 +41,11 @@ LANE_EXT = 0.35   # how far below itself the lane's mirror image reaches, in vie
 #   period: a tiling landmark comes round only every `period` view widths (transparent padding); layers that must
 #           stay together (a town and its reflection) share speed and period;
 #   stand: the walking lane (rises to the actors' feet; mirrored below);
-#   front: in front of the actors (low and at the edges only).
+#   front: in front of the actors (low and at the edges only);
+#   wrap: a tiling island with tapered ends: its last `wrap` view px are laid over its first, so the copies overlap
+#         instead of leaving a gap between them;
+#   rows: (top, bottom) only these view rows of the picture (bottom None = to the end), for a picture that lies at two
+#         depths and is cut in two (the same file, two layers).
 # Boxes reproduce Codex's layered-composite-preview.png: full-scene cutouts at 1:1 (100 %), other canvases at the box
 # of preview.html (whose wider boxes for full-scene layers only make room for its pan). Speeds: data/backgrounds.json.
 STUDIES = {
@@ -120,9 +124,14 @@ STUDIES = {
             ('sun', 'setting-sun.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'period': 2}),
             ('clouds', 'clouds.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
             ('hills', 'distant-istrian-hills.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
-            ('water', 'salt-pan-water.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
+            # Codex's water layer is the sea at the horizon and the salt pans in one picture. The sea lies beyond the far
+            # shore and the house, the pans in front of them, so it is cut in two along the shore (27 Nov 2026): the sea
+            # above view row 247 behind the shore, the pans from row 254 in front of it. Rows 247–253 lie under the
+            # shore's opaque strip (245–253) and are not drawn.
+            ('sea', 'salt-pan-water.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'rows': (0, 247)}),
             ('far-shore', 'salt-pan-far-shore.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
             ('house', 'salt-worker-house.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'period': 2}),
+            ('water', 'salt-pan-water.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'rows': (254, None)}),
             ('embankments', 'salt-pan-embankments.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
             ('reflections', 'sunset-reflections.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
             ('grass-lane', 'foreground-grass-lane.png', (-15, -0.85, 130, 101), 'fill', {'tile': True, 'stand': True}),
@@ -148,7 +157,9 @@ STUDIES = {
             ('clouds', 'clouds.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
             ('ridge', 'distant-wetland-ridge.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
             ('far-meadow', 'far-meadow-transition.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
-            ('channels', 'wetland-channels-reeds.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
+            # an island of water and reeds with tapered ends: tiled as it is, a wedge of the dawn sky showed down to the
+            # lane between two copies (27 Nov 2026), so each copy's tapered end overlaps the next one's start
+            ('channels', 'wetland-channels-reeds.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'wrap': 170}),
             ('landmarks', 'willows-and-pile-dwellings.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'period': 2}),
             ('reflections', 'water-reflections.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
             ('grass-lane', 'foreground-grass-lane.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'stand': True}),
@@ -283,6 +294,12 @@ def build(key, composite=False):
         im = Image.open(src).convert('RGBA')
         cut_l, cut_r = touches_edge(im)   # decided on the master, before resizing
         im, x, y = place(im, box, fit)
+        if opt.get('rows'):   # only these view rows of the picture (a picture that lies at two depths, cut in two)
+            r0, r1 = opt['rows'][0], VIEW_H if opt['rows'][1] is None else opt['rows'][1]
+            keep, a, b = Image.new('RGBA', im.size), max(0, r0 - y), min(im.height, r1 - y)
+            if b > a:
+                keep.paste(im.crop((0, a, im.width, b)), (0, a))
+            im = keep
         if composite:
             comp.alpha_composite(im.crop((max(0, -x), max(0, -y), min(im.width, VIEW_W - x), min(im.height, VIEW_H - y))), (max(0, x), max(0, y)))
         im, x, y = trim(im, x, y, sides=not opt.get('tile'))
@@ -299,6 +316,11 @@ def build(key, composite=False):
             print(f'  {lid}: cut on both sides, mirrored and not padded')
         if period:
             im = padded(im, period)
+        if opt.get('wrap') and opt.get('tile'):   # the picture's last `wrap` px laid over its first: the copies overlap
+            ov = opt['wrap']
+            tile = im.crop((0, 0, im.width - ov, im.height))
+            tile.alpha_composite(im.crop((im.width - ov, 0, im.width, im.height)), (0, 0))
+            im = tile
         if opt.get('stand'):
             im = lane_below(im)
         opaque = im.getchannel('A').getextrema()[0] == 255
@@ -309,9 +331,9 @@ def build(key, composite=False):
         total += buf.tell()
         layers.append({'id': lid, 'order': order, 'file': rel, 'width': im.width, 'height': im.height, 'x': x, 'y': y,
                        'alpha': not opaque, 'tileX': bool(opt.get('tile')), 'role': 'foreground' if opt.get('front') else 'background',
-                       'source': str(src.relative_to(ROOT)), 'sourceSha1': sha1(src), 'previewBox': list(box), 'fit': fit,
+                       'source': src.relative_to(ROOT).as_posix(), 'sourceSha1': sha1(src), 'previewBox': list(box), 'fit': fit,
                        **({'mirrored': 'both sides' if cut_l and cut_r else 'left side' if cut_l else 'right side'} if mirror else {}), **({'period': period} if period else {}),
-                       **({'laneMirroredBelow': True} if opt.get('stand') else {})})
+                       **({'laneMirroredBelow': True} if opt.get('stand') else {}), **({'rows': list(opt['rows'])} if opt.get('rows') else {}), **({'wrap': opt['wrap']} if opt.get('wrap') else {})})
     man = {'pack': cfg['name'], 'version': '0.1.0', 'status': 'review',
            'approval': 'OPEN — Game Director review required (first runtime draft, 26 Nov 2026)',
            'canvas': {'width': VIEW_W, 'height': VIEW_H, 'aspectRatio': '16:9',
@@ -345,7 +367,7 @@ def check():
             print(f'{mp.relative_to(ROOT)}: missing'); bad += 1; continue
         man = json.loads(mp.read_text(encoding='utf-8'))
         for L in man['layers']:
-            if not (ROOT / L['file']).is_file() or sha1(ROOT / L['source']) != L['sourceSha1']:
+            if not (ROOT / L['file']).is_file() or sha1(ROOT / L['source'].replace('\\', '/')) != L['sourceSha1']:
                 print(f"{L['file']}: missing or older than {L['source']}"); bad += 1
     print('ok' if not bad else f'{bad} to rebuild: python3 tools/art_folk_parallax.py')
     sys.exit(1 if bad else 0)

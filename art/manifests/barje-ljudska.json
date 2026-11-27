@@ -22,7 +22,7 @@
       "alpha": false,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\barje-parallax\\layers\\sky.png",
+      "source": "docs/art-benchmarks/barje-parallax/layers/sky.png",
       "sourceSha1": "306396cb46111e527fb8c133c5609b504192cd75",
       "previewBox": [
         -15,
@@ -44,7 +44,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\barje-parallax\\layers\\clouds.png",
+      "source": "docs/art-benchmarks/barje-parallax/layers/clouds.png",
       "sourceSha1": "4e26e94cf0a995f7132bd44a7281c21beb82b763",
       "previewBox": [
         -15,
@@ -66,7 +66,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\barje-parallax\\layers\\distant-wetland-ridge.png",
+      "source": "docs/art-benchmarks/barje-parallax/layers/distant-wetland-ridge.png",
       "sourceSha1": "939724725c66653447e8aced2cabd63173da18a7",
       "previewBox": [
         -15,
@@ -88,7 +88,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\barje-parallax\\layers\\far-meadow-transition.png",
+      "source": "docs/art-benchmarks/barje-parallax/layers/far-meadow-transition.png",
       "sourceSha1": "96640ed50429679e3218c0f970deb6faaf09b6e4",
       "previewBox": [
         -15,
@@ -103,14 +103,14 @@
       "id": "channels",
       "order": 5,
       "file": "art/exports/environments/barje-ljudska/channels.webp",
-      "width": 1295,
+      "width": 1125,
       "height": 139,
       "x": -149,
       "y": 223,
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\barje-parallax\\layers\\wetland-channels-reeds.png",
+      "source": "docs/art-benchmarks/barje-parallax/layers/wetland-channels-reeds.png",
       "sourceSha1": "a6b83fc170cffb239fdd859e1380ad3f41a357a8",
       "previewBox": [
         -15,
@@ -118,7 +118,8 @@
         130,
         100
       ],
-      "fit": "fill"
+      "fit": "fill",
+      "wrap": 170
     },
     {
       "id": "landmarks",
@@ -131,7 +132,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\barje-parallax\\layers\\willows-and-pile-dwellings.png",
+      "source": "docs/art-benchmarks/barje-parallax/layers/willows-and-pile-dwellings.png",
       "sourceSha1": "dbc8884271da1ec7a7795caf323d0ec89b6f1193",
       "previewBox": [
         -15,
@@ -154,7 +155,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\barje-parallax\\layers\\water-reflections.png",
+      "source": "docs/art-benchmarks/barje-parallax/layers/water-reflections.png",
       "sourceSha1": "125304da466debea0c24f66ef5ccec9aa19de272",
       "previewBox": [
         -15,
@@ -175,7 +176,7 @@
       "alpha": true,
       "tileX": true,
       "role": "background",
-      "source": "docs\\art-benchmarks\\barje-parallax\\layers\\foreground-grass-lane.png",
+      "source": "docs/art-benchmarks/barje-parallax/layers/foreground-grass-lane.png",
       "sourceSha1": "b28069f70a41da76310b1e4d0296d3b7816750e5",
       "previewBox": [
         -15,
@@ -198,7 +199,7 @@
       "alpha": true,
       "tileX": true,
       "role": "foreground",
-      "source": "docs\\art-benchmarks\\barje-parallax\\layers\\near-foreground-sedges.png",
+      "source": "docs/art-benchmarks/barje-parallax/layers/near-foreground-sedges.png",
       "sourceSha1": "f2bdc6235a4ee980982d1830b0c45d2f6d9a9eb1",
       "previewBox": [
         -15,
