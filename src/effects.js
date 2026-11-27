@@ -83,6 +83,7 @@ const PX_ART = {
   all: ['.....y.....', '.y...y...y.', '..y..y..y..', '...yyyyy...', '...ywwwy...', 'yyyywWwyyyy', '...ywwwy...', '...yyyyy...', '..y..y..y..', '.y...y...y.', '.....y.....'],
   sword: ['....W....', '...WsS...', '...WsS...', '...WsS...', '...WsS...', '...WsS...', '...WsS...', '...WsS...', '.yyyyyyy.', '....n....', '....n....', '...yyy...'],
   shield: ['bbbbbbbbbbb', 'bcccccccccb', 'bcbbbbBbbbb', 'bcbbbbBbbbb', 'bcbbbbBbbbb', 'bcbbbbBbbbb', '.bbbbbBbbb.', '.bbbbbBbbb.', '..bbbbBbb..', '...bbbBb...', '....bbb....', '.....b.....'],
+  crown: ['.w...w...w.', '.y...y...y.', 'yyy.yyy.yyy', 'yyyyyyyyyyY', 'ywyyyryyywY', 'yyyyyyyyyyY', 'YYYYYYYYYYY'],   // a boss (Game Director, 27 Nov 2026: instead of the word Šef)
   banner: ['y.........', 'nyyyyyyyy.', 'nywwyyyyyY', 'nyyyyyyyyY', 'nyyyyyyyyY', 'nyyyyyyyY.', 'nyyy..yyY.', 'nyy....yY.', 'n.........', 'n.........', 'n.........', 'N.........'],
 };
 const PX_URL = {};

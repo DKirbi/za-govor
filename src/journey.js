@@ -226,6 +226,8 @@ const HERO_MEETS = 3;
 // A save from before keeps a party of four until a hero leaves it (src/save.js).
 const PARTY_MAX = 3;
 const HERO_HOME = { ptuj: 'kurent', peca: 'matjaz', triglav: 'ajda', gozd: 'krpan', piran: 'vida', predjama: 'erazem', barje: 'jurij', reka: 'klepec' };   // the legends of the places (README)
+// the boss's crown (pixel art, src/effects.js), floating over its head on the road and in battle
+const bossCrown = () => h('i', { class: 'crown', 'aria-label': 'Šef', role: 'img', style: { 'background-image': `url(${pxUrl('crown')})` } });
 function planHeroes() {
   const slots = WORLD.regions.map((r, i) => r.stops.includes('hero') ? i : -1).filter(i => i > 0);
   return [0, ...shuffle(slots).slice(0, HERO_MEETS - 1)].sort((a, b) => a - b);
@@ -391,8 +393,10 @@ function renderTravel() {
     if (stop.enemies) {
       if (stop.done) return;
       body = h('div', { class: 'tv-foes' }, stop.enemies.map((k, n) => { const e = ENEMIES[k], art = e.art || k;
-        return h('div', { class: 'actor foe spr' + (e.boss ? ' boss' : '') + (n === stop.strong ? ' strong' : ''), style: { '--art': Math.round(SPR_SIZE[art] * (e.scale || 1)) } }, h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[art]})`, filter: e.tint || '', 'animation-delay': (-n * 400) + 'ms' } })); }));
-      cap = stop.kind === 'boss' ? 'Šef' : stop.kind === 'elite' ? 'Zaseda' : 'Nasprotniki';
+        return h('div', { class: 'actor foe spr' + (e.boss ? ' boss' : '') + (n === stop.strong ? ' strong' : ''), style: { '--art': Math.round(SPR_SIZE[art] * (e.scale || 1)) } }, h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[art]})`, filter: e.tint || '', 'animation-delay': (-n * 400) + 'ms' } }),
+          e.boss ? bossCrown() : null); }));
+      // a boss: a crown hovers over it instead of a caption (Game Director, 27 Nov 2026: "the word Šef is not fitting")
+      cap = stop.kind === 'boss' ? null : stop.kind === 'elite' ? 'Zaseda' : 'Nasprotniki';
     } else if (stop.kind === 'chest') { body = objEl('skrinja', stop.done ? 1 : 0); cap = stop.done ? '' : 'Skrinja'; }
     else if (stop.kind === 'trap') { if (stop.done) return; body = objEl('plaz'); cap = 'Plaz'; }
     else if (stop.kind === 'darts') { body = objEl('puscice', stop.done ? 1 : 0); cap = stop.done ? '' : 'Konice'; }
@@ -535,7 +539,8 @@ function travelKey(e) {
 function stopBattle(stop) {
   const R = S.run, reg = WORLD.regions[R.ri], names = stop.enemies.map(k => ENEMIES[k].name).join(', ');
   const boss = stop.kind === 'boss';
-  go('battle', { id: reg.id, bg: reg.bg, title: reg.name, sub: (boss ? 'Šef · ' : 'Bitka · ') + names, stop,
+  go('battle', { id: reg.id, bg: reg.bg, title: reg.name, sub: 'Bitka · ' + names,   // a boss is shown by its crown, not the word Šef (27 Nov 2026)
+    stop,
     battle: { enemies: stop.enemies, strong: stop.strong != null ? stop.strong : -1, scale: regionScale(R.ri), finishers: shuffle(Object.keys(FINISHER_FX)).slice(0, 2), meterStart: 0,
       ambush: stop.kind === 'elite' ? 'zaseda' : null, escort: boss ? reg.escort || null : null, tips: R.firstBattle ? NODES[0].battle.tips : [] } });
 }

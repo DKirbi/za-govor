@@ -125,6 +125,11 @@ favour of it.
   `tests/parallax.test.js` measures floating slices and the passing trees; the "front layers never cover a foot" rules
   leave passing trees out.
 
+**A crown for the boss (Game Director, 27 Nov 2026, evening)**
+- "The word Šef is not fitting": a boss on the road has no caption any more, but a small pixel-art gold crown floats
+  over its head, bobbing gently (still with reduced motion). It wears it in battle too, until it falls, and the battle's
+  title says *Bitka* like any other. `tests/screens.test.js` checks it.
+
 **Kolo črk: the zagovor on a letter wheel (Game Director, 27 Nov 2026, evening)**
 - The zagovor's crossword in the Wordscapes style decided on 24 Nov: a wheel of 7 letters, the grid only shows
   progress, no clues. Drag over the letters and let go (or tap them and the last one again; type and Enter on a

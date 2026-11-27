@@ -61,6 +61,17 @@ run(async () => {
   check(ch.clue, 'Malček still gets the clue under it');
   await shot('screens-chest');
 
+  // a boss wears a floating crown on the road and in battle; no caption Šef (27 Nov 2026)
+  await ev(() => { const Z = window.__ZG; Z.newRun('krpan'); Z.setParty(['krpan', 'kresnik', 'matjaz']); const ri = Z.WORLD.regions.findIndex(r => r.id === 'reka'); Z.enterRegion(ri);
+    const R = Z.S.run, st = R.stops.find(s => s.kind === 'boss'); R.stops.forEach(s => { if (s !== st && s.x < st.x) s.passed = s.done = true; }); R.x = st.x - 1; Z.go('travel'); });
+  await sleep(500);
+  const road = await ev(() => ({ caps: [...document.querySelectorAll('.tv-obj .cap')].map(c => c.textContent), crowns: document.querySelectorAll('.tv-foes .actor.boss .crown').length }));
+  await ev(() => { const Z = window.__ZG; Z.stopBattle(Z.S.run.stops.find(s => s.kind === 'boss')); }); await sleep(500);
+  const fight = await ev(() => { const c = document.querySelector('.enemies .actor.boss .crown'), sp = c && c.parentElement.querySelector('.sp'); const a = c && c.getBoundingClientRect(), b = sp && sp.getBoundingClientRect();
+    return { crowns: document.querySelectorAll('.enemies .crown').length, above: !!(a && b && a.top < b.top + b.height * 0.3) }; });
+  check(road.crowns === 1 && !road.caps.includes('Šef') && fight.crowns === 1 && fight.above, 'a boss has a crown floating over its head on the road and in battle, and no caption Šef', JSON.stringify({ road, fight }));
+  await ev(() => { const Z = window.__ZG; Z.stopBattle && Z.B && (Z.B.over = true); Z.go('travel'); }); await sleep(200);
+
   // remedies (27 Nov 2026): the player picks one and the hero it heals, whenever not in a battle
   await ev(() => { const Z = window.__ZG; Z.S.run.bag = {}; Z.giveItem('zeliscni-caj'); Z.giveItem('arnikino-mazilo'); Z.S.heroes[1].hp = 5; Z.S.heroes[0].hp = Z.S.heroes[0].maxHp; Z.S.heroes[2].hp = Z.S.heroes[2].maxHp; Z.go('travel'); });
   await sleep(300);
