@@ -36,7 +36,7 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
-## 0.22.0 — 27 Nov 2026 · zaprta alfa · ten folk parallax backgrounds for review, measured on phones; the phone's tip behind a ? button; a clearer hero picker
+## 0.22.0 — 27 Nov 2026 · zaprta alfa · ten folk parallax backgrounds for review, measured on phones; the phone's tip behind a ? button; a clearer hero picker; phone review fixes
 
 Branch `review/folk-backgrounds`: PRs #40, #41, #43, #44 and #45 (Codex's four later parallax studies and their runtime
 packs) and #42 (0.21.0, below) in one pull request for the Game Director to confirm. Those six PRs are closed in
@@ -83,6 +83,32 @@ favour of it.
   the repository: the pose atlases, the 48 × 48 frames, the sheet and strip, the previews and the asset review.
   `art/manifests/martin-krpan.json` keeps only the mare-lift folk illustration and says where the pack is in Git
   history (`main` at 99c2d99). His painted skill cards are a separate pack and stay.
+
+**Phone review fixes (Game Director, 27 Nov 2026, afternoon)**
+- **Whose letters are whose:** a hero's letters in the mesh now take the colour of the hero's **place in the party**,
+  not the hero's own colour: **red, green and blue** (a violet fourth for practice battles and old saves of four).
+  Erazem and Kralj Matjaž were two reds and Kresnik a pale gold. A **diamond** of the same colour stands under each hero
+  in battle, beside the level; the word chips, the proposals' dots, *Junaki in barve*, the skill screen's dots and the
+  tutorial figures use it too. The colours stay clear of the mesh's own (the gold hint and šumnik dot, the mint path,
+  the teal flood). `SLOT_C` and `ownC` in `src/game.js`.
+- **Premor is a game menu:** a tall panel (about 85 % of a phone's height), everything centred, the buttons in one column
+  of equal width with *Nadaljuj* first, the sound settings at the foot.
+- **No slice floats over the lane:** on seven folk packs the sky and far hills showed between a slice (the forest, the
+  lake, the salt pans, the channels, edge trees) and the lane. The export tool grounds those slices (`floor`): the gap
+  under their paint is filled with their own floor colour down under the lane's edge. Measured over many scroll
+  positions in `tests/parallax.test.js` (from up to 96 % of columns to under 0.5 %).
+- **Triglav's floating spruces** are now near trees the party walks past: larger, blurred, their trunks below the frame,
+  in front of the party at 1.35; on the road only, never in battle, faded while the party stands at a stop.
+- **The locked chest** says one line, *Pred teboj se pojavi zakladna skrinja. Jo znaš odpreti?* (its rules are in its
+  *Kako se igra*); Malček's clue stays under it as *Namig: …*. The chest picture was squeezed narrow by the text beside
+  it and keeps its square shape now.
+- **Skill cards** (*Veščine*) have a full border in the hero's colour around the whole card, dashed while the skill is
+  not learned (it was a coloured left edge).
+- **The role tags** (*Napadalec*, *Zdravilec* …) show only in the chosen hero's details on *Kdo gre na pot?*, not on the
+  cards in the list or in *Dosežki in junaki*.
+- **New `tests/screens.test.js`** (12 checks): the three letter colours by place and far apart on the colour wheel, the
+  diamonds, Premor's column, the skill cards' borders and dots, the chest's line and shape. `tests/parallax.test.js`
+  measures floating slices and the passing trees; the "front layers never cover a foot" rules leave passing trees out.
 
 **Kdo gre na pot? and the hero's card (Game Director, 27 Nov 2026)**
 - **The hero picker** has no lead text any more. The chosen hero comes first, above the list, in one row on every

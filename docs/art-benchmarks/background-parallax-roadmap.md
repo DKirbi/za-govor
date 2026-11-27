@@ -10,6 +10,18 @@ unchanged: resized into one 996×560 view as Codex's composites place them, WebP
   0.82 → 1.1, Triglav spruces 0.72 → 1.1 and flowers 0.88 → 1.15); the Ljubljanica bridge 0.40 → 0.55 (over its river
   at 0.50) and its road 0.90 → 1.0; skies no faster than their clouds (Ptuj and Peca sky 0.08 → 0.02, Ljubljanica
   clouds 0.035 → 0.1); Bled's lake 0.62 → 0.36, so the island (0.36) and its reflection (0.34) stay on the water.
+- **No slice floats over the lane (Game Director, 27 Nov 2026, from a phone).** Where a slice's lowest paint ended
+  above the lane's top edge, the sky and the far hills showed under it, so the forest (and on Bled the lake, on Piran
+  the salt pans, on Barje the channels, on Trnovski gozd and Ljubljanski grad the edge trees) seemed to float. Measured
+  over many scroll positions, 14–96 % of the columns of seven packs had such a gap (up to 28 canvas px). The export
+  tool's new `floor` option grounds a slice: under its lowest paint, in the columns whose paint reaches its lower part,
+  the gap is filled with the slice's own floor colour down to 8 px under the lane's lowest top edge. Now under 0.5 % of
+  columns (`tests/parallax.test.js`, *no slice floats over the lane*). The masters are unchanged.
+- **Triglav's spruces are near trees the party walks past (Game Director, 27 Nov 2026).** Codex's edge trees were
+  lifted 40 % up the scene and slid at 1.1 over the forest with their trunks in mid-air. They are now 1.6 × as large,
+  blurred (out of focus, close to the eye, `blur` in the export tool), their trunks below the scene's bottom edge, at
+  1.35 in front of the party and the flowers (`passing`): only on the road, never in battle, and faded while the party
+  stands at a stop, so they cover the heroes only for a moment while they walk.
 - **The four later packs (27 Nov 2026, reviewed on phones by `tests/parallax-phone.test.js`; PROPOSED, for the Game
   Director to confirm).** The same rules: nothing drawn in front of a layer moves slower than it, and things that stand
   on one another move together, or one slides along the other while the party walks.
