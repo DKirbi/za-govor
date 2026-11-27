@@ -203,7 +203,7 @@ skills they know filled and the others outlined (a star for stopnja 2, two for s
 themselves, with what stopnja 2 and 3 add, are listed in *Veščine* at a well or a signpost (and in the
 codex in the menu). Tapping the hero plays the skills they know, one after another — a quiet extra that
 the game does not announce.
-*Dosežki in junaki* first lists the **achievements** (59 in six groups, bronze, silver and gold, with progress bars
+*Dosežki in junaki* first lists the **achievements** (60 in six groups, bronze, silver and gold, with progress bars
 and two secrets; only real journeys count) and the **story cards** a hero earns by being alive when Lintvern falls.
 A skill's **painted folk card** (Codex) is collected the first time the skill fires in a journey battle; on a hero's
 screen *Karte veščin* shows them, and a tapped card opens full screen. In battle a hero's skill shows its painting in

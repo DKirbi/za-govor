@@ -125,6 +125,13 @@ favour of it.
   `tests/parallax.test.js` measures floating slices and the passing trees; the "front layers never cover a foot" rules
   leave passing trees out.
 
+**Mojster veščine (Game Director, 27 Nov 2026, evening)**
+- A new silver achievement in *Druščina*: the first time a hero uses a skill at its highest stopnja (3) in a journey
+  battle, *Dosežek: Mojster veščine* pops up. Practice battles and test mode do not count, as for every achievement.
+  60 achievements now; its icon is listed in `docs/achievement-art-spec.md` for Codex.
+- The achievements stay the game's own (in `zg-dosezki`, the same on every platform). Google Play Games and Steam
+  achievements can mirror them later (`docs/achievements-design.md`); nothing Android-specific is needed for them.
+
 **Predjamski grad and Ljubljanica (Game Director, 27 Nov 2026, evening)**
 - **Predjama's cliff is part of a mountain:** the castle's cliff no longer stands alone on a meadow. A forested karst
   mountain moves and repeats with it: its summit always lies behind the cliff, its slopes run off both ways to a

@@ -97,6 +97,7 @@ Create one separate square image for every row below, including the three previe
 | Zbrana druščina | Fifteen small portrait beads forming one complete circle. |
 | Vsak ima svojo zgodbo | Nine footprints leading to one open story book. |
 | Bogovi na poti | Six god signs above one shared road of footprints. |
+| Mojster veščine | Three stars stacked above one raised hand or a skill card (added 27 Nov 2026: a skill used at its highest stopnja). |
 
 ### Final-battle story cards
 
@@ -135,7 +136,7 @@ For these 15 achievements, use a simplified emblem derived from the approved spe
 
 ### Stage 2 — full pack, only after approval
 
-> Re-read `docs/achievement-art-spec.md` and `docs/achievements-design.md`, then follow the approved preview direction. Create all 59 achievement icons in the complete icon subject list as independent transparent PNGs, including new individual production files for the three preview motifs. Use square hand-painted Slovenian folk-art emblems with a simple central silhouette, subtle worn pigment, dark walnut contours, a consistent small plaque frame, and a restrained tier-colored edge accent. Make each symbol distinct and legible at 24 × 24 px. Do not put achievement names or tier labels in the images. Do not create a contact sheet as the production source and do not crop final icons from a sheet. Preserve approved character story-card subjects; label proposed motifs in the manifest and do not introduce new folklore claims. Save full-quality sources under `art/source/achievements/`, 64 × 64 game exports under `art/exports/achievements/`, and a manifest under `art/manifests/achievements-icons.md`. Inspect each individual export at 64, 32 and 24 px, and report any motifs that still need art-direction review. Do not mark the pack APPROVED or IMPLEMENTED; the Game Director owns visual approval, and runtime wiring is a separate task.
+> Re-read `docs/achievement-art-spec.md` and `docs/achievements-design.md`, then follow the approved preview direction. Create all 60 achievement icons in the complete icon subject list as independent transparent PNGs, including new individual production files for the three preview motifs. Use square hand-painted Slovenian folk-art emblems with a simple central silhouette, subtle worn pigment, dark walnut contours, a consistent small plaque frame, and a restrained tier-colored edge accent. Make each symbol distinct and legible at 24 × 24 px. Do not put achievement names or tier labels in the images. Do not create a contact sheet as the production source and do not crop final icons from a sheet. Preserve approved character story-card subjects; label proposed motifs in the manifest and do not introduce new folklore claims. Save full-quality sources under `art/source/achievements/`, 64 × 64 game exports under `art/exports/achievements/`, and a manifest under `art/manifests/achievements-icons.md`. Inspect each individual export at 64, 32 and 24 px, and report any motifs that still need art-direction review. Do not mark the pack APPROVED or IMPLEMENTED; the Game Director owns visual approval, and runtime wiring is a separate task.
 
 ## Pack layout and manifest
 

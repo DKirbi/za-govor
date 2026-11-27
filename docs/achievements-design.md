@@ -84,6 +84,7 @@ For the “without a god” goal, a shrine encounter is different from a party g
 | **Zbrana druščina** | Unlock all 15 playable heroes and gods. | Gold |
 | **Vsak ima svojo zgodbo** | Use each of the nine folk heroes in at least one completed journey. | Gold |
 | **Bogovi na poti** | Complete a journey with each of the six gods in the party. | Gold |
+| **Mojster veščine** | Use a skill at its highest stopnja (3) in a journey battle (Game Director, 27 Nov 2026). | Silver |
 
 ## Final-battle story cards
 
