@@ -295,6 +295,13 @@ function renderSettings() {
     crumb(),
     pageH1('Nastavitve'),
     h('section', {}, h('h2', {}, 'Zvok'), soundControls()),
+    // Kolo črk (src/wheel.js): the zagovor's crossword on a letter wheel or typed; PROPOSED default: the wheel on a phone
+    h('section', {}, h('h2', { id: 'set-kolo' }, 'Križanka zagovora'),
+      h('div', { role: 'radiogroup', 'aria-labelledby': 'set-kolo' },
+        ...[['kolo', 'Kolo črk', 'Besede sestavljaš z vlečenjem po črkah na kolesu, brez opisov. Manj besed na kolesu, težja uganka.'],
+          ['klasika', 'Klasična križanka', S.mobile ? 'Opisi besed, odgovore tipkaš s tipkovnico igre.' : 'Opisi besed, odgovore tipkaš.']].map(([v, label, hint]) =>
+          h('label', { class: 'toggle' }, h('input', { type: 'radio', name: 'set-kolo', class: 'set-kolo', value: v, checked: wheelOn() === (v === 'kolo'), onchange: () => setWheelPref(v) }),
+            h('span', {}, label, h('small', {}, hint)))))),
     statsSection(),
     h('section', {}, h('div', { class: 'devbox' }, h('span', { class: 'devtag' }, 'Razvoj'),
       h('h2', {}, 'Kakovost slik'),

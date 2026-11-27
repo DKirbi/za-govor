@@ -28,6 +28,7 @@
     "test:achievements": "node tests/achievements.test.js",
     "test:picker": "node tests/picker.test.js",
     "test:screens": "node tests/screens.test.js",
+    "test:wheel": "node tests/wheel.test.js",
     "screenshots": "node tools/readme-shots.js",
     "android:sync": "python3 build.py && cap sync android",
     "android:open": "cap open android",

@@ -1482,3 +1482,30 @@ body.mobile .report .rp-send .btn, body.mobile .report .rp-close { min-height: 4
 .cardview .cv-hint { position: absolute; bottom: 12px; font-size: 11px; color: var(--dim); }
 .gpaint { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
 .gpaint figure { margin: 0; display: grid; gap: 6px; font-size: 12px; color: var(--dim); }
+
+/* Kolo črk: the zagovor's crossword on a letter wheel (src/wheel.js) */
+.wbody { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.wgridwrap { max-width: 100%; overflow-x: auto; }
+.wgrid .cell { cursor: default; }
+.cell.given { background: #efe4c8; color: #6d5a3c; }
+.cell.rev { background: #f2d9a8; color: #8a5a18; }
+.cell.main:not(.ok) { box-shadow: inset 0 0 0 2px var(--gold); }
+.cell.flash { animation: cwflash .7s; }
+@keyframes cwflash { 0% { transform: scale(1.18); } 100% { transform: scale(1); } }
+.wword { min-height: 30px; font-size: 22px; font-weight: 800; letter-spacing: .08em; color: var(--gold); text-align: center; }
+.wword.said { font-size: 16px; letter-spacing: 0; }
+.wword.said.ok { color: var(--good); }
+.wword.said.warn { color: var(--dim); }
+.wword.said.bad { color: #f08a7a; animation: shake .3s; }
+.wheel { position: relative; width: min(250px, 66vw); aspect-ratio: 1; border-radius: 50%; touch-action: none; user-select: none; -webkit-user-select: none;
+  background: radial-gradient(circle at 50% 45%, #2a2c36, #1a1b22 70%); border: 2px solid #3a3320; box-shadow: inset 0 0 0 6px #14151a, 0 6px 18px #0006; }
+.wheel .wlines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.wheel .wl { position: absolute; width: 21%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; display: grid; place-items: center;
+  font-size: clamp(18px, 6.4vw, 26px); font-weight: 800; color: var(--paper-ink); background: var(--paper); box-shadow: 0 2px 0 #b9a47e; pointer-events: none; }
+.wheel .wl.on { background: var(--gold); color: #2a1d08; box-shadow: 0 0 0 3px #f6d36a55; }
+.wheel .wshuffle { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 22%; aspect-ratio: 1; border-radius: 50%;
+  border: 1px solid var(--line); background: #22232b; color: var(--dim); font-size: 22px; cursor: pointer; }
+.wheel.mini { width: 150px; pointer-events: none; }
+.wheel.mini .wl { font-size: 17px; }
+.wtools { display: flex; gap: 12px; align-items: center; justify-content: center; min-height: 32px; }
+body.mobile .wgrid { --cell: 28px; }

@@ -80,6 +80,7 @@ run(async () => {
     check(mid.words === 3 && mid.red && end === 0, 'a string that is not a word plays nothing: it flashes red and clears itself', JSON.stringify({ mid, end }));
   }
 
+  await page.evaluate(() => window.__ZG.setWheelPref('klasika'));   // the typed crossword here; Kolo črk, the phone's default, has tests/wheel.test.js
   // 2. Crossword: wrong letters stay black and do nothing; a correct entry turns green and fires
   // full health and no Kresnik burn ticking from the first word, so only the crossword can do damage
   await page.evaluate(() => { const B = window.__ZG.B; B.meter = 30; B.enemies.forEach(e => { e.hp = e.maxHp; e.burn = null; e.burnTurns = 0; }); });

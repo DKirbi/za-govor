@@ -10,6 +10,7 @@ run(async () => {
   await page.evaluate(() => window.__ZG.go('battle', window.__ZG.NODES[2])); await sleep(600);
   await page.evaluate(() => { window.__ZG.B.enemies.forEach(e => { e.hp = e.maxHp = 400; }); });
 
+  await page.evaluate(() => window.__ZG.setWheelPref('klasika'));   // the typed crossword (a phone's default is Kolo črk, tests/wheel.test.js)
   // open Perun's finisher until it comes up in the keyword-column style
   const style = await page.evaluate(() => {
     const Z = window.__ZG;

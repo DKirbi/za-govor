@@ -1453,7 +1453,7 @@ function renderSide() {
   const full = B.meter >= METER_MAX;
   UI.side.innerHTML = '';
   if (S.mobile) {
-    if (B.cw) { UI.side.append(cwKeyboard()); return; }   // the in-game Slovene keyboard (src/mobile.js)
+    if (B.cw) { if (!isWheel()) UI.side.append(cwKeyboard()); return; }   // the in-game Slovene keyboard (src/mobile.js); the wheel needs none
     UI.side.append(
       h('div', { class: 'actionbar2' },
         h('button', { class: 'btn zgbtn' + (full ? ' primary' : ''), disabled: !full, onclick: openFinisher },
@@ -1766,7 +1766,7 @@ function renderWord() {
   if (!UI.word) return;
   UI.word.innerHTML = ''; UI.chips.innerHTML = '';
   if (B.cw) {
-    UI.word.className = 'word'; UI.word.append(h('span', { class: 'ph' }, S.mobile ? 'Križanka je odprta — tipkaj s tipkami spodaj.' : 'Križanka je odprta — tipkaj v polja.'));
+    UI.word.className = 'word'; UI.word.append(h('span', { class: 'ph' }, isWheel() ? 'Zagovor: sestavljaj besede na kolesu črk.' : S.mobile ? 'Križanka je odprta — tipkaj s tipkami spodaj.' : 'Križanka je odprta — tipkaj v polja.'));
     if (UI.send) UI.send.style.visibility = 'hidden';
     if (UI.clr) UI.clr.style.visibility = 'hidden';
     renderProposals(); return;
@@ -2673,7 +2673,8 @@ function openFinisher() {
   openCrossword('finisher', id);
 }
 function openCrossword(kind, id, opts = {}) {
-  const D = makeCrossword(kind, id);
+  // the zagovor on a letter wheel where the device or Nastavitve says so (src/wheel.js); the typed crossword otherwise
+  const D = (kind === 'finisher' && wheelOn() && makeWheel(id)) || makeCrossword(kind, id);
   const cells = new Map();
   D.entries.forEach((e, k) => {
     for (let p = 0; p < e.answer.length; p++) {
@@ -2688,12 +2689,13 @@ function openCrossword(kind, id, opts = {}) {
   B.cw = { kind, id, D, cells, fill: new Map(), solved: new Set(), locked: new Set(), cur: { e: 0, p: 0 },
     timer: timerMax, timerMax, enemy: opts.enemy || null, flash: new Set(), focused: false,
     reveals: LV().reveals, revealed: new Set() };
+  if (D.style === 'wheel') wheelSetup(B.cw);
   clearWord();
   renderPuzzle(); renderWord();
   // Opened by a tap or key press, this also opens the phone keyboard; opened by an enemy, the player taps the grid.
   focusCwInput();
   if (S.mobile) UI.puzzle.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  fitSoon(); showTut(kind);
+  fitSoon(); showTut(D.style === 'wheel' ? 'kolo' : kind);
 }
 const cellKey = (e, p) => (e.row + (e.dir === 'D' ? p : 0)) + ',' + (e.col + (e.dir === 'A' ? p : 0));
 // Pressing a clue, a cell or a banner button must not blur the input first: the blur redraws the banner,
@@ -2706,6 +2708,7 @@ function focusCwInput() { const C = B && B.cw; if (C && C.input) { try { C.input
 
 // Built once per crossword; typing only repaints (so the input keeps focus and the phone keyboard stays open)
 function renderCrossword() {
+  if (isWheel()) { renderWheel(); return; }   // Kolo črk (src/wheel.js)
   const C = B.cw, D = C.D;
   const label = { finisher: 'Zagovor', lock: 'Zaklepanje', ambush: 'Zaseda' }[C.kind];
   const G = D.style === 'geslo';
@@ -2763,6 +2766,7 @@ function renderCrossword() {
   cwPaint();
 }
 function cwPaint() {
+  if (isWheel()) { wheelPaint(); return; }
   const C = B && B.cw; if (!C || !C.cellEls) return;
   const curE = C.D.entries[C.cur.e], curKey = cellKey(curE, C.cur.p);
   for (const [key, el] of C.cellEls) {
@@ -3093,6 +3097,7 @@ function battleKey(e) {
   if (B.paused || B.over) return;
   if (k === 'Delete') { e.preventDefault(); if (!B.cw) clearWord(); return; }
   if (B.cw) {
+    if (isWheel()) { wheelKey(e); return; }
     if (k === 'Tab') { e.preventDefault(); cwNext(e.shiftKey ? -1 : 1); return; }
     if (k === 'Enter') { e.preventDefault(); cwNext(); return; }
     if (k === 'Backspace') { e.preventDefault(); cwBackspace(); return; }
@@ -3402,6 +3407,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { ACH, get ACHP() { return ACHP; }, ACH_WORDS, achReset, achCheck, achProgress, cardPainting, hasSkillCard, openSkillCard, achSkillFired, achSkillRank, waitingPrayer, migratePrayers, get PARTY_MAX() { return PARTY_MAX; }, FOE_SLOTS, stepIn, statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, noteSupport, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), openShop, openBag, SHOP_MAX, BATTLE_GOLD, CHEST_GOLD, noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, godWaits, godArrives, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, PLAYSTYLE, ROLES, ownC, SLOT_C, skillPanel, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { ACH, get ACHP() { return ACHP; }, ACH_WORDS, achReset, achCheck, achProgress, cardPainting, hasSkillCard, openSkillCard, achSkillFired, achSkillRank, makeWheel, wheelOn, setWheelPref, WHEEL_LV, wheelSubmit, wheelReveal, wheelShuffle, waitingPrayer, migratePrayers, get PARTY_MAX() { return PARTY_MAX; }, FOE_SLOTS, stepIn, statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, noteSupport, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), openShop, openBag, SHOP_MAX, BATTLE_GOLD, CHEST_GOLD, noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, godWaits, godArrives, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, PLAYSTYLE, ROLES, ownC, SLOT_C, skillPanel, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 

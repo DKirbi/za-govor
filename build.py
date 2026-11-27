@@ -18,6 +18,7 @@ Inputs:  src/index.src.html (template), src/game.css + src/title.css,
            src/shrines.js (svetišča izziva: prayers, the gods' gifts, the gods as challengers),
            src/save.js (the journey saved at checkpoints by Znanje, Izhod),
            src/achievements.js (achievements, story cards and skill cards: the profile zg-dosezki, data/achievements.json),
+           src/wheel.js (Kolo črk: the zagovor's crossword on a letter wheel),
            src/art-title.js + src/title.js (the "Za govor!" title scene, art from tools/art_title.py),
          data/lexicon.bin (word list from tools/build_lexicon.py, inlined as base64),
          data/clues.json (crossword clue bank), data/world.json (regions and items of the journey),
@@ -197,7 +198,7 @@ for name, text in data.items():
 
 js = read('src/game.js')
 for mark, rels in (('/*__LEXICON__*/', ['src/lexicon.js']), ('/*__ART_EXTRA__*/', ['src/art-extra.js', 'src/art-title.js']),
-                   ('/*__JOURNEY__*/', ['src/journey.js', 'src/backgrounds.js', 'src/playtest.js', 'src/mobile.js', 'src/credits.js', 'src/report.js', 'src/stats.js', 'src/menu.js', 'src/effects.js', 'src/progression.js', 'src/skills.js', 'src/shrines.js', 'src/save.js', 'src/achievements.js', 'src/title.js'])):
+                   ('/*__JOURNEY__*/', ['src/journey.js', 'src/backgrounds.js', 'src/playtest.js', 'src/mobile.js', 'src/credits.js', 'src/report.js', 'src/stats.js', 'src/menu.js', 'src/effects.js', 'src/progression.js', 'src/skills.js', 'src/shrines.js', 'src/save.js', 'src/achievements.js', 'src/wheel.js', 'src/title.js'])):
     assert js.count(mark) == 1, f'{mark} must appear exactly once in src/game.js'
     js = js.replace(mark, ''.join(read(rel) for rel in rels))
 
