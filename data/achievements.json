@@ -593,6 +593,17 @@
    "icon": null
   },
   {
+   "id": "mojster-vescine",
+   "title": "Mojster veščine",
+   "text": "V bitki na poti uporabi veščino na tretji, najvišji stopnji.",
+   "group": "Druščina",
+   "tier": "srebrna",
+   "rule": {
+    "event": "skillTop"
+   },
+   "icon": null
+  },
+  {
    "id": "karta-krpan",
    "title": "Krpan premaga Brdavsa",
    "text": "Ko pade Lintvern, je Martin Krpan živ v družini.",

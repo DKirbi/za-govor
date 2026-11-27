@@ -26,8 +26,8 @@ run(async () => {
   const cat = await ev(() => { const A = window.__ZG.ACH.achievements;
     return { n: A.length, groups: [...new Set(A.map(a => a.group))], story: A.filter(a => a.group === 'Zgodbe').length, hidden: A.filter(a => a.hidden).map(a => a.id),
       typed: A.every(a => a.rule && (a.rule.count || a.rule.set || a.rule.event)), tiers: [...new Set(A.map(a => a.tier))], party: A.find(a => a.id === 'druzina-ostane-skupaj').text }; });
-  check(cat.n === 59 && cat.story === 15 && cat.hidden.join() === 'zlatorogova-zapuscina,zadnja-beseda' && cat.typed && cat.tiers.join() === 'bronasta,srebrna,zlata',
-    'data/achievements.json: 59 achievements with typed rules (15 story cards, two hidden), bronasta, srebrna, zlata', JSON.stringify(cat));
+  check(cat.n === 60 && cat.story === 15 && cat.hidden.join() === 'zlatorogova-zapuscina,zadnja-beseda' && cat.typed && cat.tiers.join() === 'bronasta,srebrna,zlata',
+    'data/achievements.json: 60 achievements with typed rules (15 story cards, two hidden), bronasta, srebrna, zlata', JSON.stringify(cat));
   check(/trije/.test(cat.party), 'Družina ostane skupaj asks for the party of three', cat.party);
 
   // ---------------------------------------------------------------- test mode and practice battles do not count
@@ -74,12 +74,17 @@ run(async () => {
   check(p3.counters.words === p2.counters.words && p3.unlocked['prva-zmaga'] && Object.keys(p3.cards.skill).length === Object.keys(p2.cards.skill).length,
     'the profile survives a reload and a new journey', JSON.stringify({ before: p2.counters.words, after: p3.counters.words }));
 
+  // Mojster veščine (Game Director, 27 Nov 2026): a skill used at its highest stopnja in a journey battle, not before
+  const rankWord = async sk => { await ev(sk => { window.__ZG.S.heroes[0].sk = sk; }, sk); await battle(false); await sleep(300); const w = await playWord(); await sleep(500);
+    const P = await prof(); await ev(() => window.__ZG.stopBattle && window.__ZG.B && (window.__ZG.B.over = true)); return { w, got: !!P.unlocked['mojster-vescine'] }; };
+  const r2 = await rankWord([2, 0, 0]), r3 = await rankWord([3, 0, 0]);
+  check(!r2.got && r3.got, 'Mojster veščine: a skill fired at stopnja 2 earns nothing, at stopnja 3 it is unlocked', JSON.stringify({ r2, r3 }));
   await ev(() => window.__ZG.go('heroes')); await sleep(300);
   const pg = await ev(() => { const q = s => [...document.querySelectorAll(s)];
     return { groups: q('.achs .achgroup h3').map(h => h.firstChild.textContent), got: q('.ach.got').length, bars: q('.ach .ach-bar').length,
       secret: q('.ach.secret b').slice(0, 1).map(b => b.firstChild.textContent), tier: (document.querySelector('.ach.got .ach-tier') || {}).textContent,
       lockedStory: q('.storycards .ach.secret').length, count: document.querySelector('.achs h2 .tag').textContent }; });
-  check(pg.groups.join() === 'Besede,Pošasti,Pot,Druščina,Skrivnost,Karte zgodb' && pg.got >= 2 && pg.bars > 10 && pg.secret[0] === '???' && pg.tier === 'bronasta' && pg.lockedStory >= 10 && /^\d+ od 59$/.test(pg.count),
+  check(pg.groups.join() === 'Besede,Pošasti,Pot,Druščina,Skrivnost,Karte zgodb' && pg.got >= 2 && pg.bars > 10 && pg.secret[0] === '???' && pg.tier === 'bronasta' && pg.lockedStory >= 10 && /^\d+ od 60$/.test(pg.count),
     'Dosežki in junaki: groups, tier tags, progress bars, ??? for secrets and for the cards of heroes not met', JSON.stringify(pg));
 
   // ---------------------------------------------------------------- the hero screen: bio ↔ skill cards, a card full screen

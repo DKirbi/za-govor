@@ -64,6 +64,7 @@ function achEventMet(r, ev, x) {
     case 'kill': return (!r.wordMin || (x.word && ACH_LEN(x.word) >= r.wordMin)) && (!r.domain || x.domain) && (!r.foe || x.foe === r.foe) && (!r.noRepeat || x.noRepeat);
     case 'battleWon': return (!r.boss || x.boss) && (!r.noneFell || !x.fell) && (!r.noDamage || !x.hurt) && (!r.revived || x.revived);
     case 'regionLeft': case 'regionEntered': return x.region === r.region;
+    case 'skillTop': return true;
     case 'journeyWon': {
       const full = x.alive.length >= (ACH.fullParty || 3) && x.alive.length === x.party.length;
       return (!r.noWithdraw || !x.withdrew) && (!r.partyAlive || full) && (!r.solo || x.solo) && (!r.noGod || x.noGod)
@@ -168,6 +169,8 @@ function achSkillFired(id, tier) {
   const ch = CHARS.find(c => c.id === id);
   achToast(`Nova karta: ${ch.moves[tier - 1]} (${ch.name})`);
 }
+// a skill fired at its highest stopnja in a journey battle: Mojster veščine (Game Director, 27 Nov 2026)
+function achSkillRank(id, tier, rank) { if (achOn() && rank >= MAX_RANK) achCheck('skillTop', { hero: id, tier }); }
 
 // ---------------------------------------------------------------- the page: Dosežki in junaki
 function achSection() {
