@@ -186,6 +186,36 @@
       ],
       "fit": "fill",
       "mirrored": "left side"
+    },
+    {
+      "id": "passing-trees",
+      "order": 9,
+      "file": "art/exports/environments/gozd-ljudska/passing-trees.webp",
+      "width": 2490,
+      "height": 464,
+      "x": -15,
+      "y": 146,
+      "alpha": true,
+      "tileX": true,
+      "role": "foreground",
+      "source": "docs/art-benchmarks/triglav-parallax/layers/foreground-spruces.png",
+      "sourceSha1": "4715d3c1b2fafa4b86ef3853c444d8e9d117e6f9",
+      "previewBox": [
+        0,
+        -39.5,
+        160,
+        160
+      ],
+      "fit": "fill",
+      "period": 2.5,
+      "blur": 5,
+      "flip": true,
+      "study": "triglav",
+      "tint": [
+        0.5,
+        0.6,
+        0.8
+      ]
     }
   ]
 }

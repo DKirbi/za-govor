@@ -34,6 +34,9 @@ QUALITY = 80
 LANE_EXT = 0.35   # how far below itself the lane's mirror image reaches, in view heights (the most a lane rises in battle)
 FLOOR_REACH = 8   # how far a grounded slice (`floor`) reaches under the lowest top edge of the lane, in view px
 OPAQUE = 160      # alpha from which a pixel counts as paint for `floor`
+BASE_BAND = 26    # `floor`: how many rows of the slice's own paint its base continues, mirrored, in view px
+BASE_SHADE = (0.92, 0.8)   # `floor`: the base's shade right under the paint, and BASE_FADE px further down
+BASE_FADE = 36
 
 # Per region, back to front: layer id, study file, preview box (left, top, width, height in % of the 16:9 scene;
 # height None = auto, from the picture's own shape), fit, and options:
@@ -49,11 +52,14 @@ OPAQUE = 160      # alpha from which a pixel counts as paint for `floor`
 #   rows: (top, bottom) only these view rows of the picture (bottom None = to the end), for a picture that lies at two
 #         depths and is cut in two (the same file, two layers);
 #   blur: a near layer out of focus: blurred by this radius in view px (premultiplied, so no dark fringe);
+#   flip: the picture mirrored left to right (a borrowed or repeated picture that should not look the same);
+#   tint: (r, g, b) multipliers grading a borrowed picture to the region's light (moonlight, sunset);
+#   study: take the picture from another study (passing trees borrowed from a region with the same woods);
 #   floor: the slice stands on the ground (Game Director, 27 Nov 2026: slices floated over the lane with the sky showing
 #          under them). In every column whose lowest paint lies in the lower `floor` share of the slice's painted height,
-#          the gap under that paint is filled with the slice's floor colour (the median of its paint in its lowest
-#          rows), down to FLOOR_REACH view px below the lowest top edge of the walking lane. The slice then overlaps the
-#          lane in every column at any scroll position, as slices overlap in Codex's own composite.
+#          a base is painted under that paint, continuing the slice's own painting (`grounded`), down to FLOOR_REACH
+#          view px below the lowest top edge of the walking lane. The slice then overlaps the lane in every column at any
+#          scroll position, as slices overlap in Codex's own composite.
 # Boxes reproduce Codex's layered-composite-preview.png: full-scene cutouts at 1:1 (100 %), other canvases at the box
 # of preview.html (whose wider boxes for full-scene layers only make room for its pan). Speeds: data/backgrounds.json.
 STUDIES = {
@@ -68,6 +74,10 @@ STUDIES = {
             ('framing-trees', 'framing-trees.png', (0, 0, 100, 100), 'fill', {'tile': True, 'floor': 0.25}),
             ('grass-lane', 'foreground-grass-lane.png', (0, 0, 100, 100), 'fill', {'tile': True, 'stand': True}),
             ('near-rocks-grass', 'near-foreground-rocks-grass.png', (0, 0, 100, 100), 'fill', {'tile': True, 'front': True}),
+            # passing trees, as on Triglav (Game Director, 27 Nov 2026: woods get passing trees). The forest's own edge
+            # trees are cut by the picture's sides (mirrored into a double tree, never padded, always on screen), so
+            # Triglav's whole fir clumps stand in, mirrored and graded to the moonlight, until Codex paints some
+            ('passing-trees', 'foreground-spruces.png', (0, -39.5, 160, 160), 'fill', {'tile': True, 'period': 2.5, 'front': True, 'blur': 5, 'flip': True, 'study': 'triglav', 'tint': (0.5, 0.6, 0.8)}),
         ],
     },
     'ptuj': {
@@ -95,6 +105,9 @@ STUDIES = {
             ('cave-rock', 'cave-rock.png', (36.5, 29.8, 63.5, 44.6), 'fill', {'tile': True, 'period': 3}),
             ('ground', 'foreground-ground.png', (-35, 31, 170, 80), 'fill', {'tile': True, 'stand': True}),
             ('oak', 'foreground-oak.png', (0, 0, 77.8, 69.1), 'fill', {'tile': True, 'period': 2.5}),
+            # passing trees, the same near trees as Triglav's (Game Director, 27 Nov 2026: woods get passing trees): Peca's autumn forest has the same spruces and larches as Triglav, so Triglav's
+            # near trees, mirrored, stand in for Peca's own until Codex paints some
+            ('passing-trees', 'foreground-spruces.png', (0, -39.5, 160, 160), 'fill', {'tile': True, 'period': 2.5, 'front': True, 'blur': 5, 'flip': True, 'study': 'triglav'}),
         ],
     },
     'triglav': {
@@ -201,6 +214,9 @@ STUDIES = {
             ('near-foreground-tree-frame', 'near-foreground-tree-frame.png', (0, 0, 100, 100), 'fill', {'tile': True, 'period': 2.5, 'floor': 0.25}),
             ('foreground-grass-lane', 'foreground-grass-lane.png', (0, 0, 100, 100), 'fill', {'tile': True, 'stand': True}),
             ('near-foreground-flowers', 'near-foreground-flowers.png', (0, 0, 100, 100), 'fill', {'tile': True, 'front': True}),
+            # passing trees, as on Triglav (Game Director, 27 Nov 2026): the park's oaks are cut by the picture's sides,
+            # so Triglav's whole tree clumps stand in, graded to the sunset, until Codex paints some
+            ('passing-trees', 'foreground-spruces.png', (0, -39.5, 160, 160), 'fill', {'tile': True, 'period': 2.5, 'front': True, 'blur': 5, 'study': 'triglav', 'tint': (1.0, 0.82, 0.72)}),
         ],
     },
 }
@@ -300,7 +316,12 @@ def lane_low_top(cfg):
 
 
 def grounded(im, x, y, share, reach):
-    """`floor`: the slice's gaps under its paint filled with its floor colour down to view row `reach` (see STUDIES)"""
+    """`floor`: a base painted under the slice, down to view row `reach` (see STUDIES). The base continues the slice's
+    own paint (Game Director, 27 Nov 2026: "paint proper bases"): its densest band of rows, mirrored downwards, so a
+    forest goes on as forest, water as water, reeds as reeds, and a wide hole in it (Triglav's forest has an arch)
+    holds the same paint as beside it, cloned; where a slice has no dense band (edge trees), each column's own lowest
+    paint mirrored, so a trunk goes on as a trunk. Shaded a little deeper the lower it lies, as the
+    ground under trees lies in their shade. Where neither has paint near, the slice's floor colour."""
     h = max(im.height, reach - y + 1)
     if h > im.height:
         big = Image.new('RGBA', (im.width, h)); big.paste(im, (0, 0)); im = big
@@ -314,15 +335,64 @@ def grounded(im, x, y, share, reach):
     sample = sorted((px[c, r][:3] for c in range(0, w, 2) for r in range(max(0, bottom - 14), bottom + 1) if a[c, r] > 200), key=sum)
     if not sample:
         return im
-    floor = sample[len(sample) // 2]
+    floor = sample[len(sample) // 2] + (255,)
     edge = bottom - share * (bottom - top)
+    cols = [c for c, b in enumerate(low) if b is not None and b >= edge]
+    # the densest band: the lowest row painted in at least 92 % of the grounded columns, with BASE_BAND rows above it
+    dense = next((r for r in range(bottom, top - 1, -1) if sum(a[c, r] > OPAQUE for c in cols) >= 0.92 * len(cols)), None)
+    if dense is not None and dense - BASE_BAND + 1 < top:
+        dense = None
+
+    def mirror(base, k, n):   # k rows under `base`, reflected back and forth through the n rows above it (no seam)
+        m = k % (2 * n)
+        return base - (m if m < n else 2 * n - 1 - m)
+
+    rows = {}
+
+    def cloned(r):   # row r with every hole in its paint filled with the paint beside it, cloned from the shadier side
+        if r not in rows:   # (the layer tiles, so the row wraps): a wide hole holds the same forest or water as beside it
+            row = [px[c, r] if a[c, r] > OPAQUE else None for c in range(w)]
+            start = next((c for c in range(w) if row[c] is not None), None)
+            if start is not None:
+                out, i = list(row), 0
+                while i < w:
+                    if row[(start + i) % w] is None:
+                        k = i
+                        while row[(start + k) % w] is None:
+                            k += 1
+                        m = 0   # the paint to the right of the hole, and to its left
+                        while m < w and row[(start + k + m) % w] is not None:
+                            m += 1
+                        lm = 0
+                        while lm < w and row[(start + i - 1 - lm) % w] is not None:
+                            lm += 1
+                        right = [row[(start + k + t % m) % w] for t in range(k - i)]
+                        left = [row[(start + i - lm + t % lm) % w] for t in range(k - i)]
+                        dark = lambda ps: sum(p[0] * 2 + p[1] * 3 + p[2] for p in ps)   # the shadier side: a base lies in shade
+                        for t, p in enumerate(right if dark(right) <= dark(left) else left):
+                            out[(start + i + t) % w] = p
+                        i = k
+                    else:
+                        i += 1
+                row = out
+            rows[r] = row if start is not None else None
+        return rows[r]
     under = Image.new('RGBA', im.size)
     u = under.load()
-    for c, b in enumerate(low):
-        if b is not None and b >= edge:
-            for r in range(b + 1, reach - y + 1):
-                u[c, r] = floor + (255,)
-    under.alpha_composite(im)   # the slice's own paint (and its soft edge) stays on top of the fill
+    for c in cols:
+        b = low[c]
+        n = min(BASE_BAND, b - top + 1)
+        for r in range(b + 1, reach - y + 1):
+            if dense is not None:   # the dense band, mirrored down; holes in it cloned from beside them
+                # (a hole above the band takes the band's rows too: the forest's dark base, not a crown at that height)
+                row = cloned(dense - (dense - r) % BASE_BAND if r <= dense else mirror(dense, r - dense - 1, BASE_BAND))
+                p = row[c] if row else floor
+            else:   # edge trees: the column's own paint, mirrored down (a trunk goes on as a trunk)
+                src = mirror(b, r - b - 1, n)
+                p = px[c, src] if a[c, src] > OPAQUE else ((cloned(src) or [floor] * w)[c])
+            f = BASE_SHADE[0] + (BASE_SHADE[1] - BASE_SHADE[0]) * min(1, (r - b) / BASE_FADE)
+            u[c, r] = (round(p[0] * f), round(p[1] * f), round(p[2] * f), 255)
+    under.alpha_composite(im)   # the slice's own paint (and its soft edge) stays on top of its base
     return under
 
 
@@ -340,8 +410,13 @@ def build(key, composite=False):
     out_dir.mkdir(parents=True, exist_ok=True)
     layers, total, comp = [], 0, Image.new('RGBA', (VIEW_W, VIEW_H), (0, 0, 0, 255))
     for order, (lid, f, box, fit, opt) in enumerate(cfg['layers'], 1):
-        src = master(cfg['study'], f)
+        src = master(opt.get('study', cfg['study']), f)
         im = Image.open(src).convert('RGBA')
+        if opt.get('flip'):
+            im = ImageOps.mirror(im)
+        if opt.get('tint'):   # graded to the region's light: each colour channel multiplied
+            r, g, b, al = im.split()
+            im = Image.merge('RGBA', [ch.point(lambda v, k=k: min(255, round(v * k))) for ch, k in zip((r, g, b), opt['tint'])] + [al])
         cut_l, cut_r = touches_edge(im)   # decided on the master, before resizing
         im, x, y = place(im, box, fit)
         if opt.get('rows'):   # only these view rows of the picture (a picture that lies at two depths, cut in two)
@@ -354,8 +429,6 @@ def build(key, composite=False):
             pad = opt['blur'] * 3
             big = Image.new('RGBA', (im.width + 2 * pad, im.height + 2 * pad)); big.paste(im, (pad, pad))
             im = big.convert('RGBa').filter(ImageFilter.GaussianBlur(opt['blur'])).convert('RGBA'); x -= pad; y -= pad
-        if opt.get('floor'):   # the slice stands on the ground: no sky under it above the lane
-            im = grounded(im, x, y, opt['floor'], lane_low_top(cfg) + FLOOR_REACH)
         if composite:
             comp.alpha_composite(im.crop((max(0, -x), max(0, -y), min(im.width, VIEW_W - x), min(im.height, VIEW_H - y))), (max(0, x), max(0, y)))
         im, x, y = trim(im, x, y, sides=not opt.get('tile'))
@@ -377,6 +450,8 @@ def build(key, composite=False):
             tile = im.crop((0, 0, im.width - ov, im.height))
             tile.alpha_composite(im.crop((im.width - ov, 0, im.width, im.height)), (0, 0))
             im = tile
+        if opt.get('floor'):   # the slice stands on the ground: a base under it, painted on the finished tile so that it
+            im = grounded(im, x, y, opt['floor'], lane_low_top(cfg) + FLOOR_REACH)   # wraps the way the tile repeats
         if opt.get('stand'):
             im = lane_below(im)
         opaque = im.getchannel('A').getextrema()[0] == 255
@@ -390,7 +465,9 @@ def build(key, composite=False):
                        'source': src.relative_to(ROOT).as_posix(), 'sourceSha1': sha1(src), 'previewBox': list(box), 'fit': fit,
                        **({'mirrored': 'both sides' if cut_l and cut_r else 'left side' if cut_l else 'right side'} if mirror else {}), **({'period': period} if period else {}),
                        **({'laneMirroredBelow': True} if opt.get('stand') else {}), **({'rows': list(opt['rows'])} if opt.get('rows') else {}), **({'wrap': opt['wrap']} if opt.get('wrap') else {}),
-                       **({'floor': opt['floor']} if opt.get('floor') else {}), **({'blur': opt['blur']} if opt.get('blur') else {})})
+                       **({'floor': opt['floor']} if opt.get('floor') else {}), **({'blur': opt['blur']} if opt.get('blur') else {}),
+                       **({'flip': True} if opt.get('flip') else {}), **({'study': opt['study']} if opt.get('study') else {}),
+                       **({'tint': list(opt['tint'])} if opt.get('tint') else {})})
     mp = ROOT / 'art/manifests' / f'{pack}.json'
     old = json.loads(mp.read_text(encoding='utf-8')) if mp.is_file() else {}
     man = {'pack': cfg['name'], 'version': '0.1.0', 'status': old.get('status', 'review'),

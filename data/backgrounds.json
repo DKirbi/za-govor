@@ -110,7 +110,7 @@
       }
     }
   },
-  "packsNote": "packs.<id>: manifest path; name (shown in Liki in karte → Ozadja); hideRoad (the pack brings its own ground, so the road strip of variant A is hidden); view {width, height} = the canvas the scene is fitted to, when the art's own canvas does not suit the scene; and per layer id: x, y, scale = where the layer is placed on that canvas (canvas pixels, for a manifest that leaves placement open); speed = how fast a tiling layer scrolls compared with the road while the party walks (1 = with the road); pan = how far a layer that does not tile moves across a region (1 = from the centre to its right edge); drift = steady sideways motion of a tiling layer in canvas pixels per second (negative = to the right), off under reduced motion. Layers that must stay together share their values. All are PROPOSED values tuned in the browser against where the game stands its actors (enemies' feet at 62–70 % of the scene height, heroes' at 75–87 %), not art specifications. Folk packs (tools/art_folk_parallax.py, 25 Nov 2026): x and y are written by the tool from Codex's composites; stand + riseOnly = a painted lane that rises to the actors' feet but never sinks below its place; below = a low front layer kept that many canvas pixels under the lowest feet; focusY (per pack) = which band a scene wider than the view shows (1 = its bottom, as before; less keeps more of the top and the landmark). passing = near trees the party walks past (Triglav's spruces, 27 Nov 2026): a front layer seen only on the road, hidden in battle and in the gallery, faded while the party stands at a stop.",
+  "packsNote": "packs.<id>: manifest path; name (shown in Liki in karte → Ozadja); hideRoad (the pack brings its own ground, so the road strip of variant A is hidden); view {width, height} = the canvas the scene is fitted to, when the art's own canvas does not suit the scene; and per layer id: x, y, scale = where the layer is placed on that canvas (canvas pixels, for a manifest that leaves placement open); speed = how fast a tiling layer scrolls compared with the road while the party walks (1 = with the road); pan = how far a layer that does not tile moves across a region (1 = from the centre to its right edge); drift = steady sideways motion of a tiling layer in canvas pixels per second (negative = to the right), off under reduced motion. Layers that must stay together share their values. All are PROPOSED values tuned in the browser against where the game stands its actors (enemies' feet at 62–70 % of the scene height, heroes' at 75–87 %), not art specifications. Folk packs (tools/art_folk_parallax.py, 25 Nov 2026): x and y are written by the tool from Codex's composites; stand + riseOnly = a painted lane that rises to the actors' feet but never sinks below its place; below = a low front layer kept that many canvas pixels under the lowest feet; focusY (per pack) = which band a scene wider than the view shows (1 = its bottom, as before; less keeps more of the top and the landmark). passing = near trees the party walks past (the wooded regions Triglav, Peca, Trnovski gozd and Ljubljanski grad, 27 Nov 2026): a front layer seen only on the road, hidden in battle and in the gallery, faded while the party stands at a stop.",
   "packs": {
     "ptuj": {
       "manifest": "art/manifests/ptuj.json",
@@ -421,6 +421,13 @@
           "x": -771,
           "y": 0,
           "speed": 1.1
+        },
+        "passing-trees": {
+          "x": -15,
+          "y": 146,
+          "speed": 1.35,
+          "front": true,
+          "passing": true
         }
       }
     },
@@ -602,6 +609,13 @@
           "speed": 1.25,
           "front": true,
           "below": 4
+        },
+        "passing-trees": {
+          "x": -15,
+          "y": 146,
+          "speed": 1.35,
+          "front": true,
+          "passing": true
         }
       }
     },
@@ -709,6 +723,13 @@
           "speed": 1.22,
           "front": true,
           "below": 4
+        },
+        "passing-trees": {
+          "x": -15,
+          "y": 146,
+          "speed": 1.35,
+          "front": true,
+          "passing": true
         }
       }
     },
