@@ -634,7 +634,10 @@ function renderEnding() {
       h('div', { class: 'pchips' }, long.map(w => h('span', { class: 'pchip w' }, UP(w), h('small', {}, ` ${[...w].length}`))))) : null,
     h('p', { class: 'thanks' }, 'Hvala, ker si prehodil pot do konca.'),
     inspiredLine(),
-    h('div', { class: 'row', style: { 'justify-content': 'flex-start' } }, h('button', { class: 'btn primary', onclick: leaveEnding }, 'Nova pot ', h('kbd', {}, 'Enter')))));
+    // below everything, centred, one under the other, like a game's last screen (Game Director, 27 Nov 2026)
+    h('div', { class: 'endbtns' },
+      h('button', { class: 'btn primary', onclick: () => leaveEnding('newrun') }, 'Nova pot', S.mobile ? null : [' ', h('kbd', {}, 'Enter')]),
+      h('button', { class: 'btn', onclick: () => leaveEnding('title') }, 'Nazaj na meni', S.mobile ? null : [' ', h('kbd', {}, 'Esc')]))));
   sfx('win');
 }
 

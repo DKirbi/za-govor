@@ -3373,7 +3373,7 @@ document.addEventListener('keydown', e => {
   if (S.screen === 'pick') { pickKey(e); return; }
   if (S.screen === 'train') { if (e.key === 'Escape') { e.preventDefault(); S.trainArg.back(); } return; }
   if (S.screen === 'travel') { travelKey(e); return; }
-  if (S.screen === 'ending') { if (e.key === 'Enter') { e.preventDefault(); leaveEnding(); } return; }
+  if (S.screen === 'ending') { if (e.key === 'Enter' && !(e.target && e.target.closest && e.target.closest('button'))) { e.preventDefault(); leaveEnding('newrun'); } else if (e.key === 'Escape') { e.preventDefault(); leaveEnding('title'); } return; }
   if (S.screen === 'shrine') { shrineKey(e); return; }
   if ((S.screen === 'godcome' || S.screen === 'godword') && e.key === 'Enter') { e.preventDefault(); const A = S.godArg; if (A) (A.go || A.next)(); return; }
   if (S.screen === 'result') { if (e.key === 'Enter') { e.preventDefault(); const w = !!(B && B.won); S.resultEl.remove(); afterResult(w); } return; }

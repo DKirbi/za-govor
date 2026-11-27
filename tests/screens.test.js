@@ -105,6 +105,12 @@ run(async () => {
   const info = await ev(() => ({ chips: [...document.querySelectorAll('.endinfo .pchip')].map(c => c.textContent), hits: [...document.querySelectorAll('.endhits li')].map(l => l.textContent) }));
   check(info.chips[0].includes('★★') && /še ne zna/.test(info.chips[2]) && info.hits.length === 2 && /^−64/.test(info.hits[0]) && /KOLOVRAT/.test(info.hits[0]),
     'tapping a hero shows the skills learned (with their stopnja) and the hardest hits, hardest first', JSON.stringify(info));
+  const eb = await ev(() => { const bs = [...document.querySelectorAll('.endbtns .btn')], r = bs.map(b => b.getBoundingClientRect()), last = [...document.querySelector('.ending').children].pop();
+    return { labels: bs.map(b => b.textContent.trim()), centred: r.every(x => Math.abs((x.left + x.right) / 2 - innerWidth / 2) < 4), column: r.length === 2 && r[1].top >= r[0].bottom, lastIsButtons: last.classList.contains('endbtns') }; });
+  check(eb.labels.join() === 'Nova pot,Nazaj na meni' && eb.centred && eb.column && eb.lastIsButtons, 'the ending ends with Nova pot and Nazaj na meni, centred, one under the other, below everything', JSON.stringify(eb));
+  await ev(() => [...document.querySelectorAll('.endbtns .btn')][0].click()); await sleep(200);
+  const to = await ev(() => window.__ZG.S.screen);
+  check(to === 'newrun', 'Nova pot opens the setup of a new journey', to);
 
   check(errors.length === 0, 'no page or console errors', errors.join(' | '));
   return ctx;

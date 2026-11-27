@@ -1582,3 +1582,5 @@ body .ending .endhero .hero.spr { --px: min(4px, calc(92cqw / var(--art, 48))); 
 .endwords .pchip { font-size: 15px; letter-spacing: .04em; }
 .endwords .pchip small { color: var(--faint); font-weight: 600; }
 @media (prefers-reduced-motion: reduce) { .confetti, .endhero .sp, .endglow, .ending.victory .logo { animation: none !important; } }
+.endbtns { display: grid; gap: 10px; width: min(100%, 320px); margin: 26px auto 8px; }
+.endbtns .btn { justify-content: center; min-height: 50px; font-size: 17px; font-weight: 800; }

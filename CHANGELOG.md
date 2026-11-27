@@ -132,7 +132,9 @@ favour of it.
 - **Tapping a hero** shows the skills they learned, with their stopnja (★), the ones not learned yet, and their **three
   hardest hits** of the journey (damage, skill and word), noted from the battle cards.
 - **The longest words** of the journey (letter mesh and crosswords, six at most) replace the list of items.
-  `tests/screens.test.js` checks the cheer, the words and a hero's details.
+- At the bottom, centred and one under the other, **Nova pot** (the setup of a new journey, `Enter`) and **Nazaj na
+  meni** (`Esc`), like a game's last screen. `Nova pot` used to lead to the start menu.
+  `tests/screens.test.js` checks the cheer, the words, a hero's details and the two buttons.
 
 **Dosežki in junaki in three tabs (Game Director, 27 Nov 2026, evening)**
 - The page has tabs: **Dosežki** (first), **Junaki** and the new **Nasprotniki**, one shown at a time (← → move between

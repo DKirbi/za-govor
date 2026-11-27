@@ -239,7 +239,8 @@ function restoreSnap() {
   delete R.godSnap;
 }
 // The ending screen's way out (button, Enter, Back) goes through here.
-function leaveEnding() { resetRun(); go('title'); }
+// the ending's two ways out (Game Director, 27 Nov 2026): Nova pot (the setup of a new journey) or Nazaj na meni
+function leaveEnding(to = 'title') { resetRun(); go(to); }
 function renderGodCome(arg) {
   arg = arg || S.godArg; S.godArg = arg;
   const id = arg.god, G = GOD[id], ch = CHARS.find(c => c.id === id);
