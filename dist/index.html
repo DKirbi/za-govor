@@ -761,11 +761,10 @@ body.mobile .pick h1.pick-h { font-size: 24px; }
 .pfx img.fxi { height: 17px; flex: none; margin: 0; vertical-align: 0; }
 .pickgo { grid-column: 1 / -1; display: flex; gap: 8px; }
 .pickgo .btn { min-height: 44px; justify-content: center; } .pickgo .btn.primary { flex: 1 1 auto; font-weight: 800; }
-/* a hero's role: its icon and name in the role's colour (on the picker and in the hero list) */
+/* a hero's role: its icon and name in the role's colour (only in the chosen hero's details, not on the list's cards) */
 .rtag { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px 2px 6px; border-radius: 99px; font-size: 12px; font-weight: 800; line-height: 1.4;
   white-space: nowrap; color: var(--tc); background: color-mix(in srgb, var(--tc) 15%, transparent); border: 1px solid color-mix(in srgb, var(--tc) 45%, transparent); }
 .rtag img.fxi { height: 14px; margin: 0; vertical-align: 0; }
-.pickcard .rtag { font-size: 11px; color: var(--tc); padding: 1px 8px 1px 5px; } .pickcard .rtag img.fxi { height: 12px; }
 .php { display: inline-flex; align-items: center; gap: 5px; font-size: 14px; font-weight: 800; }
 .php img.fxi { height: 14px; margin: 0; vertical-align: 0; }
 .ending .endparty { display: flex; gap: 18px; flex-wrap: wrap; margin: 14px 0; }
@@ -2933,7 +2932,7 @@ const xpNeed = () => 100 * S.level;
 const letterEq = (tile, typed) => tile === typed;
 
 // Version of this build, filled in by build.py from package.json and git (see CHANGELOG.md).
-const BUILD = {"version": "0.22.0", "stage": "zaprta alfa", "commit": "3bacba0"};
+const BUILD = {"version": "0.22.0", "stage": "zaprta alfa", "commit": "e4932d1"};
 const app = $('#app');
 let SCR = null;   // current screen container
 // There is no top bar: pages under the menu have a sticky way back, timed puzzles a Premor button in their header,
@@ -5364,7 +5363,8 @@ function openBag() {
 
 // ------------------------------------------------------------ choosing the first hero
 // Game Director, 27 Nov 2026: no lead text; the chosen hero comes first, in one row (the sprite 40 %, the details
-// 60 %); attacks and words as chips; the special effects in plain words with icons; each hero's role (PLAYSTYLE).
+// 60 %); attacks and words as chips; the special effects in plain words with icons; each hero's role (PLAYSTYLE),
+// shown only there, not on the cards in the list (15:12, same day).
 const roleTag = id => { const r = roleOf(id); return h('span', { class: 'rtag', style: { '--tc': r.col } }, pxIcon(r.icon), roleName(id, heroF(id))); };
 function renderPick() {
   const ids = starterChoices(), list = ids.map(id => CHARS.find(c => c.id === id));
@@ -5391,7 +5391,7 @@ function renderPick() {
       return i < 0 ? h('div', { class: 'pickcard locked', title: 'Še neznan: srečaš ga na poti' }, h('i', { class: 'shade', style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, '???'), h('span', {}, 'še neznan'))
         : h('button', { class: 'pickcard' + (i === S.pickSel ? ' on' : '') + (isGod(c.id) ? ' god' : ''), style: { '--c': c.c }, 'aria-pressed': i === S.pickSel ? 'true' : 'false',
           onclick: () => { if (S.pickSel === i) return startJourney(); S.pickSel = i; sfx('sel'); mountShell(); renderPick(); pickShow(); } },
-          h('i', { style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, c.name), roleTag(c.id)); }))));
+          h('i', { style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, c.name)); }))));
 }
 // a hero tapped low in the list: bring the chosen hero's details (now at the top) back into view
 function pickShow() {
@@ -7134,7 +7134,7 @@ function renderHeroes() {
       h('ul', { class: 'pickgrid herogrid' }, CHARS.map(c => h('li', {}, UNLOCKED.has(c.id)
         ? h('button', { class: 'pickcard' + (isGod(c.id) ? ' god' : ''), style: { '--c': c.c },
           onclick: () => go('hero', { kind: 'codex', ids: [c.id], crumb: 'Nazaj na junake', next: () => go('heroes'), nextLabel: 'Nazaj na junake ' }) },
-          h('i', { style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, c.name), roleTag(c.id))
+          h('i', { style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, c.name))
         : h('div', { class: 'pickcard locked', title: 'Še neznan: srečaš ga na poti' },
           h('i', { class: 'shade', style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, '???'), h('span', {}, 'še neznan')))))),
     h('div', { class: 'devbox' }, h('span', { class: 'devtag' }, 'Razvoj'),
