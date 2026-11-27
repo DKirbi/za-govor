@@ -2,7 +2,7 @@
 // - Kdo gre na pot? has no lead text; the chosen hero comes first, above the list, in one row: the sprite 40 %, the
 //   details 60 %, on a desktop and on phones (360 and 412 px wide);
 // - attacks and the hero's words are chips (no arrows); the special effects are plain words with an icon each;
-// - every hero has a role (PLAYSTYLE), feminine for the heroines;
+// - every hero has a role (PLAYSTYLE), feminine for the heroines, shown only in the chosen hero's details;
 // - the hero's card shows only the name and the skills on its front, the name on the plate under the painting; the
 //   rest (who the hero is) is on the back.
 const { openGame, runner, sleep } = require('./harness');
@@ -51,7 +51,9 @@ run(async () => {
     '"Največji napad" is now "Posebni učinek", in plain words with an icon', JSON.stringify(D.fx));
   check(D.role === 'Napadalec' && D.roleIcon && D.hp === '36' && D.hpIcon, 'Krpan is a Napadalec (role with its icon); his health has a heart', `${D.role} ${D.hp}`);
   check(D.wordsLabel === 'Njegove besede · ×1,5' && D.words === 5, 'his words are chips too', D.wordsLabel);
-  check(D.cardRoles.length === ALL.length && D.cardRoles.every(Boolean), 'every hero in the list shows a role', D.cardRoles.join());
+  check(D.cardRoles.length === ALL.length && D.cardRoles.every(r => !r), 'the role shows only in the chosen hero\'s details, not on the cards in the list', D.cardRoles.join());
+  check(await page.evaluate(() => { const Z = window.__ZG; Z.go('heroes'); const n = document.querySelectorAll('.herogrid .rtag').length; Z.go('newrun'); Z.go('pick'); return n; }) === 0,
+    'nor on the cards in Dosežki in junaki');
   await shot('picker-desktop');
 
   // more effects: a plural label; a heroine's role and words are feminine

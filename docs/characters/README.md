@@ -19,8 +19,8 @@ Each character has an individual folder containing their approved character spec
 ## Play-style roles on the hero picker
 
 **PROPOSED** by Claude on 27 Nov 2026, at the Game Director's request ("categorize every character as Damage Dealer,
-Support, Healer etc."); awaiting approval. One role per character, shown with an icon on *Kdo gre na pot?* and in
-*Dosežki in junaki*. The roles follow each specification's combat role where one exists, and otherwise what the kit
+Support, Healer etc."); awaiting approval. One role per character, shown with an icon in the chosen hero's details on
+*Kdo gre na pot?* (not on the cards in the hero lists, Game Director, 27 Nov 2026). The roles follow each specification's combat role where one exists, and otherwise what the kit
 does in the game today. Data: `ROLES` and `PLAYSTYLE` in `src/game.js`.
 
 | Role | Masculine / feminine | Meaning | Characters |

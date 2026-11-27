@@ -754,11 +754,10 @@ body.mobile .pick h1.pick-h { font-size: 24px; }
 .pfx img.fxi { height: 17px; flex: none; margin: 0; vertical-align: 0; }
 .pickgo { grid-column: 1 / -1; display: flex; gap: 8px; }
 .pickgo .btn { min-height: 44px; justify-content: center; } .pickgo .btn.primary { flex: 1 1 auto; font-weight: 800; }
-/* a hero's role: its icon and name in the role's colour (on the picker and in the hero list) */
+/* a hero's role: its icon and name in the role's colour (only in the chosen hero's details, not on the list's cards) */
 .rtag { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px 2px 6px; border-radius: 99px; font-size: 12px; font-weight: 800; line-height: 1.4;
   white-space: nowrap; color: var(--tc); background: color-mix(in srgb, var(--tc) 15%, transparent); border: 1px solid color-mix(in srgb, var(--tc) 45%, transparent); }
 .rtag img.fxi { height: 14px; margin: 0; vertical-align: 0; }
-.pickcard .rtag { font-size: 11px; color: var(--tc); padding: 1px 8px 1px 5px; } .pickcard .rtag img.fxi { height: 12px; }
 .php { display: inline-flex; align-items: center; gap: 5px; font-size: 14px; font-weight: 800; }
 .php img.fxi { height: 14px; margin: 0; vertical-align: 0; }
 .ending .endparty { display: flex; gap: 18px; flex-wrap: wrap; margin: 14px 0; }

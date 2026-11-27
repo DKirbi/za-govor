@@ -143,7 +143,8 @@ function openBag() {
 
 // ------------------------------------------------------------ choosing the first hero
 // Game Director, 27 Nov 2026: no lead text; the chosen hero comes first, in one row (the sprite 40 %, the details
-// 60 %); attacks and words as chips; the special effects in plain words with icons; each hero's role (PLAYSTYLE).
+// 60 %); attacks and words as chips; the special effects in plain words with icons; each hero's role (PLAYSTYLE),
+// shown only there, not on the cards in the list (15:12, same day).
 const roleTag = id => { const r = roleOf(id); return h('span', { class: 'rtag', style: { '--tc': r.col } }, pxIcon(r.icon), roleName(id, heroF(id))); };
 function renderPick() {
   const ids = starterChoices(), list = ids.map(id => CHARS.find(c => c.id === id));
@@ -170,7 +171,7 @@ function renderPick() {
       return i < 0 ? h('div', { class: 'pickcard locked', title: 'Še neznan: srečaš ga na poti' }, h('i', { class: 'shade', style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, '???'), h('span', {}, 'še neznan'))
         : h('button', { class: 'pickcard' + (i === S.pickSel ? ' on' : '') + (isGod(c.id) ? ' god' : ''), style: { '--c': c.c }, 'aria-pressed': i === S.pickSel ? 'true' : 'false',
           onclick: () => { if (S.pickSel === i) return startJourney(); S.pickSel = i; sfx('sel'); mountShell(); renderPick(); pickShow(); } },
-          h('i', { style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, c.name), roleTag(c.id)); }))));
+          h('i', { style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, c.name)); }))));
 }
 // a hero tapped low in the list: bring the chosen hero's details (now at the top) back into view
 function pickShow() {

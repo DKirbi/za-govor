@@ -96,8 +96,9 @@ favour of it.
   the feminine forms for Lepa Vida, Ajdovska deklica and Mokoš. They come from the combat roles in the character
   specifications and what each kit does today: Krpan, Erazem, Klepec, Kresnik, Perun, Veles and Stribog *napad*;
   Ajda and Svarog *obramba*; Zeleni Jurij and Mokoš *zdravje*; Kralj Matjaž and Dažbog *podpora*; Kurent and Vida
-  *ovira*. Every card in the list and in *Dosežki in junaki* shows its role instead of the old short description.
-  Data: `ROLES` and `PLAYSTYLE` in `src/game.js`.
+  *ovira*. The role shows only in the chosen hero's details: the cards in the list and in *Dosežki in junaki* show
+  just the sprite and the name (their old short description, e.g. *težek udar*, is gone). Data: `ROLES` and
+  `PLAYSTYLE` in `src/game.js`.
 - **New pixel icons** (`src/effects.js`, drawn like the attack and defence icons): a heart, healing, bleeding, poison,
   fire, an hourglass, an open padlock, a spark, a dodge, a stone, a hit on all, and the role icons (a sword, a shield,
   a banner).
@@ -106,9 +107,9 @@ favour of it.
   painting on phones, because the card had a fixed height and its plate overflowed. The front now sizes to the
   painting and its plate, and shows **only the name and the skills**, the name on the plate under the painting. Who
   the hero is (*vitez iz Predjame · meč, češnje, izmik*) moved to the **back** of the card, above the story.
-- **New `tests/picker.test.js`** (23 checks): no lead text, the hero above the list, 40/60 in one row on a desktop
+- **New `tests/picker.test.js`** (24 checks): no lead text, the hero above the list, 40/60 in one row on a desktop
   and at 360 and 412 px with the sprite whole, chips without arrows, effects with icons, the roles and their feminine
-  forms, and the card's name on its plate under the painting at all three widths.
+  forms, no role on the list's cards, and the card's name on its plate under the painting at all three widths.
 
 ## 0.21.0 — 26 Nov 2026 · zaprta alfa · Kakovost slik is about the backgrounds only
 
