@@ -36,7 +36,7 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
-## 0.22.0 — 27 Nov 2026 · zaprta alfa · ten folk parallax backgrounds for review, measured on phones
+## 0.22.0 — 27 Nov 2026 · zaprta alfa · ten folk parallax backgrounds for review, measured on phones; the phone's tip behind a ? button
 
 Branch `review/folk-backgrounds`: PRs #40, #41, #43, #44 and #45 (Codex's four later parallax studies and their runtime
 packs) and #42 (0.21.0, below) in one pull request for the Game Director to confirm. Those six PRs are closed in
@@ -68,6 +68,15 @@ favour of it.
   jumps; front layers never cover a foot; no hole behind the layers on the road or in battle; tiles are seamless and
   ground and water bands repeat without a gap; standing still or in battle only the clouds move, at their rate.
 - `tests/parallax.test.js` now covers all ten regions and checks that layers standing on one another share a speed.
+
+**The coach tip on a phone is a ? button**
+- Game Director, 27 Nov 2026: in a battle on a phone the *Namig* tip no longer covers the sky of the scene. It is a
+  round **?** button in the scene's top-left corner. A tap opens the tip as a popover; a tap anywhere outside closes
+  it again, and that tap still does what it does there (picks a letter, chooses an enemy). The button toggles it too.
+- A new tip (the next one after the first word, and so on) marks the button with a gold dot until it is opened
+  (it pulses three times; still under reduced motion).
+- The letter grid never moves for it. On a desktop the tip keeps its row under the word bar. *Knjižni molj* has no tips
+  and no button, as before.
 
 **Martin Krpan's high-fidelity pack is discarded completely**
 - Game Director, 27 Nov 2026: Krpan is pixel art only. On top of 0.21.0 (the pack out of the game), its files leave
