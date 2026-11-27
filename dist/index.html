@@ -1490,6 +1490,33 @@ body.mobile .report .rp-send .btn, body.mobile .report .rp-close { min-height: 4
 .gpaint { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
 .gpaint figure { margin: 0; display: grid; gap: 6px; font-size: 12px; color: var(--dim); }
 
+/* Kolo črk: the zagovor's crossword on a letter wheel (src/wheel.js) */
+.wbody { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.wgridwrap { max-width: 100%; overflow-x: auto; }
+.wgrid .cell { cursor: default; }
+.cell.given { background: #efe4c8; color: #6d5a3c; }
+.cell.rev { background: #f2d9a8; color: #8a5a18; }
+.cell.main:not(.ok) { box-shadow: inset 0 0 0 2px var(--gold); }
+.cell.flash { animation: cwflash .7s; }
+@keyframes cwflash { 0% { transform: scale(1.18); } 100% { transform: scale(1); } }
+.wword { min-height: 30px; font-size: 22px; font-weight: 800; letter-spacing: .08em; color: var(--gold); text-align: center; }
+.wword.said { font-size: 16px; letter-spacing: 0; }
+.wword.said.ok { color: var(--good); }
+.wword.said.warn { color: var(--dim); }
+.wword.said.bad { color: #f08a7a; animation: shake .3s; }
+.wheel { position: relative; width: min(250px, 66vw); aspect-ratio: 1; border-radius: 50%; touch-action: none; user-select: none; -webkit-user-select: none;
+  background: radial-gradient(circle at 50% 45%, #2a2c36, #1a1b22 70%); border: 2px solid #3a3320; box-shadow: inset 0 0 0 6px #14151a, 0 6px 18px #0006; }
+.wheel .wlines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.wheel .wl { position: absolute; width: 21%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; display: grid; place-items: center;
+  font-size: clamp(18px, 6.4vw, 26px); font-weight: 800; color: var(--paper-ink); background: var(--paper); box-shadow: 0 2px 0 #b9a47e; pointer-events: none; }
+.wheel .wl.on { background: var(--gold); color: #2a1d08; box-shadow: 0 0 0 3px #f6d36a55; }
+.wheel .wshuffle { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 22%; aspect-ratio: 1; border-radius: 50%;
+  border: 1px solid var(--line); background: #22232b; color: var(--dim); font-size: 22px; cursor: pointer; }
+.wheel.mini { width: 150px; pointer-events: none; }
+.wheel.mini .wl { font-size: 17px; }
+.wtools { display: flex; gap: 12px; align-items: center; justify-content: center; min-height: 32px; }
+body.mobile .wgrid { --cell: 28px; }
+
 /* ---------- Title scene: "Za govor!" over a dusk landscape (src/title.js, art from tools/art_title.py) ----------
    Sizes are in art pixels times --s, the whole-number scale; animations move one art pixel per step. */
 .sr-only { position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
@@ -2971,7 +2998,7 @@ const xpNeed = () => 100 * S.level;
 const letterEq = (tile, typed) => tile === typed;
 
 // Version of this build, filled in by build.py from package.json and git (see CHANGELOG.md).
-const BUILD = {"version": "0.22.0", "stage": "zaprta alfa", "commit": ""};
+const BUILD = {"version": "0.22.0", "stage": "zaprta alfa", "commit": "8a09bf1"};
 const app = $('#app');
 let SCR = null;   // current screen container
 // There is no top bar: pages under the menu have a sticky way back, timed puzzles a Premor button in their header,
@@ -3362,7 +3389,7 @@ function renderSide() {
   const full = B.meter >= METER_MAX;
   UI.side.innerHTML = '';
   if (S.mobile) {
-    if (B.cw) { UI.side.append(cwKeyboard()); return; }   // the in-game Slovene keyboard (src/mobile.js)
+    if (B.cw) { if (!isWheel()) UI.side.append(cwKeyboard()); return; }   // the in-game Slovene keyboard (src/mobile.js); the wheel needs none
     UI.side.append(
       h('div', { class: 'actionbar2' },
         h('button', { class: 'btn zgbtn' + (full ? ' primary' : ''), disabled: !full, onclick: openFinisher },
@@ -3675,7 +3702,7 @@ function renderWord() {
   if (!UI.word) return;
   UI.word.innerHTML = ''; UI.chips.innerHTML = '';
   if (B.cw) {
-    UI.word.className = 'word'; UI.word.append(h('span', { class: 'ph' }, S.mobile ? 'Križanka je odprta — tipkaj s tipkami spodaj.' : 'Križanka je odprta — tipkaj v polja.'));
+    UI.word.className = 'word'; UI.word.append(h('span', { class: 'ph' }, isWheel() ? 'Zagovor: sestavljaj besede na kolesu črk.' : S.mobile ? 'Križanka je odprta — tipkaj s tipkami spodaj.' : 'Križanka je odprta — tipkaj v polja.'));
     if (UI.send) UI.send.style.visibility = 'hidden';
     if (UI.clr) UI.clr.style.visibility = 'hidden';
     renderProposals(); return;
@@ -4582,7 +4609,8 @@ function openFinisher() {
   openCrossword('finisher', id);
 }
 function openCrossword(kind, id, opts = {}) {
-  const D = makeCrossword(kind, id);
+  // the zagovor on a letter wheel where the device or Nastavitve says so (src/wheel.js); the typed crossword otherwise
+  const D = (kind === 'finisher' && wheelOn() && makeWheel(id)) || makeCrossword(kind, id);
   const cells = new Map();
   D.entries.forEach((e, k) => {
     for (let p = 0; p < e.answer.length; p++) {
@@ -4597,12 +4625,13 @@ function openCrossword(kind, id, opts = {}) {
   B.cw = { kind, id, D, cells, fill: new Map(), solved: new Set(), locked: new Set(), cur: { e: 0, p: 0 },
     timer: timerMax, timerMax, enemy: opts.enemy || null, flash: new Set(), focused: false,
     reveals: LV().reveals, revealed: new Set() };
+  if (D.style === 'wheel') wheelSetup(B.cw);
   clearWord();
   renderPuzzle(); renderWord();
   // Opened by a tap or key press, this also opens the phone keyboard; opened by an enemy, the player taps the grid.
   focusCwInput();
   if (S.mobile) UI.puzzle.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  fitSoon(); showTut(kind);
+  fitSoon(); showTut(D.style === 'wheel' ? 'kolo' : kind);
 }
 const cellKey = (e, p) => (e.row + (e.dir === 'D' ? p : 0)) + ',' + (e.col + (e.dir === 'A' ? p : 0));
 // Pressing a clue, a cell or a banner button must not blur the input first: the blur redraws the banner,
@@ -4615,6 +4644,7 @@ function focusCwInput() { const C = B && B.cw; if (C && C.input) { try { C.input
 
 // Built once per crossword; typing only repaints (so the input keeps focus and the phone keyboard stays open)
 function renderCrossword() {
+  if (isWheel()) { renderWheel(); return; }   // Kolo črk (src/wheel.js)
   const C = B.cw, D = C.D;
   const label = { finisher: 'Zagovor', lock: 'Zaklepanje', ambush: 'Zaseda' }[C.kind];
   const G = D.style === 'geslo';
@@ -4672,6 +4702,7 @@ function renderCrossword() {
   cwPaint();
 }
 function cwPaint() {
+  if (isWheel()) { wheelPaint(); return; }
   const C = B && B.cw; if (!C || !C.cellEls) return;
   const curE = C.D.entries[C.cur.e], curKey = cellKey(curE, C.cur.p);
   for (const [key, el] of C.cellEls) {
@@ -5002,6 +5033,7 @@ function battleKey(e) {
   if (B.paused || B.over) return;
   if (k === 'Delete') { e.preventDefault(); if (!B.cw) clearWord(); return; }
   if (B.cw) {
+    if (isWheel()) { wheelKey(e); return; }
     if (k === 'Tab') { e.preventDefault(); cwNext(e.shiftKey ? -1 : 1); return; }
     if (k === 'Enter') { e.preventDefault(); cwNext(); return; }
     if (k === 'Backspace') { e.preventDefault(); cwBackspace(); return; }
@@ -6244,7 +6276,7 @@ window.addEventListener('blur', () => { if (S.mode === 'real' && !held()) setPau
 const TUT_SEEN = new Set((() => { try { return JSON.parse(localStorage.getItem('zg-tut') || '[]'); } catch (e) { return []; } })());
 function saveTutSeen() { try { localStorage.setItem('zg-tut', JSON.stringify([...TUT_SEEN])); } catch (e) { /* no storage */ } }
 function resetTuts() { TUT_SEEN.clear(); saveTutSeen(); }
-const curTutKind = () => S.screen === 'battle' ? (B && B.cw ? B.cw.kind : 'mesh') : S.screen;
+const curTutKind = () => S.screen === 'battle' ? (B && B.cw ? (B.cw.D.style === 'wheel' ? 'kolo' : B.cw.kind) : 'mesh') : S.screen;
 const K = t => h('kbd', {}, t);
 
 // Figures are built from the real game pieces (tiles, cells, rocks, the chest sprite) in a solved state.
@@ -6271,6 +6303,21 @@ function figCross() {
     h('div', { class: 'tut-key' },
       h('i', { style: { background: 'var(--good)' } }), h('span', {}, 'prava beseda: napad se sproži'),
       h('i', { style: { background: '#16171c', border: '1px solid var(--line)' } }), h('span', {}, 'vpisano, a še ni prav: nič se ne zgodi'))];
+}
+function figWheel() {
+  // VESEL is found (green), LEV is being dragged on the wheel
+  const rows = ['vesel', '..?..', '..v..'], cls = { '0,0': 'ok', '0,1': 'ok', '0,2': 'ok', '0,3': 'ok', '0,4': 'ok', '2,2': 'given' };
+  const cells = [];
+  rows.forEach((row, r) => [...row].forEach((ch, c) => cells.push(ch === '.' ? h('div', { class: 'cell void' }) : h('div', { class: 'cell ' + (cls[r + ',' + c] || '') }, h('b', {}, ch === '?' ? '' : ch)))));
+  const L = 'evsle', n = L.length, pos = [...L].map((_, i) => { const a = 2 * Math.PI * i / n - Math.PI / 2; return [50 + 36 * Math.cos(a), 50 + 36 * Math.sin(a)]; });
+  const sel = [3, 0, 1];   // L, E, V
+  const line = svgEl('polyline', { points: sel.map(i => pos[i].join(',')).join(' '), fill: 'none', stroke: 'var(--gold)', 'stroke-width': 4.5, 'stroke-linecap': 'round', opacity: .75 });
+  const svg = svgEl('svg', { class: 'wlines', viewBox: '0 0 100 100', preserveAspectRatio: 'none' }); svg.append(line);
+  return [
+    h('div', { class: 'cwgrid wgrid', style: { 'grid-template-columns': 'repeat(5, var(--cell))' } }, cells),
+    h('div', { class: 'wword' }, 'LEV'),
+    h('div', { class: 'wheel mini' }, svg, [...L].map((ch, i) => h('span', { class: 'wl' + (sel.includes(i) ? ' on' : ''), style: { left: pos[i][0] + '%', top: pos[i][1] + '%' } }, UP(ch)))),
+    h('div', { class: 'tut-key' }, h('i', { style: { background: 'var(--good)' } }), h('span', {}, 'najdena beseda: napad se sproži'))];
 }
 function figChest() {
   const tiles = w => h('div', { class: 'letters' }, [...w].map(ch => h('div', { class: 'tile' }, ch)));
@@ -6329,6 +6376,13 @@ const TUT = {
       [h('span', { class: 'tile own mini', style: { '--c': ownC(0) } }, h('span', { class: 'ini' }, ROSTER.krpan.ini), 'd'), ' Barvne črke pripadajo junakom: ko jih uporabiš, napade junak te barve. Več črk iste barve sproži močnejšo veščino.'],
       S.mobile ? ['Vsaka črka polni zagovor. Ko je poln, gumb Izreci zagovor odpre križanko za mogočen udarec.'] : ['Vsaka črka polni zagovor. Ko je poln, ', K('presledek'), ' odpre križanko za mogočen udarec.']].filter(Boolean) }),
   finisher: () => tutCross('finisher'), lock: () => tutCross('lock'), ambush: () => tutCross('ambush'),
+  kolo: () => ({ title: 'Zagovor: kolo črk', lead: 'Zagovor je poln. Iz črk na kolesu sestavi besede, ki se skrivajo v križanki. Vsaka je napad, cela križanka še mogočnejši udarec.',
+    fig: figWheel(), calm: true,
+    time: S.mode === 'real' ? 'Časa ni, a nasprotniki napadajo naprej, le pol počasneje. Zagovor lahko prekličeš; moč ostane.' : 'Časa ni in nasprotniki čakajo. Zagovor lahko prekličeš; moč ostane.',
+    steps: [
+      S.mobile ? ['Vleci s prstom po črkah na kolesu in ga dvigni, ko je beseda cela. Črke lahko tudi pritiskaš eno za drugo in zadnjo pritisneš še enkrat.'] : ['Vleci z miško po črkah na kolesu ali tipkaj črke; ', K('Enter'), ' pošlje besedo.'],
+      ['Opisov ni: dolžino besede kaže križanka, nekaj črk je že vpisanih. Beseda iz križanke pozeleni in takoj sproži napad.'],
+      ['Prava beseda, ki je ni v križanki, je dodatna beseda: šibek udarec. ⟳ v sredini kolesa premeša črke.' + (LV().reveals ? ' Gumb »Razkrij črko« pokaže eno črko.' : '')]] }),
   chest: () => ({ title: 'Zaklenjena skrinja', lead: 'Iz premešanih črk sestavi skrito besedo. Namig pove, kaj iščeš.', fig: figChest(),
     time: `Rdeča črta je čas${evSecs('timeMax')}. Ko poteče, skrinja ostane zaklenjena.`,
     steps: [
@@ -7183,6 +7237,13 @@ function renderSettings() {
     crumb(),
     pageH1('Nastavitve'),
     h('section', {}, h('h2', {}, 'Zvok'), soundControls()),
+    // Kolo črk (src/wheel.js): the zagovor's crossword on a letter wheel or typed; PROPOSED default: the wheel on a phone
+    h('section', {}, h('h2', { id: 'set-kolo' }, 'Križanka zagovora'),
+      h('div', { role: 'radiogroup', 'aria-labelledby': 'set-kolo' },
+        ...[['kolo', 'Kolo črk', 'Besede sestavljaš z vlečenjem po črkah na kolesu, brez opisov. Manj besed na kolesu, težja uganka.'],
+          ['klasika', 'Klasična križanka', S.mobile ? 'Opisi besed, odgovore tipkaš s tipkovnico igre.' : 'Opisi besed, odgovore tipkaš.']].map(([v, label, hint]) =>
+          h('label', { class: 'toggle' }, h('input', { type: 'radio', name: 'set-kolo', class: 'set-kolo', value: v, checked: wheelOn() === (v === 'kolo'), onchange: () => setWheelPref(v) }),
+            h('span', {}, label, h('small', {}, hint)))))),
     statsSection(),
     h('section', {}, h('div', { class: 'devbox' }, h('span', { class: 'devtag' }, 'Razvoj'),
       h('h2', {}, 'Kakovost slik'),
@@ -8610,6 +8671,218 @@ function galleryPaintedCards() {
         h('figcaption', {}, `${c.name}: ${c.moves[t - 1]}`, hasSkillCard(c.id, t) ? ' ✓' : ''));
     })))];
 }
+
+// ============================================================ Kolo črk: the zagovor's crossword on a letter wheel
+// Game Director, 27 Nov 2026: the zagovor gets a crossword "with the new circular Wordscapes style. Less words
+// available make the puzzles harder." As decided on 24 Nov (docs/progression-design.md §11.4): the grid only shows
+// progress; words are made by dragging over the letters of a wheel; there are no clues. Help is letters already
+// shown in the grid (by Znanje) and Razkrij črko. The theme lives in its key word (PERUN, KRESNIK, MOKOŠ …), which the
+// wheel always spells; the other words are everyday words (LEX.suggestedWords) from the same letters.
+// Difficulty is how many words the letters allow: of several wheels, Malček gets the richest, Učenjak a middle one and
+// Knjižni molj the poorest that still fills the grid (about 25, 18 and 9 words). Fewer words on the wheel, fewer lucky
+// finds; Malček's words are also shorter and some of their letters are shown.
+// PROPOSED defaults (24 Nov, not answered yet): the wheel on a phone, the typed crossword on a computer; Nastavitve
+// switches either way on any device (zg-kolo). A real word from the wheel that is not in the grid is an extra word:
+// a weak hit (once per word). The other crosswords (Zaseda, Vrtinec, Zmajeva uganka) stay typed for now.
+const WHEEL_LV = {
+  malcek: { letters: 7, count: 5, minLen: 3, maxLen: 6, pick: 'rich', given: 0.3 },
+  ucenjak: { letters: 7, count: 6, minLen: 3, maxLen: 7, pick: 'mid', given: 0.12 },
+  molj: { letters: 7, count: 6, minLen: 4, maxLen: 7, pick: 'poor', given: 0 },
+};
+const WL = () => WHEEL_LV[S.know] || WHEEL_LV.malcek;
+let WHEEL_PREF = (() => { try { return localStorage.getItem('zg-kolo'); } catch (e) { return null; } })();   // 'kolo', 'klasika' or unset
+const wheelOn = () => WHEEL_PREF ? WHEEL_PREF === 'kolo' : !!S.mobile;
+function setWheelPref(v) { WHEEL_PREF = v; try { localStorage.setItem('zg-kolo', v); } catch (e) { /* no storage */ } }
+const isWheel = () => !!(B && B.cw && B.cw.D.style === 'wheel');
+
+// a word fits the wheel when it needs no letter more often than the wheel has it (Č, Š and Ž are letters of their own)
+const letterCounts = w => { const m = new Map(); for (const ch of w) m.set(ch, (m.get(ch) || 0) + 1); return m; };
+function fitsWheel(w, have) {
+  const m = new Map();
+  for (const ch of w) { const n = (m.get(ch) || 0) + 1; if (n > (have.get(ch) || 0)) return false; m.set(ch, n); }
+  return true;
+}
+// grid words are base forms (VESEL, SVILA, GLIVA): without clues an inflected form (ŠOKOM, TRAVI) is guesswork; any real
+// word from the wheel still counts as an extra word
+const WHEEL_BASE = new Map();
+const wheelBase = (min, max) => { const k = min + '-' + max; if (!WHEEL_BASE.has(k)) WHEEL_BASE.set(k, LEX.suggestedWords(min, max).filter(w => LEMMA.get(w) === w)); return WHEEL_BASE.get(k); };
+const wheelWords = (letters, L) => { const have = letterCounts(letters); return wheelBase(L.minLen, Math.min(L.maxLen, letters.length)).filter(w => fitsWheel(w, have)); };
+// the key word's letters, then common letters (the mesh's bag) up to the wheel's size, about half of them vowels
+function wheelLetters(key, n) {
+  const out = key ? [...key] : [];
+  for (let guard = 0; out.length < n && guard < 400; guard++) {
+    const ch = BAG[rnd(BAG.length)], v = out.filter(isVowel).length;
+    if (isVowel(ch) ? v >= Math.ceil(n / 2) : out.length - v >= n - 2) continue;
+    if (out.filter(x => x === ch).length >= 2) continue;   // no letter three times
+    out.push(ch);
+  }
+  return out;
+}
+function makeWheel(id, L = WL()) {
+  const th = CLUES.themes[id] || { title: 'Zagovor', keys: [] };
+  const keys = shuffle(th.keys.map(k => k[0].toLowerCase()).filter(k => [...k].length <= L.letters));
+  for (const key of [...keys, null]) {
+    const cands = [];
+    for (let t = 0; t < 36; t++) {
+      const letters = wheelLetters(key, L.letters), words = wheelWords(letters, L).filter(w => w !== key);
+      if (words.length >= L.count + 2) cands.push({ letters, words });
+    }
+    if (!cands.length) continue;
+    cands.sort((a, b) => a.words.length - b.words.length);
+    const mid = cands.length >> 1;
+    const order = L.pick === 'poor' ? cands : L.pick === 'rich' ? [...cands].reverse() : [...cands.slice(mid), ...cands.slice(0, mid).reverse()];
+    for (const c of order.slice(0, 8)) {
+      const D = genCross(c.words.map(w => ({ a: UP(w), c: '' })), { main: key ? [UP(key), ''] : null, count: L.count, maxR: 8, maxC: 8 });
+      if (D.entries.length < L.count) continue;
+      return Object.assign(D, { style: 'wheel', title: th.title, letters: shuffle(c.letters), key, words: c.words.length,
+        avail: new Set(c.words.concat(key ? [key] : [])) });
+    }
+  }
+  return null;
+}
+// letters already shown in the grid (Malček and Učenjak): every word keeps at least two of its letters to find
+function wheelSetup(C) {
+  C.given = new Set(); C.extra = new Set(); C.sel = []; C.drag = false; C.moved = false;
+  const share = WL().given, total = C.cells.size;
+  for (const key of shuffle([...C.cells.keys()])) {
+    if (C.given.size >= Math.round(total * share)) break;
+    const ok = C.cells.get(key).ents.every(k => { const e = C.D.entries[k];
+      return [...e.answer].filter((_, p) => { const q = cellKey(e, p); return q !== key && !C.given.has(q); }).length >= 2; });
+    if (ok) { C.given.add(key); C.fill.set(key, C.cells.get(key).ch); }
+  }
+}
+
+function renderWheel() {
+  const C = B.cw, D = C.D, n = D.letters.length;
+  UI.puzzle.append(h('div', { class: 'cwhead' }, h('span', { class: 'k finisher' }, 'Zagovor'),
+    h('h3', {}, `${D.title} — povleci po črkah na kolesu. Vsaka beseda iz križanke sproži napad, cela križanka zagovor.`), h('span', { class: 'grow' }),
+    h('button', { class: 'btn small', onclick: () => { closeCrossword(); fb('Zagovor prekinjen — moč ostane shranjena.', 'warn'); } }, 'Prekliči zagovor')));
+  C.cellEls = new Map();
+  const grid = h('div', { class: 'cwgrid wgrid', style: { 'grid-template-columns': `repeat(${D.cols}, var(--cell))` } });
+  for (let r = 0; r < D.rows; r++) for (let c = 0; c < D.cols; c++) {
+    const key = r + ',' + c;
+    if (!C.cells.has(key)) { grid.append(h('div', { class: 'cell void' })); continue; }
+    const el = h('div', { class: 'cell' }, h('b', {})); C.cellEls.set(key, el); grid.append(el);
+  }
+  // the letters on a circle: their centres in % of the wheel, where the line between them is drawn too
+  C.pos = D.letters.map((_, i) => { const a = 2 * Math.PI * i / n - Math.PI / 2; return [50 + 36 * Math.cos(a), 50 + 36 * Math.sin(a)]; });
+  C.wlEls = D.letters.map((ch, i) => h('span', { class: 'wl', style: { left: C.pos[i][0] + '%', top: C.pos[i][1] + '%' } }, UP(ch)));
+  C.line = svgEl('polyline', { fill: 'none', stroke: 'var(--gold)', 'stroke-width': 4.5, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: .75 });
+  const svg = svgEl('svg', { class: 'wlines', viewBox: '0 0 100 100', preserveAspectRatio: 'none' }); svg.append(C.line);
+  C.wheel = h('div', { class: 'wheel', role: 'group', 'aria-label': 'Kolo črk' }, svg, ...C.wlEls,
+    h('button', { class: 'wshuffle', title: 'Premešaj črke (presledek)', 'aria-label': 'Premešaj črke', onpointerdown: e => e.stopPropagation(), onclick: wheelShuffle }, '⟳'));
+  wheelPointer(C);
+  C.wordEl = h('div', { class: 'wword', 'aria-live': 'polite' });
+  C.revBtn = C.reveals > 0 ? h('button', { class: 'btn small', title: 'Pokaže eno črko v križanki; beseda z njo udari s pol moči', onclick: wheelReveal }, '') : null;
+  C.extraEl = h('span', { class: 'wextra muted' });
+  UI.puzzle.append(h('div', { class: 'wbody' }, h('div', { class: 'wgridwrap' }, grid), C.wordEl, C.wheel, h('div', { class: 'wtools' }, C.revBtn, C.extraEl)));
+  if (B.paused) UI.puzzle.append(h('div', { class: 'pausebanner' }, h('div', {}, 'Premor — ', h('button', { class: 'btn', onclick: togglePause }, 'Nadaljuj'))));
+  wheelPaint();
+}
+function wheelPaint() {
+  const C = B && B.cw; if (!C || !C.cellEls || C.D.style !== 'wheel') return;
+  const mainKeys = new Set(); C.D.entries.forEach(e => { if (e.main) [...e.answer].forEach((_, p) => mainKeys.add(cellKey(e, p))); });
+  for (const [key, el] of C.cellEls) {
+    const ok = C.locked.has(key), shown = C.fill.get(key) || '';
+    el.className = 'cell' + (ok ? ' ok' : C.revealed.has(key) ? ' rev' : C.given.has(key) ? ' given' : '') + (C.flash.has(key) ? ' flash' : '') + (mainKeys.has(key) ? ' main' : '');
+    el.querySelector('b').textContent = shown;
+  }
+  C.wlEls.forEach((el, i) => { el.textContent = UP(C.D.letters[i]); el.classList.toggle('on', C.sel.includes(i)); });
+  const pts = C.sel.map(i => C.pos[i]); if (C.drag && C.pt && pts.length) pts.push(C.pt);
+  C.line.setAttribute('points', pts.map(p => p.join(',')).join(' '));
+  if (!C.wordEl.classList.contains('said')) C.wordEl.textContent = UP(C.sel.map(i => C.D.letters[i]).join(''));
+  if (C.revBtn) { C.revBtn.textContent = `Razkrij črko · ${C.reveals}`; C.revBtn.disabled = C.reveals <= 0; }
+  C.extraEl.textContent = C.extra.size ? `Dodatne besede: ${C.extra.size}` : `Besed v križanki: ${C.D.entries.length - C.solved.size}`;
+}
+// drag over the letters (the line follows the finger) and let go to send; or tap them one by one and tap the last
+// one again to send. Going back to the letter before the last takes the last one off.
+function wheelPointer(C) {
+  const W = C.wheel;
+  const at = e => { const r = W.getBoundingClientRect(); return [100 * (e.clientX - r.left) / r.width, 100 * (e.clientY - r.top) / r.height]; };
+  const hit = p => C.pos.findIndex(q => Math.hypot(p[0] - q[0], p[1] - q[1]) < 11);
+  W.addEventListener('pointerdown', e => {
+    if (B.cw !== C || B.paused) return;
+    const p = at(e), i = hit(p); if (i < 0) return;
+    e.preventDefault(); try { W.setPointerCapture(e.pointerId); } catch (err) { /* synthetic events */ }
+    if (C.sel.length && !C.drag) {   // tapping: the last letter again sends, an earlier one goes back to it
+      if (i === C.sel[C.sel.length - 1]) { wheelSubmit(); return; }
+      const j = C.sel.indexOf(i);
+      if (j >= 0) C.sel = C.sel.slice(0, j + 1); else C.sel.push(i);
+    } else C.sel = [i];
+    C.drag = true; C.moved = false; C.pt = p; sfx('sel', { rate: 1.2, vol: .4 }); wheelPaint();
+  });
+  W.addEventListener('pointermove', e => {
+    if (!C.drag || B.cw !== C) return;
+    C.pt = at(e); const i = hit(C.pt);
+    if (i >= 0 && i !== C.sel[C.sel.length - 1]) {
+      if (i === C.sel[C.sel.length - 2]) C.sel.pop();
+      else if (!C.sel.includes(i)) { C.sel.push(i); C.moved = true; sfx('sel', { rate: 1.2 + C.sel.length * .08, vol: .4 }); }
+    }
+    wheelPaint();
+  });
+  const up = () => { if (!C.drag || B.cw !== C) return; C.drag = false; C.pt = null; if (C.moved) wheelSubmit(); else wheelPaint(); };
+  W.addEventListener('pointerup', up); W.addEventListener('pointercancel', up);
+}
+function wheelSay(text, kind) {
+  const C = B.cw; if (!C || !C.wordEl) return;
+  C.wordEl.textContent = text; C.wordEl.className = 'wword said ' + kind;
+  clearTimeout(C.sayT); C.sayT = setTimeout(() => { if (C.wordEl) { C.wordEl.className = 'wword'; wheelPaint(); } }, 1300);
+}
+function wheelSubmit() {
+  const C = B && B.cw; if (!C || C.D.style !== 'wheel') return;
+  const w = C.sel.map(i => C.D.letters[i]).join(''); C.sel = []; C.drag = false; C.pt = null;
+  if ([...w].length < 2) { wheelPaint(); return; }
+  const k = C.D.entries.findIndex((e, k) => !C.solved.has(k) && e.answer.toLowerCase() === w);
+  if (k >= 0) { wheelSolve(k); return; }
+  if (C.D.entries.some((e, k) => C.solved.has(k) && e.answer.toLowerCase() === w)) { wheelSay(`${UP(w)} — že najdena`, 'warn'); sfx('bad'); wheelPaint(); return; }
+  if ([...w].length >= MINW() && (C.D.avail.has(w) || WORDS.has(w))) {
+    if (C.extra.has(w)) { wheelSay(`${UP(w)} — že najdena`, 'warn'); wheelPaint(); return; }
+    C.extra.add(w);
+    const t = cwTarget(), d = t ? damageEnemy(t, [...w].length * lvlMult()) : 0;   // a weak hit, about a three-letter mesh word
+    wheelSay(`${UP(w)} — dodatna beseda` + (d ? `, −${d}` : ''), 'ok'); sfx('sel', { rate: 1.6 });
+    renderEnemies(); if (B.cw === C) wheelPaint(); checkEnd(); return;
+  }
+  wheelSay(`${UP(w)} ni v križanki`, 'bad'); sfx('bad'); wheelPaint();
+}
+function wheelSolve(k) {
+  const C = B.cw, e = C.D.entries[k], keys = [...e.answer].map((_, p) => cellKey(e, p));
+  const hidden = keys.filter(key => !C.locked.has(key) && !C.given.has(key) && !C.revealed.has(key)).length;
+  const aided = keys.some(key => C.revealed.has(key) && !C.locked.has(key));
+  C.solved.add(k);
+  keys.forEach((key, p) => { C.locked.add(key); C.fill.set(key, e.answer[p].toLowerCase()); C.flash.add(key); });
+  setTimeout(() => { keys.forEach(key => C.flash.delete(key)); if (B && B.cw === C) wheelPaint(); }, 700);
+  sfx('sel', { rate: 1.5 });
+  cwEntrySolved(e, hidden, aided);
+  if (B.cw !== C) return;   // that hit ended the battle
+  if (C.solved.size === C.D.entries.length) { cwComplete(); return; }
+  wheelSay(`${UP(e.answer)} — napad!`, 'ok'); wheelPaint();
+}
+function wheelReveal() {
+  const C = B && B.cw; if (!C || C.D.style !== 'wheel' || C.reveals <= 0) return;
+  const open = [...C.cells.keys()].filter(k => !C.locked.has(k) && !C.given.has(k) && !C.revealed.has(k));
+  if (!open.length) return;
+  const k = pick(open); C.fill.set(k, C.cells.get(k).ch); C.revealed.add(k); C.reveals--;
+  sfx('sel', { rate: .8, vol: .5 }); wheelPaint();
+}
+function wheelShuffle() {
+  const C = B && B.cw; if (!C || C.D.style !== 'wheel') return;
+  const before = C.D.letters.join('');
+  for (let t = 0; t < 6 && C.D.letters.join('') === before; t++) C.D.letters = shuffle(C.D.letters);
+  C.sel = []; sfx('sel', { rate: .9, vol: .5 }); wheelPaint();
+}
+// a computer's keys: a letter takes the first free one of it on the wheel, Backspace the last, Enter sends,
+// the space bar shuffles and ? shows a letter
+function wheelKey(e) {
+  const C = B.cw, k = e.key;
+  if (k === 'Enter') { e.preventDefault(); wheelSubmit(); return; }
+  if (k === 'Backspace') { e.preventDefault(); C.sel.pop(); wheelPaint(); return; }
+  if (k === ' ') { e.preventDefault(); wheelShuffle(); return; }
+  if (k === '?') { e.preventDefault(); wheelReveal(); return; }
+  const ch = letterKey(e); if (!ch) return;
+  e.preventDefault();
+  const i = C.D.letters.findIndex((x, j) => letterEq(x, ch) && !C.sel.includes(j));
+  if (i >= 0) { C.sel.push(i); C.drag = false; sfx('sel', { rate: 1.2, vol: .4 }); wheelPaint(); } else wheelSay(`${UP(ch)} ni na kolesu`, 'bad');
+}
 // ============================================================ title scene: "Za govor!" over a dusk landscape
 // The art is in src/art-title.js (tools/art_title.py): a 480 x 160 scene in layers, the wordmark and its ribbon.
 // titleStage() returns the whole header; it is self-contained so any start-screen layout can put it on top.
@@ -8749,7 +9022,7 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { ACH, get ACHP() { return ACHP; }, ACH_WORDS, achReset, achCheck, achProgress, cardPainting, hasSkillCard, openSkillCard, achSkillFired, achSkillRank, waitingPrayer, migratePrayers, get PARTY_MAX() { return PARTY_MAX; }, FOE_SLOTS, stepIn, statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, noteSupport, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), openShop, openBag, SHOP_MAX, BATTLE_GOLD, CHEST_GOLD, noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, godWaits, godArrives, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, PLAYSTYLE, ROLES, ownC, SLOT_C, skillPanel, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { ACH, get ACHP() { return ACHP; }, ACH_WORDS, achReset, achCheck, achProgress, cardPainting, hasSkillCard, openSkillCard, achSkillFired, achSkillRank, makeWheel, wheelOn, setWheelPref, WHEEL_LV, wheelSubmit, wheelReveal, wheelShuffle, waitingPrayer, migratePrayers, get PARTY_MAX() { return PARTY_MAX; }, FOE_SLOTS, stepIn, statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, noteSupport, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), openShop, openBag, SHOP_MAX, BATTLE_GOLD, CHEST_GOLD, noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, godWaits, godArrives, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, PLAYSTYLE, ROLES, ownC, SLOT_C, skillPanel, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 
 </script>
