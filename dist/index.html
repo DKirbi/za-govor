@@ -200,8 +200,8 @@ h1, h2, h3 { margin: 0; }
 
 /* Crossword */
 .cwhead { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
-.cwhead .k { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; padding: 2px 8px; border-radius: 99px; }
-.cwhead .k.finisher { background: var(--gold); color: #1d1608; }
+.cwhead .k, .whead .k { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; padding: 2px 8px; border-radius: 99px; }
+.cwhead .k.finisher, .whead .k.finisher { background: var(--gold); color: #1d1608; }
 .cwhead .k.lock { background: var(--danger); color: #2a0b0b; }
 .cwhead .k.ambush { background: var(--water); color: #08202b; }
 .cwhead h3 { font-size: 15px; }
@@ -1491,7 +1491,7 @@ body.mobile .report .rp-send .btn, body.mobile .report .rp-close { min-height: 4
 .gpaint figure { margin: 0; display: grid; gap: 6px; font-size: 12px; color: var(--dim); }
 
 /* Kolo črk: the zagovor's crossword on a letter wheel (src/wheel.js) */
-.wbody { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.wbody { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .wgridwrap { max-width: 100%; overflow-x: auto; }
 .wgrid .cell { cursor: default; }
 .cell.given { background: #efe4c8; color: #6d5a3c; }
@@ -1499,12 +1499,23 @@ body.mobile .report .rp-send .btn, body.mobile .report .rp-close { min-height: 4
 .cell.main:not(.ok) { box-shadow: inset 0 0 0 2px var(--gold); }
 .cell.flash { animation: cwflash .7s; }
 @keyframes cwflash { 0% { transform: scale(1.18); } 100% { transform: scale(1); } }
-.wword { min-height: 30px; font-size: 22px; font-weight: 800; letter-spacing: .08em; color: var(--gold); text-align: center; }
+.battle.wheelon .wordbar { display: none; }   /* the wheel shows its own word: nothing between the scene and the puzzle */
+.battle.wheelon .side:empty { display: none; }
+.whead { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; min-height: 34px; }
+.whead b { font-size: 15px; }
+.whead .grow { flex: 1; }
+.whead .wq, .whead .wx { position: relative; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); background: var(--bg2); color: var(--ink);
+  font: inherit; font-weight: 800; font-size: 16px; display: grid; place-items: center; cursor: pointer; padding: 0; }
+.whead .wq.new::after { content: ''; position: absolute; top: -2px; right: -2px; width: 10px; height: 10px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 2px var(--panel); }
+.wrow { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; width: min(100%, 360px); min-height: 32px; }
+.wrow > :first-child { justify-self: start; } .wrow > :last-child { justify-self: end; font-size: 13px; }
+.wrow .wrev { min-height: 30px; padding: 3px 10px; font-size: 13px; }
+.wword { min-height: 30px; font-size: 22px; font-weight: 800; letter-spacing: .08em; color: var(--gold); text-align: center; white-space: nowrap; }
 .wword.said { font-size: 16px; letter-spacing: 0; }
 .wword.said.ok { color: var(--good); }
 .wword.said.warn { color: var(--dim); }
 .wword.said.bad { color: #f08a7a; animation: shake .3s; }
-.wheel { position: relative; width: min(250px, 66vw); aspect-ratio: 1; border-radius: 50%; touch-action: none; user-select: none; -webkit-user-select: none;
+.wheel { position: relative; width: min(240px, 62vw); aspect-ratio: 1; border-radius: 50%; touch-action: none; user-select: none; -webkit-user-select: none;
   background: radial-gradient(circle at 50% 45%, #2a2c36, #1a1b22 70%); border: 2px solid #3a3320; box-shadow: inset 0 0 0 6px #14151a, 0 6px 18px #0006; }
 .wheel .wlines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .wheel .wl { position: absolute; width: 21%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; display: grid; place-items: center;
@@ -1514,7 +1525,6 @@ body.mobile .report .rp-send .btn, body.mobile .report .rp-close { min-height: 4
   border: 1px solid var(--line); background: #22232b; color: var(--dim); font-size: 22px; cursor: pointer; }
 .wheel.mini { width: 150px; pointer-events: none; }
 .wheel.mini .wl { font-size: 17px; }
-.wtools { display: flex; gap: 12px; align-items: center; justify-content: center; min-height: 32px; }
 body.mobile .wgrid { --cell: 28px; }
 
 /* a boss's crown, floating over its head on the road and in battle (Game Director, 27 Nov 2026: instead of "Šef") */
@@ -1541,6 +1551,44 @@ body.mobile .actor.foe.boss > .crown { width: 22px; }
 .foepick .spirit .foe.spr { --px: min(2.5px, calc(88cqw / var(--art, 48))); }
 .page .foepick .pdet h2 { display: block; font-size: 24px; letter-spacing: 0; text-transform: none; color: var(--ink); margin: 0; }
 body.mobile .page .foepick .pdet h2 { font-size: 21px; }
+
+/* the ending: a victory (Game Director, 27 Nov 2026) — the party cheers close up, confetti, tap a hero for skills and hits */
+.ending.victory { position: relative; overflow: hidden; }
+.ending.victory .logo { background: linear-gradient(180deg, #fff3c2, #f6d36a 55%, #c98a1c); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 3px 0 #5a3a10) drop-shadow(0 0 18px #f6d36a55); animation: endpop .9s cubic-bezier(.2, 1.6, .4, 1) both; }
+@keyframes endpop { 0% { transform: scale(.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.confetti { position: absolute; inset: 0 0 auto 0; height: 100%; pointer-events: none; z-index: 0; }
+.confetti i { position: absolute; top: -12px; width: 7px; height: 11px; border-radius: 1px; background: var(--k); opacity: .85;
+  animation: confetti 6s linear infinite; animation-delay: var(--d); }
+@keyframes confetti { 0% { transform: translate(0, -10px) rotate(0); } 100% { transform: translate(var(--x), 105vh) rotate(720deg); } }
+.ending.victory > *:not(.confetti) { position: relative; z-index: 1; }
+.endparty.cheer { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 8px; margin: 18px 0 4px; }
+.endhero { position: relative; display: grid; justify-items: center; align-content: end; gap: 6px; padding: 14px 4px 10px; border: 2px solid transparent; border-radius: 14px;
+  background: none; color: var(--ink); cursor: pointer; container-type: inline-size; min-width: 0; }
+.endhero.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 12%, transparent); }
+.endhero b { font-size: 14px; text-align: center; }
+body .ending .endhero .hero.spr { --px: min(4px, calc(92cqw / var(--art, 48))); position: relative; }
+.endhero .sp { transform-origin: 50% 100%; animation: cheer 1.15s ease-in-out infinite; animation-delay: var(--d) !important; }
+@keyframes cheer { 0%, 100% { transform: translateY(0) scale(1, 1); } 14% { transform: translateY(0) scale(1.08, .9); }
+  38% { transform: translateY(-22%) scale(.95, 1.07) rotate(-4deg); } 52% { transform: translateY(-24%) scale(.96, 1.05) rotate(4deg); }
+  70% { transform: translateY(0) scale(1.07, .93); } 82% { transform: translateY(0) scale(1, 1); } }
+.endglow { position: absolute; left: 50%; bottom: 30px; width: 80%; aspect-ratio: 1; transform: translateX(-50%); border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--c) 45%, transparent), transparent 68%); animation: endglow 2.3s ease-in-out infinite; animation-delay: var(--d); }
+@keyframes endglow { 0%, 100% { opacity: .55; transform: translateX(-50%) scale(.9); } 50% { opacity: 1; transform: translateX(-50%) scale(1.05); } }
+.endtap { margin: 2px 0 10px; font-size: 13px; text-align: center; }
+.endinfo:empty { display: none; }
+.endinfo { border: 1px solid var(--line); border-top: 3px solid var(--c); border-radius: var(--radius); background: var(--panel); padding: 12px 14px; display: grid; gap: 10px; }
+.endinfo > h3 { margin: 0; font-size: 19px; }
+.endinfo .pchip .stars { font-style: normal; color: var(--gold); }
+.endhits { margin: 0; padding: 0; list-style: none; display: grid; gap: 5px; }
+.endhits li { display: flex; gap: 10px; align-items: baseline; font-size: 14px; }
+.endhits b { min-width: 46px; color: #f08a7a; font-size: 17px; }
+.endhits em { margin-left: auto; font-style: normal; font-weight: 800; letter-spacing: .05em; color: var(--gold); }
+.endwords { margin: 14px 0 0; }
+.endwords h3 { margin: 0 0 6px; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
+.endwords .pchip { font-size: 15px; letter-spacing: .04em; }
+.endwords .pchip small { color: var(--faint); font-weight: 600; }
+@media (prefers-reduced-motion: reduce) { .confetti, .endhero .sp, .endglow, .ending.victory .logo { animation: none !important; } }
 
 /* ---------- Title scene: "Za govor!" over a dusk landscape (src/title.js, art from tools/art_title.py) ----------
    Sizes are in art pixels times --s, the whole-number scale; animations move one art pixel per step. */
@@ -3023,7 +3071,7 @@ const xpNeed = () => 100 * S.level;
 const letterEq = (tile, typed) => tile === typed;
 
 // Version of this build, filled in by build.py from package.json and git (see CHANGELOG.md).
-const BUILD = {"version": "0.22.0", "stage": "zaprta alfa", "commit": "b8a813b"};
+const BUILD = {"version": "0.22.0", "stage": "zaprta alfa", "commit": ""};
 const app = $('#app');
 let SCR = null;   // current screen container
 // There is no top bar: pages under the menu have a sticky way back, timed puzzles a Premor button in their header,
@@ -3984,7 +4032,7 @@ function resolveWord(w, path) {
   B.words++; B.stats.words++;
   if (w.length > B.stats.longest.length) B.stats.longest = w;
   B.meter = Math.min(METER_MAX, B.meter + w.length * rep * (has('mokosino-vreteno') ? 1.3 : 1));
-  if (S.run) S.run.words++;
+  if (S.run) { S.run.words++; noteLongWord(w); }   // the ending shows the journey's longest words
   if (B.meter >= METER_MAX) fb('Zagovor je pripravljen — pritisni presledek.', 'ok');
   scorchedUsed(path);   // the Lintvern's scorched letters burn whoever uses them
   path.forEach(i => { B.grid[i] = newTile(); });
@@ -4010,7 +4058,7 @@ function heroAct(a, w) {
   const card = { tier: a.tier, c: hero.c, name: hero.name, move: hero.moves[a.tier - 1], word: UP(w), portrait: hero.ini, stack: a.n, art: hero.id };
   attackAnim(el, a.tier, UI.scene); S.lastHero = a.k;
   // Ajdovska deklica, Erazem, Kralj Matjaž, Kresnik and Kurent: their own kits with ranks 1–3 (src/progression.js)
-  if (hero.kit === 'reviewed') { reviewedAct(a, target, card); spawnCard(el, card); renderEnemies(); return; }
+  if (hero.kit === 'reviewed') { reviewedAct(a, target, card); spawnCard(el, card); noteHit(hero.id, card); renderEnemies(); return; }
   noteAttack(target, a.k);   // the party's XP counts every hero's attacks (src/progression.js)
   const others = () => B.enemies.filter(e => e !== target && e.hp > 0), alive = () => B.enemies.filter(e => e.hp > 0);
   const hit = (m, e = target) => damageEnemy(e, m * p + rallyBonus(a.k, e === target), { crit: a.crit, by: a.k });   // + Kraljeva vojska's bonus, once
@@ -4094,7 +4142,7 @@ function heroAct(a, w) {
     if (said.length) card.value = [card.value, ...said].filter(Boolean).join(' · ');
     renderPartyHp();
   }
-  spawnCard(el, card);
+  spawnCard(el, card); noteHit(hero.id, card);   // the ending shows each hero's best hits (src/journey.js)
   renderEnemies();
 }
 
@@ -4657,7 +4705,8 @@ function openCrossword(kind, id, opts = {}) {
   // Opened by a tap or key press, this also opens the phone keyboard; opened by an enemy, the player taps the grid.
   focusCwInput();
   if (S.mobile) UI.puzzle.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  fitSoon(); showTut(D.style === 'wheel' ? 'kolo' : kind);
+  // the wheel's rules wait behind its ? button (Game Director, 27 Nov 2026); the typed crosswords still introduce themselves
+  fitSoon(); if (D.style !== 'wheel') showTut(kind);
 }
 const cellKey = (e, p) => (e.row + (e.dir === 'D' ? p : 0)) + ',' + (e.col + (e.dir === 'A' ? p : 0));
 // Pressing a clue, a cell or a banner button must not blur the input first: the blur redraws the banner,
@@ -4670,6 +4719,7 @@ function focusCwInput() { const C = B && B.cw; if (C && C.input) { try { C.input
 
 // Built once per crossword; typing only repaints (so the input keeps focus and the phone keyboard stays open)
 function renderCrossword() {
+  const bt = UI.puzzle && UI.puzzle.closest('.battle'); if (bt) bt.classList.toggle('wheelon', isWheel());   // no word bar under the scene for the wheel
   if (isWheel()) { renderWheel(); return; }   // Kolo črk (src/wheel.js)
   const C = B.cw, D = C.D;
   const label = { finisher: 'Zagovor', lock: 'Zaklepanje', ambush: 'Zaseda' }[C.kind];
@@ -4845,6 +4895,7 @@ function cwTarget() { return B.enemies[B.target] && B.enemies[B.target].hp > 0 ?
 const crk = n => n === 1 ? 'črka' : n === 2 ? 'črki' : n <= 4 ? 'črke' : 'črk';
 function cwEntrySolved(e, hidden = 0, aided = false) {
   const C = B.cw, len = e.answer.length, word = UP(e.answer), lv = lvlMult(), pw = aided ? 0.5 : 1;
+  if (!e.geslo) noteLongWord(e.answer.toLowerCase());
   if (e.geslo) {
     // the keyword is free once every row is solved; guessing it early multiplies the zagovor
     C.gesloHidden = hidden; C.gesloBonus = 1 + 0.15 * hidden;
@@ -4931,7 +4982,7 @@ function cwFail() {
     log('Opazili so te. Bitka se nadaljuje brez nadaljnje prednosti.'); fb('Opazili so te.', 'warn');
   }
 }
-function closeCrossword() { B.cw = null; UI.cwTimer = null; renderPuzzle(); renderSide(); renderWord(); fitSoon(); if (!B.over) showTut('mesh'); }
+function closeCrossword() { B.cw = null; UI.cwTimer = null; const bt = UI.puzzle && UI.puzzle.closest('.battle'); if (bt) bt.classList.remove('wheelon'); renderPuzzle(); renderSide(); renderWord(); fitSoon(); if (!B.over) showTut('mesh'); }
 
 
 // ------------------------------------------------------------ battle end
@@ -5902,20 +5953,59 @@ function openShop(stop) {
 }
 
 // ------------------------------------------------------------ the end of the road
+// What the ending shows (Game Director, 27 Nov 2026): each hero's three hardest hits of the journey (from the battle
+// card of the attack: its move, word and damage) and the journey's six longest words (letter mesh and crosswords).
+function noteHit(id, card) {
+  const R = S.run, m = R && /−(\d+)/.exec(String(card.value || ''));
+  if (!m) return;
+  const L = ((R.hits = R.hits || {})[id] = R.hits[id] || []);
+  L.push({ d: +m[1], move: card.move, word: card.word || '' }); L.sort((a, b) => b.d - a.d); L.length = Math.min(L.length, 3);
+}
+function noteLongWord(w) {
+  const R = S.run; if (!R || !w) return;
+  const L = (R.long = R.long || []);
+  if (L.includes(w)) return;
+  L.push(w); L.sort((a, b) => [...b].length - [...a].length || a.localeCompare(b, 'sl')); L.length = Math.min(L.length, 6);
+}
 function renderEnding() {
   const R = S.run || { battles: 0, words: 0, gold: 0, relics: [] };
   statJourney(true);   // src/stats.js, once
   achJourneyWon();   // src/achievements.js: the journey, Znanje, story cards (who was alive when Lintvern fell)
   R.over = true;   // a finished journey cannot be continued from the menu
   clearSave();
-  SCR.append(h('div', { class: 'title ending' },
-    h('div', { class: 'logo' }, 'Ljubljana je rešena'),
+  // a victory: the whole party cheers close up (the fallen get up for it), confetti in the colours of the folk border;
+  // tapping a hero shows the skills they learned and their hardest hits
+  const info = h('div', { class: 'endinfo', 'aria-live': 'polite' });
+  const heroBtns = HEROES.map((hr, k) => h('button', { class: 'endhero', style: { '--c': hr.c, '--d': (k * .22) + 's' }, 'aria-label': `${hr.name}: veščine in najmočnejši udarci`,
+    onclick: () => showEndHero(k) }, h('span', { class: 'endglow', 'aria-hidden': 'true' }), spriteEl(hr.id, hr.c), h('b', {}, hr.name)));
+  function showEndHero(k) {
+    const hr = HEROES[k], st = S.heroes[k], hits = (R.hits || {})[hr.id] || [];
+    heroBtns.forEach((b, i) => b.classList.toggle('on', i === k));
+    info.innerHTML = '';
+    info.style.setProperty('--c', hr.c);
+    info.append(h('h3', {}, hr.name, h('span', { class: 'muted' }, ` · raven ${st.lvl}`)),
+      h('div', { class: 'psec' }, h('h3', {}, 'Veščine'), h('div', { class: 'pchips' }, hr.moves.map((m, t) => { const r = st.sk ? st.sk[t] : (t === 0 ? 1 : 0);
+        return h('span', { class: 'pchip' + (r ? '' : ' w') }, m, r > 1 ? h('i', { class: 'stars' }, ' ' + '★'.repeat(r - 1)) : null, r ? null : h('small', {}, ' · še ne zna')); }))),
+      h('div', { class: 'psec' }, h('h3', {}, 'Najmočnejši udarci'), hits.length
+        ? h('ol', { class: 'endhits' }, hits.map(x => h('li', {}, h('b', {}, `−${x.d}`), h('span', {}, x.move), x.word ? h('em', {}, x.word) : null)))
+        : h('p', { class: 'muted' }, 'Na tej poti ni zapisanih udarcev.')));
+    sfx('sel', { rate: 1.1 });
+  }
+  const long = R.long || [];
+  const confetti = h('div', { class: 'confetti', 'aria-hidden': 'true' }, Array.from({ length: 28 }, (_, i) => h('i', { style: { left: (i * 37 % 100) + '%', '--d': (-(i * 0.43) % 6) + 's', '--x': ((i % 5) - 2) * 14 + 'px', '--k': ['#c8463a', '#f6d36a', '#f2ead8', '#4f8a4a', '#4c8ff0'][i % 5] } })));
+  SCR.append(h('div', { class: 'title ending victory' },
+    confetti,
+    h('div', { class: 'logo' }, 'Ljubljana je rešena!'),
     h('div', { class: 'tagline' }, 'Lintvern je premagan. Z grajskega stolpa se vidi vsa pot, ki si jo prehodil — od Ptuja do sem.'),
     h('div', { class: 'folk-rule' }),
-    h('div', { class: 'endparty' }, HEROES.map((hr, k) => h('figure', {}, spriteEl(hr.id, hr.c, S.heroes[k].down ? 'down' : ''), h('figcaption', {}, hr.name)))),
+    h('div', { class: 'endparty cheer' }, heroBtns),
+    h('p', { class: 'endtap muted' }, 'Pritisni junaka: njegove veščine in najmočnejši udarci.'),
+    info,
     h('div', { class: 'stats' },
       h('div', {}, 'Bitke'), h('div', {}, R.battles), h('div', {}, 'Izrečene besede'), h('div', {}, R.words),
-      h('div', {}, 'Zlatniki'), h('div', {}, R.gold), h('div', {}, 'Predmeti'), h('div', {}, R.relics.length ? R.relics.map(id => ITEMS[id].name).join(', ') : '—')),
+      h('div', {}, 'Zlatniki'), h('div', {}, R.gold)),
+    long.length ? h('div', { class: 'endwords' }, h('h3', {}, 'Najdaljše besede'),
+      h('div', { class: 'pchips' }, long.map(w => h('span', { class: 'pchip w' }, UP(w), h('small', {}, ` ${[...w].length}`))))) : null,
     h('p', { class: 'thanks' }, 'Hvala, ker si prehodil pot do konca.'),
     inspiredLine(),
     h('div', { class: 'row', style: { 'justify-content': 'flex-start' } }, h('button', { class: 'btn primary', onclick: leaveEnding }, 'Nova pot ', h('kbd', {}, 'Enter')))));
@@ -8847,9 +8937,12 @@ function wheelSetup(C) {
 
 function renderWheel() {
   const C = B.cw, D = C.D, n = D.letters.length;
-  UI.puzzle.append(h('div', { class: 'cwhead' }, h('span', { class: 'k finisher' }, 'Zagovor'),
-    h('h3', {}, `${D.title} — povleci po črkah na kolesu. Vsaka beseda iz križanke sproži napad, cela križanka zagovor.`), h('span', { class: 'grow' }),
-    h('button', { class: 'btn small', onclick: () => { closeCrossword(); fb('Zagovor prekinjen — moč ostane shranjena.', 'warn'); } }, 'Prekliči zagovor')));
+  // one short row (Game Director, 27 Nov 2026: save vertical space, no rules repeated): the rules are behind ?, which
+  // opens Kako se igra over the puzzle and stops the clock; a gold dot marks it until it has been opened once
+  const seen = TUT_SEEN.has('kolo');
+  UI.puzzle.append(h('div', { class: 'whead' }, h('span', { class: 'k finisher' }, 'Zagovor'), h('b', {}, D.title), h('span', { class: 'grow' }),
+    h('button', { class: 'wq' + (seen ? '' : ' new'), type: 'button', 'aria-label': 'Kako se igra kolo črk', title: 'Kako se igra', onclick: () => { showTut('kolo', true); wheelPaint(); } }, '?'),
+    h('button', { class: 'wx', type: 'button', 'aria-label': 'Prekliči zagovor (moč ostane)', title: 'Prekliči zagovor — moč ostane', onclick: () => { closeCrossword(); fb('Zagovor prekinjen — moč ostane shranjena.', 'warn'); } }, '✕')));
   C.cellEls = new Map();
   const grid = h('div', { class: 'cwgrid wgrid', style: { 'grid-template-columns': `repeat(${D.cols}, var(--cell))` } });
   for (let r = 0; r < D.rows; r++) for (let c = 0; c < D.cols; c++) {
@@ -8866,9 +8959,10 @@ function renderWheel() {
     h('button', { class: 'wshuffle', title: 'Premešaj črke (presledek)', 'aria-label': 'Premešaj črke', onpointerdown: e => e.stopPropagation(), onclick: wheelShuffle }, '⟳'));
   wheelPointer(C);
   C.wordEl = h('div', { class: 'wword', 'aria-live': 'polite' });
-  C.revBtn = C.reveals > 0 ? h('button', { class: 'btn small', title: 'Pokaže eno črko v križanki; beseda z njo udari s pol moči', onclick: wheelReveal }, '') : null;
+  C.revBtn = C.reveals > 0 ? h('button', { class: 'btn small wrev', title: 'Razkrij črko: pokaže eno črko v križanki; beseda z njo udari s pol moči', onclick: wheelReveal }, '') : null;
   C.extraEl = h('span', { class: 'wextra muted' });
-  UI.puzzle.append(h('div', { class: 'wbody' }, h('div', { class: 'wgridwrap' }, grid), C.wordEl, C.wheel, h('div', { class: 'wtools' }, C.revBtn, C.extraEl)));
+  // the word being made sits between Razkrij črko and the count, in one row over the wheel
+  UI.puzzle.append(h('div', { class: 'wbody' }, h('div', { class: 'wgridwrap' }, grid), h('div', { class: 'wrow' }, C.revBtn || h('span'), C.wordEl, C.extraEl), C.wheel));
   if (B.paused) UI.puzzle.append(h('div', { class: 'pausebanner' }, h('div', {}, 'Premor — ', h('button', { class: 'btn', onclick: togglePause }, 'Nadaljuj'))));
   wheelPaint();
 }
@@ -8884,8 +8978,10 @@ function wheelPaint() {
   const pts = C.sel.map(i => C.pos[i]); if (C.drag && C.pt && pts.length) pts.push(C.pt);
   C.line.setAttribute('points', pts.map(p => p.join(',')).join(' '));
   if (!C.wordEl.classList.contains('said')) C.wordEl.textContent = UP(C.sel.map(i => C.D.letters[i]).join(''));
-  if (C.revBtn) { C.revBtn.textContent = `Razkrij črko · ${C.reveals}`; C.revBtn.disabled = C.reveals <= 0; }
-  C.extraEl.textContent = C.extra.size ? `Dodatne besede: ${C.extra.size}` : `Besed v križanki: ${C.D.entries.length - C.solved.size}`;
+  if (C.revBtn) { C.revBtn.textContent = `Razkrij · ${C.reveals}`; C.revBtn.disabled = C.reveals <= 0; }
+  C.extraEl.textContent = `še ${C.D.entries.length - C.solved.size}` + (C.extra.size ? ` · +${C.extra.size}` : '');
+  C.extraEl.title = `Besed v križanki še: ${C.D.entries.length - C.solved.size}` + (C.extra.size ? `; dodatnih besed: ${C.extra.size}` : '');
+  const q = UI.puzzle.querySelector('.wq'); if (q) q.classList.toggle('new', !TUT_SEEN.has('kolo'));
 }
 // drag over the letters (the line follows the finger) and let go to send; or tap them one by one and tap the last
 // one again to send. Going back to the letter before the last takes the last one off.
@@ -9115,7 +9211,7 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { ACH, get ACHP() { return ACHP; }, ACH_WORDS, achReset, achCheck, achProgress, cardPainting, hasSkillCard, openSkillCard, achSkillFired, achSkillRank, makeWheel, wheelOn, setWheelPref, WHEEL_LV, wheelSubmit, wheelReveal, wheelShuffle, waitingPrayer, migratePrayers, get PARTY_MAX() { return PARTY_MAX; }, FOE_SLOTS, stepIn, statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, noteSupport, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), openShop, openBag, SHOP_MAX, BATTLE_GOLD, CHEST_GOLD, noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, godWaits, godArrives, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, PLAYSTYLE, ROLES, ownC, SLOT_C, skillPanel, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { ACH, get ACHP() { return ACHP; }, ACH_WORDS, achReset, achCheck, achProgress, cardPainting, hasSkillCard, openSkillCard, achSkillFired, achSkillRank, noteHit, noteLongWord, makeWheel, wheelOn, setWheelPref, WHEEL_LV, wheelSubmit, wheelReveal, wheelShuffle, waitingPrayer, migratePrayers, get PARTY_MAX() { return PARTY_MAX; }, FOE_SLOTS, stepIn, statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, noteSupport, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), openShop, openBag, SHOP_MAX, BATTLE_GOLD, CHEST_GOLD, noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, godWaits, godArrives, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, PLAYSTYLE, ROLES, ownC, SLOT_C, skillPanel, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 
 </script>
