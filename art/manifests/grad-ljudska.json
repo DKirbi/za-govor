@@ -140,7 +140,8 @@
         100
       ],
       "fit": "fill",
-      "mirrored": "both sides"
+      "mirrored": "both sides",
+      "floor": 0.25
     },
     {
       "id": "foreground-grass-lane",

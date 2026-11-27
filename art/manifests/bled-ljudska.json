@@ -124,7 +124,7 @@
       "order": 6,
       "file": "art/exports/environments/bled-ljudska/lake-water.webp",
       "width": 1984,
-      "height": 149,
+      "height": 169,
       "x": 2,
       "y": 283,
       "alpha": true,
@@ -139,7 +139,8 @@
         100
       ],
       "fit": "fill",
-      "mirrored": "both sides"
+      "mirrored": "both sides",
+      "floor": 0.5
     },
     {
       "id": "reflections",

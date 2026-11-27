@@ -116,7 +116,8 @@
         100
       ],
       "fit": "fill",
-      "mirrored": "both sides"
+      "mirrored": "both sides",
+      "floor": 0.5
     },
     {
       "id": "framing-trees",
@@ -138,7 +139,8 @@
         100
       ],
       "fit": "fill",
-      "mirrored": "both sides"
+      "mirrored": "both sides",
+      "floor": 0.25
     },
     {
       "id": "grass-lane",

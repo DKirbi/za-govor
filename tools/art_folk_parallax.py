@@ -25,13 +25,15 @@ The PNG masters stay where Codex delivered them and are never changed. Only the 
   python3 tools/art_folk_parallax.py --composite    also write a check composite to the system temp folder
 """
 import hashlib, io, json, pathlib, sys, tempfile
-from PIL import Image, ImageOps
+from PIL import Image, ImageFilter, ImageOps
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 VIEW_H = 560
 VIEW_W = round(VIEW_H * 16 / 9)   # 996
 QUALITY = 80
 LANE_EXT = 0.35   # how far below itself the lane's mirror image reaches, in view heights (the most a lane rises in battle)
+FLOOR_REACH = 8   # how far a grounded slice (`floor`) reaches under the lowest top edge of the lane, in view px
+OPAQUE = 160      # alpha from which a pixel counts as paint for `floor`
 
 # Per region, back to front: layer id, study file, preview box (left, top, width, height in % of the 16:9 scene;
 # height None = auto, from the picture's own shape), fit, and options:
@@ -45,7 +47,13 @@ LANE_EXT = 0.35   # how far below itself the lane's mirror image reaches, in vie
 #   wrap: a tiling island with tapered ends: its last `wrap` view px are laid over its first, so the copies overlap
 #         instead of leaving a gap between them;
 #   rows: (top, bottom) only these view rows of the picture (bottom None = to the end), for a picture that lies at two
-#         depths and is cut in two (the same file, two layers).
+#         depths and is cut in two (the same file, two layers);
+#   blur: a near layer out of focus: blurred by this radius in view px (premultiplied, so no dark fringe);
+#   floor: the slice stands on the ground (Game Director, 27 Nov 2026: slices floated over the lane with the sky showing
+#          under them). In every column whose lowest paint lies in the lower `floor` share of the slice's painted height,
+#          the gap under that paint is filled with the slice's floor colour (the median of its paint in its lowest
+#          rows), down to FLOOR_REACH view px below the lowest top edge of the walking lane. The slice then overlaps the
+#          lane in every column at any scroll position, as slices overlap in Codex's own composite.
 # Boxes reproduce Codex's layered-composite-preview.png: full-scene cutouts at 1:1 (100 %), other canvases at the box
 # of preview.html (whose wider boxes for full-scene layers only make room for its pan). Speeds: data/backgrounds.json.
 STUDIES = {
@@ -56,8 +64,8 @@ STUDIES = {
             ('moon', 'moon.png', (0, 0, 100, 100), 'fill', {}),
             ('clouds', 'clouds.png', (0, 0, 100, 100), 'fill', {'tile': True}),
             ('distant-karst-ridge', 'distant-karst-ridge.png', (0, 0, 100, 100), 'fill', {'tile': True}),
-            ('doline-forest', 'doline-forest.png', (0, 0, 100, 100), 'fill', {'tile': True}),
-            ('framing-trees', 'framing-trees.png', (0, 0, 100, 100), 'fill', {'tile': True}),
+            ('doline-forest', 'doline-forest.png', (0, 0, 100, 100), 'fill', {'tile': True, 'floor': 0.5}),
+            ('framing-trees', 'framing-trees.png', (0, 0, 100, 100), 'fill', {'tile': True, 'floor': 0.25}),
             ('grass-lane', 'foreground-grass-lane.png', (0, 0, 100, 100), 'fill', {'tile': True, 'stand': True}),
             ('near-rocks-grass', 'near-foreground-rocks-grass.png', (0, 0, 100, 100), 'fill', {'tile': True, 'front': True}),
         ],
@@ -83,7 +91,7 @@ STUDIES = {
             ('clouds', 'clouds.png', (0, 0, 100, 100), 'fill', {'tile': True}),
             ('distant-hills', 'distant-hills.png', (0, 7.4, 100, 59.2), 'fill', {'tile': True}),
             ('mountain', 'peca-mountain.png', (0, 10.6, 100, 51), 'fill', {'tile': True, 'period': 2}),
-            ('forest', 'midground-forest.png', (0, 20.7, 100, 51), 'fill', {'tile': True}),
+            ('forest', 'midground-forest.png', (0, 20.7, 100, 51), 'fill', {'tile': True, 'floor': 0.5}),
             ('cave-rock', 'cave-rock.png', (36.5, 29.8, 63.5, 44.6), 'fill', {'tile': True, 'period': 3}),
             ('ground', 'foreground-ground.png', (-35, 31, 170, 80), 'fill', {'tile': True, 'stand': True}),
             ('oak', 'foreground-oak.png', (0, 0, 77.8, 69.1), 'fill', {'tile': True, 'period': 2.5}),
@@ -97,10 +105,14 @@ STUDIES = {
             ('distant-foothills', 'distant-foothills.png', (0, 0, 100, 100), 'fill', {'tile': True}),
             ('distant-peaks', 'distant-peaks.png', (0, 4, 100, 55.6), 'fill', {'tile': True, 'period': 2}),
             ('zlatorog', 'zlatorog-ibex.png', (20, 31, 5.5, None), 'fill', {'tile': True, 'period': 2, 'mirror': False}),   # a hoof tip at the edge, not a cut
-            ('midground-forest', 'midground-forest.png', (-22, -8, 144, 85), 'fill', {'tile': True}),
+            ('midground-forest', 'midground-forest.png', (-22, -8, 144, 85), 'fill', {'tile': True, 'floor': 0.5}),
             ('grass-lane', 'foreground-grass-lane.png', (-48, -14, 196, 116), 'fill', {'tile': True, 'stand': True}),
-            ('spruces', 'foreground-spruces.png', (0, -40, 100, 100), 'fill', {'tile': True, 'period': 1.5}),
             ('flowers', 'foreground-flowers.png', (-15, 23, 130, 77), 'fill', {'tile': True, 'front': True}),
+            # Codex's edge trees, lifted 40 % up the scene, ended in mid-air above the lane and slid fast over the forest
+            # (Game Director, 27 Nov 2026). Now they are near trees: 1.6 × as large, their trunks below the scene's bottom
+            # edge, blurred (out of focus, close to the eye), in front of the party (and of the flowers: nearer, faster) on the road only (`passing` in
+            # data/backgrounds.json), so the party seems to walk through a forest for a moment.
+            ('spruces', 'foreground-spruces.png', (0, -39.5, 160, 160), 'fill', {'tile': True, 'period': 2.5, 'front': True, 'blur': 5}),
         ],
     },
     'bled': {
@@ -111,7 +123,7 @@ STUDIES = {
             ('distant-mountains', 'distant-mountains.png', (0, 0, 100, 100), 'fill', {'tile': True}),
             ('forested-shoreline', 'forested-shoreline.png', (0, 0, 100, 100), 'fill', {'tile': True}),
             ('castle-cliff', 'castle-cliff.png', (0, 0, 100, 100), 'fill', {'tile': True, 'period': 2.5}),
-            ('lake-water', 'lake-water.png', (0, 0, 100, 100), 'fill', {'tile': True}),
+            ('lake-water', 'lake-water.png', (0, 0, 100, 100), 'fill', {'tile': True, 'floor': 0.5}),
             ('reflections', 'water-reflections.png', (0, 0, 100, 100), 'fill', {'tile': True, 'period': 2.5}),   # castle and island mirrored
             ('island-church', 'island-church.png', (22.5, 4, 70, None), 'fill', {'tile': True, 'period': 2.5}),   # in front of the lake, as Codex's preview
             ('grass-lane', 'foreground-grass-lane.png', (0, 4, 100, 100), 'fill', {'tile': True, 'stand': True}),
@@ -131,8 +143,8 @@ STUDIES = {
             ('sea', 'salt-pan-water.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'rows': (0, 247)}),
             ('far-shore', 'salt-pan-far-shore.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
             ('house', 'salt-worker-house.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'period': 2}),
-            ('water', 'salt-pan-water.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'rows': (254, None)}),
-            ('embankments', 'salt-pan-embankments.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
+            ('water', 'salt-pan-water.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'rows': (254, None), 'floor': 0.5}),
+            ('embankments', 'salt-pan-embankments.png', (-15, 0, 130, 100), 'fill', {'tile': True}),   # not grounded: the water under it is
             ('reflections', 'sunset-reflections.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
             ('grass-lane', 'foreground-grass-lane.png', (-15, -0.85, 130, 101), 'fill', {'tile': True, 'stand': True}),
             ('near-grass', 'near-foreground-salt-grass.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'front': True}),
@@ -159,7 +171,7 @@ STUDIES = {
             ('far-meadow', 'far-meadow-transition.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
             # an island of water and reeds with tapered ends: tiled as it is, a wedge of the dawn sky showed down to the
             # lane between two copies (27 Nov 2026), so each copy's tapered end overlaps the next one's start
-            ('channels', 'wetland-channels-reeds.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'wrap': 170}),
+            ('channels', 'wetland-channels-reeds.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'wrap': 170, 'floor': 0.5}),
             ('landmarks', 'willows-and-pile-dwellings.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'period': 2}),
             ('reflections', 'water-reflections.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
             ('grass-lane', 'foreground-grass-lane.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'stand': True}),
@@ -186,7 +198,7 @@ STUDIES = {
             ('distant-basin-hills', 'distant-basin-hills.png', (0, 0, 100, 100), 'fill', {'tile': True}),
             ('ljubljana-old-town', 'ljubljana-old-town.png', (0, 0, 100, 100), 'fill', {'tile': True, 'period': 2}),
             ('castle-hill-and-fortress', 'castle-hill-and-fortress.png', (0, 0, 100, 100), 'fill', {'tile': True, 'period': 2}),
-            ('near-foreground-tree-frame', 'near-foreground-tree-frame.png', (0, 0, 100, 100), 'fill', {'tile': True, 'period': 2.5}),
+            ('near-foreground-tree-frame', 'near-foreground-tree-frame.png', (0, 0, 100, 100), 'fill', {'tile': True, 'period': 2.5, 'floor': 0.25}),
             ('foreground-grass-lane', 'foreground-grass-lane.png', (0, 0, 100, 100), 'fill', {'tile': True, 'stand': True}),
             ('near-foreground-flowers', 'near-foreground-flowers.png', (0, 0, 100, 100), 'fill', {'tile': True, 'front': True}),
         ],
@@ -276,6 +288,44 @@ def padded(im, period):
     return out
 
 
+def lane_low_top(cfg):
+    """the lowest top edge of the walking lane in view rows: the most a slice must reach down to meet it in every column"""
+    for lid, f, box, fit, opt in cfg['layers']:
+        if opt.get('stand'):
+            im, x, y = place(Image.open(master(cfg['study'], f)).convert('RGBA'), box, fit)
+            a, w, h = im.getchannel('A').load(), im.width, im.height
+            tops = [next((r for r in range(h) if a[c, r] > OPAQUE), None) for c in range(w)]
+            return y + max(t for t in tops if t is not None)
+    return None
+
+
+def grounded(im, x, y, share, reach):
+    """`floor`: the slice's gaps under its paint filled with its floor colour down to view row `reach` (see STUDIES)"""
+    h = max(im.height, reach - y + 1)
+    if h > im.height:
+        big = Image.new('RGBA', (im.width, h)); big.paste(im, (0, 0)); im = big
+    a, px, w = im.getchannel('A').load(), im.load(), im.width
+    low = [next((r for r in range(im.height - 1, -1, -1) if a[c, r] > OPAQUE), None) for c in range(w)]
+    painted = [r for r in low if r is not None]
+    if not painted:
+        return im
+    top = min(next((r for r in range(im.height) if a[c, r] > OPAQUE), im.height) for c in range(w))
+    bottom = max(painted)
+    sample = sorted((px[c, r][:3] for c in range(0, w, 2) for r in range(max(0, bottom - 14), bottom + 1) if a[c, r] > 200), key=sum)
+    if not sample:
+        return im
+    floor = sample[len(sample) // 2]
+    edge = bottom - share * (bottom - top)
+    under = Image.new('RGBA', im.size)
+    u = under.load()
+    for c, b in enumerate(low):
+        if b is not None and b >= edge:
+            for r in range(b + 1, reach - y + 1):
+                u[c, r] = floor + (255,)
+    under.alpha_composite(im)   # the slice's own paint (and its soft edge) stays on top of the fill
+    return under
+
+
 def lane_below(im):
     ext = min(im.height, round(VIEW_H * LANE_EXT))
     out = Image.new('RGBA', (im.width, im.height + ext))
@@ -300,6 +350,12 @@ def build(key, composite=False):
             if b > a:
                 keep.paste(im.crop((0, a, im.width, b)), (0, a))
             im = keep
+        if opt.get('blur'):   # out of focus, close to the eye: blurred with premultiplied alpha (no dark fringe)
+            pad = opt['blur'] * 3
+            big = Image.new('RGBA', (im.width + 2 * pad, im.height + 2 * pad)); big.paste(im, (pad, pad))
+            im = big.convert('RGBa').filter(ImageFilter.GaussianBlur(opt['blur'])).convert('RGBA'); x -= pad; y -= pad
+        if opt.get('floor'):   # the slice stands on the ground: no sky under it above the lane
+            im = grounded(im, x, y, opt['floor'], lane_low_top(cfg) + FLOOR_REACH)
         if composite:
             comp.alpha_composite(im.crop((max(0, -x), max(0, -y), min(im.width, VIEW_W - x), min(im.height, VIEW_H - y))), (max(0, x), max(0, y)))
         im, x, y = trim(im, x, y, sides=not opt.get('tile'))
@@ -333,9 +389,12 @@ def build(key, composite=False):
                        'alpha': not opaque, 'tileX': bool(opt.get('tile')), 'role': 'foreground' if opt.get('front') else 'background',
                        'source': src.relative_to(ROOT).as_posix(), 'sourceSha1': sha1(src), 'previewBox': list(box), 'fit': fit,
                        **({'mirrored': 'both sides' if cut_l and cut_r else 'left side' if cut_l else 'right side'} if mirror else {}), **({'period': period} if period else {}),
-                       **({'laneMirroredBelow': True} if opt.get('stand') else {}), **({'rows': list(opt['rows'])} if opt.get('rows') else {}), **({'wrap': opt['wrap']} if opt.get('wrap') else {})})
-    man = {'pack': cfg['name'], 'version': '0.1.0', 'status': 'review',
-           'approval': 'OPEN — Game Director review required (first runtime draft, 26 Nov 2026)',
+                       **({'laneMirroredBelow': True} if opt.get('stand') else {}), **({'rows': list(opt['rows'])} if opt.get('rows') else {}), **({'wrap': opt['wrap']} if opt.get('wrap') else {}),
+                       **({'floor': opt['floor']} if opt.get('floor') else {}), **({'blur': opt['blur']} if opt.get('blur') else {})})
+    mp = ROOT / 'art/manifests' / f'{pack}.json'
+    old = json.loads(mp.read_text(encoding='utf-8')) if mp.is_file() else {}
+    man = {'pack': cfg['name'], 'version': '0.1.0', 'status': old.get('status', 'review'),
+           'approval': old.get('approval', 'OPEN — Game Director review required (first runtime draft, 26 Nov 2026)'),
            'canvas': {'width': VIEW_W, 'height': VIEW_H, 'aspectRatio': '16:9',
                       'basis': f'The 16:9 scene of Codex\'s docs/art-benchmarks/{cfg["study"]}-parallax/preview.html at {VIEW_H} px'},
            'madeBy': 'tools/art_folk_parallax.py from Codex\'s study PNGs (unchanged masters); WebP q%d' % QUALITY,

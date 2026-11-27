@@ -63,7 +63,8 @@ const bgMotion = () => !(window.matchMedia && matchMedia('(prefers-reduced-motio
 function bgLayers(scene, key, where) {
   const v = bgVariant(key), P = v === 'A' ? null : bgPack(key, v);
   if (!P || !scene) return null;
-  const els = P.layers.map(L => h('i', { class: 'pbg-l' + (L.tileX ? ' tx' : '') + (L.front ? ' front' : ''), 'data-layer': L.id, 'aria-hidden': 'true',
+  // `passing`: near trees the party walks past (Triglav, 27 Nov 2026): on the road only, faded while the party stands (game.css)
+  const els = P.layers.map(L => h('i', { class: 'pbg-l' + (L.tileX ? ' tx' : '') + (L.front ? ' front' : '') + (L.passing ? ' passing' : ''), 'data-layer': L.id, 'aria-hidden': 'true',
     style: { 'background-image': `url(${L.src})` } }));
   const back = els.filter((el, i) => !P.layers[i].front), front = els.filter((el, i) => P.layers[i].front);
   const dim = { battle: 'linear-gradient(rgba(14,16,26,.36), rgba(14,16,26,.16))', travel: 'linear-gradient(rgba(14,16,26,.2), rgba(14,16,26,.05))' }[where];

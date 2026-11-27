@@ -2,7 +2,7 @@
   "pack": "Peca — ljudska poslikava (Codex)",
   "version": "0.1.0",
   "status": "review",
-  "approval": "OPEN — Game Director review required (first in-game draft, 25 Nov 2026)",
+  "approval": "OPEN — Game Director review required (first runtime draft, 26 Nov 2026)",
   "canvas": {
     "width": 996,
     "height": 560,
@@ -105,7 +105,7 @@
       "order": 5,
       "file": "art/exports/environments/peca-ljudska/forest.webp",
       "width": 1986,
-      "height": 193,
+      "height": 206,
       "x": 0,
       "y": 159,
       "alpha": true,
@@ -120,7 +120,8 @@
         51
       ],
       "fit": "fill",
-      "mirrored": "right side"
+      "mirrored": "right side",
+      "floor": 0.5
     },
     {
       "id": "cave-rock",

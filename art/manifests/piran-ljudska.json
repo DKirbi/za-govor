@@ -173,7 +173,7 @@
       "order": 8,
       "file": "art/exports/environments/piran-ljudska/water.webp",
       "width": 2582,
-      "height": 122,
+      "height": 133,
       "x": -147,
       "y": 254,
       "alpha": true,
@@ -192,7 +192,8 @@
       "rows": [
         254,
         null
-      ]
+      ],
+      "floor": 0.5
     },
     {
       "id": "embankments",
