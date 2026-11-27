@@ -123,11 +123,13 @@ function shrinePrompt(stop, pass, train) {
     return { text: met && met.result ? `${where} ${p.name} te je na tej poti že ${p.f ? 'preizkusila' : 'preizkusil'}.` : `${where} ${p.name} te čaka na koncu pokrajine; dveh izzivov hkrati ni.`,
       actions: [{ label: 'Naprej ▶', primary: true, fn: () => pass(true) }, ...extra] };
   }
-  return { text: `${where} Kdor se tu pomoli, izzove ${G.f ? 'boginjo' : 'boga'}.`,
+  return { text: `${where} Kdor se tu pokloni, izzove ${G.f ? 'boginjo' : 'boga'}.`,
     actions: [{ label: 'Stopi v svetišče', primary: true, fn: () => go('shrine', { stop }) }, { label: 'Pojdi mimo', fn: () => pass() }, ...extra] };
 }
 
-// ------------------------------------------------------------ Svetišče: pray to the god's sign
+// ------------------------------------------------------------ Svetišče: bow to the god's sign
+// The button is "Pokloni se" (Game Director, 27 Nov 2026; it was "Pomoli se"): pokloniti se is the usual Slovene
+// for bowing to someone in reverence; nakloniti se reads first as "to lean", and nakloniti komu as "to grant".
 function renderShrine(arg) {
   arg = arg || S.shrineArg; S.shrineArg = arg;
   const R = S.run, stop = arg.stop, id = stop.god, G = GOD[id], ch = CHARS.find(c => c.id === id);
@@ -138,7 +140,7 @@ function renderShrine(arg) {
     stop.done = stop.passed = true; R.prompt = null; arg.prayed = true; chorus();
     mountShell(); renderShrine(arg);
   };
-  arg.actions = arg.prayed ? [{ label: 'Naprej ', primary: true, fn: back }] : [{ label: 'Pomoli se ', primary: true, fn: pray }, { label: 'Pojdi naprej ', fn: leave }];
+  arg.actions = arg.prayed ? [{ label: 'Naprej ', primary: true, fn: back }] : [{ label: 'Pokloni se ', primary: true, fn: pray }, { label: 'Pojdi naprej ', fn: leave }];
   SCR.append(h('div', { class: 'hm shrine', style: { '--c': ch.c } },
     h('div', {}, h('div', { class: 'kind' }, 'Svetišče izziva'), h('h2', {}, 'Svetišče', h('small', {}, `posvečeno ${G.f ? 'boginji' : 'bogu'} ${G.to}`))),
     h('div', { class: 'shrine-body' },
@@ -150,7 +152,7 @@ function renderShrine(arg) {
         arg.prayed
           ? h('div', { class: 'say god' }, godSign(id), h('div', {}, h('b', {}, G.name), '»' + G.answer + '«'))
           : [h('p', { class: 'lead' }, G.look),
-            h('p', {}, `Tu se ne prosi za pomoč, tu se izziva. Če se pomoliš, ti ${G.name} posodi svoj dar: ko beseda nosi tri črke iste barve, ${G.gift}.`),
+            h('p', {}, `Tu se ne prosi za pomoč, tu se izziva. Če se pokloniš, ti ${G.name} posodi svoj dar: ko beseda nosi tri črke iste barve, ${G.gift}.`),
             h('p', {}, `Na koncu te pokrajine, pred kažipotom, pride ${G.name} ${G.f ? 'sama' : 'sam'} in te preizkusi. Boj mora biti pošten, zato pred njim vsem junakom vrne polno zdravje. Če ${G.f ? 'jo' : 'ga'} premagaš, ${G.f ? 'jo' : 'ga'} odkleneš za naslednje poti in ${G.f ? 'njen' : 'njegov'} dar ostane s tabo do konca poti. Če izgubiš, se pot ne konča: junaki so spet tako zdravi kot pred izzivom, dar pa ugasne, ko je za tabo še naslednja pokrajina.`),
             h('p', { class: 'muted' }, 'Na eni poti srečaš le dve svetišči.')])),
     h('div', { class: 'row', style: { 'flex-wrap': 'wrap' } }, arg.actions.map(a => h('button', { class: 'btn' + (a.primary ? ' primary' : ''), onclick: a.fn }, a.label, h('kbd', {}, a.primary ? 'Enter' : 'Esc'))))));

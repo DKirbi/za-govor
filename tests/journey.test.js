@@ -269,7 +269,7 @@ run(async () => {
   await page.keyboard.press('Enter'); await sleep(500);
   const shrine = await page.evaluate(() => ({ screen: window.__ZG.S.screen, h2: document.querySelector('.shrine h2').firstChild.textContent, sign: !!document.querySelector('.shrine .godsign.big'),
     gods: document.querySelectorAll('.shrine .hero.spr').length, btns: [...document.querySelectorAll('.shrine .row .btn')].map(b => b.textContent) }));
-  check(shrine.screen === 'shrine' && shrine.h2 === 'Svetišče' && shrine.sign && shrine.gods === 0 && /^Pomoli se/.test(shrine.btns[0]), 'the page is titled Svetišče and shows the god\'s sign, never the god', JSON.stringify(shrine));
+  check(shrine.screen === 'shrine' && shrine.h2 === 'Svetišče' && shrine.sign && shrine.gods === 0 && /^Pokloni se/.test(shrine.btns[0]), 'the page is titled Svetišče and shows the god\'s sign, never the god', JSON.stringify(shrine));
   await shot('journey-07-shrine');
   await page.keyboard.press('Enter'); await sleep(400);
   const prayed = await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run; return { prayer: (Z.waitingPrayer() || {}).god, gifts: R.gifts.slice(), say: (document.querySelector('.shrine .say.god') || {}).textContent || '',
