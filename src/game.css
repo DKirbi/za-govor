@@ -1517,3 +1517,20 @@ body.mobile .wgrid { --cell: 28px; }
 @keyframes crownbob { 0%, 100% { transform: translate(-50%, 0) rotate(-3deg); } 50% { transform: translate(-50%, -5px) rotate(3deg); } }
 body.mobile .actor.foe.boss > .crown { width: 22px; }
 @media (prefers-reduced-motion: reduce) { .actor.foe.boss > .crown { animation: none; } }
+
+/* Dosežki in junaki: tabs (Dosežki, Junaki, Nasprotniki; Game Director, 27 Nov 2026) */
+.heroes .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin: 4px 0 14px; position: sticky; top: 0; z-index: 2; background: var(--bg); }
+.heroes .tab { flex: 1 1 0; min-height: 44px; padding: 8px 10px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--dim);
+  font: inherit; font-weight: 800; font-size: 15px; cursor: pointer; }
+.heroes .tab.on { color: var(--ink); border-bottom-color: var(--gold); }
+.heroes .tab:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+.foeinfo:empty { display: none; }
+.foeinfo { margin-bottom: 12px; }
+.foegrid .pickcard.on { border-color: var(--gold); }
+.foegrid .pickcard.boss:not(.locked) { border-color: #c0506a88; }
+.foepick .spirit { display: grid; place-items: end center; }
+.foepick .spirit .actor { position: relative; }
+.foepick .spirit { container-type: inline-size; }
+.foepick .spirit .foe.spr { --px: min(2.5px, calc(88cqw / var(--art, 48))); }
+.page .foepick .pdet h2 { display: block; font-size: 24px; letter-spacing: 0; text-transform: none; color: var(--ink); margin: 0; }
+body.mobile .page .foepick .pdet h2 { font-size: 21px; }

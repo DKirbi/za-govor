@@ -160,8 +160,24 @@ run(async () => {
 
   // 7. Dosežki in junaki: met heroes open their card, the others are silhouettes; the dev gallery is one step deeper
   await page.evaluate(() => window.__ZG.go('heroes')); await sleep(200);
-  const hr = await page.evaluate(() => ({ open: document.querySelectorAll('.herogrid button.pickcard').length, locked: document.querySelectorAll('.herogrid .pickcard.locked').length, ach: !!document.querySelector('.heroes .achs .achlist') }));
-  check(hr.open + hr.locked === 15 && hr.open >= 3 && hr.ach, 'Dosežki in junaki lists all fifteen heroes (met ones open) and a place for achievements', JSON.stringify(hr));
+  // three tabs (27 Nov 2026): Dosežki first, then Junaki and Nasprotniki, one panel shown at a time
+  const tb = await page.evaluate(() => ({ tabs: [...document.querySelectorAll('.heroes [role=tab]')].map(t => t.textContent + (t.getAttribute('aria-selected') === 'true' ? '*' : '')),
+    shown: [...document.querySelectorAll('.heroes [role=tabpanel]')].filter(p => !p.hidden).map(p => p.id), ach: !!document.querySelector('#tp-dosezki:not([hidden]) .achs .achlist') }));
+  check(tb.tabs.join() === 'Dosežki*,Junaki,Nasprotniki' && tb.shown.join() === 'tp-dosezki' && tb.ach, 'Dosežki in junaki has three tabs: Dosežki (open), Junaki and Nasprotniki', JSON.stringify(tb));
+  await page.click('#tab-junaki'); await sleep(150);
+  const hr = await page.evaluate(() => ({ open: document.querySelectorAll('.herogrid:not(.foegrid) button.pickcard').length, locked: document.querySelectorAll('.herogrid:not(.foegrid) .pickcard.locked').length,
+    shown: [...document.querySelectorAll('.heroes [role=tabpanel]')].filter(p => !p.hidden).map(p => p.id).join() }));
+  check(hr.open + hr.locked === 15 && hr.open >= 3 && hr.shown === 'tp-junaki', 'the Junaki tab lists all fifteen heroes (met ones open)', JSON.stringify(hr));
+  await page.keyboard.press('ArrowRight'); await sleep(150);
+  const fo = await page.evaluate(() => { const Z = window.__ZG; return { tab: document.activeElement.id, shown: [...document.querySelectorAll('.heroes [role=tabpanel]')].filter(p => !p.hidden).map(p => p.id).join(),
+    cards: document.querySelectorAll('.foegrid .pickcard').length, all: Object.keys(Z.ENEMIES).length, open: document.querySelectorAll('.foegrid button.pickcard').length,
+    known: Object.keys(Z.ENEMIES).filter(k => (Z.ACHP.counters || {})['foe:' + k]).length }; });
+  check(fo.tab === 'tab-nasprotniki' && fo.shown === 'tp-nasprotniki' && fo.cards === fo.all && fo.open === fo.known, 'the Nasprotniki tab (→ from Junaki) shows every enemy in the same view; only the beaten ones are known', JSON.stringify(fo));
+  await page.evaluate(() => { window.__ZG.ACHP.counters['foe:povodni'] = 2; window.__ZG.go('heroes'); }); await sleep(250);
+  await page.click('.foegrid button[data-foe="povodni"]'); await sleep(200);
+  const fd = await page.evaluate(() => { const i = document.querySelector('.foeinfo'); return { name: i.querySelector('h2').textContent, crown: !!i.querySelector('.crown'), chips: [...i.querySelectorAll('.pchip')].map(c => c.textContent), times: /premagan 2-krat/.test(i.textContent) }; });
+  check(fd.name === 'Povodni mož' && fd.crown && fd.chips.includes('Vrtinec') && fd.chips.includes('Ljubljanica') && fd.times, 'an enemy shows its attacks, where it is met and how often it was beaten; a boss its crown', JSON.stringify(fd));
+  await page.click('#tab-junaki'); await sleep(150);
   await page.click('.herogrid button.pickcard'); await sleep(250);
   const card = await page.evaluate(() => ({ screen: window.__ZG.S.screen, kind: document.querySelector('.hm .kind').textContent, crumb: document.querySelector('.hm .crumb').textContent }));
   check(card.screen === 'hero' && card.kind === 'Junak' && /Nazaj na junake/.test(card.crumb), 'a met hero opens their card with a way back to the heroes', JSON.stringify(card));
@@ -171,7 +187,7 @@ run(async () => {
   await page.keyboard.press('Enter'); await sleep(150);
   check(await S(page) === 'hero', 'Enter does not leave the card (there is no button it would press)');
   await page.keyboard.press('Escape'); await sleep(150);
-  check(await S(page) === 'heroes', 'Esc on the card returns to the heroes');
+  check(await S(page) === 'heroes' && await page.evaluate(() => !document.querySelector('#tp-junaki').hidden), 'Esc on the card returns to the heroes, on the Junaki tab');
   await page.click('.heroes .devbox .btn'); await sleep(250);
   check(await S(page) === 'gallery' && /Nazaj na junake/.test(await page.evaluate(() => document.querySelector('.gallery .crumb').textContent)), 'the developer gallery opens from the heroes, with its way back');
   check(await page.evaluate(() => [...document.querySelectorAll('#screen button')].filter(b => /Nazaj na junake/.test(b.textContent)).length) === 1, 'the gallery has one way back too');

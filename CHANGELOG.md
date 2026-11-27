@@ -125,6 +125,13 @@ favour of it.
   `tests/parallax.test.js` measures floating slices and the passing trees; the "front layers never cover a foot" rules
   leave passing trees out.
 
+**Dosežki in junaki in three tabs (Game Director, 27 Nov 2026, evening)**
+- The page has tabs: **Dosežki** (first), **Junaki** and the new **Nasprotniki**, one shown at a time (← → move between
+  them). The way back from a hero's card lands on Junaki.
+- **Nasprotniki** uses the same view as Junaki: all eleven enemies in road order, known once beaten on a journey (the
+  achievements' counters), *???* before. A chosen enemy shows its sprite (a boss with its crown), its health, how often
+  it was beaten, its attacks and the regions where it is met, all from the game's data. `tests/menu.test.js` checks it.
+
 **A crown for the boss (Game Director, 27 Nov 2026, evening)**
 - "The word Šef is not fitting": a boss on the road has no caption any more, but a small pixel-art gold crown floats
   over its head, bobbing gently (still with reduced motion). It wears it in battle too, until it falls, and the battle's
