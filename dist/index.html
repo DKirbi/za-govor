@@ -1517,6 +1517,14 @@ body.mobile .report .rp-send .btn, body.mobile .report .rp-close { min-height: 4
 .wtools { display: flex; gap: 12px; align-items: center; justify-content: center; min-height: 32px; }
 body.mobile .wgrid { --cell: 28px; }
 
+/* a boss's crown, floating over its head on the road and in battle (Game Director, 27 Nov 2026: instead of "Šef") */
+.actor.foe.boss > .crown { position: absolute; left: 50%; bottom: calc(100% - var(--crown-dip, 4px)); width: 30px; aspect-ratio: 11 / 7; z-index: 3;
+  background: center / 100% 100% no-repeat; image-rendering: pixelated; transform: translateX(-50%); pointer-events: none;
+  filter: drop-shadow(0 0 4px #f6d36a99) drop-shadow(0 2px 0 #0008); animation: crownbob 2.2s ease-in-out infinite; }
+@keyframes crownbob { 0%, 100% { transform: translate(-50%, 0) rotate(-3deg); } 50% { transform: translate(-50%, -5px) rotate(3deg); } }
+body.mobile .actor.foe.boss > .crown { width: 22px; }
+@media (prefers-reduced-motion: reduce) { .actor.foe.boss > .crown { animation: none; } }
+
 /* ---------- Title scene: "Za govor!" over a dusk landscape (src/title.js, art from tools/art_title.py) ----------
    Sizes are in art pixels times --s, the whole-number scale; animations move one art pixel per step. */
 .sr-only { position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
@@ -2998,7 +3006,7 @@ const xpNeed = () => 100 * S.level;
 const letterEq = (tile, typed) => tile === typed;
 
 // Version of this build, filled in by build.py from package.json and git (see CHANGELOG.md).
-const BUILD = {"version": "0.22.0", "stage": "zaprta alfa", "commit": "8a09bf1"};
+const BUILD = {"version": "0.22.0", "stage": "zaprta alfa", "commit": ""};
 const app = $('#app');
 let SCR = null;   // current screen container
 // There is no top bar: pages under the menu have a sticky way back, timed puzzles a Premor button in their header,
@@ -3356,6 +3364,7 @@ function renderEnemies() {
         (statuses.includes('omamljen') ? ' stunned' : '') + (e.hp > 0 && performance.now() - (e.hitT || -1e9) < 250 ? ' hit' : ''),
       style: { '--art': Math.round(SPR_SIZE[foeArt(e)] * (e.scale || 1) * (e.strong ? 1.12 : 1)) }, title: e.name, onclick: () => setTarget(i) },
       h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[foeArt(e)]})`, filter: e.tint || '', 'animation-delay': atk ? (-since) + 'ms' : (-(i * 400)) + 'ms' } }),
+      e.boss && e.hp > 0 ? bossCrown() : null,   // a boss wears a floating crown (src/journey.js)
       h('span', { class: 'st' }, fxBadges(foeFx(e)), statuses.length ? h('span', {}, statuses.join(' · ')) : null));   // attack up or down: icons (src/effects.js)
     const pips = S.mode === 'calm' && e.hp > 0 ? (() => {
       const steps = Math.round(1 / e.calmStep), on = Math.round(e.charge / e.calmStep);
@@ -5523,6 +5532,8 @@ const HERO_MEETS = 3;
 // A save from before keeps a party of four until a hero leaves it (src/save.js).
 const PARTY_MAX = 3;
 const HERO_HOME = { ptuj: 'kurent', peca: 'matjaz', triglav: 'ajda', gozd: 'krpan', piran: 'vida', predjama: 'erazem', barje: 'jurij', reka: 'klepec' };   // the legends of the places (README)
+// the boss's crown (pixel art, src/effects.js), floating over its head on the road and in battle
+const bossCrown = () => h('i', { class: 'crown', 'aria-label': 'Šef', role: 'img', style: { 'background-image': `url(${pxUrl('crown')})` } });
 function planHeroes() {
   const slots = WORLD.regions.map((r, i) => r.stops.includes('hero') ? i : -1).filter(i => i > 0);
   return [0, ...shuffle(slots).slice(0, HERO_MEETS - 1)].sort((a, b) => a - b);
@@ -5688,8 +5699,10 @@ function renderTravel() {
     if (stop.enemies) {
       if (stop.done) return;
       body = h('div', { class: 'tv-foes' }, stop.enemies.map((k, n) => { const e = ENEMIES[k], art = e.art || k;
-        return h('div', { class: 'actor foe spr' + (e.boss ? ' boss' : '') + (n === stop.strong ? ' strong' : ''), style: { '--art': Math.round(SPR_SIZE[art] * (e.scale || 1)) } }, h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[art]})`, filter: e.tint || '', 'animation-delay': (-n * 400) + 'ms' } })); }));
-      cap = stop.kind === 'boss' ? 'Šef' : stop.kind === 'elite' ? 'Zaseda' : 'Nasprotniki';
+        return h('div', { class: 'actor foe spr' + (e.boss ? ' boss' : '') + (n === stop.strong ? ' strong' : ''), style: { '--art': Math.round(SPR_SIZE[art] * (e.scale || 1)) } }, h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[art]})`, filter: e.tint || '', 'animation-delay': (-n * 400) + 'ms' } }),
+          e.boss ? bossCrown() : null); }));
+      // a boss: a crown hovers over it instead of a caption (Game Director, 27 Nov 2026: "the word Šef is not fitting")
+      cap = stop.kind === 'boss' ? null : stop.kind === 'elite' ? 'Zaseda' : 'Nasprotniki';
     } else if (stop.kind === 'chest') { body = objEl('skrinja', stop.done ? 1 : 0); cap = stop.done ? '' : 'Skrinja'; }
     else if (stop.kind === 'trap') { if (stop.done) return; body = objEl('plaz'); cap = 'Plaz'; }
     else if (stop.kind === 'darts') { body = objEl('puscice', stop.done ? 1 : 0); cap = stop.done ? '' : 'Konice'; }
@@ -5832,7 +5845,8 @@ function travelKey(e) {
 function stopBattle(stop) {
   const R = S.run, reg = WORLD.regions[R.ri], names = stop.enemies.map(k => ENEMIES[k].name).join(', ');
   const boss = stop.kind === 'boss';
-  go('battle', { id: reg.id, bg: reg.bg, title: reg.name, sub: (boss ? 'Šef · ' : 'Bitka · ') + names, stop,
+  go('battle', { id: reg.id, bg: reg.bg, title: reg.name, sub: 'Bitka · ' + names,   // a boss is shown by its crown, not the word Šef (27 Nov 2026)
+    stop,
     battle: { enemies: stop.enemies, strong: stop.strong != null ? stop.strong : -1, scale: regionScale(R.ri), finishers: shuffle(Object.keys(FINISHER_FX)).slice(0, 2), meterStart: 0,
       ambush: stop.kind === 'elite' ? 'zaseda' : null, escort: boss ? reg.escort || null : null, tips: R.firstBattle ? NODES[0].battle.tips : [] } });
 }
@@ -7366,6 +7380,7 @@ const PX_ART = {
   all: ['.....y.....', '.y...y...y.', '..y..y..y..', '...yyyyy...', '...ywwwy...', 'yyyywWwyyyy', '...ywwwy...', '...yyyyy...', '..y..y..y..', '.y...y...y.', '.....y.....'],
   sword: ['....W....', '...WsS...', '...WsS...', '...WsS...', '...WsS...', '...WsS...', '...WsS...', '...WsS...', '.yyyyyyy.', '....n....', '....n....', '...yyy...'],
   shield: ['bbbbbbbbbbb', 'bcccccccccb', 'bcbbbbBbbbb', 'bcbbbbBbbbb', 'bcbbbbBbbbb', 'bcbbbbBbbbb', '.bbbbbBbbb.', '.bbbbbBbbb.', '..bbbbBbb..', '...bbbBb...', '....bbb....', '.....b.....'],
+  crown: ['.w...w...w.', '.y...y...y.', 'yyy.yyy.yyy', 'yyyyyyyyyyY', 'ywyyyryyywY', 'yyyyyyyyyyY', 'YYYYYYYYYYY'],   // a boss (Game Director, 27 Nov 2026: instead of the word Šef)
   banner: ['y.........', 'nyyyyyyyy.', 'nywwyyyyyY', 'nyyyyyyyyY', 'nyyyyyyyyY', 'nyyyyyyyY.', 'nyyy..yyY.', 'nyy....yY.', 'n.........', 'n.........', 'n.........', 'N.........'],
 };
 const PX_URL = {};
