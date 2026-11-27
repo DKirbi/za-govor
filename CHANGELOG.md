@@ -125,6 +125,18 @@ favour of it.
   `tests/parallax.test.js` measures floating slices and the passing trees; the "front layers never cover a foot" rules
   leave passing trees out.
 
+**Kolo črk: the zagovor on a letter wheel (Game Director, 27 Nov 2026, evening)**
+- The zagovor's crossword in the Wordscapes style decided on 24 Nov: a wheel of 7 letters, the grid only shows
+  progress, no clues. Drag over the letters and let go (or tap them and the last one again; type and Enter on a
+  computer); ⟳ shuffles. The key word of the zagovor (PERUN, KRESNIK, MOKOŠ …) is always on the wheel and in the grid;
+  the other words are base forms of everyday words from the same letters.
+- **Fewer words on the wheel, harder:** Malček gets the richest of 36 wheels (about 33 words, 30 % of the letters
+  shown), Učenjak a middle one (about 18), Knjižni molj the poorest that still fills the grid (about 9, none shown).
+  A real word that is not in the grid is an extra word: a weak hit, once. Values PROPOSED.
+- Phones open the wheel, computers the typed crossword (PROPOSED); *Nastavitve → Križanka zagovora* switches it on any
+  device. The other crosswords stay typed. New *Kako se igra* for the wheel. `src/wheel.js`; `tests/wheel.test.js`
+  (17 checks); the phone and keyword tests keep testing the typed crossword.
+
 **Mojster veščine (Game Director, 27 Nov 2026, evening)**
 - A new silver achievement in *Druščina*: the first time a hero uses a skill at its highest stopnja (3) in a journey
   battle, *Dosežek: Mojster veščine* pops up. Practice battles and test mode do not count, as for every achievement.
