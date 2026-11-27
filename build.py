@@ -160,42 +160,7 @@ def background_packs():
         gone = [v for v, p in t.get('variants', {}).items() if p not in packs]
         if t.get('live') and gone:
             notes.append(f"background test {key} is live but variant {', '.join(gone)} is not built: everyone sees A")
-    return {'tests': cfg.get('tests', {}), 'packs': packs, 'cardTest': cfg.get('cardTest')}, notes
-
-
-def hero_sheets():
-    """High-fidelity hero art for Nastavitve → Razvoj → Kakovost slik = Visoka, one entry per hero in data/hero-art.json.
-    `strip` is the idle | attack picture every card and portrait uses (SPRITES), `sheet` the frames of tools/art_hero_pack.py
-    (one row a sequence) with its index, `states` and `skills` the sequences the game plays, by name. A hero whose pack is not
-    committed is left out (its current sprite stays); a stale sheet or a name that is not in the pack stops the build."""
-    out, notes = {}, []
-    reg = json.loads(read('data/hero-art.json'))['heroes']
-    for hid, e in reg.items():
-        man_rel = e['manifest']
-        stem = pathlib.PurePosixPath(man_rel).stem
-        sheet_rel, idx_rel = f'art/exports/characters/{stem}/{stem}-sheet.png', f'art/exports/characters/{stem}/{stem}-sheet.json'
-        if not all((root / r).is_file() for r in (man_rel, sheet_rel, idx_rel)):
-            notes.append(f'hero art {hid}: pack not committed, the current sprite only'); continue
-        man = json.loads(read(man_rel))
-        strip_rel = man['runtimeSheet']['path']
-        idx = json.loads(read(idx_rel))
-        sheet, strip = (root / sheet_rel).read_bytes(), (root / strip_rel).read_bytes()
-        sw, sh, _ = png_info(sheet, sheet_rel)
-        assert (sw, sh) == (idx['cols'] * idx['frame'], idx['rows'] * idx['frame']), f'{sheet_rel} is {sw}×{sh}, its index says {idx["cols"]}×{idx["rows"]} frames'
-        stale = f'{sheet_rel} is out of date: run python3 tools/art_hero_pack.py {man_rel}'
-        assert [s['id'] for s in man['sequences']] == list(idx['seqs']), stale
-        assert all(len(s['framesBackToFront']) == idx['seqs'][s['id']]['frames'] for s in man['sequences']), stale
-        assert png_info(strip, strip_rel)[:2] == (2 * idx['frame'], idx['frame']), f'{strip_rel} must be idle | attack, {2 * idx["frame"]}×{idx["frame"]}'
-        states, skills = e.get('states', {}), e.get('skills', {})
-        assert states.get('idle'), f'data/hero-art.json: {hid} needs states.idle'
-        named = list(states.values()) + [n for ranks in skills.values() for n in ranks]
-        missing = [n for n in named if n not in idx['seqs']]
-        assert not missing, f'data/hero-art.json: {hid} names {missing}, which {man_rel} does not have'
-        uri = lambda b: 'data:image/png;base64,' + base64.b64encode(b).decode('ascii')
-        out[hid] = {'strip': uri(strip), 'sheet': uri(sheet), 'frame': idx['frame'], 'cols': idx['cols'], 'rows': idx['rows'], 'seqs': idx['seqs'],
-                    'states': states, 'skills': skills, 'status': man.get('status', 'draft')}
-        notes.append(f"hero art {hid}: {len(idx['seqs'])} sequences ({', '.join(k for k in ('run', 'win', 'down') if k in states) or 'idle and skills only'}), {(len(sheet) + len(strip)) // 1024} KB, status {man.get('status', 'draft')}")
-    return out, notes
+    return {'tests': cfg.get('tests', {}), 'packs': packs}, notes
 
 
 def skill_cards():
@@ -222,8 +187,6 @@ def skill_cards():
 bgdata, bgnotes = background_packs()
 cards, cardnotes = skill_cards()
 bgdata['cards'] = cards; bgnotes += cardnotes
-heroes, heronotes = hero_sheets()
-bgdata['heroes'] = heroes; bgnotes += heronotes
 template = read('src/index.src.html')
 data = {'/*__LEX__*/': base64.b64encode((root / 'data/lexicon.bin').read_bytes()).decode('ascii'),
         '/*__CLUES__*/': read('data/clues.json'), '/*__WORLD__*/': read('data/world.json'), '/*__WORDS__*/': read('data/words.json'), '/*__MEANINGS__*/': read('data/meanings.json'),

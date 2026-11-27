@@ -2,7 +2,7 @@
 
 **Status:** Separate generated concept images; pending Game Director review. Not approved or production-ready.
 
-**In game (draft, 25 Nov 2026):** a 768×512 WebP export of each card (`art/exports/characters/<hero>/folk-art/skills/<skill>/card.webp`, made by `tools/art_skill_cards.py`; the PNG masters stay as delivered) shows on the battle card in variant B of the card A/B test, and is collected on the hero screen (*Karte veščin*) the first time the skill fires in a journey battle. Final art review pending.
+**In game (draft, 25 Nov 2026):** a 768×512 WebP export of each card (`art/exports/characters/<hero>/folk-art/skills/<skill>/card.webp`, made by `tools/art_skill_cards.py`; the PNG masters stay as delivered) shows on the battle card in every *Kakovost slik* setting (the default since 0.21.0; the card A/B test is over), and is collected on the hero screen (*Karte veščin*) the first time the skill fires in a journey battle. Final art review pending.
 
 - **Metanje skal:** [Open concept](../../../../../art/source/characters/ajdovska-deklica/folk-art/skills/metanje-skal/skill-card-concept.png)
 - **Varstvo popotnikov:** [Open concept](../../../../../art/source/characters/ajdovska-deklica/folk-art/skills/varstvo-popotnikov/skill-card-concept.png)

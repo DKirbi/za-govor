@@ -53,10 +53,9 @@ Cloud drift uses the existing renderer's tiled-layer movement and respects reduc
 - Winter (D, `ptuj-zima`) has no low picture yet, so it stays on its Codex pack under both settings. Only
   `?ozadje=D` shows it until the Game Director assigns it.
 - The Codex pack's low copies were removed: they were half-size Codex layers, not the lower tier.
-- Martin Krpan's sprites follow this setting since 18 Nov: *Visoka* uses Codex's sheet
-  (`art/exports/characters/martin-krpan/martin-krpan-sheet.png`, built by `tools/art_hero_pack.py` from
-  `data/hero-art.json`), *Samodejno* and *Nizka* the sprite already in the game. In *Visoka* he runs on the road,
-  salutes when the last enemy falls and kneels when down.
+- Martin Krpan's sprites followed this setting from 18 Nov to 0.20.0 (Codex's sheet in *Visoka*). Since 0.21.0
+  (Game Director, 25 Nov 2026) heroes and enemies draw their pixel sprites in every setting, and (26 Nov 2026) the painted skill
+  cards are the default in every setting too: *Kakovost slik* changes only the backgrounds.
 
 ## The road: smaller cobbles, a thinner strip
 

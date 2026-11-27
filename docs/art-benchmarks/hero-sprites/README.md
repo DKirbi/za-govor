@@ -1,6 +1,10 @@
 # Hero sprite packs — roster benchmark
 
-**Status:** PROPOSED convention, derived from the Martin Krpan pack (PR #34). Krpan's running, victory and downed
+**Status:** SUPERSEDED (Game Director, 25 Nov 2026): heroes and enemies use simple pixel sprites, so no hero gets a
+sprite pack. Krpan's pack left the game in 0.21.0, with `data/hero-art.json` and `tools/art_hero_pack.py`; both are in Git
+history (0.20.0) if the Game Director reopens this. Kept as a record of the convention.
+
+**Former status:** PROPOSED convention, derived from the Martin Krpan pack (PR #34). Krpan's running, victory and downed
 poses are approved for Krpan only; nothing here approves another hero's art. The Game Director approves each pack.
 
 Use this to brief and review the sprite pack of every remaining hero. The pipeline after the art is data only: no game

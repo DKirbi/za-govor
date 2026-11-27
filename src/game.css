@@ -407,28 +407,6 @@ body.mobile .curclue { margin-top: 0; }
 @keyframes lunge3 { 0% { transform: translateX(calc(var(--px) * -5)) } 14% { transform: translate(calc(var(--px) * 8), calc(var(--px) * -3)) }
   30% { transform: translateX(calc(var(--px) * 11)) } 44% { transform: translateX(calc(var(--px) * 5)) } 58% { transform: translate(calc(var(--px) * 11), calc(var(--px) * -2)) }
   74% { transform: translateX(calc(var(--px) * 9)) } 88% { transform: translateX(calc(var(--px) * 3)) } 100% { transform: none } }
-/* Visoka: a hero with frames (data/hero-art.json, src/backgrounds.js) plays them from one sheet. spriteEl puts --cols, --rows
-   and the rows of its states on the element: --ri idle, --rr running, --rw victory, --rd down; attackAnim sets --ra, the row
-   of the skill it plays. --r is the row shown, --f the frame the animation steps through (every animated sequence has four
-   frames; a held state has one). Idle loops; a skill plays once in 0,72 s in place of the lunge; running loops while the
-   party walks; victory (.cheer) plays once when the last enemy falls and holds its last frame; down holds the kneel, greyed
-   like every fallen hero but upright. A hero without a state (no hi-run, hi-win or hi-down) keeps what the game did before. */
-@property --f { syntax: '<number>'; inherits: false; initial-value: 0; }
-.spr.hi { --r: var(--ri, 0); }
-.spr.hi.atk, .spr.hi.atk3 { --r: var(--ra, var(--ri, 0)); }
-.scene.travel.walking .party .spr.hi.hi-run:not(.down) { --r: var(--rr); }
-.spr.hi.hi-win.cheer { --r: var(--rw); }
-.spr.hi.hi-down.down, .spirit.down .spr.hi.hi-down { --r: var(--rd); }
-.spr.hi .sp { background-size: calc(var(--cols) * 100%) calc(var(--rows) * 100%);
-  background-position: calc(var(--f) / (var(--cols) - 1) * 100%) calc(var(--r, 0) / (var(--rows) - 1) * 100%);
-  animation: hiplay 1.2s steps(4, jump-none) infinite; }
-.spirit .spr.hi .sp { animation: hiplay 1.2s steps(4, jump-none) infinite, breathe 3.2s steps(1) infinite; }   /* the hero screens keep their breathing */
-.spr.hi.atk .sp, .spr.hi.atk3 .sp { animation: hiplay .72s steps(4, jump-none) both; }
-.scene.travel.walking .party .spr.hi.hi-run:not(.down) .sp { animation: hiplay .5s steps(4, jump-none) infinite; }
-.spr.hi.hi-win.cheer .sp { animation: hiplay .8s steps(4, jump-none) both; }
-.hero.spr.hi.hi-down.down .sp, .spirit.down .spr.hi.hi-down .sp { animation: none !important; transform: none; --f: 0;
-  background-position: 0 calc(var(--r) / (var(--rows) - 1) * 100%); filter: grayscale(1) brightness(.7); }
-@keyframes hiplay { from { --f: 0 } to { --f: 3 } }
 .hit { animation: hitblink .5s steps(1) .14s both !important; }
 @keyframes hitblink { 0% { opacity: 0; transform: translateX(5px) } 14% { opacity: 1; transform: translateX(-5px) } 28% { opacity: 0; transform: translateX(4px) }
   42% { opacity: 1; transform: translateX(-4px) } 56% { opacity: 0; transform: translateX(2px) } 70% { opacity: 1; transform: translateX(-2px) } 84% { opacity: 0 } 100% { opacity: 1; transform: none } }
@@ -489,7 +467,7 @@ body.mobile .gstage { height: 268px; } body.mobile .gstage .hero.spr { width: 96
 body.mobile .gstage .party { left: 6%; } body.mobile .gstage .enemies { right: 6%; }
 body.mobile .card.folk { font-size: 11px; }
 body.mobile .card.folk.t1 { width: 100px; } body.mobile .card.folk.t2 { width: 146px; } body.mobile .card.folk.t3 { width: 200px; }
-@media (prefers-reduced-motion: reduce) { .sp, .spr.atk .sp, .spr.atk3 .sp, .spr.hi .sp, .spr.hi.cheer .sp, .scene.travel.walking .party .spr.hi .sp, .hit, .scene.flash::after { animation: none !important; } .scene.flash::after { display: none; } }
+@media (prefers-reduced-motion: reduce) { .sp, .spr.atk .sp, .spr.atk3 .sp, .hit, .scene.flash::after { animation: none !important; } .scene.flash::after { display: none; } }
 
 /* iteration 4: hidden keyword column (geslo) */
 .cell.gk { outline: 2px solid var(--gold); outline-offset: -2px; }
@@ -522,6 +500,11 @@ body.mobile .card.folk.t1 { width: 100px; } body.mobile .card.folk.t2 { width: 1
 /* Codex's painted skill cards (variant B of the card test, src/backgrounds.js): the whole 3:2 painting with its own
    painted frame, a little narrower than the SVG boards so a card stays about as tall over the scene */
 .card.folk .pic.paint img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; pointer-events: none; }
+/* a hero's skill without Codex's painting yet: an empty board with ??? (Game Director, 26 Nov 2026) */
+.card.folk .pic.paint .tbd { display: grid; place-items: center; aspect-ratio: 3 / 2; font: 800 20px/1 Georgia, serif; letter-spacing: .12em; color: #6e6253;
+  background: radial-gradient(ellipse at 50% 40%, #2c2620, #15120f); box-shadow: inset 0 0 0 3px #3a2c1f; }
+.card.folk.t1 .pic.paint .tbd { font-size: 15px; } .card.folk.t3 .pic.paint .tbd { font-size: 26px; }
+.gboard.skill img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 3px; box-shadow: 0 2px 0 #1c110b, 0 6px 14px rgba(0,0,0,.4); }
 .card.folk.paint.t1 { width: 100px; } .card.folk.paint.t2 { width: 150px; } .card.folk.paint.t3 { width: 204px; }
 body.mobile .card.folk.paint.t1 { width: 86px; } body.mobile .card.folk.paint.t2 { width: 124px; } body.mobile .card.folk.paint.t3 { width: 170px; }
 .card.folk.foecard .cap .vl { color: #ff9a9a; }

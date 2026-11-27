@@ -201,8 +201,9 @@ the game does not announce.
 *Dosežki in junaki* first lists the **achievements** (59 in six groups, bronze, silver and gold, with progress bars
 and two secrets; only real journeys count) and the **story cards** a hero earns by being alive when Lintvern falls.
 A skill's **painted folk card** (Codex) is collected the first time the skill fires in a journey battle; on a hero's
-screen *Karte veščin* shows them, and a tapped card opens full screen. In battle the paintings are an A/B test against
-the hand-made boards (`?karte=B` or *Kakovost slik → Visoka* shows them).
+screen *Karte veščin* shows them, and a tapped card opens full screen. In battle a hero's skill shows its painting in
+every *Kakovost slik* setting; a skill that has no painting yet shows an empty board with ???. Enemies keep their
+hand-made boards.
 
 *Dosežki in junaki* lists every hero: the ones you have unlocked open their card and
 backstory, the others are silhouettes. A developer link there
@@ -491,7 +492,7 @@ CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 | `tests/title.test.js` | The title scene: the *Za govor!* heading and tab title, whole-number scaling (3× at 1280 px, 4× at 1920, 2× on a phone), square wordmark pixels, full width with no sideways scrolling (also at an odd width), starting at the top of the page (below a phone's status bar), room left for the menu, the wordmark standing still, sparks rising in whole art pixels and not restarting when the start screen is rebuilt, a still picture with reduced motion |
 | `tests/desktop.test.js` | A keyboard playthrough: c/s/z are not accepted for č/š/ž, first battle, result and hero screens, chest, finisher, Lintvern's letter lock and forced crossword, ambush, rock slide, and no console errors anywhere |
 | `tests/parallax.test.js` | Codex's folk parallax packs (variant B of six regions): built and decoded; the lane at exactly 1.0; no layer slower than the one behind it; layers at 0.2 or faster tile; after a known walk every tiling layer moved by distance × speed; in battle every actor stands on the painted lane and front layers stay under the feet, on a desktop and a phone |
-| `tests/achievements.test.js` | Achievements and folk cards: test mode and practice battles never count; the first real word and the first skill card; queued toasts; the painting on battle cards in B, the SVG board with *Nizka*; the card variant in the statistics; the page; the profile through a reload; the hero screen's skill cards and a card full screen; story cards for the heroes alive at the Lintvern win |
+| `tests/achievements.test.js` | Achievements and folk cards: test mode and practice battles never count; the first real word and the first skill card; queued toasts; the painting on battle cards by default and with *Nizka* and *Visoka*, ??? boards for a hero without paintings, enemies' SVG boards; no card variant in the statistics; the page; the profile through a reload; the hero screen's skill cards and a card full screen; story cards for the heroes alive at the Lintvern win |
 | `tests/backgrounds.test.js` | Background A/B tests for Ptuj: the Codex pack built in as variant B (eight layers placed through a 1672×560 view, the road enlarged 1.3×) and Claude's pack as preview-only variant C; variant A unchanged on the road and in battle while the test is off; `?ozadje=B`/`C` previews marked in the statistics; every hero and enemy standing on the ground layer (read from the image) in battle and on the road; town, river and reflections moving together; smooth shrinking for B and hard pixels for C; a short, wide scene covered without side gaps; C's tiling speeds, drift and reduced motion; the foreground in front of the actors and under the battle UI; other regions untouched; the gallery entries; a live test assigning A or B per install by its share and never C |
 
 Screenshots from each run land in `test-output/` (ignored by git).

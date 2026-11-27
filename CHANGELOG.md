@@ -36,6 +36,43 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
+## 0.21.0 — 26 Nov 2026 · zaprta alfa · Kakovost slik is about the backgrounds only
+
+Branch `art/krpan-pixel-sprite` (PR #42). Decided by the Game Director on 25 Nov (heroes and enemies use simple pixel
+sprites) and 26 Nov (*Visoka* shows only the difference in the backgrounds; the painted skill cards become the default
+everywhere, with an empty board and ??? where a card is missing).
+
+**Martin Krpan is pixel art again**
+- **Martin Krpan in *Kakovost slik → Visoka*** draws the pixel sprite every other quality already showed (the one in
+  `SPRITES`), with the early-handheld lunge for his attacks. Codex's 48 × 48 sheet (idle, the skill sequences,
+  running, victory, the kneel) is no longer in the game.
+- **His skills are unchanged:** Lipov kij, Kmečka moč (ranks 1–3) and Mesarica keep their damage, targets, bleed and
+  ranks (`src/progression.js`).
+- **Removed:** the hero-sheet path (`data/hero-art.json`, its part of `build.py`, `spriteEl` / `attackAnim` frames,
+  the victory salute, `.spr.hi` in `game.css`) and its two offline tools (`tools/art_hero_pack.py`,
+  `tools/art_krpan_salt_throw.py`). Codex's Krpan pack stays in `art/` as archived source art; it is not built in.
+  The single-file build is about 30 KB smaller.
+
+**The painted skill cards are the default**
+- **In battle a hero's skill shows Codex's painted card in every quality** (*Samodejno*, *Visoka*, *Nizka*). The A/B
+  test against the hand-made SVG boards is over: `cardTest` left `data/backgrounds.json`, `?karte=` is gone and the
+  tester statistics no longer carry `karte=`.
+- **A skill without a painting yet shows an empty board with ???** under its usual caption (name, word, value). Today
+  that is Perun, Svarog, Veles, Mokoš, Dažbog, Stribog, Zeleni Jurij and Peter Klepec; Krpan, Kurent, Kresnik, Kralj
+  Matjaž, Erazem, Lepa Vida and Ajdovska deklica have all three paintings.
+- **The hero screen's *Karte veščin* is on every hero now.** A hero without paintings shows three ??? boards
+  (*Veščina 1 · karta še nastaja*); collecting works as in 0.19.0 for the painted ones.
+- **Enemies keep their hand-made boards**, gods fought at a shrine included.
+- *Liki in karte* plays each hero's skills as the party shows them and lists the painting or ??? under each hero.
+- *Nastavitve → Razvoj → Kakovost slik* now says it changes only the backgrounds.
+
+**Tests**
+- `tests/backgrounds.test.js`: Krpan draws the same pixel sprite in all three qualities and lunges for every skill.
+- `tests/achievements.test.js`: the painting by default and with *Nizka* and *Visoka*; ??? boards for Zeleni Jurij in
+  battle cards, on his hero screen and in the gallery; Mora keeps her SVG board; no `karte=` in the statistics. The
+  test word now goes through a hero's letters, and the quality check runs in the gallery, which fixes two checks that
+  failed now and then when a word hit no hero or the first battle had already ended.
+
 ## 0.20.0 — 25 Nov 2026 · zaprta alfa · A party of three, two shrines, three enemies on screen
 
 Branch `feat/party-three-gods-queue` (PR #39). Prepared on 24 Nov as 0.18.0; it merged after 0.19.0 (PR #38), so it

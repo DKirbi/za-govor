@@ -190,28 +190,28 @@ run(async () => {
   check(!scene.auto && scene.high && !scene.lowB && scene.lowD && scene.radiosAuto.auto === true && scene.radiosLow.low === true && scene.radiosLow.auto === false,
     'the travel scene: Visoka draws the layered pack, Nizka the picture in the game, winter stays layered; Nastavitve shows the stored choice', JSON.stringify(scene));
 
-  // ---------------------------------------------------------------- Martin Krpan follows the same setting (Codex's pack = Visoka; the sprite in the game = Samodejno and Nizka)
+  // ---------------------------------------------------------------- heroes keep their pixel sprites in every quality (Game Director, 25 Nov 2026)
+  // Krpan's Codex sheet left the game in 0.21.0: Visoka, Samodejno and Nizka all draw the sprite in SPRITES, and his
+  // skills still fire with the early-handheld lunge.
   const kp = await ev(async () => { const Z = window.__ZG, out = {}, wait = ms => new Promise(r => setTimeout(r, ms));
     Z.S.testMode = true; Z.S.mode = 'calm';
     const look = async f => { if (f) localStorage.setItem('zg-fidelity', f); else localStorage.removeItem('zg-fidelity');
       Z.go('settings'); const r = document.querySelector(`input.set-fid[value="${f || 'auto'}"]`); r.checked = true; r.dispatchEvent(new Event('change', { bubbles: true })); await wait(50);
       Z.newRun('krpan'); Z.joinHero('kurent'); Z.go('travel'); await wait(80);
-      const el = document.querySelector('.party .spr[data-hero="krpan"], .party .spr.hi'); const k = [...document.querySelectorAll('.party .spr')][0];
-      return { hi: !!(k && k.classList.contains('hi')), bg: k ? (k.querySelector('.sp').style.backgroundImage || '').length : 0 }; };
+      const k = document.querySelector('.party .spr[data-hero="krpan"]');
+      return { found: !!k, hi: !!(k && k.classList.contains('hi')), bg: k ? k.querySelector('.sp').style.backgroundImage : '' }; };
     out.auto = await look(null); out.high = await look('high'); out.low = await look('low');
-    const H = Z.BGX.heroes.krpan; out.rows = H ? Object.fromEntries(Object.entries(H.seqs).map(([n, q]) => [n, q.row])) : null;
+    out.heroesKey = 'heroes' in Z.BGX;
+    // Visoka: every skill and rank plays the lunge, the strike frame of the pixel strip, as before the sheet
+    const spr = document.querySelector('.party .spr[data-hero="krpan"]'); out.atk = {};
+    localStorage.setItem('zg-fidelity', 'high');
+    for (const t of [1, 2, 3]) { Z.attackAnim(spr, t, document.querySelector('.scene')); const cs = getComputedStyle(spr.querySelector('.sp'));
+      out.atk[t] = { anim: cs.animationName, pos: cs.backgroundPosition }; }
     localStorage.removeItem('zg-fidelity'); return out; });
-  check(!kp.auto.hi && kp.high.hi && !kp.low.hi && kp.high.bg > kp.low.bg, 'Martin Krpan: Samodejno and Nizka keep the sprite already in the game, Visoka uses Codex\'s sheet', JSON.stringify({ ...kp, rows: undefined }));
-  check(kp.rows && ['idle', 'cudgel-strike', 'kmecka-moc-r1-double-punch', 'kmecka-moc-r2-salt-bag-throw', 'kmecka-moc-r3-boulder', 'mesarica-slash', 'running', 'victory', 'downed'].every(n => n in kp.rows),
-    'the Krpan sheet holds idle, Lipov kij, the three Kmečka moč ranks (rank 2 the solo salt-bag throw), Mesarica, running, victory and downed', JSON.stringify(kp.rows));
-  const seq = await ev(async () => { const Z = window.__ZG; localStorage.setItem('zg-fidelity', 'high');
-    Z.S.testMode = true; Z.S.mode = 'calm'; Z.newRun('krpan'); Z.joinHero('kurent'); Z.go('travel');
-    const spr = document.querySelector('.party .spr.hi'), rows = Z.BGX.heroes.krpan.seqs, out = {};
-    if (!spr) { localStorage.removeItem('zg-fidelity'); return null; }
-    for (const [t, r, n] of [[1, 1, 'cudgel-strike'], [2, 1, 'kmecka-moc-r1-double-punch'], [2, 2, 'kmecka-moc-r2-salt-bag-throw'], [2, 3, 'kmecka-moc-r3-boulder'], [3, 1, 'mesarica-slash'], [3, 3, 'mesarica-slash']]) {
-      Z.attackAnim(spr, t, document.querySelector('.scene'), r); out[`${t}/${r}`] = [getComputedStyle(spr).getPropertyValue('--r').trim(), String(rows[n].row)]; }
-    localStorage.removeItem('zg-fidelity'); return out; });
-  check(seq && Object.values(seq).every(([got, want]) => got === want), 'Krpan\'s skills use their own rows: Lipov kij, Kmečka moč R1 / R2 / R3, Mesarica (any rank)', JSON.stringify(seq));
+  check(kp.auto.found && kp.high.found && kp.low.found && !kp.auto.hi && !kp.high.hi && !kp.low.hi && kp.auto.bg && kp.high.bg === kp.auto.bg && kp.low.bg === kp.auto.bg && !kp.heroesKey,
+    'Martin Krpan draws the same pixel sprite in Samodejno, Visoka and Nizka; the build carries no hero sheets', JSON.stringify({ ...kp, auto: { ...kp.auto, bg: kp.auto.bg.length }, high: { ...kp.high, bg: kp.high.bg.length }, low: { ...kp.low, bg: kp.low.bg.length } }));
+  check(kp.atk[1].anim === 'lunge' && kp.atk[2].anim === 'lunge' && kp.atk[3].anim === 'lunge3' && Object.values(kp.atk).every(x => /^100%/.test(x.pos)),
+    'in Visoka his three skills lunge with the strike frame of the pixel strip (tier 3 the bigger lunge)', JSON.stringify(kp.atk));
 
   // ---------------------------------------------------------------- the Ptuj packs ship as WebP (tools/art_bg_webp.py) and decode at their size
   const wp = await ev(async () => { const P = window.__ZG.BGX.packs, out = {};
@@ -224,38 +224,6 @@ run(async () => {
     return out; });
   check(['ptuj', 'ptuj-zima'].every(id => wp[id].n > 0 && wp[id].webp === wp[id].n && wp[id].decoded === wp[id].n && wp[id].kb < 700),
     'every Ptuj layer (sunset and winter) is WebP, decodes, matches its manifest size, and each pack is under 700 KB', JSON.stringify(wp));
-
-  // ---------------------------------------------------------------- Krpan's running, victory and downed states (data/hero-art.json)
-  const st = await ev(async () => { const Z = window.__ZG, wait = ms => new Promise(r => setTimeout(r, ms)), out = {};
-    localStorage.setItem('zg-fidelity', 'high'); Z.S.testMode = true; Z.S.mode = 'calm';
-    const rows = Z.BGX.heroes.krpan.seqs, row = el => getComputedStyle(el).getPropertyValue('--r').trim();
-    const look = el => { const sp = el.querySelector('.sp'), cs = getComputedStyle(sp); return { row: row(el), anim: cs.animationName, transform: cs.transform, filter: cs.filter }; };
-    out.want = { idle: String(rows.idle.row), run: String(rows.running.row), win: String(rows.victory.row), down: String(rows.downed.row) };
-    // the road: idle while standing, running while the party walks; Kurent (no pack) is untouched
-    Z.newRun('krpan'); Z.joinHero('kurent'); Z.go('travel'); await wait(60);
-    const k = () => document.querySelector('.party .spr.hi[data-hero="krpan"]'), ku = () => document.querySelector('.party .spr[data-hero="kurent"]');
-    out.cls = k() ? k().className : null; out.kurentHi = ku() ? ku().classList.contains('hi') : null;
-    out.stand = look(k()); Z.travelAct('go'); await wait(80); out.walk = look(k()); out.walking = document.querySelector('.scene').classList.contains('walking'); Z.travelAct('go');
-    // down on the road, walking: the kneel wins over running, upright and greyed
-    Z.S.heroes[0].down = true; Z.go('travel'); Z.travelAct('go'); await wait(80); out.downWalk = look(k()); Z.travelAct('go'); Z.S.heroes[0].down = false;
-    // battle: the last enemy falls, the living Krpan plays victory once
-    Z.go('travel'); const stop = Z.S.run.stops.find(s => s.kind === 'battle'); Z.stopBattle(stop); await wait(150);
-    const be = () => Z.HEROES.map((h, i) => [h.id, i]).find(([id]) => id === 'krpan')[1];
-    out.battleIdle = row(document.querySelectorAll('.party .spr')[be()]);
-    // the real path: the enemies fall, checkEnd runs 650 ms later, the salute plays, Zmaga! opens 900 ms after that
-    Z.B.enemies.forEach(e => { if (e.hp > 0) Z.damageEnemy(e, 9999); }); await wait(760);
-    const bk = document.querySelectorAll('.party .spr')[be()];
-    out.cheer = { has: bk.classList.contains('cheer'), ...look(bk) };
-    await wait(1000); const h2 = document.querySelector('.overlay h2'); out.resultShown = !!(h2 && h2.textContent === 'Zmaga!');
-    localStorage.removeItem('zg-fidelity'); return out; });
-  check(st && /\bhi-run\b/.test(st.cls) && /\bhi-win\b/.test(st.cls) && /\bhi-down\b/.test(st.cls) && st.kurentHi === false,
-    'Krpan in Visoka carries his running, victory and down rows; a hero without a pack keeps the old sprite', JSON.stringify(st && { cls: st.cls, kurentHi: st.kurentHi }));
-  check(st && st.stand.row === st.want.idle && st.walking && st.walk.row === st.want.run && st.walk.anim === 'hiplay',
-    'on the road he stands in idle and runs his own four-frame loop while the party walks', JSON.stringify(st && { stand: st.stand, walk: st.walk, want: st.want }));
-  check(st && st.downWalk.row === st.want.down && st.downWalk.anim === 'none' && st.downWalk.transform === 'none' && /grayscale/.test(st.downWalk.filter),
-    'down, he holds the kneel even while the party walks: upright (not turned on his side), greyed, still', JSON.stringify(st && st.downWalk));
-  check(st && st.battleIdle === st.want.idle && st.cheer.has && st.cheer.row === st.want.win && st.cheer.anim === 'hiplay' && st.resultShown,
-    'when the last enemy falls he plays the victory salute, then Zmaga! opens', JSON.stringify(st && { battleIdle: st.battleIdle, cheer: st.cheer, resultShown: st.resultShown }));
 
   check(errors.length === 0, 'no page or console errors', errors.join(' | '));
   return ctx;
