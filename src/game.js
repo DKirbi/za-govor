@@ -747,6 +747,36 @@ const KIT = {
   ajda:    { ini: 'Aj', kit: 'reviewed', role: 'varstvo, okamnitev', domain: ['gora', 'skala', 'kamen', 'vrh', 'planika', 'gams', 'okno', 'sneg', 'stena', 'pot'] },
 };
 const ROSTER = Object.fromEntries(CHARS.map(ch => [ch.id, { id: ch.id, name: ch.name, c: ch.c, moves: ch.moves, god: isGod(ch.id), ...KIT[ch.id] }]));
+// Play style on the hero picker (Game Director, 27 Nov 2026: "categorize every character as Damage Dealer, Support,
+// Healer etc."). PROPOSED by Claude from the character specs' combat roles and the kits above, awaiting approval:
+// one role per character (masculine and feminine name) and the special effects in a few plain words, each with an
+// icon (pxIcon, src/effects.js). Effects describe what the hero's skills do today, not the numbers.
+const ROLES = {
+  napad:   { m: 'Napadalec', f: 'Napadalka', icon: 'sword', col: '#e8835f' },    // damage
+  obramba: { m: 'Branilec', f: 'Branilka', icon: 'shield', col: '#7fb0e6' },      // protects the party, takes the blows
+  zdravje: { m: 'Zdravilec', f: 'Zdravilka', icon: 'heal', col: '#6cc46f' },      // heals
+  podpora: { m: 'Podpornik', f: 'Podpornica', icon: 'banner', col: '#e8b74a' },   // makes the party stronger
+  ovira:   { m: 'Oviralec', f: 'Oviralka', icon: 'delay', col: '#b98af0' },       // slows and weakens enemies
+};
+const PLAYSTYLE = {
+  krpan:   { role: 'napad', fx: [['bleed', 'nasprotnik krvavi']] },
+  jurij:   { role: 'zdravje', fx: [['heal', 'zdravi družino'], ['unlock', 'odklene črke']] },
+  kurent:  { role: 'ovira', fx: [['delay', 'nasprotnik napade kasneje'], ['atk-', 'nasprotnik udari šibkeje']] },
+  matjaz:  { role: 'podpora', fx: [['atk+', 'družina udari močneje'], ['def+', 'ščit za vso družino'], ['revive', 'padli vstanejo']] },
+  erazem:  { role: 'napad', fx: [['dodge', 'izmik in protinapad'], ['heal', 'češnje zdravijo sosede']] },
+  klepec:  { role: 'napad', fx: [['atk+', 'moč raste do konca bitke']] },
+  vida:    { role: 'ovira', fx: [['atk-', 'nasprotniki udarijo šibkeje']] },
+  ajda:    { role: 'obramba', fx: [['def+', 'prestreže udarce'], ['stone', 'okamni nasprotnika']] },
+  kresnik: { role: 'napad', fx: [['burn', 'nasprotnik gori'], ['heal', 'povrne del rane']] },
+  perun:   { role: 'napad', fx: [['all', 'strela zadene vse']] },
+  svarog:  { role: 'obramba', fx: [['def+', 'ščit za vso družino']] },
+  mokos:   { role: 'zdravje', fx: [['heal', 'zdravi družino'], ['unlock', 'očisti črke'], ['revive', 'obudi padlega']] },
+  veles:   { role: 'napad', fx: [['poison', 'zastrupi nasprotnika'], ['all', 'zadene vse']] },
+  dazbog:  { role: 'podpora', fx: [['atk+', 'naslednja beseda je močnejša']] },
+  stribog: { role: 'napad', fx: [['all', 'zadene vse'], ['unlock', 'očisti mrežo črk']] },
+};
+const roleOf = id => ROLES[(PLAYSTYLE[id] || {}).role || 'napad'];
+const roleName = (id, f) => roleOf(id)[f ? 'f' : 'm'];
 const GOD_ATK = { veles: 1.5 }, GOD_ATK_DEFAULT = 1.35;   // gods hit harder than folk heroes; Veles hardest
 const CLASSIC = ['perun', 'svarog', 'mokos', 'kresnik'];   // the four used by the practice battles and the tests
 const HEROES = [];   // the current party (on a journey up to PARTY_MAX, src/journey.js; the practice four), in battle order; S.heroes holds their health and level
@@ -1130,11 +1160,12 @@ function renderHeroMoment(arg) {
       h('span', { class: 'i', 'aria-hidden': 'true' }, 'i'), 'Veščine'));
   const flip = h('div', { class: 'flip' });
   const front = h('div', { class: 'face front' }); front.innerHTML = CardArt.svg(id, 1);
-  // the skills on the card: filled when known, outlined when not yet; a star for stopnja 2, two for stopnja 3
-  front.append(h('div', { class: 'plate' }, h('b', {}, ch.name), h('span', {}, ch.sub), h('div', { class: 'mv' }, ch.moves.map((m, i) => {
+  // the front: the name and the skills only (27 Nov 2026), filled when known, outlined when not yet; a star for stopnja 2,
+  // two for stopnja 3. The rest of the hero (who they are, their story) is on the back.
+  front.append(h('div', { class: 'plate' }, h('b', {}, ch.name), h('div', { class: 'mv' }, ch.moves.map((m, i) => {
     const on = !sst || !S.run || knows(sst, i + 1), ups = sst && S.run ? upsOf(sst, i + 1) : 0;
     return h('em', { class: on ? 'on' : 'off', title: on ? `stopnja ${ups + 1} od ${MAX_RANK}` : 'še ni znana' }, m, ups ? h('i', {}, '★'.repeat(ups)) : null); }))));
-  const rear = h('div', { class: 'face rear' }, h('h4', {}, ch.name, h('small', {}, ST_LABEL[CHAR_ST[id]][0].split(' · ')[0])), L.story.map(p => h('p', {}, p)));
+  const rear = h('div', { class: 'face rear' }, h('h4', {}, ch.name, h('small', {}, ST_LABEL[CHAR_ST[id]][0].split(' · ')[0])), h('p', { class: 'rsub' }, ch.sub), L.story.map(p => h('p', {}, p)));
   flip.append(h('div', { class: 'flip-in' }, front, rear));
   const flipBtn = h('button', { class: 'btn', 'aria-pressed': 'false', onclick: () => { const b = flip.classList.toggle('back'); flipBtn.setAttribute('aria-pressed', b ? 'true' : 'false'); flipBtn.lastChild.textContent = b ? ' Pokaži sliko' : ' Obrni karto'; sfx('sel', { rate: b ? .8 : 1.2 }); } }, '↻', ' Obrni karto');
   flip.addEventListener('click', () => flipBtn.click());
@@ -3356,6 +3387,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { ACH, get ACHP() { return ACHP; }, ACH_WORDS, achReset, achCheck, achProgress, cardPainting, hasSkillCard, openSkillCard, achSkillFired, waitingPrayer, migratePrayers, get PARTY_MAX() { return PARTY_MAX; }, FOE_SLOTS, stepIn, statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, noteSupport, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, godWaits, godArrives, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { ACH, get ACHP() { return ACHP; }, ACH_WORDS, achReset, achCheck, achProgress, cardPainting, hasSkillCard, openSkillCard, achSkillFired, waitingPrayer, migratePrayers, get PARTY_MAX() { return PARTY_MAX; }, FOE_SLOTS, stepIn, statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, noteSupport, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, godWaits, godArrives, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, PLAYSTYLE, ROLES, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 

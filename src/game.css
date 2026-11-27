@@ -551,17 +551,18 @@ body.mobile .gbg { grid-template-columns: 1fr; }
   font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
 .say b { display: block; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; font-family: system-ui, sans-serif; margin-bottom: 2px; }
 .hm-card { display: grid; gap: 10px; }
-.flip { perspective: 1100px; width: 100%; max-width: 400px; height: 262px; justify-self: center; }
-.flip-in { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .6s cubic-bezier(.3, 1.3, .5, 1); }
+/* the hero's card: the front sizes to its painting and plate (the name always sits on the plate, under the painting);
+   the back lies over it and scrolls when the story is longer (Game Director, 27 Nov 2026) */
+.flip { perspective: 1100px; width: 100%; max-width: 400px; justify-self: center; }
+.flip-in { position: relative; width: 100%; transform-style: preserve-3d; transition: transform .6s cubic-bezier(.3, 1.3, .5, 1); }
 .flip.back .flip-in { transform: rotateY(180deg); }
 .face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 8px; overflow: hidden; border: 2px solid #2a1a12;
   box-shadow: 0 2px 0 #1c110b, 0 12px 26px rgba(0,0,0,.5); font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
-.face.front { background: var(--paper); color: var(--paper-ink); display: grid; grid-template-rows: auto 1fr; }
+.face.front { position: relative; inset: auto; background: var(--paper); color: var(--paper-ink); display: grid; grid-template-rows: auto auto; }
 .face.front svg { display: block; width: 100%; height: auto; }
-.face.front .plate { padding: 8px 12px; display: grid; gap: 4px; align-content: center; }
-.face.front .plate b { font-size: 20px; } .face.front .plate span { font-size: 12.5px; }
-.face.front .mv { display: flex; gap: 6px; flex-wrap: wrap; font-family: system-ui, sans-serif; font-size: 11px; }
-.face.front .mv { display: flex; flex-wrap: wrap; gap: 6px; }
+.face.front .plate { padding: 10px 14px 13px; display: grid; gap: 8px; align-content: start; border-top: 2px solid #2a1a12; }
+.face.front .plate b { font-size: 21px; line-height: 1.15; }
+.face.front .mv { display: flex; gap: 6px; flex-wrap: wrap; font-family: system-ui, sans-serif; font-size: 12px; }
 /* the card's skills: filled when the hero knows them, outlined (dashed, faint) when not yet; a star per upgrade */
 .face.front .mv em { font-style: normal; border: 1.5px solid #2a1a12; border-radius: 99px; padding: 3px 11px; line-height: 1.3; }
 .face.front .mv em.on { background: #2a1a12; color: #f6efdc; }
@@ -571,11 +572,12 @@ body.mobile .gbg { grid-template-columns: 1fr; }
   background: repeating-linear-gradient(0deg, #d9b98a 0 3px, #d3b282 3px 4px, #dcbd90 4px 9px), #d9b98a; }
 .face.rear h4 { font-size: 16px; margin: 0 0 6px; border-bottom: 2px solid #7d1f25; padding-bottom: 4px; display: flex; justify-content: space-between; align-items: baseline; }
 .face.rear h4 small { font-size: 11px; font-weight: 500; font-family: system-ui, sans-serif; }
+.face.rear .rsub { font-style: italic; color: #4a3220; }
 .face.rear p { margin: 0 0 6px; font-size: 13.5px; line-height: 1.45; }
 .hm-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-@media (max-width: 760px) { .hm-body { grid-template-columns: 1fr; } .spirit { height: 210px; } .spirit .hero.spr { --px: 3px; } .spirit::before { width: 150px; height: 150px; margin-left: -75px; } .flip { height: 250px; } }
+@media (max-width: 760px) { .hm-body { grid-template-columns: 1fr; } .spirit { height: 210px; } .spirit .hero.spr { --px: 3px; } .spirit::before { width: 150px; height: 150px; margin-left: -75px; } }
 body.mobile .hm-body { grid-template-columns: 1fr; padding: 12px; } body.mobile .spirit { height: 200px; } body.mobile .spirit .hero.spr { --px: 3px; }
-body.mobile .spirit::before { width: 150px; height: 150px; margin-left: -75px; } body.mobile .flip { height: 250px; } body.mobile .hm h2 { font-size: 22px; }
+body.mobile .spirit::before { width: 150px; height: 150px; margin-left: -75px; } body.mobile .hm h2 { font-size: 22px; }
 @media (prefers-reduced-motion: reduce) { .spirit .sp, .spirit::before, .spirit .mote, .spirit.cursed .hero.spr { animation: none !important; } .spirit.cursed .hero.spr { filter: none; } .flip-in { transition: none; } }
 
 /* ---------- Per-hero health, levels, fallen heroes ---------- */
@@ -725,30 +727,60 @@ body.mobile .wordbar .chips { min-height: 24px; }
 .gobjs figure { margin: 0; display: grid; justify-items: center; gap: 4px; font-size: 11.5px; color: var(--dim); }
 
 .pick { max-width: 860px; margin: 10px auto; display: grid; gap: 12px; }
-.pick .lead { color: var(--dim); margin: 0; line-height: 1.45; }
+.pick h1.pick-h, body.mobile .pick h1.pick-h { font-size: 30px; margin: 0; line-height: 1.1; }
+body.mobile .pick h1.pick-h { font-size: 24px; }
 .pickgrid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
-.pickcard { display: grid; justify-items: center; gap: 2px; background: var(--panel); border: 2px solid var(--line); border-radius: var(--radius); padding: 8px 4px; cursor: pointer; min-width: 0; }
+.pickcard { display: grid; justify-items: center; align-content: start; gap: 4px; background: var(--panel); border: 2px solid var(--line); border-radius: var(--radius); padding: 8px 4px; cursor: pointer; min-width: 0; }
 .pickcard.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 14%, var(--panel)); }
 .pickcard.god { border-style: dashed; } .pickcard.god.on { border-style: solid; }
 .pickcard i { width: 64px; height: 64px; background-size: 200% 100%; image-rendering: pixelated; }
 .pickcard b { font-size: 12.5px; text-align: center; } .pickcard span { font-size: 11px; color: var(--dim); text-align: center; }
-.pickinfo { display: grid; grid-template-columns: 220px 1fr; gap: 16px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; }
-.pickinfo h2 { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-.pickinfo .stats { margin: 8px 0; }
+/* the chosen hero, in one row: the sprite 40 %, the details 60 % (Game Director, 27 Nov 2026) */
+.pickinfo { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 14px; align-items: stretch; background: var(--panel);
+  border: 1px solid var(--line); border-top: 3px solid var(--c); border-radius: var(--radius); padding: 14px; scroll-margin-top: 8px; }
+.pickinfo .spirit { height: auto; min-height: 220px; padding-bottom: 18px; }
+.pdet { display: grid; gap: 9px; align-content: start; min-width: 0; }
+.pdet h2 { margin: 0; font-size: 24px; line-height: 1.15; }
+.ptags { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+.ptags .gtag { margin: 0; }
+.psub { margin: 0; color: var(--dim); font-size: 13.5px; line-height: 1.35; }
+.psec h3 { margin: 0 0 5px; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
+.pchips { display: flex; flex-wrap: wrap; gap: 5px; }
+.pchip { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 13px; font-weight: 700; line-height: 1.35; white-space: nowrap;
+  color: var(--ink); background: color-mix(in srgb, var(--c) 18%, var(--bg2)); border: 1px solid color-mix(in srgb, var(--c) 55%, var(--line)); }
+.pchip.w { font-weight: 600; color: var(--dim); background: var(--bg2); border-color: var(--line); }
+.pfx { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.pfx li { display: flex; align-items: center; gap: 8px; font-size: 14px; line-height: 1.3; }
+.pfx img.fxi { height: 17px; flex: none; margin: 0; vertical-align: 0; }
+.pickgo { grid-column: 1 / -1; display: flex; gap: 8px; }
+.pickgo .btn { min-height: 44px; justify-content: center; } .pickgo .btn.primary { flex: 1 1 auto; font-weight: 800; }
+/* a hero's role: its icon and name in the role's colour (on the picker and in the hero list) */
+.rtag { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px 2px 6px; border-radius: 99px; font-size: 12px; font-weight: 800; line-height: 1.4;
+  white-space: nowrap; color: var(--tc); background: color-mix(in srgb, var(--tc) 15%, transparent); border: 1px solid color-mix(in srgb, var(--tc) 45%, transparent); }
+.rtag img.fxi { height: 14px; margin: 0; vertical-align: 0; }
+.pickcard .rtag { font-size: 11px; color: var(--tc); padding: 1px 8px 1px 5px; } .pickcard .rtag img.fxi { height: 12px; }
+.php { display: inline-flex; align-items: center; gap: 5px; font-size: 14px; font-weight: 800; }
+.php img.fxi { height: 14px; margin: 0; vertical-align: 0; }
 .ending .endparty { display: flex; gap: 18px; flex-wrap: wrap; margin: 14px 0; }
 .ending .endparty figure { margin: 0; display: grid; justify-items: center; gap: 6px; font-size: 12px; color: var(--dim); }
 
 @media (max-width: 760px) {
   .obj.spr { --px: 1px; } .obj.spr.big { --px: 2px; }
   .tv-status { grid-template-columns: 1fr; } .tv-heroes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .pickgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } .pickinfo { grid-template-columns: 1fr; } .gitems { grid-template-columns: 1fr; }
+  .pickgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } .gitems { grid-template-columns: 1fr; }
 }
 body.mobile .obj.spr { --px: 1px; } body.mobile .obj.spr.big { --px: 2px; }
 body.mobile .tv-obj { bottom: 40px; } body.mobile .tv-obj .cap { font-size: 10px; padding: 0 6px; }
 body.mobile .tv-status { grid-template-columns: 1fr; } body.mobile .tv-heroes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 body.mobile .tv-hero > i { width: 32px; height: 32px; }
 body.mobile .tv-prompt { position: sticky; bottom: 0; z-index: 3; }
-body.mobile .pickgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } body.mobile .pickinfo { grid-template-columns: 1fr; } body.mobile .pickcard i { width: 48px; height: 48px; }
+body.mobile .pickgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } body.mobile .pickcard i { width: 48px; height: 48px; }
+body.mobile .pickinfo { gap: 10px; padding: 10px; } body.mobile .pickinfo .spirit { height: auto; min-height: 180px; padding-bottom: 14px; }
+body.mobile .pickinfo .spirit .hero.spr { --px: 3px; }
+/* narrow phones (360 px): the 40 % column is narrower than a 3× sprite, so the sprite shrinks to fit instead of being cut */
+@supports (container-type: inline-size) { .pickinfo .spirit { container-type: inline-size; }
+  body.mobile .pickinfo .spirit .hero.spr { --px: min(3px, calc(100cqw / var(--art, 48))); } } body.mobile .pickinfo .spirit::before { width: 130px; height: 130px; margin-left: -65px; }
+body.mobile .pdet { gap: 8px; } body.mobile .pdet h2 { font-size: 20px; } body.mobile .pchip { font-size: 12.5px; padding: 3px 8px; } body.mobile .pfx li { font-size: 13.5px; }
 body.mobile .gitems { grid-template-columns: 1fr; } body.mobile .foename { font-size: 9px; }
 body.mobile .regdots i { width: 7px; height: 7px; }
 @media (prefers-reduced-motion: reduce) { .obj.spr.npc .sp { animation: none; } }
@@ -1300,7 +1332,7 @@ body.mobile .hm-foot { position: sticky; bottom: 0; z-index: 25; margin: 0 -10px
   background: linear-gradient(to bottom, transparent, var(--bg) 14px); }
 body.mobile .hm-foot .btn { flex-basis: 100%; min-height: 48px; font-size: 16px; }
 /* a little less height for the pictures on a phone, so more of the screen is the hero and the way on */
-body.mobile .spirit { height: 170px; } body.mobile .flip { height: 220px; }
+body.mobile .spirit { height: 170px; }
 /* the puzzle that waits at a stop */
 .tv-prompt .ptag { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; font-size: 12.5px; font-weight: 700; white-space: nowrap;
   color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 50%, var(--line)); background: color-mix(in srgb, var(--gold) 10%, var(--panel)); }

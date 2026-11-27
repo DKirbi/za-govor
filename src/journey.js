@@ -142,36 +142,45 @@ function openBag() {
 }
 
 // ------------------------------------------------------------ choosing the first hero
+// Game Director, 27 Nov 2026: no lead text; the chosen hero comes first, in one row (the sprite 40 %, the details
+// 60 %); attacks and words as chips; the special effects in plain words with icons; each hero's role (PLAYSTYLE).
+const roleTag = id => { const r = roleOf(id); return h('span', { class: 'rtag', style: { '--tc': r.col } }, pxIcon(r.icon), roleName(id, heroF(id))); };
 function renderPick() {
   const ids = starterChoices(), list = ids.map(id => CHARS.find(c => c.id === id));
   S.pickSel = clamp(S.pickSel, 0, list.length - 1);
-  const ch = list[S.pickSel], K = ROSTER[ch.id];
-  const locked = CHARS.length - ids.length;
+  const ch = list[S.pickSel], K = ROSTER[ch.id], fx = (PLAYSTYLE[ch.id] || { fx: [] }).fx;
+  const sec = (label, body) => h('div', { class: 'psec' }, h('h3', {}, label), body);
   SCR.append(h('div', { class: 'pick' },
-    h('div', { class: 'logo', style: { 'font-size': '30px' } }, 'Kdo gre na pot?'),
-    h('p', { class: 'lead' }, 'Izberi enega junaka. Na začetku so znani trije: Martin Krpan, Zeleni Jurij in Kurent. Drugi so še sence — ko koga srečaš na poti, ga spoznaš in naslednjič lahko začneš tudi z njim.' + (locked ? ` Še neznanih: ${locked}.` : ' Spoznal si vse.') + (setupVal('testMode') ? ' (Preizkusni način: na izbiro so vsi.)' : '')),
+    h('h1', { class: 'logo pick-h' }, 'Kdo gre na pot?'),
+    h('div', { class: 'pickinfo', style: { '--c': ch.c } },
+      h('div', { class: 'spirit' }, spriteEl(ch.id, ch.c)),
+      h('div', { class: 'pdet' },
+        h('h2', {}, ch.name),
+        h('div', { class: 'ptags' }, roleTag(ch.id),
+          h('span', { class: 'php', title: 'zdravje', 'aria-label': `zdravje ${HERO_HP[ch.id]}` }, pxIcon('heart'), HERO_HP[ch.id]),
+          isGod(ch.id) ? h('span', { class: 'gtag', style: { '--tc': ST_LABEL.bog[1] } }, ST_LABEL.bog[0]) : null),
+        h('p', { class: 'psub' }, ch.sub.split(' · ')[0]),
+        sec('Napadi', h('div', { class: 'pchips' }, ch.moves.map(m => h('span', { class: 'pchip' }, m)))),
+        fx.length ? sec(fx.length > 1 ? 'Posebni učinki' : 'Posebni učinek', h('ul', { class: 'pfx' }, fx.map(([ic, t]) => h('li', {}, pxIcon(ic), h('span', {}, t))))) : null,
+        sec(`${heroF(ch.id) ? 'Njene' : 'Njegove'} besede · ×1,5`, h('div', { class: 'pchips' }, K.domain.slice(0, 5).map(w => h('span', { class: 'pchip w' }, w))))),
+      h('div', { class: 'pickgo' },
+        h('button', { class: 'btn primary', onclick: startJourney }, 'Na pot ', h('kbd', {}, 'Enter')),
+        h('button', { class: 'btn', onclick: () => go('newrun') }, 'Nazaj'))),
     h('div', { class: 'pickgrid' }, CHARS.map(c => { const i = ids.indexOf(c.id);
       return i < 0 ? h('div', { class: 'pickcard locked', title: 'Še neznan: srečaš ga na poti' }, h('i', { class: 'shade', style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, '???'), h('span', {}, 'še neznan'))
         : h('button', { class: 'pickcard' + (i === S.pickSel ? ' on' : '') + (isGod(c.id) ? ' god' : ''), style: { '--c': c.c }, 'aria-pressed': i === S.pickSel ? 'true' : 'false',
-          onclick: () => { if (S.pickSel === i) return startJourney(); S.pickSel = i; sfx('sel'); mountShell(); renderPick(); } },
-          h('i', { style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, c.name), h('span', {}, isGod(c.id) ? 'bog' : ROSTER[c.id].role)); })),
-    h('div', { class: 'pickinfo', style: { '--c': ch.c } },
-      h('div', { class: 'spirit' }, spriteEl(ch.id, ch.c)),
-      h('div', {},
-        h('h2', {}, ch.name, h('span', { class: 'gtag', style: { '--tc': ST_LABEL[CHAR_ST[ch.id]][1] } }, ST_LABEL[CHAR_ST[ch.id]][0])),
-        h('p', { class: 'muted' }, ch.sub),
-        h('div', { class: 'stats' },
-          h('div', {}, 'Zdravje'), h('div', {}, HERO_HP[ch.id]),
-          h('div', {}, 'Napadi'), h('div', {}, ch.moves.join(' → ')),
-          h('div', {}, 'Največji napad'), h('div', {}, ch.extra),
-          h('div', {}, 'Njegove besede (×1,5)'), h('div', {}, K.domain.slice(0, 5).join(', ') + ' …')),
-        h('div', { class: 'row', style: { 'justify-content': 'flex-start' } },
-          h('button', { class: 'btn primary', onclick: startJourney }, 'Na pot ', h('kbd', {}, 'Enter')),
-          h('button', { class: 'btn', onclick: () => go('newrun') }, 'Nazaj'))))));
+          onclick: () => { if (S.pickSel === i) return startJourney(); S.pickSel = i; sfx('sel'); mountShell(); renderPick(); pickShow(); } },
+          h('i', { style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, c.name), roleTag(c.id)); }))));
+}
+// a hero tapped low in the list: bring the chosen hero's details (now at the top) back into view
+function pickShow() {
+  const p = $('.pickinfo'); if (!p || p.getBoundingClientRect().top >= 0) return;
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  p.scrollIntoView({ block: 'start', behavior: reduce ? 'auto' : 'smooth' });
 }
 function pickKey(e) {
   const d = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0;
-  if (d) { e.preventDefault(); const n = starterChoices().length; S.pickSel = (S.pickSel + d + n) % n; sfx('sel'); mountShell(); renderPick(); }
+  if (d) { e.preventDefault(); const n = starterChoices().length; S.pickSel = (S.pickSel + d + n) % n; sfx('sel'); mountShell(); renderPick(); pickShow(); }
   else if (e.key === 'Enter') { e.preventDefault(); startJourney(); }
   else if (e.key === 'Escape') go('newrun');
 }

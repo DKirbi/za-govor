@@ -59,6 +59,49 @@ function fxText(str) {
 }
 const fxPlain = str => String(str || '').replace(FX_TOKEN, (_, k, d) => FX_LABEL[k + d]);   // for logs and aria
 
+// ------------------------------------------------------------ more pixel icons: roles and special effects
+// Game Director, 27 Nov 2026: the hero picker names each hero's role and special effects in plain words, with an icon
+// beside each. Same drawing as above: a pixel grid ('.' is empty) in a few colours, with the dark outline around it.
+// Attack and defence up or down keep their own icons (atk+, atk-, def+, def-).
+const PX_PAL = {
+  r: '#d6443a', R: '#7a1a14', p: '#ff9a8c',  g: '#45b457', G: '#235a2c', l: '#a9f0a1',
+  y: '#e8b74a', Y: '#8a5a1c', w: '#fff1b8',  o: '#f0862c', O: '#a8400f',
+  s: '#c9d2dc', S: '#6d7a88', W: '#ffffff',  b: '#5a8fd0', B: '#28487a', c: '#bfe0ff',
+  k: '#9a988c', K: '#5c5a52', j: '#d2d0c4',  n: '#a8743a', N: '#5a3a1c',
+};
+const PX_ART = {
+  heart: ['.rrr...rrr.', 'rpprr.rrrrr', 'rprrrrrrrrR', 'rrrrrrrrrrR', 'rrrrrrrrrrR', '.rrrrrrrrR.', '..rrrrrrR..', '...rrrrR...', '....rrR....', '.....R.....'],
+  heal: ['.ggg...ggg.', 'gllgg.ggggg', 'glgggWggggG', 'gggggWggggG', 'gggWWWWWggG', '.ggggWgggG.', '..gggWggG..', '...ggggG...', '....ggG....', '.....G.....'],
+  bleed: ['....R....', '...RrR...', '...rrr...', '..rprrR..', '..prrrR..', '.prrrrrR.', '.prrrrrR.', '.rrrrrrR.', '.rrrrrrR.', '..rrrrR..', '...RRR...'],
+  poison: ['....G....', '...GgG...', '...ggg...', '..glggG..', '..lgggG..', '.lggggWG.', '.lgggWWG.', '.gggggWG.', '.ggggggG.', '..ggggG..', '...GGG...'],
+  burn: ['....o......', '....oo.....', '...ooo..o..', '...oyoo.oo.', '..ooyyoooo.', '..oyyyyyoo.', '.ooyywyyyoo', '.oyywwwyyyo', '.oyywwwwyyo', '.ooyywwyyoO', '..ooyyyyoO.', '...OOOOOO..'],
+  delay: ['nnnnnnnnn', '.ncccccn.', '.nyyyyyn.', '..nyyyn..', '...nyn...', '...ncn...', '..ncycn..', '.nccyccn.', '.nyyyyyn.', '.nyyyyyn.', 'nnnnnnnnn'],
+  unlock: ['...sss...', '..s...s..', '..s...S..', '..s......', '..s......', 'yyyyyyyyy', 'ywwwwwwwy', 'yyyyNyyyy', 'yyyyNyyyy', 'yyyyyyyyy', 'YYYYYYYYY'],
+  revive: ['.....y.....', '.....y.....', '....yyy....', '....ywy....', '..yyywyyy..', 'yyywwwwwyyy', '..yyywyyy..', '....ywy....', '....yyy....', '.....y.....', '.....y.....'],
+  dodge: ['bc....bc...', '.bc....bc..', '..bc....bc.', '...bc....bc', '..bc....bc.', '.bc....bc..', 'bc....bc...'],
+  stone: ['...KKKKK...', '..KjjjkkK..', '.KjjkkkkkK.', 'KjjkkkkkkkK', 'KjkkkkkkkkK', 'KkkkkkkkkKK', '.KKkkkkKKK.', '..KKKKKKK..'],
+  all: ['.....y.....', '.y...y...y.', '..y..y..y..', '...yyyyy...', '...ywwwy...', 'yyyywWwyyyy', '...ywwwy...', '...yyyyy...', '..y..y..y..', '.y...y...y.', '.....y.....'],
+  sword: ['....W....', '...WsS...', '...WsS...', '...WsS...', '...WsS...', '...WsS...', '...WsS...', '...WsS...', '.yyyyyyy.', '....n....', '....n....', '...yyy...'],
+  shield: ['bbbbbbbbbbb', 'bcccccccccb', 'bcbbbbBbbbb', 'bcbbbbBbbbb', 'bcbbbbBbbbb', 'bcbbbbBbbbb', '.bbbbbBbbb.', '.bbbbbBbbb.', '..bbbbBbb..', '...bbbBb...', '....bbb....', '.....b.....'],
+  banner: ['y.........', 'nyyyyyyyy.', 'nywwyyyyyY', 'nyyyyyyyyY', 'nyyyyyyyyY', 'nyyyyyyyY.', 'nyyy..yyY.', 'nyy....yY.', 'n.........', 'n.........', 'n.........', 'N.........'],
+};
+const PX_URL = {};
+function pxUrl(key) {
+  if (PX_URL[key]) return PX_URL[key];
+  const px = new Map();
+  PX_ART[key].forEach((row, y) => [...row].forEach((ch, x) => { if (ch !== '.') px.set(`${x + 1},${y + 1}`, PX_PAL[ch]); }));
+  const out = new Map(px);
+  for (const k of px.keys()) { const [x, y] = k.split(',').map(Number);
+    [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(([dx, dy]) => { const n = `${x + dx},${y + dy}`; if (!px.has(n)) out.set(n, FX_LINE); }); }
+  let w = 0, hgt = 0, rects = '';
+  for (const [k, c] of out) { const [x, y] = k.split(',').map(Number); w = Math.max(w, x + 1); hgt = Math.max(hgt, y + 1); rects += `<rect x="${x}" y="${y}" width="1" height="1" fill="${c}"/>`; }
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${hgt}" width="${w}" height="${hgt}" shape-rendering="crispEdges">${rects}</svg>`;
+  return (PX_URL[key] = 'data:image/svg+xml,' + encodeURIComponent(svg));
+}
+// an icon by key: one of PX_ART, or atk+ / atk- / def+ / def- (the icons above); decorative next to its words
+const pxIcon = key => FX_LABEL[key] ? h('img', { class: 'fxi', src: fxUrl(key), alt: '', draggable: 'false' })
+  : h('img', { class: 'fxi px', src: pxUrl(key), alt: '', draggable: 'false' });
+
 // ------------------------------------------------------------ what is in force on an actor, for the badges above its head
 // an enemy: its attack weakened (Kurent's bells until its next blow, Pregon zime's half, Lepa Vida's song, Volčja
 // jagoda) or grown (the Volkodlak feeding on repeated words), against the attack it came with (atkBase)
