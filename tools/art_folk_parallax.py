@@ -61,7 +61,10 @@ BASE_FADE = 36
 #          view px below the lowest top edge of the walking lane. The slice then overlaps the lane in every column at any
 #          scroll position, as slices overlap in Codex's own composite.
 # Boxes reproduce Codex's layered-composite-preview.png: full-scene cutouts at 1:1 (100 %), other canvases at the box
-# of preview.html (whose wider boxes for full-scene layers only make room for its pan). Speeds: data/backgrounds.json.
+# of preview.html (whose wider boxes for full-scene layers only make room for its pan).
+# Piranske soline, Predjama and Ljubljansko barje had their full-scene cutouts at preview.html's 130 × 100 % boxes, which
+# stretched them 1.3 × wide: the sun was an ellipse (Game Director, 27 Nov 2026). They are at 1:1 now, as Trnovski gozd
+# and Ljubljanski grad; Barje's overlap (`wrap`) shrank with them, 170 → 131 px. Speeds: data/backgrounds.json.
 STUDIES = {
     'gozd': {
         'study': 'trnovski-gozd', 'name': 'Trnovski gozd — ljudska poslikava (Codex)',
@@ -145,50 +148,50 @@ STUDIES = {
     'piran': {
         'study': 'piranske-soline', 'name': 'Piranske soline — ljudska poslikava (Codex)',
         'layers': [
-            ('sky', 'sky.png', (-10, -2, 120, 104), 'fill', {'tile': True}),
-            ('sun', 'setting-sun.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'period': 2}),
-            ('clouds', 'clouds.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
-            ('hills', 'distant-istrian-hills.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
+            ('sky', 'sky.png', (-2, -2, 104, 104), 'fill', {'tile': True}),
+            ('sun', 'setting-sun.png', (0, 0, 100, 100), 'fill', {'tile': True, 'period': 2}),
+            ('clouds', 'clouds.png', (0, 0, 100, 100), 'fill', {'tile': True}),
+            ('hills', 'distant-istrian-hills.png', (0, 0, 100, 100), 'fill', {'tile': True}),
             # Codex's water layer is the sea at the horizon and the salt pans in one picture. The sea lies beyond the far
             # shore and the house, the pans in front of them, so it is cut in two along the shore (27 Nov 2026): the sea
             # above view row 247 behind the shore, the pans from row 254 in front of it. Rows 247–253 lie under the
             # shore's opaque strip (245–253) and are not drawn.
-            ('sea', 'salt-pan-water.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'rows': (0, 247)}),
-            ('far-shore', 'salt-pan-far-shore.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
-            ('house', 'salt-worker-house.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'period': 2}),
-            ('water', 'salt-pan-water.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'rows': (254, None), 'floor': 0.5}),
-            ('embankments', 'salt-pan-embankments.png', (-15, 0, 130, 100), 'fill', {'tile': True}),   # not grounded: the water under it is
-            ('reflections', 'sunset-reflections.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
-            ('grass-lane', 'foreground-grass-lane.png', (-15, -0.85, 130, 101), 'fill', {'tile': True, 'stand': True}),
-            ('near-grass', 'near-foreground-salt-grass.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'front': True}),
+            ('sea', 'salt-pan-water.png', (0, 0, 100, 100), 'fill', {'tile': True, 'rows': (0, 247)}),
+            ('far-shore', 'salt-pan-far-shore.png', (0, 0, 100, 100), 'fill', {'tile': True}),
+            ('house', 'salt-worker-house.png', (0, 0, 100, 100), 'fill', {'tile': True, 'period': 2}),
+            ('water', 'salt-pan-water.png', (0, 0, 100, 100), 'fill', {'tile': True, 'rows': (254, None), 'floor': 0.5}),
+            ('embankments', 'salt-pan-embankments.png', (0, 0, 100, 100), 'fill', {'tile': True}),   # not grounded: the water under it is
+            ('reflections', 'sunset-reflections.png', (0, 0, 100, 100), 'fill', {'tile': True}),
+            ('grass-lane', 'foreground-grass-lane.png', (-0.5, -0.85, 101, 101), 'fill', {'tile': True, 'stand': True}),
+            ('near-grass', 'near-foreground-salt-grass.png', (0, 0, 100, 100), 'fill', {'tile': True, 'front': True}),
         ],
     },
     'predjama': {
         'study': 'predjama', 'name': 'Predjamski grad — ljudska poslikava (Codex)',
         'layers': [
-            ('sky', 'sky.png', (-10, -2, 120, 104), 'fill', {'tile': True}),
-            ('clouds', 'clouds.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
-            ('ridge', 'distant-karst-forest.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
-            ('castle-cliff', 'castle-cliff.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'period': 2}),
-            ('stream', 'lokva-stream.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'period': 2}),
-            ('grass-lane', 'foreground-grass-lane.png', (-15, -0.85, 130, 101), 'fill', {'tile': True, 'stand': True}),
-            ('near-foreground', 'near-foreground-rocks-grass.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'front': True}),
+            ('sky', 'sky.png', (-2, -2, 104, 104), 'fill', {'tile': True}),
+            ('clouds', 'clouds.png', (0, 0, 100, 100), 'fill', {'tile': True}),
+            ('ridge', 'distant-karst-forest.png', (0, 0, 100, 100), 'fill', {'tile': True}),
+            ('castle-cliff', 'castle-cliff.png', (0, 0, 100, 100), 'fill', {'tile': True, 'period': 2}),
+            ('stream', 'lokva-stream.png', (0, 0, 100, 100), 'fill', {'tile': True, 'period': 2}),
+            ('grass-lane', 'foreground-grass-lane.png', (-0.5, -0.85, 101, 101), 'fill', {'tile': True, 'stand': True}),
+            ('near-foreground', 'near-foreground-rocks-grass.png', (0, 0, 100, 100), 'fill', {'tile': True, 'front': True}),
         ],
     },
     'barje': {
         'study': 'barje', 'name': 'Ljubljansko barje — ljudska poslikava (Codex)',
         'layers': [
-            ('sky', 'sky.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
-            ('clouds', 'clouds.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
-            ('ridge', 'distant-wetland-ridge.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
-            ('far-meadow', 'far-meadow-transition.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
+            ('sky', 'sky.png', (0, 0, 100, 100), 'fill', {'tile': True}),
+            ('clouds', 'clouds.png', (0, 0, 100, 100), 'fill', {'tile': True}),
+            ('ridge', 'distant-wetland-ridge.png', (0, 0, 100, 100), 'fill', {'tile': True}),
+            ('far-meadow', 'far-meadow-transition.png', (0, 0, 100, 100), 'fill', {'tile': True}),
             # an island of water and reeds with tapered ends: tiled as it is, a wedge of the dawn sky showed down to the
             # lane between two copies (27 Nov 2026), so each copy's tapered end overlaps the next one's start
-            ('channels', 'wetland-channels-reeds.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'wrap': 170, 'floor': 0.5}),
-            ('landmarks', 'willows-and-pile-dwellings.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'period': 2}),
-            ('reflections', 'water-reflections.png', (-15, 0, 130, 100), 'fill', {'tile': True}),
-            ('grass-lane', 'foreground-grass-lane.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'stand': True}),
-            ('near-foreground', 'near-foreground-sedges.png', (-15, 0, 130, 100), 'fill', {'tile': True, 'front': True}),
+            ('channels', 'wetland-channels-reeds.png', (0, 0, 100, 100), 'fill', {'tile': True, 'wrap': 131, 'floor': 0.5}),
+            ('landmarks', 'willows-and-pile-dwellings.png', (0, 0, 100, 100), 'fill', {'tile': True, 'period': 2}),
+            ('reflections', 'water-reflections.png', (0, 0, 100, 100), 'fill', {'tile': True}),
+            ('grass-lane', 'foreground-grass-lane.png', (0, 0, 100, 100), 'fill', {'tile': True, 'stand': True}),
+            ('near-foreground', 'near-foreground-sedges.png', (0, 0, 100, 100), 'fill', {'tile': True, 'front': True}),
         ],
     },
     'ljubljanica': {
