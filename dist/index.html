@@ -1589,6 +1589,8 @@ body .ending .endhero .hero.spr { --px: min(4px, calc(92cqw / var(--art, 48))); 
 .endwords .pchip { font-size: 15px; letter-spacing: .04em; }
 .endwords .pchip small { color: var(--faint); font-weight: 600; }
 @media (prefers-reduced-motion: reduce) { .confetti, .endhero .sp, .endglow, .ending.victory .logo { animation: none !important; } }
+.endbtns { display: grid; gap: 10px; width: min(100%, 320px); margin: 26px auto 8px; }
+.endbtns .btn { justify-content: center; min-height: 50px; font-size: 17px; font-weight: 800; }
 
 /* ---------- Title scene: "Za govor!" over a dusk landscape (src/title.js, art from tools/art_title.py) ----------
    Sizes are in art pixels times --s, the whole-number scale; animations move one art pixel per step. */
@@ -3071,7 +3073,7 @@ const xpNeed = () => 100 * S.level;
 const letterEq = (tile, typed) => tile === typed;
 
 // Version of this build, filled in by build.py from package.json and git (see CHANGELOG.md).
-const BUILD = {"version": "0.22.0", "stage": "zaprta alfa", "commit": ""};
+const BUILD = {"version": "0.22.0", "stage": "zaprta alfa", "commit": "cd7d2ca"};
 const app = $('#app');
 let SCR = null;   // current screen container
 // There is no top bar: pages under the menu have a sticky way back, timed puzzles a Premor button in their header,
@@ -6008,7 +6010,10 @@ function renderEnding() {
       h('div', { class: 'pchips' }, long.map(w => h('span', { class: 'pchip w' }, UP(w), h('small', {}, ` ${[...w].length}`))))) : null,
     h('p', { class: 'thanks' }, 'Hvala, ker si prehodil pot do konca.'),
     inspiredLine(),
-    h('div', { class: 'row', style: { 'justify-content': 'flex-start' } }, h('button', { class: 'btn primary', onclick: leaveEnding }, 'Nova pot ', h('kbd', {}, 'Enter')))));
+    // below everything, centred, one under the other, like a game's last screen (Game Director, 27 Nov 2026)
+    h('div', { class: 'endbtns' },
+      h('button', { class: 'btn primary', onclick: () => leaveEnding('newrun') }, 'Nova pot', S.mobile ? null : [' ', h('kbd', {}, 'Enter')]),
+      h('button', { class: 'btn', onclick: () => leaveEnding('title') }, 'Nazaj na meni', S.mobile ? null : [' ', h('kbd', {}, 'Esc')]))));
   sfx('win');
 }
 
@@ -8401,7 +8406,8 @@ function restoreSnap() {
   delete R.godSnap;
 }
 // The ending screen's way out (button, Enter, Back) goes through here.
-function leaveEnding() { resetRun(); go('title'); }
+// the ending's two ways out (Game Director, 27 Nov 2026): Nova pot (the setup of a new journey) or Nazaj na meni
+function leaveEnding(to = 'title') { resetRun(); go(to); }
 function renderGodCome(arg) {
   arg = arg || S.godArg; S.godArg = arg;
   const id = arg.god, G = GOD[id], ch = CHARS.find(c => c.id === id);
@@ -9173,7 +9179,7 @@ document.addEventListener('keydown', e => {
   if (S.screen === 'pick') { pickKey(e); return; }
   if (S.screen === 'train') { if (e.key === 'Escape') { e.preventDefault(); S.trainArg.back(); } return; }
   if (S.screen === 'travel') { travelKey(e); return; }
-  if (S.screen === 'ending') { if (e.key === 'Enter') { e.preventDefault(); leaveEnding(); } return; }
+  if (S.screen === 'ending') { if (e.key === 'Enter' && !(e.target && e.target.closest && e.target.closest('button'))) { e.preventDefault(); leaveEnding('newrun'); } else if (e.key === 'Escape') { e.preventDefault(); leaveEnding('title'); } return; }
   if (S.screen === 'shrine') { shrineKey(e); return; }
   if ((S.screen === 'godcome' || S.screen === 'godword') && e.key === 'Enter') { e.preventDefault(); const A = S.godArg; if (A) (A.go || A.next)(); return; }
   if (S.screen === 'result') { if (e.key === 'Enter') { e.preventDefault(); const w = !!(B && B.won); S.resultEl.remove(); afterResult(w); } return; }
