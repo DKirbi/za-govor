@@ -558,17 +558,18 @@ body.mobile .gbg { grid-template-columns: 1fr; }
   font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
 .say b { display: block; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; font-family: system-ui, sans-serif; margin-bottom: 2px; }
 .hm-card { display: grid; gap: 10px; }
-.flip { perspective: 1100px; width: 100%; max-width: 400px; height: 262px; justify-self: center; }
-.flip-in { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .6s cubic-bezier(.3, 1.3, .5, 1); }
+/* the hero's card: the front sizes to its painting and plate (the name always sits on the plate, under the painting);
+   the back lies over it and scrolls when the story is longer (Game Director, 27 Nov 2026) */
+.flip { perspective: 1100px; width: 100%; max-width: 400px; justify-self: center; }
+.flip-in { position: relative; width: 100%; transform-style: preserve-3d; transition: transform .6s cubic-bezier(.3, 1.3, .5, 1); }
 .flip.back .flip-in { transform: rotateY(180deg); }
 .face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 8px; overflow: hidden; border: 2px solid #2a1a12;
   box-shadow: 0 2px 0 #1c110b, 0 12px 26px rgba(0,0,0,.5); font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
-.face.front { background: var(--paper); color: var(--paper-ink); display: grid; grid-template-rows: auto 1fr; }
+.face.front { position: relative; inset: auto; background: var(--paper); color: var(--paper-ink); display: grid; grid-template-rows: auto auto; }
 .face.front svg { display: block; width: 100%; height: auto; }
-.face.front .plate { padding: 8px 12px; display: grid; gap: 4px; align-content: center; }
-.face.front .plate b { font-size: 20px; } .face.front .plate span { font-size: 12.5px; }
-.face.front .mv { display: flex; gap: 6px; flex-wrap: wrap; font-family: system-ui, sans-serif; font-size: 11px; }
-.face.front .mv { display: flex; flex-wrap: wrap; gap: 6px; }
+.face.front .plate { padding: 10px 14px 13px; display: grid; gap: 8px; align-content: start; border-top: 2px solid #2a1a12; }
+.face.front .plate b { font-size: 21px; line-height: 1.15; }
+.face.front .mv { display: flex; gap: 6px; flex-wrap: wrap; font-family: system-ui, sans-serif; font-size: 12px; }
 /* the card's skills: filled when the hero knows them, outlined (dashed, faint) when not yet; a star per upgrade */
 .face.front .mv em { font-style: normal; border: 1.5px solid #2a1a12; border-radius: 99px; padding: 3px 11px; line-height: 1.3; }
 .face.front .mv em.on { background: #2a1a12; color: #f6efdc; }
@@ -578,11 +579,12 @@ body.mobile .gbg { grid-template-columns: 1fr; }
   background: repeating-linear-gradient(0deg, #d9b98a 0 3px, #d3b282 3px 4px, #dcbd90 4px 9px), #d9b98a; }
 .face.rear h4 { font-size: 16px; margin: 0 0 6px; border-bottom: 2px solid #7d1f25; padding-bottom: 4px; display: flex; justify-content: space-between; align-items: baseline; }
 .face.rear h4 small { font-size: 11px; font-weight: 500; font-family: system-ui, sans-serif; }
+.face.rear .rsub { font-style: italic; color: #4a3220; }
 .face.rear p { margin: 0 0 6px; font-size: 13.5px; line-height: 1.45; }
 .hm-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-@media (max-width: 760px) { .hm-body { grid-template-columns: 1fr; } .spirit { height: 210px; } .spirit .hero.spr { --px: 3px; } .spirit::before { width: 150px; height: 150px; margin-left: -75px; } .flip { height: 250px; } }
+@media (max-width: 760px) { .hm-body { grid-template-columns: 1fr; } .spirit { height: 210px; } .spirit .hero.spr { --px: 3px; } .spirit::before { width: 150px; height: 150px; margin-left: -75px; } }
 body.mobile .hm-body { grid-template-columns: 1fr; padding: 12px; } body.mobile .spirit { height: 200px; } body.mobile .spirit .hero.spr { --px: 3px; }
-body.mobile .spirit::before { width: 150px; height: 150px; margin-left: -75px; } body.mobile .flip { height: 250px; } body.mobile .hm h2 { font-size: 22px; }
+body.mobile .spirit::before { width: 150px; height: 150px; margin-left: -75px; } body.mobile .hm h2 { font-size: 22px; }
 @media (prefers-reduced-motion: reduce) { .spirit .sp, .spirit::before, .spirit .mote, .spirit.cursed .hero.spr { animation: none !important; } .spirit.cursed .hero.spr { filter: none; } .flip-in { transition: none; } }
 
 /* ---------- Per-hero health, levels, fallen heroes ---------- */
@@ -732,30 +734,60 @@ body.mobile .wordbar .chips { min-height: 24px; }
 .gobjs figure { margin: 0; display: grid; justify-items: center; gap: 4px; font-size: 11.5px; color: var(--dim); }
 
 .pick { max-width: 860px; margin: 10px auto; display: grid; gap: 12px; }
-.pick .lead { color: var(--dim); margin: 0; line-height: 1.45; }
+.pick h1.pick-h, body.mobile .pick h1.pick-h { font-size: 30px; margin: 0; line-height: 1.1; }
+body.mobile .pick h1.pick-h { font-size: 24px; }
 .pickgrid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
-.pickcard { display: grid; justify-items: center; gap: 2px; background: var(--panel); border: 2px solid var(--line); border-radius: var(--radius); padding: 8px 4px; cursor: pointer; min-width: 0; }
+.pickcard { display: grid; justify-items: center; align-content: start; gap: 4px; background: var(--panel); border: 2px solid var(--line); border-radius: var(--radius); padding: 8px 4px; cursor: pointer; min-width: 0; }
 .pickcard.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 14%, var(--panel)); }
 .pickcard.god { border-style: dashed; } .pickcard.god.on { border-style: solid; }
 .pickcard i { width: 64px; height: 64px; background-size: 200% 100%; image-rendering: pixelated; }
 .pickcard b { font-size: 12.5px; text-align: center; } .pickcard span { font-size: 11px; color: var(--dim); text-align: center; }
-.pickinfo { display: grid; grid-template-columns: 220px 1fr; gap: 16px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; }
-.pickinfo h2 { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-.pickinfo .stats { margin: 8px 0; }
+/* the chosen hero, in one row: the sprite 40 %, the details 60 % (Game Director, 27 Nov 2026) */
+.pickinfo { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 14px; align-items: stretch; background: var(--panel);
+  border: 1px solid var(--line); border-top: 3px solid var(--c); border-radius: var(--radius); padding: 14px; scroll-margin-top: 8px; }
+.pickinfo .spirit { height: auto; min-height: 220px; padding-bottom: 18px; }
+.pdet { display: grid; gap: 9px; align-content: start; min-width: 0; }
+.pdet h2 { margin: 0; font-size: 24px; line-height: 1.15; }
+.ptags { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+.ptags .gtag { margin: 0; }
+.psub { margin: 0; color: var(--dim); font-size: 13.5px; line-height: 1.35; }
+.psec h3 { margin: 0 0 5px; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
+.pchips { display: flex; flex-wrap: wrap; gap: 5px; }
+.pchip { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 13px; font-weight: 700; line-height: 1.35; white-space: nowrap;
+  color: var(--ink); background: color-mix(in srgb, var(--c) 18%, var(--bg2)); border: 1px solid color-mix(in srgb, var(--c) 55%, var(--line)); }
+.pchip.w { font-weight: 600; color: var(--dim); background: var(--bg2); border-color: var(--line); }
+.pfx { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.pfx li { display: flex; align-items: center; gap: 8px; font-size: 14px; line-height: 1.3; }
+.pfx img.fxi { height: 17px; flex: none; margin: 0; vertical-align: 0; }
+.pickgo { grid-column: 1 / -1; display: flex; gap: 8px; }
+.pickgo .btn { min-height: 44px; justify-content: center; } .pickgo .btn.primary { flex: 1 1 auto; font-weight: 800; }
+/* a hero's role: its icon and name in the role's colour (on the picker and in the hero list) */
+.rtag { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px 2px 6px; border-radius: 99px; font-size: 12px; font-weight: 800; line-height: 1.4;
+  white-space: nowrap; color: var(--tc); background: color-mix(in srgb, var(--tc) 15%, transparent); border: 1px solid color-mix(in srgb, var(--tc) 45%, transparent); }
+.rtag img.fxi { height: 14px; margin: 0; vertical-align: 0; }
+.pickcard .rtag { font-size: 11px; color: var(--tc); padding: 1px 8px 1px 5px; } .pickcard .rtag img.fxi { height: 12px; }
+.php { display: inline-flex; align-items: center; gap: 5px; font-size: 14px; font-weight: 800; }
+.php img.fxi { height: 14px; margin: 0; vertical-align: 0; }
 .ending .endparty { display: flex; gap: 18px; flex-wrap: wrap; margin: 14px 0; }
 .ending .endparty figure { margin: 0; display: grid; justify-items: center; gap: 6px; font-size: 12px; color: var(--dim); }
 
 @media (max-width: 760px) {
   .obj.spr { --px: 1px; } .obj.spr.big { --px: 2px; }
   .tv-status { grid-template-columns: 1fr; } .tv-heroes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .pickgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } .pickinfo { grid-template-columns: 1fr; } .gitems { grid-template-columns: 1fr; }
+  .pickgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } .gitems { grid-template-columns: 1fr; }
 }
 body.mobile .obj.spr { --px: 1px; } body.mobile .obj.spr.big { --px: 2px; }
 body.mobile .tv-obj { bottom: 40px; } body.mobile .tv-obj .cap { font-size: 10px; padding: 0 6px; }
 body.mobile .tv-status { grid-template-columns: 1fr; } body.mobile .tv-heroes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 body.mobile .tv-hero > i { width: 32px; height: 32px; }
 body.mobile .tv-prompt { position: sticky; bottom: 0; z-index: 3; }
-body.mobile .pickgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } body.mobile .pickinfo { grid-template-columns: 1fr; } body.mobile .pickcard i { width: 48px; height: 48px; }
+body.mobile .pickgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } body.mobile .pickcard i { width: 48px; height: 48px; }
+body.mobile .pickinfo { gap: 10px; padding: 10px; } body.mobile .pickinfo .spirit { height: auto; min-height: 180px; padding-bottom: 14px; }
+body.mobile .pickinfo .spirit .hero.spr { --px: 3px; }
+/* narrow phones (360 px): the 40 % column is narrower than a 3× sprite, so the sprite shrinks to fit instead of being cut */
+@supports (container-type: inline-size) { .pickinfo .spirit { container-type: inline-size; }
+  body.mobile .pickinfo .spirit .hero.spr { --px: min(3px, calc(100cqw / var(--art, 48))); } } body.mobile .pickinfo .spirit::before { width: 130px; height: 130px; margin-left: -65px; }
+body.mobile .pdet { gap: 8px; } body.mobile .pdet h2 { font-size: 20px; } body.mobile .pchip { font-size: 12.5px; padding: 3px 8px; } body.mobile .pfx li { font-size: 13.5px; }
 body.mobile .gitems { grid-template-columns: 1fr; } body.mobile .foename { font-size: 9px; }
 body.mobile .regdots i { width: 7px; height: 7px; }
 @media (prefers-reduced-motion: reduce) { .obj.spr.npc .sp { animation: none; } }
@@ -1307,7 +1339,7 @@ body.mobile .hm-foot { position: sticky; bottom: 0; z-index: 25; margin: 0 -10px
   background: linear-gradient(to bottom, transparent, var(--bg) 14px); }
 body.mobile .hm-foot .btn { flex-basis: 100%; min-height: 48px; font-size: 16px; }
 /* a little less height for the pictures on a phone, so more of the screen is the hero and the way on */
-body.mobile .spirit { height: 170px; } body.mobile .flip { height: 220px; }
+body.mobile .spirit { height: 170px; }
 /* the puzzle that waits at a stop */
 .tv-prompt .ptag { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; font-size: 12.5px; font-weight: 700; white-space: nowrap;
   color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 50%, var(--line)); background: color-mix(in srgb, var(--gold) 10%, var(--panel)); }
@@ -2595,6 +2627,36 @@ const KIT = {
   ajda:    { ini: 'Aj', kit: 'reviewed', role: 'varstvo, okamnitev', domain: ['gora', 'skala', 'kamen', 'vrh', 'planika', 'gams', 'okno', 'sneg', 'stena', 'pot'] },
 };
 const ROSTER = Object.fromEntries(CHARS.map(ch => [ch.id, { id: ch.id, name: ch.name, c: ch.c, moves: ch.moves, god: isGod(ch.id), ...KIT[ch.id] }]));
+// Play style on the hero picker (Game Director, 27 Nov 2026: "categorize every character as Damage Dealer, Support,
+// Healer etc."). PROPOSED by Claude from the character specs' combat roles and the kits above, awaiting approval:
+// one role per character (masculine and feminine name) and the special effects in a few plain words, each with an
+// icon (pxIcon, src/effects.js). Effects describe what the hero's skills do today, not the numbers.
+const ROLES = {
+  napad:   { m: 'Napadalec', f: 'Napadalka', icon: 'sword', col: '#e8835f' },    // damage
+  obramba: { m: 'Branilec', f: 'Branilka', icon: 'shield', col: '#7fb0e6' },      // protects the party, takes the blows
+  zdravje: { m: 'Zdravilec', f: 'Zdravilka', icon: 'heal', col: '#6cc46f' },      // heals
+  podpora: { m: 'Podpornik', f: 'Podpornica', icon: 'banner', col: '#e8b74a' },   // makes the party stronger
+  ovira:   { m: 'Oviralec', f: 'Oviralka', icon: 'delay', col: '#b98af0' },       // slows and weakens enemies
+};
+const PLAYSTYLE = {
+  krpan:   { role: 'napad', fx: [['bleed', 'nasprotnik krvavi']] },
+  jurij:   { role: 'zdravje', fx: [['heal', 'zdravi družino'], ['unlock', 'odklene črke']] },
+  kurent:  { role: 'ovira', fx: [['delay', 'nasprotnik napade kasneje'], ['atk-', 'nasprotnik udari šibkeje']] },
+  matjaz:  { role: 'podpora', fx: [['atk+', 'družina udari močneje'], ['def+', 'ščit za vso družino'], ['revive', 'padli vstanejo']] },
+  erazem:  { role: 'napad', fx: [['dodge', 'izmik in protinapad'], ['heal', 'češnje zdravijo sosede']] },
+  klepec:  { role: 'napad', fx: [['atk+', 'moč raste do konca bitke']] },
+  vida:    { role: 'ovira', fx: [['atk-', 'nasprotniki udarijo šibkeje']] },
+  ajda:    { role: 'obramba', fx: [['def+', 'prestreže udarce'], ['stone', 'okamni nasprotnika']] },
+  kresnik: { role: 'napad', fx: [['burn', 'nasprotnik gori'], ['heal', 'povrne del rane']] },
+  perun:   { role: 'napad', fx: [['all', 'strela zadene vse']] },
+  svarog:  { role: 'obramba', fx: [['def+', 'ščit za vso družino']] },
+  mokos:   { role: 'zdravje', fx: [['heal', 'zdravi družino'], ['unlock', 'očisti črke'], ['revive', 'obudi padlega']] },
+  veles:   { role: 'napad', fx: [['poison', 'zastrupi nasprotnika'], ['all', 'zadene vse']] },
+  dazbog:  { role: 'podpora', fx: [['atk+', 'naslednja beseda je močnejša']] },
+  stribog: { role: 'napad', fx: [['all', 'zadene vse'], ['unlock', 'očisti mrežo črk']] },
+};
+const roleOf = id => ROLES[(PLAYSTYLE[id] || {}).role || 'napad'];
+const roleName = (id, f) => roleOf(id)[f ? 'f' : 'm'];
 const GOD_ATK = { veles: 1.5 }, GOD_ATK_DEFAULT = 1.35;   // gods hit harder than folk heroes; Veles hardest
 const CLASSIC = ['perun', 'svarog', 'mokos', 'kresnik'];   // the four used by the practice battles and the tests
 const HEROES = [];   // the current party (on a journey up to PARTY_MAX, src/journey.js; the practice four), in battle order; S.heroes holds their health and level
@@ -2871,7 +2933,7 @@ const xpNeed = () => 100 * S.level;
 const letterEq = (tile, typed) => tile === typed;
 
 // Version of this build, filled in by build.py from package.json and git (see CHANGELOG.md).
-const BUILD = {"version": "0.22.0", "stage": "zaprta alfa", "commit": "15b5562"};
+const BUILD = {"version": "0.22.0", "stage": "zaprta alfa", "commit": "3bacba0"};
 const app = $('#app');
 let SCR = null;   // current screen container
 // There is no top bar: pages under the menu have a sticky way back, timed puzzles a Premor button in their header,
@@ -2978,11 +3040,12 @@ function renderHeroMoment(arg) {
       h('span', { class: 'i', 'aria-hidden': 'true' }, 'i'), 'Veščine'));
   const flip = h('div', { class: 'flip' });
   const front = h('div', { class: 'face front' }); front.innerHTML = CardArt.svg(id, 1);
-  // the skills on the card: filled when known, outlined when not yet; a star for stopnja 2, two for stopnja 3
-  front.append(h('div', { class: 'plate' }, h('b', {}, ch.name), h('span', {}, ch.sub), h('div', { class: 'mv' }, ch.moves.map((m, i) => {
+  // the front: the name and the skills only (27 Nov 2026), filled when known, outlined when not yet; a star for stopnja 2,
+  // two for stopnja 3. The rest of the hero (who they are, their story) is on the back.
+  front.append(h('div', { class: 'plate' }, h('b', {}, ch.name), h('div', { class: 'mv' }, ch.moves.map((m, i) => {
     const on = !sst || !S.run || knows(sst, i + 1), ups = sst && S.run ? upsOf(sst, i + 1) : 0;
     return h('em', { class: on ? 'on' : 'off', title: on ? `stopnja ${ups + 1} od ${MAX_RANK}` : 'še ni znana' }, m, ups ? h('i', {}, '★'.repeat(ups)) : null); }))));
-  const rear = h('div', { class: 'face rear' }, h('h4', {}, ch.name, h('small', {}, ST_LABEL[CHAR_ST[id]][0].split(' · ')[0])), L.story.map(p => h('p', {}, p)));
+  const rear = h('div', { class: 'face rear' }, h('h4', {}, ch.name, h('small', {}, ST_LABEL[CHAR_ST[id]][0].split(' · ')[0])), h('p', { class: 'rsub' }, ch.sub), L.story.map(p => h('p', {}, p)));
   flip.append(h('div', { class: 'flip-in' }, front, rear));
   const flipBtn = h('button', { class: 'btn', 'aria-pressed': 'false', onclick: () => { const b = flip.classList.toggle('back'); flipBtn.setAttribute('aria-pressed', b ? 'true' : 'false'); flipBtn.lastChild.textContent = b ? ' Pokaži sliko' : ' Obrni karto'; sfx('sel', { rate: b ? .8 : 1.2 }); } }, '↻', ' Obrni karto');
   flip.addEventListener('click', () => flipBtn.click());
@@ -5300,36 +5363,45 @@ function openBag() {
 }
 
 // ------------------------------------------------------------ choosing the first hero
+// Game Director, 27 Nov 2026: no lead text; the chosen hero comes first, in one row (the sprite 40 %, the details
+// 60 %); attacks and words as chips; the special effects in plain words with icons; each hero's role (PLAYSTYLE).
+const roleTag = id => { const r = roleOf(id); return h('span', { class: 'rtag', style: { '--tc': r.col } }, pxIcon(r.icon), roleName(id, heroF(id))); };
 function renderPick() {
   const ids = starterChoices(), list = ids.map(id => CHARS.find(c => c.id === id));
   S.pickSel = clamp(S.pickSel, 0, list.length - 1);
-  const ch = list[S.pickSel], K = ROSTER[ch.id];
-  const locked = CHARS.length - ids.length;
+  const ch = list[S.pickSel], K = ROSTER[ch.id], fx = (PLAYSTYLE[ch.id] || { fx: [] }).fx;
+  const sec = (label, body) => h('div', { class: 'psec' }, h('h3', {}, label), body);
   SCR.append(h('div', { class: 'pick' },
-    h('div', { class: 'logo', style: { 'font-size': '30px' } }, 'Kdo gre na pot?'),
-    h('p', { class: 'lead' }, 'Izberi enega junaka. Na začetku so znani trije: Martin Krpan, Zeleni Jurij in Kurent. Drugi so še sence — ko koga srečaš na poti, ga spoznaš in naslednjič lahko začneš tudi z njim.' + (locked ? ` Še neznanih: ${locked}.` : ' Spoznal si vse.') + (setupVal('testMode') ? ' (Preizkusni način: na izbiro so vsi.)' : '')),
+    h('h1', { class: 'logo pick-h' }, 'Kdo gre na pot?'),
+    h('div', { class: 'pickinfo', style: { '--c': ch.c } },
+      h('div', { class: 'spirit' }, spriteEl(ch.id, ch.c)),
+      h('div', { class: 'pdet' },
+        h('h2', {}, ch.name),
+        h('div', { class: 'ptags' }, roleTag(ch.id),
+          h('span', { class: 'php', title: 'zdravje', 'aria-label': `zdravje ${HERO_HP[ch.id]}` }, pxIcon('heart'), HERO_HP[ch.id]),
+          isGod(ch.id) ? h('span', { class: 'gtag', style: { '--tc': ST_LABEL.bog[1] } }, ST_LABEL.bog[0]) : null),
+        h('p', { class: 'psub' }, ch.sub.split(' · ')[0]),
+        sec('Napadi', h('div', { class: 'pchips' }, ch.moves.map(m => h('span', { class: 'pchip' }, m)))),
+        fx.length ? sec(fx.length > 1 ? 'Posebni učinki' : 'Posebni učinek', h('ul', { class: 'pfx' }, fx.map(([ic, t]) => h('li', {}, pxIcon(ic), h('span', {}, t))))) : null,
+        sec(`${heroF(ch.id) ? 'Njene' : 'Njegove'} besede · ×1,5`, h('div', { class: 'pchips' }, K.domain.slice(0, 5).map(w => h('span', { class: 'pchip w' }, w))))),
+      h('div', { class: 'pickgo' },
+        h('button', { class: 'btn primary', onclick: startJourney }, 'Na pot ', h('kbd', {}, 'Enter')),
+        h('button', { class: 'btn', onclick: () => go('newrun') }, 'Nazaj'))),
     h('div', { class: 'pickgrid' }, CHARS.map(c => { const i = ids.indexOf(c.id);
       return i < 0 ? h('div', { class: 'pickcard locked', title: 'Še neznan: srečaš ga na poti' }, h('i', { class: 'shade', style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, '???'), h('span', {}, 'še neznan'))
         : h('button', { class: 'pickcard' + (i === S.pickSel ? ' on' : '') + (isGod(c.id) ? ' god' : ''), style: { '--c': c.c }, 'aria-pressed': i === S.pickSel ? 'true' : 'false',
-          onclick: () => { if (S.pickSel === i) return startJourney(); S.pickSel = i; sfx('sel'); mountShell(); renderPick(); } },
-          h('i', { style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, c.name), h('span', {}, isGod(c.id) ? 'bog' : ROSTER[c.id].role)); })),
-    h('div', { class: 'pickinfo', style: { '--c': ch.c } },
-      h('div', { class: 'spirit' }, spriteEl(ch.id, ch.c)),
-      h('div', {},
-        h('h2', {}, ch.name, h('span', { class: 'gtag', style: { '--tc': ST_LABEL[CHAR_ST[ch.id]][1] } }, ST_LABEL[CHAR_ST[ch.id]][0])),
-        h('p', { class: 'muted' }, ch.sub),
-        h('div', { class: 'stats' },
-          h('div', {}, 'Zdravje'), h('div', {}, HERO_HP[ch.id]),
-          h('div', {}, 'Napadi'), h('div', {}, ch.moves.join(' → ')),
-          h('div', {}, 'Največji napad'), h('div', {}, ch.extra),
-          h('div', {}, 'Njegove besede (×1,5)'), h('div', {}, K.domain.slice(0, 5).join(', ') + ' …')),
-        h('div', { class: 'row', style: { 'justify-content': 'flex-start' } },
-          h('button', { class: 'btn primary', onclick: startJourney }, 'Na pot ', h('kbd', {}, 'Enter')),
-          h('button', { class: 'btn', onclick: () => go('newrun') }, 'Nazaj'))))));
+          onclick: () => { if (S.pickSel === i) return startJourney(); S.pickSel = i; sfx('sel'); mountShell(); renderPick(); pickShow(); } },
+          h('i', { style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, c.name), roleTag(c.id)); }))));
+}
+// a hero tapped low in the list: bring the chosen hero's details (now at the top) back into view
+function pickShow() {
+  const p = $('.pickinfo'); if (!p || p.getBoundingClientRect().top >= 0) return;
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  p.scrollIntoView({ block: 'start', behavior: reduce ? 'auto' : 'smooth' });
 }
 function pickKey(e) {
   const d = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0;
-  if (d) { e.preventDefault(); const n = starterChoices().length; S.pickSel = (S.pickSel + d + n) % n; sfx('sel'); mountShell(); renderPick(); }
+  if (d) { e.preventDefault(); const n = starterChoices().length; S.pickSel = (S.pickSel + d + n) % n; sfx('sel'); mountShell(); renderPick(); pickShow(); }
   else if (e.key === 'Enter') { e.preventDefault(); startJourney(); }
   else if (e.key === 'Escape') go('newrun');
 }
@@ -7062,7 +7134,7 @@ function renderHeroes() {
       h('ul', { class: 'pickgrid herogrid' }, CHARS.map(c => h('li', {}, UNLOCKED.has(c.id)
         ? h('button', { class: 'pickcard' + (isGod(c.id) ? ' god' : ''), style: { '--c': c.c },
           onclick: () => go('hero', { kind: 'codex', ids: [c.id], crumb: 'Nazaj na junake', next: () => go('heroes'), nextLabel: 'Nazaj na junake ' }) },
-          h('i', { style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, c.name), h('span', {}, isGod(c.id) ? 'bog' : ROSTER[c.id].role))
+          h('i', { style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, c.name), roleTag(c.id))
         : h('div', { class: 'pickcard locked', title: 'Še neznan: srečaš ga na poti' },
           h('i', { class: 'shade', style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, '???'), h('span', {}, 'še neznan')))))),
     h('div', { class: 'devbox' }, h('span', { class: 'devtag' }, 'Razvoj'),
@@ -7129,6 +7201,49 @@ function fxText(str) {
   return out;
 }
 const fxPlain = str => String(str || '').replace(FX_TOKEN, (_, k, d) => FX_LABEL[k + d]);   // for logs and aria
+
+// ------------------------------------------------------------ more pixel icons: roles and special effects
+// Game Director, 27 Nov 2026: the hero picker names each hero's role and special effects in plain words, with an icon
+// beside each. Same drawing as above: a pixel grid ('.' is empty) in a few colours, with the dark outline around it.
+// Attack and defence up or down keep their own icons (atk+, atk-, def+, def-).
+const PX_PAL = {
+  r: '#d6443a', R: '#7a1a14', p: '#ff9a8c',  g: '#45b457', G: '#235a2c', l: '#a9f0a1',
+  y: '#e8b74a', Y: '#8a5a1c', w: '#fff1b8',  o: '#f0862c', O: '#a8400f',
+  s: '#c9d2dc', S: '#6d7a88', W: '#ffffff',  b: '#5a8fd0', B: '#28487a', c: '#bfe0ff',
+  k: '#9a988c', K: '#5c5a52', j: '#d2d0c4',  n: '#a8743a', N: '#5a3a1c',
+};
+const PX_ART = {
+  heart: ['.rrr...rrr.', 'rpprr.rrrrr', 'rprrrrrrrrR', 'rrrrrrrrrrR', 'rrrrrrrrrrR', '.rrrrrrrrR.', '..rrrrrrR..', '...rrrrR...', '....rrR....', '.....R.....'],
+  heal: ['.ggg...ggg.', 'gllgg.ggggg', 'glgggWggggG', 'gggggWggggG', 'gggWWWWWggG', '.ggggWgggG.', '..gggWggG..', '...ggggG...', '....ggG....', '.....G.....'],
+  bleed: ['....R....', '...RrR...', '...rrr...', '..rprrR..', '..prrrR..', '.prrrrrR.', '.prrrrrR.', '.rrrrrrR.', '.rrrrrrR.', '..rrrrR..', '...RRR...'],
+  poison: ['....G....', '...GgG...', '...ggg...', '..glggG..', '..lgggG..', '.lggggWG.', '.lgggWWG.', '.gggggWG.', '.ggggggG.', '..ggggG..', '...GGG...'],
+  burn: ['....o......', '....oo.....', '...ooo..o..', '...oyoo.oo.', '..ooyyoooo.', '..oyyyyyoo.', '.ooyywyyyoo', '.oyywwwyyyo', '.oyywwwwyyo', '.ooyywwyyoO', '..ooyyyyoO.', '...OOOOOO..'],
+  delay: ['nnnnnnnnn', '.ncccccn.', '.nyyyyyn.', '..nyyyn..', '...nyn...', '...ncn...', '..ncycn..', '.nccyccn.', '.nyyyyyn.', '.nyyyyyn.', 'nnnnnnnnn'],
+  unlock: ['...sss...', '..s...s..', '..s...S..', '..s......', '..s......', 'yyyyyyyyy', 'ywwwwwwwy', 'yyyyNyyyy', 'yyyyNyyyy', 'yyyyyyyyy', 'YYYYYYYYY'],
+  revive: ['.....y.....', '.....y.....', '....yyy....', '....ywy....', '..yyywyyy..', 'yyywwwwwyyy', '..yyywyyy..', '....ywy....', '....yyy....', '.....y.....', '.....y.....'],
+  dodge: ['bc....bc...', '.bc....bc..', '..bc....bc.', '...bc....bc', '..bc....bc.', '.bc....bc..', 'bc....bc...'],
+  stone: ['...KKKKK...', '..KjjjkkK..', '.KjjkkkkkK.', 'KjjkkkkkkkK', 'KjkkkkkkkkK', 'KkkkkkkkkKK', '.KKkkkkKKK.', '..KKKKKKK..'],
+  all: ['.....y.....', '.y...y...y.', '..y..y..y..', '...yyyyy...', '...ywwwy...', 'yyyywWwyyyy', '...ywwwy...', '...yyyyy...', '..y..y..y..', '.y...y...y.', '.....y.....'],
+  sword: ['....W....', '...WsS...', '...WsS...', '...WsS...', '...WsS...', '...WsS...', '...WsS...', '...WsS...', '.yyyyyyy.', '....n....', '....n....', '...yyy...'],
+  shield: ['bbbbbbbbbbb', 'bcccccccccb', 'bcbbbbBbbbb', 'bcbbbbBbbbb', 'bcbbbbBbbbb', 'bcbbbbBbbbb', '.bbbbbBbbb.', '.bbbbbBbbb.', '..bbbbBbb..', '...bbbBb...', '....bbb....', '.....b.....'],
+  banner: ['y.........', 'nyyyyyyyy.', 'nywwyyyyyY', 'nyyyyyyyyY', 'nyyyyyyyyY', 'nyyyyyyyY.', 'nyyy..yyY.', 'nyy....yY.', 'n.........', 'n.........', 'n.........', 'N.........'],
+};
+const PX_URL = {};
+function pxUrl(key) {
+  if (PX_URL[key]) return PX_URL[key];
+  const px = new Map();
+  PX_ART[key].forEach((row, y) => [...row].forEach((ch, x) => { if (ch !== '.') px.set(`${x + 1},${y + 1}`, PX_PAL[ch]); }));
+  const out = new Map(px);
+  for (const k of px.keys()) { const [x, y] = k.split(',').map(Number);
+    [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(([dx, dy]) => { const n = `${x + dx},${y + dy}`; if (!px.has(n)) out.set(n, FX_LINE); }); }
+  let w = 0, hgt = 0, rects = '';
+  for (const [k, c] of out) { const [x, y] = k.split(',').map(Number); w = Math.max(w, x + 1); hgt = Math.max(hgt, y + 1); rects += `<rect x="${x}" y="${y}" width="1" height="1" fill="${c}"/>`; }
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${hgt}" width="${w}" height="${hgt}" shape-rendering="crispEdges">${rects}</svg>`;
+  return (PX_URL[key] = 'data:image/svg+xml,' + encodeURIComponent(svg));
+}
+// an icon by key: one of PX_ART, or atk+ / atk- / def+ / def- (the icons above); decorative next to its words
+const pxIcon = key => FX_LABEL[key] ? h('img', { class: 'fxi', src: fxUrl(key), alt: '', draggable: 'false' })
+  : h('img', { class: 'fxi px', src: pxUrl(key), alt: '', draggable: 'false' });
 
 // ------------------------------------------------------------ what is in force on an actor, for the badges above its head
 // an enemy: its attack weakened (Kurent's bells until its next blow, Pregon zime's half, Lepa Vida's song, Volčja
@@ -8548,7 +8663,7 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { ACH, get ACHP() { return ACHP; }, ACH_WORDS, achReset, achCheck, achProgress, cardPainting, hasSkillCard, openSkillCard, achSkillFired, waitingPrayer, migratePrayers, get PARTY_MAX() { return PARTY_MAX; }, FOE_SLOTS, stepIn, statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, noteSupport, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, godWaits, godArrives, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { ACH, get ACHP() { return ACHP; }, ACH_WORDS, achReset, achCheck, achProgress, cardPainting, hasSkillCard, openSkillCard, achSkillFired, waitingPrayer, migratePrayers, get PARTY_MAX() { return PARTY_MAX; }, FOE_SLOTS, stepIn, statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, noteSupport, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, godWaits, godArrives, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, PLAYSTYLE, ROLES, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 
 </script>
