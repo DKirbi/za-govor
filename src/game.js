@@ -779,6 +779,13 @@ const roleOf = id => ROLES[(PLAYSTYLE[id] || {}).role || 'napad'];
 const roleName = (id, f) => roleOf(id)[f ? 'f' : 'm'];
 const GOD_ATK = { veles: 1.5 }, GOD_ATK_DEFAULT = 1.35;   // gods hit harder than folk heroes; Veles hardest
 const CLASSIC = ['perun', 'svarog', 'mokos', 'kresnik'];   // the four used by the practice battles and the tests
+// Whose letters are whose (Game Director, 27 Nov 2026): a hero's letters in the mesh take the colour of the hero's place
+// in the party, not the hero's own colour, so three heroes never look alike (Erazem and Kralj Matjaž were both red,
+// Kresnik's a pale gold). Red, green and blue, kept clear of the mesh's other colours (the gold hint and šumnik dot,
+// the mint path, the teal flood); a fourth for a practice battle or an old save with four. A diamond of the same colour
+// stands under each hero in battle (renderParty).
+const SLOT_C = ['#e5534b', '#5bb84a', '#4c8ff0', '#b07be8'];
+const ownC = k => SLOT_C[((k % SLOT_C.length) + SLOT_C.length) % SLOT_C.length];
 const HEROES = [];   // the current party (on a journey up to PARTY_MAX, src/journey.js; the practice four), in battle order; S.heroes holds their health and level
 
 const ENEMIES = {
@@ -1372,7 +1379,7 @@ function renderParty() {
     const bar = {};
     UI.party.append(h('div', { class: 'herowrap' + (st.down ? ' isdown' : ''), ref: w => bar.wrap = w }, el,
       h('div', { class: 'hpbar', ref: b => bar.bar = b }, h('i', { ref: f => bar.fill = f })),
-      h('span', { class: 'hpnum' }, h('span', { class: 'lv', title: `Raven ${st.lvl}`, ref: l => bar.lv = l }), h('span', { ref: n => bar.num = n }))));
+      h('span', { class: 'hpnum' }, h('i', { class: 'owndia', style: { '--c': ownC(i) }, title: `${hr.name}: črke te barve` }), h('span', { class: 'lv', title: `Raven ${st.lvl}`, ref: l => bar.lv = l }), h('span', { ref: n => bar.num = n }))));
     UI.heroBars.push(bar); return el;
   });
   renderPartyHp();
@@ -1468,7 +1475,7 @@ function renderSide() {
       h('button', { class: 'btn small', style: { flex: 1 }, disabled: !!B.cw, onclick: () => shuffleGrid(true) }, 'Premešaj ', h('kbd', {}, '2')),
       S.run ? h('button', { class: 'btn small', style: { flex: 1 }, disabled: !bagCount(true), onclick: () => openBag() }, `Torba (${bagCount(true)}) `, h('kbd', {}, '3')) : null),
     h('div', { class: 'box' }, h('h4', {}, 'Junaki in barve'),
-      h('div', { class: 'legend' }, HEROES.map((hr, i) => h('div', { style: { '--c': hr.c } },
+      h('div', { class: 'legend' }, HEROES.map((hr, i) => h('div', { style: { '--c': ownC(i) } },
         h('span', { class: 'sw' }), h('span', {}, h('b', {}, hr.ini), ' ', hr.name, ' · ', hr.role),
         h('span', { class: 'zz' }, S.heroes[i].down ? 'padel' : busy(i) && !B.sleep[i] ? 'pleše' : asleep(i) ? (B.sleep[i] && B.sleep[i].why === 'topot' ? 'omamljen' : 'spi') : ''))))),
     h('div', { class: 'box keys' },
@@ -1723,7 +1730,7 @@ function renderPuzzle() {
     const locked = isLocked(t);
     const el = h('div', { class: 'tile' + (hero && !locked ? ' own' : '') + (locked ? ' locked' : '') + (locked && t.flood ? ' flood' : '') +
         (!locked && SUMNIKI.includes(t.ch) ? ' sumnik' : '') + (hero && !locked && asleep(t.owner) ? ' sleep' : '') + (t.scorch && !locked ? ' scorch' : '') + (t.pop ? ' pop' : ''),
-      'data-i': i, style: hero ? { '--c': hero.c } : null },
+      'data-i': i, style: hero ? { '--c': ownC(t.owner) } : null },
       hero && !locked ? h('span', { class: 'ini' }, hero.ini) : null, t.ch);
     t.pop = false;
     mesh.append(el); return el;
@@ -1776,7 +1783,7 @@ function renderWord() {
     // one chip per attacking hero: the initials from the tiles and the skill this word fires
     counts.forEach((n, k) => { if (n && !asleep(k)) { const t = firedTier(k, n);
       if (holdsBack(k)) { UI.chips.append(h('span', { class: 'chip', style: { '--c': 'var(--dim)' }, title: `${HEROES[k].name} ne udari svoje božanske podobe` }, h('b', {}, HEROES[k].ini), 'ne udari')); return; }
-      UI.chips.append(h('span', { class: 'chip', style: { '--c': HEROES[k].c }, title: `${HEROES[k].name}: ${HEROES[k].moves[t - 1]}` }, h('b', {}, HEROES[k].ini), HEROES[k].moves[t - 1])); } });
+      UI.chips.append(h('span', { class: 'chip', style: { '--c': ownC(k) }, title: `${HEROES[k].name}: ${HEROES[k].moves[t - 1]}` }, h('b', {}, HEROES[k].ini), HEROES[k].moves[t - 1])); } });
     if (B.path.length >= MINW()) UI.chips.append(h('span', { class: 'chip' }, `dolžina ×${num(LEN_MULT(B.path.length))}`));
     if (valid) {
       const lem = LEMMA.get(pathWord(B.path)), uses = B.lemmaUses.get(lem) || 0;
@@ -1864,7 +1871,7 @@ function renderProposals() {
   list.forEach(([w, { p }]) => UI.props.append(h('button', { class: 'prop', title: S.mobile ? 'Pošlji to besedo' : 'Izberi to besedo',
     onclick: () => { B.path = p.slice(); B.typed = w; B.nopath = false; renderSelection();
       if (S.mobile) { const b = B, key = p.join(); setTimeout(() => { if (B === b && B.path.join() === key) submitWord(); }, 380); } } },
-    UP(w), h('span', { class: 'dots' }, p.filter(i => ownerActive(B.grid[i])).map(i => h('i', { style: { '--c': HEROES[B.grid[i].owner].c } }))))));
+    UP(w), h('span', { class: 'dots' }, p.filter(i => ownerActive(B.grid[i])).map(i => h('i', { style: { '--c': ownC(B.grid[i].owner) } }))))));
   UI.props.append(h('button', { class: 'prop-x', title: 'Skrij predloge', onclick: () => { S.suggest = false; renderProposals(); fb('Predlogi so skriti. Vklopiš jih na začetnem zaslonu.', 'warn'); } }, '×'));
 }
 
@@ -3140,8 +3147,10 @@ function renderChest() {
     h('div', { class: 'bhead' }, h('div', { class: 't' }, 'Zaklenjena skrinja', h('small', {}, 'dogodek na čas')), pauseBtn()),
     h('div', { class: 'panel' },
       h('div', { class: 'chestbox' }, objEl('skrinja', E.done && E.win ? 1 : 0, 'big'),
-        h('div', {}, h('div', {}, 'Iz črk sestavi besedo in jo pošlji. Imaš en poskus: beseda iz vseh črk odpre skrinjo, krajša prava beseda jo le priškrne in prinese del nagrade (daljša beseda, večji del). Če se zmotiš, besedo počisti in začni znova.'),
-          E.clue ? h('div', { class: 'chestclue', style: { color: 'var(--gold)', 'margin-top': '6px' } }, 'Namig za skrito besedo: ', E.item.clue) : null)),
+        // one line (Game Director, 27 Nov 2026); the rules (one try, a shorter word opens it only a little) are in the
+        // chest's Kako se igra
+        h('div', {}, h('div', { class: 'chestlead' }, 'Pred teboj se pojavi zakladna skrinja. Jo znaš odpreti?'),
+          E.clue ? h('div', { class: 'chestclue' }, 'Namig: ', E.item.clue) : null)),
       h('div', { class: 'timer', style: { margin: '14px 0 4px' } }, h('i', { ref: el => UI.evTimer = el, style: { width: clamp(100 * E.time / E.timeMax, 0, 100) + '%' } })),
       h('div', { class: 'sendrow' },
         h('div', { class: 'guess' }, [...E.item.w].map((_, k) => h('span', { class: 'lt' }, E.sel[k] != null ? E.letters[E.sel[k]].ch : ''))),
@@ -3387,6 +3396,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { ACH, get ACHP() { return ACHP; }, ACH_WORDS, achReset, achCheck, achProgress, cardPainting, hasSkillCard, openSkillCard, achSkillFired, waitingPrayer, migratePrayers, get PARTY_MAX() { return PARTY_MAX; }, FOE_SLOTS, stepIn, statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, noteSupport, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, godWaits, godArrives, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, PLAYSTYLE, ROLES, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { ACH, get ACHP() { return ACHP; }, ACH_WORDS, achReset, achCheck, achProgress, cardPainting, hasSkillCard, openSkillCard, achSkillFired, waitingPrayer, migratePrayers, get PARTY_MAX() { return PARTY_MAX; }, FOE_SLOTS, stepIn, statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, noteSupport, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, godWaits, godArrives, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, PLAYSTYLE, ROLES, ownC, SLOT_C, skillPanel, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 

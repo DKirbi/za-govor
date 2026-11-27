@@ -230,6 +230,9 @@ h1, h2, h3 { margin: 0; }
 .event { max-width: 720px; margin: 10px auto; display: grid; gap: 12px; }
 .event .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
 .chestbox { display: flex; gap: 16px; align-items: center; }
+.chestbox > .obj { flex: none; }   /* the chest keeps its shape: a flex row squeezed it narrow next to the text */
+.chestlead { font-size: 16px; font-weight: 600; line-height: 1.35; }
+.chestclue { color: var(--gold); margin-top: 6px; }
 .chestsq { width: 90px; height: 70px; border: 2px solid var(--gold); border-radius: 8px; display: grid; place-items: center; font-weight: 800;
   background: color-mix(in srgb, var(--gold) 15%, var(--panel)); }
 .letters { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
@@ -585,6 +588,9 @@ body.mobile .spirit::before { width: 150px; height: 150px; margin-left: -75px; }
 .herowrap .hpbar { min-width: 0; width: 100%; height: 6px; }
 .herowrap .hpbar i { background: var(--good); }
 .herowrap .hpbar.low i { background: var(--gold); } .herowrap .hpbar.crit i { background: var(--danger); }
+/* the diamond under a hero in battle: the colour of their letters (ownC), so it is plain whose letters are whose */
+.owndia { display: inline-block; width: 8px; height: 8px; margin: 0 5px 0 2px; vertical-align: 1px; transform: rotate(45deg); background: var(--c);
+  box-shadow: 0 0 0 1.5px #0b0c10, 0 0 6px color-mix(in srgb, var(--c) 60%, transparent); }
 .herowrap .hpnum { display: flex; gap: 4px; align-items: center; white-space: nowrap; }
 .herowrap .lv { color: var(--gold); font-size: 7px; letter-spacing: 1px; }
 .herowrap .lv u { text-decoration: none; opacity: .28; }
@@ -808,7 +814,17 @@ body.held .puzzle, body.held .wordbar, body.held .event .panel, body.held .lanes
   filter: blur(18px) saturate(.4) brightness(.8); pointer-events: none; user-select: none; }
 .overlay.pause { z-index: 70; background: rgba(8, 9, 12, .78); padding: 12px; }
 .overlay.tut { z-index: 80; background: rgba(8, 9, 12, .8); padding: 10px; }
-.pause-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 4px; }
+/* the pause window is a game menu (Game Director, 27 Nov 2026): a tall panel, everything centred, the buttons in one
+   column of equal width, Nadaljuj first; the sound settings at the foot */
+.overlay.pause .dialog { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+  width: min(440px, 92vw); min-height: min(680px, 84vh); padding: 30px 24px; box-sizing: border-box; }
+.overlay.pause h2 { margin: 0; font-size: 36px; letter-spacing: .02em; }
+.overlay.pause .dialog > .muted { margin-top: 6px; max-width: 30ch; line-height: 1.4; }
+.pause-actions { display: grid; gap: 12px; width: min(100%, 320px); margin: 28px auto 6px; }
+.pause-actions .btn { width: 100%; min-height: 54px; font-size: 17px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.pause-actions .btn kbd { font-size: 11px; }
+.overlay.pause .soundctl { width: min(100%, 320px); text-align: left; margin-top: 22px; }
+body.mobile .overlay.pause .dialog { min-height: min(720px, 86vh); }
 .volrow { display: flex; align-items: center; gap: 12px; margin-top: 16px; color: var(--dim); font-size: 13px; }
 .volrow input { flex: 1; accent-color: var(--gold); min-width: 0; }
 .volrow output { width: 3.2em; text-align: right; font-variant-numeric: tabular-nums; }
@@ -1211,8 +1227,10 @@ body.mobile .skillbtn { min-height: 40px; padding: 6px 12px; }
 .sk-sum b { color: var(--ink); }
 .sk-pts { padding: 2px 10px; border-radius: 99px; border: 1px solid var(--line); }
 .sk-pts.on { border-color: var(--gold); color: var(--gold); font-weight: 700; }
-.sk { border: 1px solid var(--line); border-left: 3px solid var(--c); border-radius: 10px; padding: 10px 12px; background: var(--panel2); }
-.sk.off { border-left-style: dashed; background: transparent; }
+/* a skill's card: a full border in the hero's colour around the whole card (Game Director, 27 Nov 2026), dashed while
+   the skill is not learned yet */
+.sk { border: 2px solid var(--c); border-radius: 10px; padding: 10px 12px; background: var(--panel2); }
+.sk.off { border-style: dashed; border-color: color-mix(in srgb, var(--c) 75%, transparent); background: transparent; }
 .sk-head { display: flex; align-items: center; gap: 8px; }
 .sk-head b { font-size: 15px; }
 .sk.off .sk-head b { color: var(--dim); }
@@ -1408,6 +1426,12 @@ body.mobile .report .rp-send .btn, body.mobile .report .rp-close { min-height: 4
 .scene.pbg > .partyhp, .scene.pbg > .cards, .scene.pbg > .floats { z-index: 2; }
 .scene.pbg .foewrap > :not(.spr) { position: relative; z-index: 2; }   /* an enemy's name, health and pips stay over a front layer */
 .scene.travel.pbg > .pbg-l.front { z-index: 3; }
+/* near trees the party walks past (`passing`, Triglav): only on the road, never over a battle or the gallery; while the
+   party stands (a stop, a prompt) they fade back, so they never hide anyone during a choice */
+.scene:not(.travel) > .pbg-l.passing { display: none; }
+.scene.travel > .pbg-l.passing { transition: opacity .45s ease; }
+.scene.travel:not(.walking) > .pbg-l.passing { opacity: .22; }
+@media (prefers-reduced-motion: reduce) { .scene.travel > .pbg-l.passing { transition: none; } }
 .gbg .gpbg { position: relative; width: 100%; overflow: hidden; border-radius: 6px; border: 1px solid var(--line); background: #1a1e2b; }
 
 /* ---------------------------------------------------------------- achievements (src/achievements.js, data/achievements.json) */
