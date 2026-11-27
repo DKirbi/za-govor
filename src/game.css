@@ -615,9 +615,27 @@ body.mobile #app:has(.battle) { padding-bottom: 0; }
 body.mobile .battle { display: flex; flex-direction: column; height: calc(100dvh - var(--battle-top, 57px)); }
 body.mobile .battle > * { flex-shrink: 0; }
 body.mobile .battle > .scene { flex: 1 1 auto; min-height: 170px; }
-/* the tip sits over the sky, under the actors and cards, and lets taps through */
-.scene > .coach { position: absolute; top: 8px; left: 8px; right: 8px; pointer-events: none;
-  font-size: 12px; line-height: 1.35; padding: 6px 9px; background: rgba(22, 30, 52, .92); border: 1px solid #34466e; }
+/* the tip is a "?" button in the scene's top-left corner, over the sky; a tap opens it as a popover (27 Nov 2026).
+   The strip itself lets taps through, only the button and the open popover take them. */
+.scene > .coach-tip { position: absolute; top: 6px; left: 6px; right: 6px; z-index: 2; pointer-events: none;
+  background: none; border: 0; border-radius: 0; padding: 0; }
+.coach-btn { position: relative; pointer-events: auto; width: 30px; height: 30px; padding: 0; border-radius: 50%;
+  display: grid; place-items: center; font: 700 16px/1 system-ui, sans-serif; color: var(--gold);
+  background: rgba(22, 30, 52, .92); border: 1px solid #34466e; box-shadow: 0 2px 6px rgba(0, 0, 0, .35); cursor: pointer;
+  -webkit-tap-highlight-color: transparent; }
+.coach-btn::before { content: ''; position: absolute; inset: -7px; }   /* a 44 px touch target around the 30 px disc */
+.coach-btn[aria-expanded="true"] { border-color: var(--gold); background: #2a2413; }
+.coach-tip.fresh .coach-btn::after { content: ''; position: absolute; top: -2px; right: -2px; width: 9px; height: 9px;
+  border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 2px rgba(22, 30, 52, .92); animation: coachdot 1.6s ease-in-out 3; }
+@keyframes coachdot { 50% { transform: scale(1.35); } }
+@media (prefers-reduced-motion: reduce) { .coach-tip.fresh .coach-btn::after { animation: none; } }
+.coach-pop { position: relative; pointer-events: auto; margin-top: 8px; width: max-content; max-width: 100%;
+  font-size: 12.5px; line-height: 1.4; color: #cfe0ff; padding: 8px 10px; border-radius: 8px;
+  background: rgba(22, 30, 52, .96); border: 1px solid #34466e; box-shadow: 0 6px 18px rgba(0, 0, 0, .45); }
+.coach-pop::before { content: ''; position: absolute; top: -6px; left: 10px; width: 10px; height: 10px; transform: rotate(45deg);
+  background: inherit; border-left: 1px solid #34466e; border-top: 1px solid #34466e; }
+.coach-pop b { color: var(--gold); font-weight: 700; }
+.coach-pop[hidden] { display: none; }
 /* while the tip covers the sky, the dashed frame alone marks the target */
 body.mobile .scene.coaching .foewrap .tg { visibility: hidden; }
 /* feedback covers the word-count line for its 3 s instead of adding a row; proposals stay on one line */

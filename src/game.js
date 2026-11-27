@@ -1279,9 +1279,18 @@ function startBattle(node) {
 
 const nodeBg = node => node.bg || NODE_BG[node.id];
 function buildBattleDom() {
-  // On a phone the coach tip floats over the empty sky of the scene instead of taking a row,
-  // so the letter grid keeps its place when the tip appears or goes away.
-  const coach = h('div', { class: 'coach', ref: el => UI.coach = el });
+  // On a phone the coach tip is a "?" button in the scene's top corner (Game Director, 27 Nov 2026): a tap opens the tip
+  // as a popover over the sky, a tap anywhere outside closes it again (and still reaches what was tapped). A new tip
+  // marks the button with a gold dot until it is opened. The letter grid never moves for it. On a desktop the tip
+  // keeps its row under the word bar.
+  UI.coachBtn = UI.coachPop = null;
+  const coach = S.mobile
+    ? h('div', { class: 'coach coach-tip', ref: el => UI.coach = el },
+      h('button', { class: 'coach-btn', type: 'button', 'aria-label': 'Namig', 'aria-expanded': 'false', 'aria-controls': 'coach-pop', ref: el => UI.coachBtn = el,
+        onpointerdown: e => e.preventDefault(),   // never takes focus from the puzzle
+        onclick: () => setCoachOpen(UI.coachPop.hidden) }, '?'),
+      h('div', { class: 'coach-pop', id: 'coach-pop', role: 'note', hidden: true, ref: el => UI.coachPop = el }))
+    : h('div', { class: 'coach', ref: el => UI.coach = el });
   UI.send = UI.clr = null;
   let battle;
   SCR.append(battle = h('div', { class: 'battle' },
@@ -1453,9 +1462,27 @@ const STARTER_TIP = { text: 'V vrsticah mreže ležijo cele besede. Beri jih z l
 function renderCoach() {
   const tip = !LV().coach ? null : (B.def.tips || []).find(t => B.words < t.until) || (B.starters && B.starters.length && !B.words ? STARTER_TIP : null);
   UI.coach.style.display = tip ? '' : 'none';
-  if (UI.scene) UI.scene.classList.toggle('coaching', !!tip && S.mobile);
-  if (tip) UI.coach.textContent = 'Namig: ' + (S.mobile && tip.m ? tip.m : tip.text);
+  if (!UI.coachPop) { if (tip) UI.coach.textContent = 'Namig: ' + tip.text; return; }   // desktop: a row under the word bar
+  if (!tip) { setCoachOpen(false); return; }
+  const text = S.mobile && tip.m ? tip.m : tip.text;
+  if (UI.coachPop.dataset.tip !== text) {   // a new tip: the dot on the button until it is opened
+    UI.coachPop.dataset.tip = text;
+    UI.coachPop.replaceChildren(h('b', {}, 'Namig: '), text);
+    if (UI.coachPop.hidden) UI.coach.classList.add('fresh');
+  }
 }
+// the phone's tip popover: open or closed (while it is open over the sky, the dashed frame alone marks the target)
+function setCoachOpen(open) {
+  if (!UI.coachPop) return;
+  UI.coachPop.hidden = !open;
+  UI.coachBtn.setAttribute('aria-expanded', String(!!open));
+  if (open) UI.coach.classList.remove('fresh');
+  if (UI.scene) UI.scene.classList.toggle('coaching', !!open);
+}
+// a tap anywhere outside the open popover and its button closes it; the tap still does what it does there
+document.addEventListener('pointerdown', e => {
+  if (UI.coachPop && !UI.coachPop.hidden && !UI.coach.contains(e.target)) setCoachOpen(false);
+}, true);
 
 // ------------------------------------------------------------ cards + floats
 function actorCenter(el, scene = UI.scene) {
