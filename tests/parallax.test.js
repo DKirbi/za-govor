@@ -10,6 +10,31 @@ const REGIONS = [['ptuj', 0], ['peca', 1], ['triglav', 2], ['bled', 3], ['gozd',
 // layers that stand on one another move together, or one slides along the other while the party walks (27 Nov 2026):
 // the Piran house on its far shore, the Lokva falling out of Predjama's cliff, the Barje willows and pile dwellings in
 // their channels, the Ljubljanski grad trees rooted at the lane's far edge
+// Composited on the pack's canvas at many scroll positions: in how many columns the far layers (slower than 0.2: sky,
+// clouds, distant hills) show in a gap between a nearer slice and the lane's top edge (Game Director, 27 Nov 2026:
+// "slices floating in the air"). The lane is at its canvas place, the lowest it ever is (it only rises to the feet).
+async function floating(pid) {
+  const P = window.__ZG.BGX.packs[pid], W = P.canvas.w, H = P.canvas.h, li = P.layers.findIndex(l => l.stand != null), lane = P.layers[li];
+  const near = P.layers.slice(0, li).filter(l => !l.front && l.speed >= 0.2);
+  const mask = async l => { const im = new Image(); im.src = l.src; await im.decode();
+    const w = Math.round(l.w * (l.scale || 1)), h = Math.round(l.h * (l.scale || 1)), c = new OffscreenCanvas(w, h), g = c.getContext('2d');
+    g.drawImage(im, 0, 0, w, h); const d = g.getImageData(0, 0, w, h).data, a = new Uint8Array(w * h);
+    for (let i = 0; i < w * h; i++) a[i] = d[i * 4 + 3] > 160 ? 1 : 0;
+    return { a, w, h }; };
+  const M = new Map(); for (const l of [...near, lane]) M.set(l, await mask(l));
+  const at = (l, cam, x, y) => { const m = M.get(l), yy = y - Math.round(l.y); if (yy < 0 || yy >= m.h) return 0;
+    const xx = (((x - Math.round(l.x) + Math.round(cam * l.speed)) % m.w) + m.w) % m.w; return m.a[yy * m.w + xx]; };
+  let cols = 0, bad = 0, worst = 0, cams = 0;
+  for (let cam = 0; cam < 4000; cam += 211) { cams++;
+    for (let x = 0; x < W; x += 3) {
+      let top = -1; for (let y = 0; y < H; y++) if (at(lane, cam, x, y)) { top = y; break; }
+      if (top < 1) continue;
+      cols++; let n = 0, y = top - 1;
+      while (y >= 0 && !near.some(l => at(l, cam, x, y))) { n++; y--; }
+      if (y >= 0 && n >= 2 && n <= 80) { bad++; worst = Math.max(worst, n); }   // sandwiched: a slice floats over the lane
+    } }
+  return { cols, bad, worst, cams };
+}
 const GLUED = { piran: [['house', 'far-shore']], predjama: [['stream', 'castle-cliff']], barje: [['landmarks', 'channels']], grad: [['near-foreground-tree-frame', 'foreground-grass-lane']] };
 const WALK = 1500;   // world px walked between the two measurements
 
@@ -39,6 +64,9 @@ run(async () => {
         check(L.filter(l => l.tileX && l.speed >= 0.2).length === L.filter(l => l.speed >= 0.2).length, `${key}: every layer at 0.2 or faster tiles, so it really scrolls with the walk`);
         (GLUED[key] || []).forEach(([a, b]) => { const A = L.find(l => l.id === a), Bl = L.find(l => l.id === b);
           check(A && Bl && A.speed === Bl.speed, `${key}: ${a} stands on ${b} and moves with it`, A && Bl ? `${A.speed} and ${Bl.speed}` : 'missing'); });
+        const fl = await ev(floating, pid);
+        check(fl.cols > 1000 && fl.bad / fl.cols <= 0.005, `${key}: no slice floats over the lane: the far sky and hills never show between a slice and the lane's top edge`,
+          `${(100 * fl.bad / fl.cols).toFixed(2)} % of ${fl.cols} columns at ${fl.cams} scroll positions${fl.bad ? `, worst ${fl.worst} canvas px` : ''}`);
       }
       // walk: measure each tiling layer before and after WALK world px
       await ev((ri) => { const Z = window.__ZG; Z.S.testMode = true; Z.S.mode = 'calm'; Z.setBgForce('B'); Z.newRun('krpan'); Z.joinHero('kurent'); Z.joinHero('matjaz'); Z.enterRegion(ri); Z.go('travel'); }, ri);
@@ -57,6 +85,18 @@ run(async () => {
       });
       check(a.layers.length === P.length && !bad.length, `${key} (${dev}): after ${WALK} px every tiling layer moved by distance × speed`, bad.join('; ') || `${P.filter(l => l.tileX).length} layers`);
       shots.push(page.screenshot({ path: require('path').join(require('./harness').OUT_DIR, `parallax-${key}-${dev}-road.png`) }));
+      // trees the party walks past (`passing`, Triglav): in front of the party, faster than the lane, seen while it walks,
+      // faded while it stands (a stop, a prompt) so they never hide anyone during a choice
+      const pass = await ev(async () => { const R = window.__ZG.S.run, sc = document.querySelector('.scene'), els = [...sc.querySelectorAll(':scope > .pbg-l.passing')];
+        if (!els.length) return null;
+        const party = +getComputedStyle(sc.querySelector(':scope > .party')).zIndex || 0, op = () => els.map(e => +getComputedStyle(e).opacity);
+        R.walking = false; await new Promise(r => setTimeout(r, 120)); const still = op();
+        const was = R.stops.map(st => st.passed); R.stops.forEach(st => { st.passed = true; }); R.x = 0; R.prompt = null;   // a clear stretch of road
+        R.walking = true; await new Promise(r => setTimeout(r, 160)); const walking = op(); R.walking = false;
+        R.stops.forEach((st, i) => { st.passed = was[i]; });
+        return { z: els.map(e => +getComputedStyle(e).zIndex), party, still, walking }; });
+      if (pass) check(pass.z.every(z => z > pass.party) && pass.walking.every(o => o === 1) && pass.still.every(o => o < 0.5),
+        `${key} (${dev}): the trees the party walks past stand in front of it while it walks, and fade while it stands`, JSON.stringify(pass));
       await Promise.all(shots.splice(0));
       // battle: the actors stand on the painted lane; front layers stay under the lowest feet
       await ev(() => { const Z = window.__ZG; Z.stopBattle(Z.S.run.stops.find(s => s.kind === 'battle' || s.kind === 'boss')); Z.B.enemies.forEach(e => { e.charge = -99; }); });
@@ -66,10 +106,12 @@ run(async () => {
         const lane = P.layers.find(l => l.stand != null), el = sc.querySelector(`[data-layer="${lane.id}"]`);
         const laneTop = parseFloat(el.style.backgroundPosition.split(' ')[1]);
         const sprites = [...sc.querySelectorAll('.party .sp, .enemies .sp')].filter(e => e.getBoundingClientRect().width).map(e => Math.round(e.getBoundingClientRect().bottom - r.top));
-        const fronts = P.layers.filter(l => l.front).map(l => parseFloat(sc.querySelector(`[data-layer="${l.id}"]`).style.backgroundPosition.split(' ')[1]));
-        return { laneTop: Math.round(laneTop), feet: sprites, fronts: fronts.map(Math.round), H: Math.round(r.height) }; }, pid);
+        const fronts = P.layers.filter(l => l.front && !l.passing).map(l => parseFloat(sc.querySelector(`[data-layer="${l.id}"]`).style.backgroundPosition.split(' ')[1]));
+        const passing = P.layers.filter(l => l.passing).map(l => getComputedStyle(sc.querySelector(`[data-layer="${l.id}"]`)).display);
+        return { laneTop: Math.round(laneTop), feet: sprites, fronts: fronts.map(Math.round), passing, H: Math.round(r.height) }; }, pid);
       check(feet.feet.length >= 2 && feet.feet.every(f => f >= feet.laneTop), `${key} (${dev}): in battle every hero and enemy stands on the painted lane`, JSON.stringify(feet));
       check(feet.fronts.every(y => y >= Math.max(...feet.feet)), `${key} (${dev}): front layers stay under the lowest feet`, JSON.stringify(feet));
+      if (feet.passing.length) check(feet.passing.every(p => p === 'none'), `${key} (${dev}): the trees the party walks past are not in a battle`, feet.passing.join());
       await page.screenshot({ path: require('path').join(require('./harness').OUT_DIR, `parallax-${key}-${dev}-battle.png`) });
     }
     check(errors.length === 0, `no page errors (${dev})`, errors.join(' | '));

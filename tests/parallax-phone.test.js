@@ -147,9 +147,10 @@ run(async () => {
         const meta = await ev(pid => { const Z = window.__ZG, R = Z.S.run, sc = document.querySelector('.scene'), P = Z.BGX.packs[pid];
           return { pbg: sc.classList.contains('pbg'), W: sc.clientWidth, H: sc.clientHeight, endX: R.endX, stops: R.stops.map(s => s.x), k: Z.S.mobile ? 0.62 : 1,
             s: Math.max(sc.clientHeight / P.canvas.h, sc.clientWidth / P.canvas.w),
-            layers: P.layers.map(l => ({ id: l.id, speed: l.speed, tileX: l.tileX, front: !!l.front, stand: l.stand, drift: l.drift || 0, w: l.w, scale: l.scale || 1 })) }; }, pid);
+            layers: P.layers.map(l => ({ id: l.id, speed: l.speed, tileX: l.tileX, front: !!l.front, passing: !!l.passing, stand: l.stand, drift: l.drift || 0, w: l.w, scale: l.scale || 1 })) }; }, pid);
         check(meta.pbg, `${tag}: the folk pack draws the road`);
-        const lane = meta.layers.find(l => l.stand != null), fronts = meta.layers.filter(l => l.front);
+        // trees the party walks past (`passing`) are meant to cover it while it walks: not part of the feet rule
+        const lane = meta.layers.find(l => l.stand != null), fronts = meta.layers.filter(l => l.front && !l.passing);
         // three stretches: the region's start, middle and end, each walked in real time
         const xs = [0, Math.max(0, meta.endX / 2 - 300), Math.max(0, meta.endX - SEG_MS / 1000 * 240 - 40)];
         const where = ['start', 'middle', 'end'];
@@ -212,7 +213,7 @@ run(async () => {
           const a = pos(); await new Promise(res => setTimeout(res, 700)); const b = pos();
           const lane = P.layers.find(l => l.stand != null), laneTop = parseFloat(sc.querySelector(`[data-layer="${lane.id}"]`).style.backgroundPosition.split(' ')[1]);
           const feet = [...sc.querySelectorAll('.party .sp, .enemies .sp')].filter(e => e.getBoundingClientRect().width).map(e => Math.round(e.getBoundingClientRect().bottom - r.top));
-          const fronts = P.layers.filter(l => l.front).map(l => Math.round(parseFloat(sc.querySelector(`[data-layer="${l.id}"]`).style.backgroundPosition.split(' ')[1])));
+          const fronts = P.layers.filter(l => l.front && !l.passing).map(l => Math.round(parseFloat(sc.querySelector(`[data-layer="${l.id}"]`).style.backgroundPosition.split(' ')[1])));
           return { still: a === b, laneTop: Math.round(laneTop), feet, fronts, H: Math.round(r.height) }; }, pid);
         check(bt.still, `${tag}: in battle the layers stand still`);
         check(bt.feet.length >= 4 && bt.feet.every(f => f >= bt.laneTop), `${tag}: in battle every hero and enemy stands on the painted lane`, JSON.stringify(bt));
