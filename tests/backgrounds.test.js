@@ -147,7 +147,7 @@ run(async () => {
   await ev(() => window.__ZG.go('gallery')); await sleep(400);
   const gal = await ev(() => [...document.querySelectorAll('.gbg figure')].filter(f => f.querySelector('.gpbg')).map(f => ({ cap: f.textContent, layers: f.querySelectorAll('.pbg-l').length, h: f.querySelector('.gpbg').clientHeight })));
   const cap = c => gal.find(g => g.cap === c) || { layers: 0 };
-  check(gal.length === 9 && cap('Ptuj — sončni zahod nad Dravo — različica E (v pregledu)').layers === 12 && cap('Ptuj — večer ob Dravi — različica C (v pregledu)').layers === 10
+  check(gal.length === 13 && cap('Ptuj — sončni zahod nad Dravo — različica E (v pregledu)').layers === 12 && cap('Ptuj — večer ob Dravi — različica C (v pregledu)').layers === 10
     && cap('Ptuj — zimski večer ob Dravi — različica D (v pregledu)').layers === 12 && cap('Ptuj — ljudska poslikava (Codex) — različica B (v pregledu)').layers === 9 && gal.every(g => g.h > 0 && / \(v pregledu\)$/.test(g.cap)),
     'Liki in karte → Ozadja shows every pack variant, each "v pregledu" until approved; the sunset pack is Ptuj\'s E', JSON.stringify(gal.map(g => g.cap)));
   // the winter companion D stands in the same depth order as B: the shared bridge after the riverbank wall, never behind the sky

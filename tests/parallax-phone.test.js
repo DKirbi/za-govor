@@ -27,7 +27,7 @@ const SCREENS = [
   { id: '844x390', width: 844, height: 390, deviceScaleFactor: 3 },     // a phone turned on its side
 ];
 const SEG_MS = 2200;   // each walked stretch (start, middle, end of a region)
-const only = (process.env.ZG_REGIONS || '').split(',').filter(Boolean);
+const only = (process.env.ZG_REGIONS || '').split(',').filter(Boolean), onlyScreens = (process.env.ZG_SCREENS || '').split(',').filter(Boolean);
 
 function chromePath() {
   return [process.env.CHROME_PATH, '/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium', '/usr/bin/chromium-browser'].filter(Boolean).find(p => fs.existsSync(p));
@@ -111,12 +111,15 @@ function seams(pid) {
     inner.sort((a, b) => a - b);
     const p99 = inner[Math.floor(inner.length * 0.99)] || 0, seam = colDiff(W - 1, 0);
     // a band of ground or water (not a landmark or a silhouette) must also meet its next copy without a gap: in every
-    // row it fills almost entirely (below its uneven top fifth), no transparent run where the tile's end meets its start
+    // row it fills almost entirely, no transparent run where the tile's end meets its start. Only its middle three
+    // fifths: the uneven top edge is open by design, and a walking lane ends in its mirror image (that top edge again),
+    // which never shows (tools/art_folk_parallax.py, LANE_EXT)
     let gap = 0;
-    if (/channel|water|river|lake|sea|lane|road|ground/.test(l.id)) {
+    if (/(^|-)(channels?|water|river|lake|sea|lane|road|ground)(-|$)/.test(l.id)) {
       const rows = []; for (let y = 0; y < H; y++) { let n = 0; for (let x = 0; x < W; x++) if (d[(y * W + x) * 4 + 3] > 128) n++; rows.push(n / W); }
-      const full = rows.map((c, y) => c >= 0.85 ? y : -1).filter(y => y >= 0), from = full.length ? full[0] + Math.round((full[full.length - 1] - full[0]) * 0.2) : H;
-      full.filter(y => y >= from).forEach(y => { let a = 0, b = 0; while (a < W && d[(y * W + a) * 4 + 3] <= 128) a++; while (b < W && d[(y * W + W - 1 - b) * 4 + 3] <= 128) b++; gap = Math.max(gap, a + b); });
+      const full = rows.map((c, y) => c >= 0.85 ? y : -1).filter(y => y >= 0), span = full.length ? full[full.length - 1] - full[0] : 0;
+      const from = full.length ? full[0] + Math.round(span * 0.2) : H, to = full.length ? full[0] + Math.round(span * 0.8) : 0;
+      full.filter(y => y >= from && y <= to).forEach(y => { let a = 0, b = 0; while (a < W && d[(y * W + a) * 4 + 3] <= 128) a++; while (b < W && d[(y * W + W - 1 - b) * 4 + 3] <= 128) b++; gap = Math.max(gap, a + b); });
     }
     return { id: l.id, seam: Math.round(seam), p99: Math.round(p99), gap, ok: seam <= Math.max(24, p99 * 1.5) && gap <= 2 };
   }));
@@ -127,7 +130,7 @@ run(async () => {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   try {
     let first = true;
-    for (const vp of SCREENS) {
+    for (const vp of SCREENS.filter(v => !onlyScreens.length || onlyScreens.includes(v.id))) {
       const { page, errors } = await openPhone(browser, vp);
       const ev = (fn, ...a) => page.evaluate(fn, ...a);
       check(await ev(() => window.__ZG.S.mobile), `${vp.id}: the game takes the phone layout`);
