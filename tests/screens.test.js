@@ -61,6 +61,23 @@ run(async () => {
   check(ch.clue, 'Malček still gets the clue under it');
   await shot('screens-chest');
 
+  // remedies (27 Nov 2026): the player picks one and the hero it heals, whenever not in a battle
+  await ev(() => { const Z = window.__ZG; Z.S.run.bag = {}; Z.giveItem('zeliscni-caj'); Z.giveItem('arnikino-mazilo'); Z.S.heroes[1].hp = 5; Z.S.heroes[0].hp = Z.S.heroes[0].maxHp; Z.S.heroes[2].hp = Z.S.heroes[2].maxHp; Z.go('travel'); });
+  await sleep(300);
+  await ev(() => window.__ZG.openBag()); await sleep(150);
+  await ev(() => document.querySelector('.dialog.bag .itemrow.heal .btn').click()); await sleep(100);
+  const pick = await ev(() => [...document.querySelectorAll('.healpick .btn')].map(b => !b.disabled));
+  check(pick.join() === 'false,true,false', 'a remedy offers only the heroes it can help (the hurt one)', pick.join());
+  await ev(() => [...document.querySelectorAll('.healpick .btn')][1].click()); await sleep(150);
+  const healed = await ev(() => { const Z = window.__ZG, st = Z.S.heroes[1]; return { hp: st.hp, max: st.maxHp, caj: Z.S.run.bag['zeliscni-caj'], card: (document.querySelectorAll('.tv-heroes .hpnum')[1] || {}).textContent }; });
+  check(healed.hp === Math.min(healed.max, 5 + Math.round(healed.max * 0.4)) && healed.caj === 0 && healed.card.startsWith(`${healed.hp}/`),
+    'Zeliščni čaj gives the chosen hero 40 % of their health, is spent, and the road shows the new health', JSON.stringify(healed));
+  await ev(() => document.querySelector('.dialog.bag .btn.primary').click()); await sleep(150);
+  await ev(() => { const Z = window.__ZG; Z.S.heroes[1].hp = 5; Z.go('battle', Z.NODES[2]); }); await sleep(500);
+  await ev(() => window.__ZG.openBag()); await sleep(150);
+  const inBattle = await ev(() => { const b = document.querySelector('.dialog.bag .itemrow.heal .btn'); const r = { disabled: b && b.disabled, label: b && b.textContent }; document.querySelector('.dialog.bag .btn.primary').click(); return r; });
+  check(inBattle.disabled && inBattle.label === 'po bitki', 'in a battle a remedy waits: used after the battle', JSON.stringify(inBattle));
+
   check(errors.length === 0, 'no page or console errors', errors.join(' | '));
   return ctx;
 });

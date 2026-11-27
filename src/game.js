@@ -784,6 +784,8 @@ const CLASSIC = ['perun', 'svarog', 'mokos', 'kresnik'];   // the four used by t
 // Kresnik's a pale gold). Red, green and blue, kept clear of the mesh's other colours (the gold hint and šumnik dot,
 // the mint path, the teal flood); a fourth for a practice battle or an old save with four. A diamond of the same colour
 // stands under each hero in battle (renderParty).
+// '1 zlatnik', '2 zlatnika', '3 zlatniki', '5 zlatnikov' (Slovene dual and plural; a battle now pays 1, 27 Nov 2026)
+const zlat = n => { const m = Math.abs(n) % 100; return `${n} ${m === 1 ? 'zlatnik' : m === 2 ? 'zlatnika' : m === 3 || m === 4 ? 'zlatniki' : 'zlatnikov'}`; };
 const SLOT_C = ['#e5534b', '#5bb84a', '#4c8ff0', '#b07be8'];
 const ownC = k => SLOT_C[((k % SLOT_C.length) + SLOT_C.length) % SLOT_C.length];
 const HEROES = [];   // the current party (on a journey up to PARTY_MAX, src/journey.js; the practice four), in battle order; S.heroes holds their health and level
@@ -2160,10 +2162,10 @@ function damageEnemy(e, amount, opts = {}) {
     e.charge = 0; e.burn = null; e.burnTurns = 0;
     // every defeated enemy drops gold and gives experience to every hero still standing: its own XP, or for a
     // reviewed hero their attacks on it + the damage they dealt it + its level (awardFoeXp, src/progression.js)
-    const drop = S.run ? gainGold(4 + Math.round(e.xp / 8)) : 0; B.stats.gold += drop;
-    if (drop) floatOn(e.el, `+${drop} zlatnikov`, 'crit');
+    const drop = S.run ? gainGold(e.boss ? BOSS_GOLD : BATTLE_GOLD) : 0; B.stats.gold += drop;   // a little: gold comes from chests (27 Nov 2026)
+    if (drop) floatOn(e.el, `+${zlat(drop)}`, 'crit');
     const said = awardFoeXp(e);
-    log(`${e.name} je ${e.f ? 'premagana' : 'premagan'}: ${said}` + (drop ? `, +${drop} zlatnikov.` : '.'));
+    log(`${e.name} je ${e.f ? 'premagana' : 'premagan'}: ${said}` + (drop ? `, +${zlat(drop)}.` : '.'));
     retarget();
     const b = B;
     // the next enemy in line steps in: at once if the field would be empty, otherwise after a short while
@@ -3197,15 +3199,15 @@ function chestSubmit() {
   if (WORDS.has(guess) || guess === E.item.w) { E.word = guess; E.isNew = noteFound(guess, 'skrinja'); }
   if (guess === E.item.w || (guess.length === total && WORDS.has(guess))) {
     E.done = true; E.win = true; S.meterBonus = 0.5;   // chests pay gold and items; experience comes from enemies only
-    const loot = S.run ? randomItem() : null, gold = S.run ? gainGold(15 + rnd(11)) : 0;
+    const loot = S.run ? randomItem() : null, gold = S.run ? gainGold(CHEST_GOLD + rnd(CHEST_GOLD_SPREAD + 1)) : 0;
     if (loot) { giveItem(loot.id); E.loot = loot; }
-    E.msg = `Skrinja se odpre: ${UP(guess)}!` + (gold ? ` +${gold} zlatnikov` : '') + (loot ? (gold ? ',' : '') + ` v njej je ${loot.name}` : '') + '. Zagovor v naslednji bitki začne napolnjen do polovice.';
+    E.msg = `Skrinja se odpre: ${UP(guess)}!` + (gold ? ` +${zlat(gold)}` : '') + (loot ? (gold ? ',' : '') + ` v njej je ${loot.name}` : '') + '. Zagovor v naslednji bitki začne napolnjen do polovice.';
     E.msgKind = 'ok';
   } else if (WORDS.has(guess)) {
     // a real word that does not use every letter ends the chest with part of the reward
-    const share = guess.length / total, gold = S.run ? gainGold(Math.max(1, Math.round(12 * share))) : 0;
+    const share = guess.length / total, gold = S.run ? gainGold(Math.max(1, Math.round(CHEST_PART * share))) : 0;
     E.done = true; E.win = false; E.partial = { w: guess, gold, share };
-    E.msg = `${UP(guess)} je prava beseda, a ne iz vseh črk (skrita je bila ${UP(E.item.w)}). Skrinja se le priškrne` + (gold ? `: +${gold} zlatnikov.` : '.');
+    E.msg = `${UP(guess)} je prava beseda, a ne iz vseh črk (skrita je bila ${UP(E.item.w)}). Skrinja se le priškrne` + (gold ? `: +${zlat(gold)}.` : '.');
     E.msgKind = 'warn';
   } else {
     noteRejected(guess, 'skrinja');
@@ -3228,7 +3230,10 @@ function chestTick(dt) {
 // ============================================================ trap event (timed)
 // One wave of rocks whose letters all come from one real word, so a word that breaks every
 // rock exists. You get one word: the rocks it names break, the others graze the party.
-const TRAP_HIT = 8, TRAP_GRAZE = 4, TRAP_GOLD = 3;
+// Gold comes from chests (Game Director, 27 Nov 2026): a whole chest 35–50 zlatnikov, a chest opened a little with a
+// shorter word up to 40 by its share; a rock slide pays none (it paid 3 a rock); a won battle little (BATTLE_GOLD).
+const CHEST_GOLD = 35, CHEST_GOLD_SPREAD = 15, CHEST_PART = 40;
+const TRAP_HIT = 8, TRAP_GRAZE = 4, TRAP_GOLD = 0;
 function startTrap(node) {
   const real = S.mode === 'real', reg = S.run ? REGION_WORDS[WORLD.regions[S.run.ri].id] : null;
   const own = reg && reg.rocks ? reg.rocks.filter(w => WORDS.has(w) && new Set(w).size >= 4) : [];
@@ -3326,7 +3331,7 @@ function trapShowEnd() {
   const E = S.ev; UI.trapEnd.innerHTML = '';
   if (UI.trapInput) UI.trapInput.blur();
   if (UI.trapKb) { UI.trapKb.remove(); UI.trapKb = null; }
-  UI.trapEnd.append(h('p', {}, `Razbite skale: ${E.broken}/${E.rocks.length} · prejeta škoda: ${E.dmg}.` + (E.gold ? ` +${E.gold} zlatnikov.` : '') + (E.dmg ? ' Rane ostanejo do vodnjaka ali do konca pokrajine.' : '')),
+  UI.trapEnd.append(h('p', {}, `Razbite skale: ${E.broken}/${E.rocks.length} · prejeta škoda: ${E.dmg}.` + (E.gold ? ` +${zlat(E.gold)}.` : '') + (E.dmg ? ' Rane ostanejo do vodnjaka ali do konca pokrajine.' : '')),
     E.word && (E.isNew || meaningOf(E.word)) ? h('div', { class: 'newwords' }, meaningChip(E.word, 'plaz')) : null,
     h('button', { class: 'btn primary', onclick: () => finishEvent() }, 'Na pot ', h('kbd', {}, 'Enter')));
 }
@@ -3396,6 +3401,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { ACH, get ACHP() { return ACHP; }, ACH_WORDS, achReset, achCheck, achProgress, cardPainting, hasSkillCard, openSkillCard, achSkillFired, waitingPrayer, migratePrayers, get PARTY_MAX() { return PARTY_MAX; }, FOE_SLOTS, stepIn, statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, noteSupport, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, godWaits, godArrives, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, PLAYSTYLE, ROLES, ownC, SLOT_C, skillPanel, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { ACH, get ACHP() { return ACHP; }, ACH_WORDS, achReset, achCheck, achProgress, cardPainting, hasSkillCard, openSkillCard, achSkillFired, waitingPrayer, migratePrayers, get PARTY_MAX() { return PARTY_MAX; }, FOE_SLOTS, stepIn, statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, noteSupport, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), openShop, openBag, SHOP_MAX, BATTLE_GOLD, CHEST_GOLD, noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, godWaits, godArrives, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, PLAYSTYLE, ROLES, ownC, SLOT_C, skillPanel, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
 go('title');
 

@@ -230,7 +230,11 @@ h1, h2, h3 { margin: 0; }
 .event { max-width: 720px; margin: 10px auto; display: grid; gap: 12px; }
 .event .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
 .chestbox { display: flex; gap: 16px; align-items: center; }
-.chestbox > .obj { flex: none; }   /* the chest keeps its shape: a flex row squeezed it narrow next to the text */
+.chestbox > .obj { flex: none; }
+/* remedies in the bag (Game Director, 27 Nov 2026): pick one, then the hero it heals */
+.itemrow.heal.on { border-color: var(--good); }
+.healpick { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: -2px 0 6px; padding: 8px 10px; border-radius: 10px; background: var(--bg2); }
+.healpick .btn { border-color: color-mix(in srgb, var(--c) 60%, var(--line)); }   /* the chest keeps its shape: a flex row squeezed it narrow next to the text */
 .chestlead { font-size: 16px; font-weight: 600; line-height: 1.35; }
 .chestclue { color: var(--gold); margin-top: 6px; }
 .chestsq { width: 90px; height: 70px; border: 2px solid var(--gold); border-radius: 8px; display: grid; place-items: center; font-weight: 800;

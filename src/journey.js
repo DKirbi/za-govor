@@ -47,6 +47,10 @@ function objEl(id, frame = 0, cls = '') {
   return h('div', { class: 'actor spr obj ' + cls, style: { '--art': SPR_SIZE[id] } },
     h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[id]})`, 'background-position': frame ? '100% 0' : '0 0' } }));
 }
+// The pedlar (Game Director, 27 Nov 2026): at most four things, and each can be bought once. Gold comes from chests;
+// a won battle pays only a little (BATTLE_GOLD a defeated enemy, a boss BOSS_GOLD).
+const SHOP_MAX = 4, BATTLE_GOLD = 1, BOSS_GOLD = 5;
+const itemTag = it => it.kind === 'relic' ? 'predmet' : it.kind === 'heal' ? 'zdravilo' : it.poison ? 'strup' : 'napoj';
 function gainGold(n) { const g = Math.round(n * (has('velesov-rog') ? 1.5 : 1)); if (S.run) S.run.gold += g; return g; }
 function giveItem(id) {
   const R = S.run, it = ITEMS[id]; if (!R || !it) return;
@@ -60,7 +64,7 @@ function giveItem(id) {
 function randomItem(kind) {
   const R = S.run; if (!R) return null;
   const k = kind || (Math.random() < 0.4 ? 'relic' : 'use');
-  const pool = WORLD.items.filter(it => it.kind === k && !R.relics.includes(it.id));
+  const pool = WORLD.items.filter(it => (it.kind === k || (k === 'use' && it.kind === 'heal')) && !R.relics.includes(it.id));   // a remedy counts as a potion
   return pool.length ? pick(pool) : pick(WORLD.items.filter(it => it.kind === 'use'));
 }
 // can this item be used by hand right now? (Živa voda is drunk automatically in battle)
@@ -128,12 +132,39 @@ function openBag() {
   if (inB && B.cw) return;
   const was = inB ? B.paused : false; if (inB) B.paused = true;
   const close = () => { ov.remove(); S.bagEl = null; S.overlayKey = null; if (inB && B) B.paused = was; };
-  const uses = Object.keys(R.bag).filter(id => R.bag[id] > 0);
+  const held = Object.keys(R.bag).filter(id => R.bag[id] > 0), uses = held.filter(id => ITEMS[id].kind !== 'heal'), heals = held.filter(id => ITEMS[id].kind === 'heal');
   const row = (id, n) => h('div', { class: 'itemrow' }, itemIcon(id), h('div', {}, h('b', {}, ITEMS[id].name, n > 1 ? ` ×${n}` : ''), h('span', {}, ITEMS[id].text)));
+  // a remedy (Game Director, 27 Nov 2026): the player picks it and the hero, whenever not in a battle
+  let pickFor = null;
+  const healList = h('div', { class: 'itemlist' });
+  const paintHeals = () => {
+    healList.innerHTML = '';
+    Object.keys(R.bag).filter(id => R.bag[id] > 0 && ITEMS[id].kind === 'heal').forEach(id => {
+      const it = ITEMS[id], need = S.heroes.some(st => !st.down && st.hp < st.maxHp);
+      healList.append(h('div', { class: 'itemrow heal' + (pickFor === id ? ' on' : '') }, itemIcon(id),
+        h('div', {}, h('b', {}, it.name, R.bag[id] > 1 ? ` ×${R.bag[id]}` : ''), h('span', {}, it.text)),
+        h('button', { class: 'btn small', disabled: inB || !need, title: inB ? 'Zdravila uporabiš zunaj bitke.' : !need ? 'Vsi junaki so zdravi.' : '',
+          onclick: () => { pickFor = pickFor === id ? null : id; paintHeals(); } }, inB ? 'po bitki' : need ? 'Uporabi' : 'vsi zdravi')));
+      if (pickFor === id) healList.append(h('div', { class: 'healpick' }, h('span', { class: 'muted' }, 'Komu?'),
+        HEROES.map((hr, k) => { const st = S.heroes[k], ok = !st.down && st.hp < st.maxHp;
+          return h('button', { class: 'btn small', disabled: !ok, style: { '--c': hr.c }, onclick: () => useHeal(id, k) },
+            h('b', {}, hr.name), ' ', st.down ? 'obležal' : `${st.hp}/${st.maxHp}`); })));
+    });
+  };
+  const useHeal = (id, k) => {
+    const st = S.heroes[k], it = ITEMS[id]; if (!st || st.down || !(R.bag[id] > 0)) return;
+    const got = Math.min(st.maxHp - st.hp, Math.round(st.maxHp * (it.heal || 0.4))); if (got <= 0) return;
+    st.hp += got; R.bag[id]--; pickFor = null; sfx('heal', { vol: .7 });
+    toast(`${HEROES[k].name}: ${it.name}, +${got} zdravja.`);
+    if (S.screen === 'travel' && typeof renderTravelPanel === 'function') renderTravelPanel();
+    paintHeals(); if (!Object.keys(R.bag).some(x => R.bag[x] > 0 && ITEMS[x].kind === 'heal')) healList.replaceChildren(h('p', { class: 'muted' }, 'Zdravil ni več.'));
+  };
+  paintHeals();
   const ov = h('div', { class: 'overlay', onclick: e => { if (e.target === ov) close(); } }, h('div', { class: 'dialog bag' },
     h('h2', {}, 'Torba', h('span', { class: 'goldtag' }, h('i', { class: 'coin' }), R.gold)),
+    heals.length ? [h('h4', {}, inB ? 'Zdravila (uporabiš jih po bitki)' : 'Zdravila (izberi zdravilo in junaka)'), healList] : null,
     h('h4', {}, 'Napoji in strupi (junaki jih uporabijo sami)'),
-    uses.length ? h('div', { class: 'itemlist' }, uses.map(id => row(id, R.bag[id]))) : h('p', { class: 'muted' }, 'Torba je prazna. Napoje in strupe prodaja krošnjar, nekaj jih je tudi v skrinjah.'),
+    uses.length ? h('div', { class: 'itemlist' }, uses.map(id => row(id, R.bag[id]))) : h('p', { class: 'muted' }, heals.length ? 'Napojev in strupov ni.' : 'Torba je prazna. Napoje, strupe in zdravila prodaja krošnjar, nekaj jih je tudi v skrinjah.'),
     h('h4', {}, 'Predmeti (delujejo ves čas)'),
     R.relics.length ? h('div', { class: 'itemlist' }, R.relics.map(id => row(id, 1))) : h('p', { class: 'muted' }, 'Še nobenega predmeta.'),
     h('div', { class: 'row' }, h('button', { class: 'btn primary', onclick: close }, 'Zapri ', h('kbd', {}, 'Esc')))));
@@ -331,9 +362,11 @@ function enterRegion(i) {
       stop.hero = pickHero(reg.id);
       if (stop.hero) R.met.push(stop.hero); else stop.kind = 'well';
     } else if (kind === 'god') stop.god = R.shrines[i];
-    else if (kind === 'shop') {
-      const relics = shuffle(WORLD.items.filter(it => it.kind === 'relic' && !R.relics.includes(it.id))).slice(0, 2);
-      stop.stock = shuffle(WORLD.items.filter(it => it.kind === 'use')).slice(0, 4).concat(relics).map(it => ({ id: it.id, sold: false }));
+    else if (kind === 'shop') {   // at most SHOP_MAX things, each sold once: a remedy, potions or poisons, and a relic
+      const heal = shuffle(WORLD.items.filter(it => it.kind === 'heal')).slice(0, 1);
+      const relics = shuffle(WORLD.items.filter(it => it.kind === 'relic' && !R.relics.includes(it.id))).slice(0, 1);
+      const uses = shuffle(WORLD.items.filter(it => it.kind === 'use')).slice(0, SHOP_MAX - heal.length - relics.length);
+      stop.stock = heal.concat(uses, relics).map(it => ({ id: it.id, sold: false }));
     }
     R.stops.push(stop);
   });
@@ -480,7 +513,7 @@ function promptFor(stop) {
         go('travel');
       } }, { label: 'Pojdi mimo', fn: () => pass() }, ...(train ? [train] : [])] };
   }
-  if (stop.kind === 'shop') return { text: 'Krošnjar iz Ribnice razgrne robo: napoji, strupi in nekaj redkih predmetov.', actions: [{ label: 'Poglej robo', primary: true, fn: () => openShop(stop) }, { label: 'Pojdi mimo', fn: () => pass() }] };
+  if (stop.kind === 'shop') return { text: 'Krošnjar iz Ribnice razgrne robo: zdravila, napoji, strupi in kak redek predmet.', actions: [{ label: 'Poglej robo', primary: true, fn: () => openShop(stop) }, { label: 'Pojdi mimo', fn: () => pass() }] };
   if (stop.kind === 'hero') return { text: `${ROSTER[stop.hero].name} stoji ob poti.`, actions: [{ label: 'Pozdravi', primary: true, fn: () => meetHero(stop, [stop.hero]) }, { label: 'Pojdi mimo', fn: () => pass() }] };
   if (stop.kind === 'god') return shrinePrompt(stop, pass, null);   // balance E: skill points only at wells and signposts
   return { text: '…', actions: [{ label: 'Naprej', primary: true, fn: () => pass() }] };
@@ -527,8 +560,8 @@ function openShop(stop) {
     goldEl.innerHTML = ''; goldEl.append(h('i', { class: 'coin' }), R.gold); list.innerHTML = '';
     stop.stock.forEach(s => { const it = ITEMS[s.id], can = !s.sold && R.gold >= it.price;
       list.append(h('div', { class: 'itemrow' + (s.sold ? ' sold' : '') }, itemIcon(s.id),
-        h('div', {}, h('b', {}, it.name, h('em', {}, it.kind === 'relic' ? 'predmet' : it.poison ? 'strup' : 'napoj')), h('span', {}, it.text)),
-        h('button', { class: 'btn small', disabled: !can, onclick: () => { R.gold -= it.price; giveItem(s.id); if (it.kind === 'relic') s.sold = true; sfx('ok'); paint(); } },
+        h('div', {}, h('b', {}, it.name, h('em', {}, itemTag(it))), h('span', {}, it.text)),
+        h('button', { class: 'btn small', disabled: !can, onclick: () => { R.gold -= it.price; giveItem(s.id); s.sold = true; sfx('ok'); paint(); } },
           s.sold ? 'prodano' : h('span', { class: 'price' }, h('i', { class: 'coin' }), it.price)))); });
   };
   const ov = h('div', { class: 'overlay' }, h('div', { class: 'dialog bag' },
