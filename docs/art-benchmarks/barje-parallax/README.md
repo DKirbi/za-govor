@@ -2,6 +2,8 @@
 
 This first pass separates the approved dawn panorama into a painted sky, clouds, low wetland ridge, a misty meadow transition, and a connected willow-and-pile-dwelling landmark layer. The shallow channels and reeds, water highlights, wide grass travel lane, and near-camera sedges are independent. Keeping the timber houses and their stilts together preserves their relationship to the water as the view moves.
 
+**In the game (27 Nov 2026, PROPOSED):** the willows and pile dwellings move with the channels they stand in (0.46, not 0.38); the channels' tapered ends overlap from one copy to the next, so no wedge of sky shows down to the lane; the clouds drift at −1.2 px/s. See the [roadmap](../background-parallax-roadmap.md).
+
 Open the [interactive rightward travel preview](preview.html) to scrub or play the scene. The [static layer composite](layered-composite-preview.png) pairs the scenery with current 48×48 game sprites; the [runtime-pack composite](runtime-pack-composite.png) shows the exported art at game size. The original [background-only illustration](../slovenia-folk-location-previews/barje-folk-background.png) and [scene preview with characters](../slovenia-folk-location-previews/barje-folk-preview.png) are kept as references. This folk scene is available as an opt-in variant B through `?ozadje=B` or the high-quality setting; the disabled A/B test does not randomize it.
 
 ## Layer stack and first-pass speeds

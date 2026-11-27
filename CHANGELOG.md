@@ -36,6 +36,45 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
+## 0.22.0 — 27 Nov 2026 · zaprta alfa · ten folk parallax backgrounds for review, measured on phones
+
+Branch `review/folk-backgrounds`: PRs #40, #41, #43, #44 and #45 (Codex's four later parallax studies and their runtime
+packs) and #42 (0.21.0, below) in one pull request for the Game Director to confirm. Those six PRs are closed in
+favour of it.
+
+**Four more folk backgrounds as variant B (preview only)**
+- **Piranske soline, Predjamski grad, Ljubljansko barje and Ljubljanski grad** get Codex's folk packs as variant B
+  (`?ozadje=B` or *Kakovost slik → Visoka*), like the six regions of 0.19.0. Their tests stay off (`live: false`):
+  nobody is assigned a variant, everyone else sees A. All ten regions now have one. About +3.4 MB of WebP in the build.
+- **Speeds reviewed (PROPOSED, for the Game Director):** nothing in front of a layer moves slower than it, and things
+  that stand on one another move together.
+  - Piran: the sea and the salt pans were one picture at 0.50 that slid behind the far shore (0.24) and the house
+    (0.32). `tools/art_folk_parallax.py` cuts it along the shore: the sea at 0.20 behind the shore, the pans at 0.50
+    in front of it. The house and its shore move together at 0.28; the sun moves with the sky (0.02).
+  - Predjama: the Lokva moves with the cliff it falls from (0.38, not 0.42).
+  - Barje: the willows and pile dwellings move with their channels (0.46, not 0.38).
+  - Ljubljanski grad: the edge trees, behind the lane at its far edge, move with it (1.0, not 1.08).
+  - The four packs' clouds drift at −1.2 px/s like the other six (Codex's −0.2 to −0.5 barely moved on a phone).
+- **Fix:** on Barje a wedge of dawn sky showed down to the lane where the reed channels repeated (an island with
+  tapered ends). Each copy's end now overlaps the next copy's start (`wrap` in the export tool).
+- **Fix:** the export tool wrote Windows paths (`docs\art-benchmarks\…`) into four manifests, which broke
+  `--check` elsewhere; paths are written with `/` and read either way.
+
+**Measured on phones while the party runs**
+- **New `tests/parallax-phone.test.js`:** the ten packs on 360×640, 390×844, 412×915 and 844×390 (a phone on its
+  side), with the game itself walking the party at the start, middle and end of each region and every frame read:
+  each tiling layer moves by the walked distance × its speed (±1 px rounding); chests, enemies, wells and the signpost
+  keep their place on the painted lane; the heroes stay put, run, and keep their feet on the lane, whose top never
+  jumps; front layers never cover a foot; no hole behind the layers on the road or in battle; tiles are seamless and
+  ground and water bands repeat without a gap; standing still or in battle only the clouds move, at their rate.
+- `tests/parallax.test.js` now covers all ten regions and checks that layers standing on one another share a speed.
+
+**Martin Krpan's high-fidelity pack is discarded completely**
+- Game Director, 27 Nov 2026: Krpan is pixel art only. On top of 0.21.0 (the pack out of the game), its files leave
+  the repository: the pose atlases, the 48 × 48 frames, the sheet and strip, the previews and the asset review.
+  `art/manifests/martin-krpan.json` keeps only the mare-lift folk illustration and says where the pack is in Git
+  history (`main` at 99c2d99). His painted skill cards are a separate pack and stay.
+
 ## 0.21.0 — 26 Nov 2026 · zaprta alfa · Kakovost slik is about the backgrounds only
 
 Branch `art/krpan-pixel-sprite` (PR #42). Decided by the Game Director on 25 Nov (heroes and enemies use simple pixel

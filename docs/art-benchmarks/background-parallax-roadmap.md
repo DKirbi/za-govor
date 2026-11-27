@@ -10,6 +10,22 @@ unchanged: resized into one 996×560 view as Codex's composites place them, WebP
   0.82 → 1.1, Triglav spruces 0.72 → 1.1 and flowers 0.88 → 1.15); the Ljubljanica bridge 0.40 → 0.55 (over its river
   at 0.50) and its road 0.90 → 1.0; skies no faster than their clouds (Ptuj and Peca sky 0.08 → 0.02, Ljubljanica
   clouds 0.035 → 0.1); Bled's lake 0.62 → 0.36, so the island (0.36) and its reflection (0.34) stay on the water.
+- **The four later packs (27 Nov 2026, reviewed on phones by `tests/parallax-phone.test.js`; PROPOSED, for the Game
+  Director to confirm).** The same rules: nothing drawn in front of a layer moves slower than it, and things that stand
+  on one another move together, or one slides along the other while the party walks.
+  - *Piranske soline:* Codex's water picture holds both the sea at the horizon and the salt pans, at 0.50, so the sea
+    slid behind the far shore (0.24) and the house (0.32). `tools/art_folk_parallax.py` now cuts it in two along the
+    shore (`rows`): **sea 0.20** behind the shore, **pans 0.50** in front of it; the rows between lie under the
+    shore's opaque strip, so the still picture is unchanged. The house stands on the far shore: **both 0.28**. The sun
+    sits in the sky behind the clouds: **0.03 → 0.02**, with the sky.
+  - *Predjamski grad:* the Lokva falls out of the cliff: **stream 0.42 → 0.38**, with the castle cliff (same period).
+  - *Ljubljansko barje:* the willows and pile dwellings stand in the channels: **landmarks 0.38 → 0.46**. The channels
+    picture is an island with tapered ends; tiled as it was, a wedge of dawn sky showed down to the lane between two
+    copies. Each copy's tapered end now overlaps the next copy's start (`wrap`, 170 px).
+  - *Ljubljanski grad:* the edge trees are drawn behind the lane, rooted at its far edge, but moved faster than it
+    (1.08): **1.08 → 1.0**, so their trunks do not slide along the grass.
+  - *Cloud drift:* Codex's −0.2 to −0.5 px/s is about one screen pixel every 5–11 s on a phone, i.e. still; the four
+    packs now drift at −1.2 like the other six.
 - **Seams:** a tiling layer whose picture is cut by its side is joined to its mirror image (Game Director, 25 Nov);
   landmarks clear of both sides are padded so they come round only every 2–3 view widths. Codex may deliver true
   seamless tiles later, which would replace the mirror joins.
@@ -36,7 +52,7 @@ The campaign currently has ten implemented battle backgrounds. Their order and `
 | 9 | Ljubljanica | `ljubljanica` | Implemented pixel-art scene | Approved [side-view Triple Bridge scene](slovenia-folk-location-previews/ljubljanica-folk-preview.png), first-pass layers/camera preview and opt-in runtime variant B in the [Ljubljanica parallax study](ljubljanica-parallax/README.md). |
 | 10 | Ljubljanski grad | `grad` | Implemented pixel-art scene | Approved [sunset castle scene](slovenia-folk-location-previews/ljubljanski-grad-folk-preview.png); first-pass layers, rightward camera preview and opt-in runtime variant B are in the [Ljubljanski grad parallax study](ljubljanski-grad-parallax/README.md). |
 
-All ten campaign regions now have folk-art panorama references, first-pass parallax studies and opt-in runtime packs. The A/B tests remain disabled. Mobile framing, actor placement, seam review and final speed tuning remain future work.
+All ten campaign regions now have folk-art panorama references, first-pass parallax studies and opt-in runtime packs. The A/B tests remain disabled. On 27 Nov 2026 all ten were measured on four phone screens while the party runs (`tests/parallax-phone.test.js`: speeds frame by frame, road objects on the lane, feet, front layers, holes, seams); final speed approval is the Game Director's.
 
 ## Work order
 
@@ -57,7 +73,8 @@ All ten campaign regions now have folk-art panorama references, first-pass paral
 - [x] Preserve the existing approved Ljubljanica side-view scene and first-pass slice study; review its alignment before runtime integration.
 - [x] Create and approve the Ljubljanski grad sunset scene preview; complete the first layer set with separate sky, clouds, distant hills, old-town roofs, connected castle hill, edge trees, wide grass lane, near flowers, static composite and interactive approach preview.
 - [x] Add Ljubljanski grad as a review-only runtime pack: export eight WebP layers, keep the PNG masters, add variant B with the test disabled, and create a game-size composite.
-- [ ] After each scene's slices are approved, tune parallax speeds, cloud/water/ambient motion, character staging, reduced-motion behavior, and mobile landscape/portrait framing in the battle viewport.
+- [x] Measure all ten packs on phones (portrait 360×640, 390×844, 412×915 and landscape 844×390) while the party runs; fix the depth-order breaks of Piran, Predjama, Barje and Ljubljanski grad and the Barje channels gap (27 Nov 2026).
+- [ ] After each scene's slices are approved, the Game Director confirms the speeds; then cloud/water/ambient motion and character staging.
 
 ## Layer workflow
 

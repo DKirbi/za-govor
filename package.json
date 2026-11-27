@@ -1,6 +1,6 @@
 {
   "name": "za-govor",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "config": {
     "stage": "zaprta alfa"
   },
@@ -15,6 +15,7 @@
     "test:keyword": "node tests/keyword.test.js",
     "test:levels": "node tests/levels.test.js",
     "test:journey": "node tests/journey.test.js",
+    "test:parallax-phone": "node tests/parallax-phone.test.js",
     "test:title": "node tests/title.test.js",
     "test:lexicon": "node tests/lexicon.test.js",
     "test:menu": "node tests/menu.test.js",

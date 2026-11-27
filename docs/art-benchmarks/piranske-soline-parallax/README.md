@@ -2,6 +2,8 @@
 
 This first parallax pass separates the approved sunset Piranske soline panorama into a sky, slow clouds and sun, Istrian hills, shallow basin water, a salt-worker house and far shore, embankments, reflections, a wide grassy travel lane, and low salt-marsh plants at the near edge.
 
+**In the game (27 Nov 2026, PROPOSED):** the water picture is cut along the far shore into `sea` (0.20, behind the shore) and `water` (the pans, 0.50, in front of it); the far shore and the house move together at 0.28; the sun moves with the sky (0.02); the clouds drift at −1.2 px/s. See the [roadmap](../background-parallax-roadmap.md).
+
 Open the [interactive rightward travel preview](preview.html) to scrub or play the scene. The [static layer composite](layered-composite-preview.png) shows the assembled pass with current Martin Krpan and Mora idle sprites; the [runtime-pack composite](runtime-pack-composite.png) shows the exported art at game size. The approved flattened [background](../slovenia-folk-location-previews/piran-folk-background.png) and [character preview](../slovenia-folk-location-previews/piran-folk-preview.png) remain unchanged. This folk scene is available as an opt-in variant B through `?ozadje=B` or the high-quality setting; the disabled A/B test does not randomize it.
 
 ## Layer stack and first-pass speeds

@@ -2,6 +2,8 @@
 
 This first pass separates the approved Predjama panorama into a painted sky, slow clouds, distant Karst forest, and a single castle-and-cliff layer. The Lokva stream, broad grass travel lane, and near-edge rocks and plants remain separate for depth motion. Keeping the castle attached to its cliff preserves the landmark's geography as the camera travels.
 
+**In the game (27 Nov 2026, PROPOSED):** the Lokva stream moves with the castle cliff it falls from (0.38, not 0.42), so the waterfall stays at the cave mouth; the clouds drift at −1.2 px/s. See the [roadmap](../background-parallax-roadmap.md).
+
 Open the [interactive rightward approach preview](preview.html) to scrub or play the scene. The [static layer composite](layered-composite-preview.png) pairs the layers with Erazem and Perkmandeljc; the [runtime-pack composite](runtime-pack-composite.png) shows the exported art at game size. The approved flattened [background](../slovenia-folk-location-previews/predjama-folk-background.png) and [character preview](../slovenia-folk-location-previews/predjama-folk-preview.png) remain unchanged. This folk scene is available as an opt-in variant B through `?ozadje=B` or the high-quality setting; the disabled A/B test does not randomize it.
 
 ## Layer stack and first-pass speeds

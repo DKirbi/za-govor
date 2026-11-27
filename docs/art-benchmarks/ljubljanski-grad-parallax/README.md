@@ -2,6 +2,8 @@
 
 This first pass separates the approved sunset panorama into a painted sky, independent clouds, distant basin hills and Ljubljana's old-town roofline. The castle stays joined to its wooded hill so the landmark does not drift away from the terrain. The broad grass lane, edge trees and near-camera flowers are separate layers.
 
+**In the game (27 Nov 2026, PROPOSED):** the edge trees stand behind the lane, at its far edge, so they move with it (1.0, not 1.08) instead of sliding along the grass; the clouds drift at −1.2 px/s. See the [roadmap](../background-parallax-roadmap.md).
+
 Open the [interactive rightward approach preview](preview.html) to scrub or play the scene. The [full-size layer composite](layered-composite-preview.png) checks the stack with the current game sprites, and the [996×560 runtime-pack composite](runtime-pack-composite.png) shows the exported layers at the game's scene size. The original [background-only illustration](../slovenia-folk-location-previews/ljubljanski-grad-folk-background.png) and [approved scene preview](../slovenia-folk-location-previews/ljubljanski-grad-folk-preview.png) remain unchanged references. The folk pack is an opt-in variant B, previewable with `?ozadje=B` or the high-quality setting; it is not randomized by the disabled A/B test.
 
 ## Layer stack and first-pass speeds
