@@ -44,7 +44,8 @@ run(async () => {
   const ev = (fn, ...a) => page.evaluate(fn, ...a);
   const open = async (know = 'malcek') => {
     await ev(know => { const Z = window.__ZG; Z.S.tutOn = false; Z.S.mode = 'calm'; Z.S.know = know; Z.newRun('krpan'); Z.joinHero('kurent'); Z.joinHero('matjaz');
-      Z.stopBattle(Z.S.run.stops.find(s => s.kind === 'battle' && !s.done)); Z.B.enemies.forEach(e => { e.charge = -99; e.hp = e.maxHp = 900; }); Z.B.meter = 30; }, know);
+      Z.stopBattle(Z.S.run.stops.find(s => s.kind === 'battle' && !s.done)); Z.B.enemies.forEach(e => { e.charge = -99; e.hp = e.maxHp = 900; }); Z.B.meter = 30;
+      Z.B.def = { ...Z.B.def, finishers: ['perun'] }; }, know);   // Perun's zagovor strikes (Mokoš's heals instead)
     await sleep(300);
     await page.keyboard.press(' '); await sleep(400);
   };
