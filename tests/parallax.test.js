@@ -6,7 +6,8 @@
 const { openGame, runner, sleep } = require('./harness');
 const { check, run } = runner('Folk parallax packs (variant B of all ten regions)');
 
-const REGIONS = [['ptuj', 0], ['peca', 1], ['triglav', 2], ['bled', 3], ['gozd', 4], ['piran', 5], ['predjama', 6], ['barje', 7], ['ljubljanica', 8], ['grad', 9]];
+const REGIONS = [['ptuj', 0], ['peca', 1], ['triglav', 2], ['bled', 3], ['gozd', 4], ['piran', 5], ['predjama', 6], ['barje', 7], ['ljubljanica', 8], ['grad', 9]]
+  .filter(([k]) => !process.env.ZG_REGIONS || process.env.ZG_REGIONS.split(',').includes(k));   // ZG_REGIONS=predjama,peca to measure a few
 // layers that stand on one another move together, or one slides along the other while the party walks (27 Nov 2026):
 // the Piran house on its far shore, the Lokva falling out of Predjama's cliff, the Barje willows and pile dwellings in
 // their channels, the Ljubljanski grad trees rooted at the lane's far edge
@@ -35,7 +36,47 @@ async function floating(pid) {
     } }
   return { cols, bad, worst, cams };
 }
-const GLUED = { piran: [['house', 'far-shore']], predjama: [['stream', 'castle-cliff']], barje: [['landmarks', 'channels']], grad: [['near-foreground-tree-frame', 'foreground-grass-lane']] };
+// Predjamski grad (Game Director, 27 Nov 2026): the castle's cliff is only one part of a mountain that goes on both
+// ways, with mountains behind it. Measured at many scroll positions: the mountain repeats exactly with the cliff, its
+// summit always lies behind the cliff, and in every column there is mountain or cliff (no lone rock on a plain).
+async function inMountain(pid) {
+  const P = window.__ZG.BGX.packs[pid], W = P.canvas.w, hill = P.layers.find(l => l.id === 'hill'), cliff = P.layers.find(l => l.id === 'castle-cliff');
+  const mask = async l => { const im = new Image(); im.src = l.src; await im.decode();
+    const w = Math.round(l.w * (l.scale || 1)), h = Math.round(l.h * (l.scale || 1)), c = new OffscreenCanvas(w, h), g = c.getContext('2d');
+    g.drawImage(im, 0, 0, w, h); const d = g.getImageData(0, 0, w, h).data, a = new Uint8Array(w * h);
+    for (let i = 0; i < w * h; i++) a[i] = d[i * 4 + 3] > 160 ? 1 : 0;
+    return { a, w, h }; };
+  const mh = await mask(hill), mc = await mask(cliff);
+  const at = (l, m, cam, x, y) => { const yy = y - Math.round(l.y); if (yy < 0 || yy >= m.h) return 0;
+    const xx = (((x - Math.round(l.x) + Math.round(cam * l.speed)) % m.w) + m.w) % m.w; return m.a[yy * m.w + xx]; };
+  let sx = 0, sy = mh.h; for (let x = 0; x < mh.w; x++) for (let y = 0; y < sy; y++) if (mh.a[y * mh.w + x]) { sy = y; sx = x; break; }
+  let seen = 0, hidden = 0, cols = 0, bare = 0;
+  for (let cam = 0; cam < 4000; cam += 97) {
+    const x = (((sx + Math.round(hill.x) - Math.round(cam * hill.speed)) % mh.w) + mh.w) % mh.w;
+    for (let k = x; k < W; k += mh.w) { seen++; if (at(cliff, mc, cam, k, sy + Math.round(hill.y))) hidden++; }
+    for (let c = 0; c < W; c += 4) { cols++; let any = false;
+      for (let y = 0; y < P.canvas.h && !any; y++) any = !!(at(hill, mh, cam, c, y) || at(cliff, mc, cam, c, y));
+      if (!any) bare++; } }
+  return { same: hill.speed === cliff.speed && mh.w === mc.w, tile: [mh.w, mc.w], seen, hidden, cols, bare };
+}
+// Ljubljanica (Game Director, 27 Nov 2026): "twin castles" and "a bridge that keeps going and going". The castle's tower
+// top is one place per tile of the town (it is not mirrored), and the bridge stands alone: most of its tile is empty.
+async function oneCastle(pid) {
+  const P = window.__ZG.BGX.packs[pid], L = id => P.layers.find(l => l.id === id);
+  const mask = async l => { const im = new Image(); im.src = l.src; await im.decode();
+    const c = new OffscreenCanvas(l.w, l.h), g = c.getContext('2d'); g.drawImage(im, 0, 0);
+    const d = g.getImageData(0, 0, l.w, l.h).data, a = new Uint8Array(l.w * l.h);
+    for (let i = 0; i < l.w * l.h; i++) a[i] = d[i * 4 + 3] > 160 ? 1 : 0;
+    return { a, w: l.w, h: l.h }; };
+  const t = await mask(L('town-castle')), b = await mask(L('bridge'));
+  const tops = Array.from({ length: t.w }, (_, x) => { for (let y = 0; y < t.h; y++) if (t.a[y * t.w + x]) return y; return t.h; });
+  const best = Math.min(...tops); let runs = 0;
+  for (let x = 0; x < t.w; x++) if (tops[x] <= best + 6 && (x === 0 || tops[x - 1] > best + 6)) runs++;
+  let used = 0; for (let x = 0; x < b.w; x++) { for (let y = 0; y < b.h; y++) if (b.a[y * b.w + x]) { used++; break; } }
+  return { castles: runs, bridgeShare: +(used / b.w).toFixed(2), bridgeTile: b.w, glued: L('bridge').speed === L('quay').speed && L('quay').speed === L('town-castle').speed };
+}
+const GLUED = { piran: [['house', 'far-shore']], predjama: [['stream', 'castle-cliff'], ['hill', 'castle-cliff']],
+  ljubljanica: [['bridge', 'quay'], ['quay', 'town-castle']], barje: [['landmarks', 'channels']], grad: [['near-foreground-tree-frame', 'foreground-grass-lane']] };
 const WALK = 1500;   // world px walked between the two measurements
 
 run(async () => {
@@ -64,6 +105,18 @@ run(async () => {
         check(L.filter(l => l.tileX && l.speed >= 0.2).length === L.filter(l => l.speed >= 0.2).length, `${key}: every layer at 0.2 or faster tiles, so it really scrolls with the walk`);
         (GLUED[key] || []).forEach(([a, b]) => { const A = L.find(l => l.id === a), Bl = L.find(l => l.id === b);
           check(A && Bl && A.speed === Bl.speed, `${key}: ${a} stands on ${b} and moves with it`, A && Bl ? `${A.speed} and ${Bl.speed}` : 'missing'); });
+        if (key === 'predjama') {
+          const mt = await ev(inMountain, pid);
+          check(mt.same && mt.seen > 10 && mt.hidden === mt.seen && mt.bare === 0,
+            'predjama: the castle stands in a mountain that goes on: it repeats with the cliff, its summit always behind the cliff, mountain in every column',
+            JSON.stringify(mt));
+          check(L.some(l => l.id === 'mountains' && l.speed < 0.12), 'predjama: far mountains behind the karst ridge', JSON.stringify(L.map(l => `${l.id} ${l.speed}`)));
+        }
+        if (key === 'ljubljanica') {
+          const oc = await ev(oneCastle, pid);
+          check(oc.castles === 1 && oc.bridgeShare < 0.4 && oc.glued, 'ljubljanica: one castle per stretch of town (no twin castles); the bridge stands alone on the quay, not without end',
+            JSON.stringify(oc));
+        }
         const fl = await ev(floating, pid);
         check(fl.cols > 1000 && fl.bad / fl.cols <= 0.005, `${key}: no slice floats over the lane: the far sky and hills never show between a slice and the lane's top edge`,
           `${(100 * fl.bad / fl.cols).toFixed(2)} % of ${fl.cols} columns at ${fl.cams} scroll positions${fl.bad ? `, worst ${fl.worst} canvas px` : ''}`);

@@ -55,6 +55,9 @@ BASE_FADE = 36
 #   flip: the picture mirrored left to right (a borrowed or repeated picture that should not look the same);
 #   tint: (r, g, b) multipliers grading a borrowed picture to the region's light (moonlight, sunset);
 #   study: take the picture from another study (passing trees borrowed from a region with the same woods);
+#   cols: (left, right) only these master columns (a part of a borrowed picture, or a strip cut wall to wall);
+#   haze: (r, g, b, amount) far away: the colours mixed towards the air's colour;
+#   span: the finished tile stretched (under 1 %) to exactly this many view widths, to repeat with a landmark;
 #   floor: the slice stands on the ground (Game Director, 27 Nov 2026: slices floated over the lane with the sky showing
 #          under them). In every column whose lowest paint lies in the lower `floor` share of the slice's painted height,
 #          a base is painted under that paint, continuing the slice's own painting (`grounded`), down to FLOOR_REACH
@@ -171,7 +174,13 @@ STUDIES = {
         'layers': [
             ('sky', 'sky.png', (-2, -2, 104, 104), 'fill', {'tile': True}),
             ('clouds', 'clouds.png', (0, 0, 100, 100), 'fill', {'tile': True}),
-            ('ridge', 'distant-karst-forest.png', (0, 0, 100, 100), 'fill', {'tile': True}),
+            ('mountains', 'distant-foothills.png', (0, -7, 100, 100), 'fill', {'tile': True, 'study': 'triglav', 'haze': (170, 150, 175, 0.45)}),
+            ('ridge', 'distant-karst-forest.png', (0, -10.7, 100, 100), 'fill', {'tile': True}),
+            # Stand-in (Game Director, 27 Nov 2026: "the rest of the mountain continues ... everything is a hill"): Peca's
+            # slope up to its summit, mirrored there, so the summit lies behind the cliff and the forest runs off both ways;
+            # it repeats with the cliff (span 2). Far mountains: Triglav's foothills in evening haze. Until Codex paints
+            # Predjama's own (docs/art-workflow/FOLK_PARALLAX_SCENES_SPEC.md §3)
+            ('hill', 'peca-mountain.png', (-29.2, -4.1, 100, None), 'fill', {'tile': True, 'study': 'peca', 'cols': (60, 1575), 'span': 2, 'tint': (1.06, 1.0, 0.88), 'floor': 0.3}),
             ('castle-cliff', 'castle-cliff.png', (0, 0, 100, 100), 'fill', {'tile': True, 'period': 2}),
             ('stream', 'lokva-stream.png', (0, 0, 100, 100), 'fill', {'tile': True, 'period': 2}),
             ('grass-lane', 'foreground-grass-lane.png', (-0.5, -0.85, 101, 101), 'fill', {'tile': True, 'stand': True}),
@@ -199,10 +208,18 @@ STUDIES = {
         'layers': [
             ('sky-hills', 'distant-sky-hills.png', (-8, -8, 116, 116), 'cover', {'tile': True}),
             ('clouds', 'clouds.png', (-8, -15, 128, None), 'fill', {'tile': True}),
-            ('town-castle', 'town-castle.png', (-5, 7, 110, None), 'fill', {'tile': True, 'period': 2}),
+            # The town strip starts and ends with a whole house wall: it tiles wall to wall as it is. Mirrored (until 27 Nov
+            # 2026) it showed the castle twice side by side and the Franciscan church twice (Game Director: "twin castles").
+            ('town-castle', 'town-castle.png', (-5, 7, 108.1, None), 'fill', {'tile': True, 'cols': (19, 2153), 'mirror': False}),
+            # The far bank's stone quay from Codex's clean plate (the riverfront without the bridge), under the houses, so the
+            # bridge can stand alone: it was mirrored into a bridge without end (Game Director, 27 Nov 2026)
+            ('quay', 'riverfront-clean-plate.png', (0, 5.9, 94, 100), 'fill', {'tile': True, 'cols': (100, 1672), 'rows': (352, 423)}),
+            # Tromostovje: one bridge of three arches whose ends stand on the quay, every 3 view widths, at its painted
+            # proportions (it was 1.86 × wide); in the river's water, which runs in front of its piers. Stand-in until
+            # Codex's Ljubljanica riverbank (docs/art-workflow/FOLK_PARALLAX_SCENES_SPEC.md §1)
+            ('bridge', 'bridge.png', (8, 35.6, 77, 45.65), 'fill', {'tile': True, 'period': 3, 'mirror': False}),
             ('river', 'river-surface.png', (-35, 69, 145, 22), 'fill', {'tile': True}),
             ('glints', 'water-reflections.png', (-14, 52, 140, 42), 'fill', {'tile': True}),   # glints on the river
-            ('bridge', 'bridge.png', (-5, 46, 110, 35), 'fill', {'tile': True, 'period': 2}),
             ('road', 'foreground-road.png', (-68, None, 170, None), 'fill', {'tile': True, 'stand': True}),
         ],
     },
@@ -415,11 +432,17 @@ def build(key, composite=False):
     for order, (lid, f, box, fit, opt) in enumerate(cfg['layers'], 1):
         src = master(opt.get('study', cfg['study']), f)
         im = Image.open(src).convert('RGBA')
+        if opt.get('cols'):   # only these columns of the master (a part of a borrowed picture)
+            im = im.crop((opt['cols'][0], 0, opt['cols'][1], im.height))
         if opt.get('flip'):
             im = ImageOps.mirror(im)
         if opt.get('tint'):   # graded to the region's light: each colour channel multiplied
             r, g, b, al = im.split()
             im = Image.merge('RGBA', [ch.point(lambda v, k=k: min(255, round(v * k))) for ch, k in zip((r, g, b), opt['tint'])] + [al])
+        if opt.get('haze'):   # far away: every colour mixed towards the air's colour (atmospheric perspective)
+            *col, amt = opt['haze']
+            r, g, b, al = im.split()
+            im = Image.merge('RGBA', [ch.point(lambda v, c=c: round(v + (c - v) * amt)) for ch, c in zip((r, g, b), col)] + [al])
         cut_l, cut_r = touches_edge(im)   # decided on the master, before resizing
         im, x, y = place(im, box, fit)
         if opt.get('rows'):   # only these view rows of the picture (a picture that lies at two depths, cut in two)
@@ -448,6 +471,10 @@ def build(key, composite=False):
             print(f'  {lid}: cut on both sides, mirrored and not padded')
         if period:
             im = padded(im, period)
+        if opt.get('span'):   # the finished tile stretched (by under 1 %) to exactly this many view widths, so that it
+            w = round(VIEW_W * opt['span'])   # repeats with the landmark it stands behind and never drifts from it
+            assert abs(w / im.width - 1) < 0.01, (lid, im.width, w)
+            im = im.resize((w, im.height), Image.LANCZOS)
         if opt.get('wrap') and opt.get('tile'):   # the picture's last `wrap` px laid over its first: the copies overlap
             ov = opt['wrap']
             tile = im.crop((0, 0, im.width - ov, im.height))
@@ -470,7 +497,8 @@ def build(key, composite=False):
                        **({'laneMirroredBelow': True} if opt.get('stand') else {}), **({'rows': list(opt['rows'])} if opt.get('rows') else {}), **({'wrap': opt['wrap']} if opt.get('wrap') else {}),
                        **({'floor': opt['floor']} if opt.get('floor') else {}), **({'blur': opt['blur']} if opt.get('blur') else {}),
                        **({'flip': True} if opt.get('flip') else {}), **({'study': opt['study']} if opt.get('study') else {}),
-                       **({'tint': list(opt['tint'])} if opt.get('tint') else {})})
+                       **({'tint': list(opt['tint'])} if opt.get('tint') else {}), **({'haze': list(opt['haze'])} if opt.get('haze') else {}),
+                       **({'cols': list(opt['cols'])} if opt.get('cols') else {}), **({'span': opt['span']} if opt.get('span') else {})})
     mp = ROOT / 'art/manifests' / f'{pack}.json'
     old = json.loads(mp.read_text(encoding='utf-8')) if mp.is_file() else {}
     man = {'pack': cfg['name'], 'version': '0.1.0', 'status': old.get('status', 'review'),

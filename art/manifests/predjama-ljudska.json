@@ -55,13 +55,42 @@
       "fit": "fill"
     },
     {
-      "id": "ridge",
+      "id": "mountains",
       "order": 3,
+      "file": "art/exports/environments/predjama-ljudska/mountains.webp",
+      "width": 1984,
+      "height": 218,
+      "x": 2,
+      "y": 117,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/triglav-parallax/layers/distant-foothills.png",
+      "sourceSha1": "967e10d821683763e90cae5097ccb4ff0199d7ec",
+      "previewBox": [
+        0,
+        -7,
+        100,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "both sides",
+      "study": "triglav",
+      "haze": [
+        170,
+        150,
+        175,
+        0.45
+      ]
+    },
+    {
+      "id": "ridge",
+      "order": 4,
       "file": "art/exports/environments/predjama-ljudska/ridge.webp",
       "width": 1984,
       "height": 99,
       "x": 2,
-      "y": 301,
+      "y": 241,
       "alpha": true,
       "tileX": true,
       "role": "background",
@@ -69,7 +98,7 @@
       "sourceSha1": "249668511c9e1debe0595655cb914b5fcc3abaf5",
       "previewBox": [
         0,
-        0,
+        -10.7,
         100,
         100
       ],
@@ -77,8 +106,42 @@
       "mirrored": "both sides"
     },
     {
+      "id": "hill",
+      "order": 5,
+      "file": "art/exports/environments/predjama-ljudska/hill.webp",
+      "width": 1992,
+      "height": 367,
+      "x": -289,
+      "y": 42,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/peca-parallax/layers/peca-mountain.png",
+      "sourceSha1": "b2ab534aff80e24eac087050a5661846469870d9",
+      "previewBox": [
+        -29.2,
+        -4.1,
+        100,
+        null
+      ],
+      "fit": "fill",
+      "mirrored": "both sides",
+      "floor": 0.3,
+      "study": "peca",
+      "tint": [
+        1.06,
+        1.0,
+        0.88
+      ],
+      "cols": [
+        60,
+        1575
+      ],
+      "span": 2
+    },
+    {
       "id": "castle-cliff",
-      "order": 4,
+      "order": 6,
       "file": "art/exports/environments/predjama-ljudska/castle-cliff.webp",
       "width": 1992,
       "height": 427,
@@ -100,7 +163,7 @@
     },
     {
       "id": "stream",
-      "order": 5,
+      "order": 7,
       "file": "art/exports/environments/predjama-ljudska/stream.webp",
       "width": 1992,
       "height": 64,
@@ -122,7 +185,7 @@
     },
     {
       "id": "grass-lane",
-      "order": 6,
+      "order": 8,
       "file": "art/exports/environments/predjama-ljudska/grass-lane.webp",
       "width": 2004,
       "height": 350,
@@ -145,7 +208,7 @@
     },
     {
       "id": "near-foreground",
-      "order": 7,
+      "order": 9,
       "file": "art/exports/environments/predjama-ljudska/near-foreground.webp",
       "width": 996,
       "height": 77,
