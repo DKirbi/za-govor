@@ -1,12 +1,16 @@
-// Codex's folk parallax packs in game (25 Nov 2026; tools/art_folk_parallax.py, data/backgrounds.json): each region's
+// Codex's folk parallax packs in game (25–27 Nov 2026; tools/art_folk_parallax.py, data/backgrounds.json): each region's
 // variant B, previewed with ?ozadje=B. The speeds are measured, not looked at: walking a known distance moves every
 // tiling layer by distance × its speed; the lane the party walks on moves at exactly 1; nothing drawn in front of
 // another layer moves slower than it (reflections excepted: they follow what they mirror); front layers stay under the
 // feet; and in battle the actors stand on the painted lane, on a phone and on a desktop.
 const { openGame, runner, sleep } = require('./harness');
-const { check, run } = runner('Folk parallax packs (variant B of six regions)');
+const { check, run } = runner('Folk parallax packs (variant B of all ten regions)');
 
-const REGIONS = [['ptuj', 0], ['peca', 1], ['triglav', 2], ['bled', 3], ['gozd', 4], ['ljubljanica', 8]];
+const REGIONS = [['ptuj', 0], ['peca', 1], ['triglav', 2], ['bled', 3], ['gozd', 4], ['piran', 5], ['predjama', 6], ['barje', 7], ['ljubljanica', 8], ['grad', 9]];
+// layers that stand on one another move together, or one slides along the other while the party walks (27 Nov 2026):
+// the Piran house on its far shore, the Lokva falling out of Predjama's cliff, the Barje willows and pile dwellings in
+// their channels, the Ljubljanski grad trees rooted at the lane's far edge
+const GLUED = { piran: [['house', 'far-shore']], predjama: [['stream', 'castle-cliff']], barje: [['landmarks', 'channels']], grad: [['near-foreground-tree-frame', 'foreground-grass-lane']] };
 const WALK = 1500;   // world px walked between the two measurements
 
 run(async () => {
@@ -33,6 +37,8 @@ run(async () => {
         check(!breaks.length, `${key}: speeds never decrease from back to front`, moving.map(l => `${l.id} ${l.speed}`).join(', '));
         check(L.filter(l => l.front).every(l => l.speed >= 1), `${key}: front layers move at least as fast as the lane`, JSON.stringify(L.filter(l => l.front)));
         check(L.filter(l => l.tileX && l.speed >= 0.2).length === L.filter(l => l.speed >= 0.2).length, `${key}: every layer at 0.2 or faster tiles, so it really scrolls with the walk`);
+        (GLUED[key] || []).forEach(([a, b]) => { const A = L.find(l => l.id === a), Bl = L.find(l => l.id === b);
+          check(A && Bl && A.speed === Bl.speed, `${key}: ${a} stands on ${b} and moves with it`, A && Bl ? `${A.speed} and ${Bl.speed}` : 'missing'); });
       }
       // walk: measure each tiling layer before and after WALK world px
       await ev((ri) => { const Z = window.__ZG; Z.S.testMode = true; Z.S.mode = 'calm'; Z.setBgForce('B'); Z.newRun('krpan'); Z.joinHero('kurent'); Z.joinHero('matjaz'); Z.enterRegion(ri); Z.go('travel'); }, ri);
