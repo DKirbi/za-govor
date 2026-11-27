@@ -36,7 +36,7 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
-## 0.22.0 — 27 Nov 2026 · zaprta alfa · ten folk parallax backgrounds for review, measured on phones; the phone's tip behind a ? button; a clearer hero picker; phone review fixes
+## 0.22.0 — 27 Nov 2026 · zaprta alfa · ten folk parallax backgrounds for review, measured on phones; the phone's tip behind a ? button; a clearer hero picker; phone review fixes; gold from chests, remedies
 
 Branch `review/folk-backgrounds`: PRs #40, #41, #43, #44 and #45 (Codex's four later parallax studies and their runtime
 packs) and #42 (0.21.0, below) in one pull request for the Game Director to confirm. Those six PRs are closed in
@@ -112,9 +112,31 @@ favour of it.
   grad** get passing trees like Triglav's: Triglav's whole tree clumps, mirrored and graded to each region's light
   (moonlit for Trnovski gozd, sunset for Ljubljanski grad), until Codex paints their own. Export tool options `flip`,
   `tint` and `study`; `tests/parallax.test.js` checks the passing trees in all four regions.
-- **New `tests/screens.test.js`** (12 checks): the three letter colours by place and far apart on the colour wheel, the
-  diamonds, Premor's column, the skill cards' borders and dots, the chest's line and shape. `tests/parallax.test.js`
-  measures floating slices and the passing trees; the "front layers never cover a foot" rules leave passing trees out.
+- **Round sun, square castle:** Piranske soline, Predjamski grad and Ljubljansko barje were placed at Codex's preview
+  boxes, 1.3 times wider than tall, so the sun, Predjama's castle, the salt worker's house and Barje's pile dwellings
+  were stretched. They are 1:1 now, like Trnovski gozd and Ljubljanski grad.
+- **Pokloni se** replaces *Pomoli se* on the shrines (*Kdor se tu pokloni …*, *Če se pokloniš …*): a bow before the
+  god's idol, shorter and plainer than a prayer. The gods' answers still say *molitev* (OPEN, for the Game Director).
+- **For Codex:** `docs/art-workflow/FOLK_PARALLAX_CORRECTIONS_SPEC.md` asks for real bases under seven slices, passing
+  trees for three woods, seamless edge trees in Gozd and Grad, and the Ptuj, Peca and Ljubljanica strips repainted at
+  their in-game shape. The tool's stand-ins stay until then.
+- **New `tests/screens.test.js`** (15 checks): the three letter colours by place and far apart on the colour wheel, the
+  diamonds, Premor's column, the skill cards' borders and dots, the chest's line and shape, the remedies (below).
+  `tests/parallax.test.js` measures floating slices and the passing trees; the "front layers never cover a foot" rules
+  leave passing trees out.
+
+**The pedlar, gold and remedies (Game Director, 27 Nov 2026, evening)**
+- **The pedlar shows four things at most, each sold once:** one remedy, two potions or poisons and one relic the party
+  does not have (it showed six, and potions could be bought again and again). A bought thing says *prodano*.
+- **Gold comes from chests:** a whole chest pays 35–50 gold (was 15–25), a chest opened a little up to 40 by its share.
+  A won battle pays 1 gold an enemy and 5 a boss (it was 4 + a share of the enemy's XP, about 7–25 a fight: battles
+  brought some 500–650 gold a journey, chests about 120). Rock slides pay none (3 a rock). `BATTLE_GOLD`, `BOSS_GOLD`
+  in `src/journey.js`, `CHEST_GOLD` in `src/game.js`. Gold reads *1 zlatnik, 2 zlatnika, 3 zlatniki, 5 zlatnikov*.
+- **Remedies (new, `kind: "heal"` in `data/world.json`):** *Zeliščni čaj* (15, gives back 40 % health) and *Arnikino
+  mazilo* (30, all of it). In *Torba* the player picks a remedy and then the hero, any time outside a battle; only
+  heroes who are hurt and standing can be picked, the road's health cards update at once. In a battle the button says
+  *po bitki*. The pedlar always has one and chests can hold one. Names, prices and amounts PROPOSED.
+- `tests/journey.test.js`: the pedlar's four things and *prodano*, a battle's small gold, a chest's 35 or more.
 
 **Kdo gre na pot? and the hero's card (Game Director, 27 Nov 2026)**
 - **The hero picker** has no lead text any more. The chosen hero comes first, above the list, in one row on every

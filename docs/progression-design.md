@@ -342,7 +342,18 @@ The six drawn enemies stay. Four regional enemies reuse their sprites with a col
 | Zmajev mladič (the olm of Postojna, once believed to be a dragon's young) | Lintvern, pale | 40 / 6 | *Jamski prah*: buries four letters |
 
 ## 7. Items
-Gold (*zlatniki*) comes from battles (about 7–25 per fight) and chests (15–25). The pedlar (a *krošnjar* from Ribnica) shows four potions or poisons and two relics. Chests hold one random item; ambushes and bosses drop one too (bosses always a relic).
+**Gold comes from chests (CONFIRMED, Game Director, 27 Nov 2026; IMPLEMENTED v0.22.0).** A chest opened with the whole word pays 35–50 gold (*zlatniki*); one opened a little with a shorter word pays up to 40 by its share. A won battle pays little: 1 gold an enemy, 5 a boss. Rock slides pay none. *(Until v0.21.0 every enemy dropped 4 + a share of its XP, about 7–25 a fight, chests 15–25 and rock slides 3 a rock: battles brought some 500–650 gold a journey and chests about 120.)* Velesov rog's +50 % still applies to both.
+
+**The pedlar (a *krošnjar* from Ribnica) shows four things at most, each sold once (CONFIRMED, 27 Nov 2026):** one remedy, two potions or poisons and one relic the party does not have yet (fewer potions if no relic is left). A thing bought is marked *prodano*; the next pedlar has fresh stock. *(Until v0.21.0: four potions or poisons and two relics, the potions for sale again and again.)* Chests hold one random item, a remedy among them; ambushes and bosses drop one too (bosses always a relic).
+
+**Remedies — the player uses them outside a battle (CONFIRMED, 27 Nov 2026; IMPLEMENTED v0.22.0; names, prices and amounts PROPOSED)**
+
+| Item | Price | Effect |
+| --- | --- | --- |
+| Zeliščni čaj | 15 | The chosen hero gets back 40 % of their health |
+| Arnikino mazilo | 30 | The chosen hero gets back all their health |
+
+In *Torba* the player picks a remedy, then the hero: only heroes who are hurt and still standing can be picked (a remedy does not raise the fallen, like a well since 16 Nov: that takes a healer, Mrtva voda or a beaten god). In a battle the button says *po bitki* and the remedy waits. Potions and poisons still work by themselves in battle (below).
 
 **Relics — work all the time, one of each**
 
@@ -355,7 +366,7 @@ Gold (*zlatniki*) comes from battles (about 7–25 per fight) and chests (15–2
 | Dažbogov kolut | 50 | Words of six or more letters +25 % |
 | Svarogovo kladivo | 45 | Every battle starts with a shield of 8 |
 | Mokošino vreteno | 45 | The zagovor fills 30 % faster |
-| Velesov rog | 40 | Gold from battles and chests +50 % |
+| Velesov rog | 40 | Gold from battles and chests +50 % (since 27 Nov nearly all of it is from chests) |
 | Kurentov zvonec | 35 | The first enemy attack of every battle is late |
 | Idrijska čipka | 35 | Words with Č, Š or Ž hit another 25 % harder |
 | Krpanova sol | 30 | Repeated words lose less power |
