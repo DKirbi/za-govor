@@ -106,6 +106,12 @@ favour of it.
   not learned (it was a coloured left edge).
 - **The role tags** (*Napadalec*, *Zdravilec* …) show only in the chosen hero's details on *Kdo gre na pot?*, not on the
   cards in the list or in *Dosežki in junaki*.
+- **Painted bases and passing trees in every wood (Game Director, evening):** the grounded slices' bases are no
+  longer a flat colour but continue each slice's own painting (forest undergrowth, lake water, reeds, tree trunks),
+  shaded a little, painted on the finished tile so they wrap the way it repeats. **Peca, Trnovski gozd and Ljubljanski
+  grad** get passing trees like Triglav's: Triglav's whole tree clumps, mirrored and graded to each region's light
+  (moonlit for Trnovski gozd, sunset for Ljubljanski grad), until Codex paints their own. Export tool options `flip`,
+  `tint` and `study`; `tests/parallax.test.js` checks the passing trees in all four regions.
 - **New `tests/screens.test.js`** (12 checks): the three letter colours by place and far apart on the colour wheel, the
   diamonds, Premor's column, the skill cards' borders and dots, the chest's line and shape. `tests/parallax.test.js`
   measures floating slices and the passing trees; the "front layers never cover a foot" rules leave passing trees out.

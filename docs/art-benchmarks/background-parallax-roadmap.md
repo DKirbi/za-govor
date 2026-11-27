@@ -15,13 +15,26 @@ unchanged: resized into one 996×560 view as Codex's composites place them, WebP
   the salt pans, on Barje the channels, on Trnovski gozd and Ljubljanski grad the edge trees) seemed to float. Measured
   over many scroll positions, 14–96 % of the columns of seven packs had such a gap (up to 28 canvas px). The export
   tool's new `floor` option grounds a slice: under its lowest paint, in the columns whose paint reaches its lower part,
-  the gap is filled with the slice's own floor colour down to 8 px under the lane's lowest top edge. Now under 0.5 % of
-  columns (`tests/parallax.test.js`, *no slice floats over the lane*). The masters are unchanged.
+  a base is painted down to 8 px under the lane's lowest top edge. Now under 0.5 % of columns (`tests/parallax.test.js`,
+  *no slice floats over the lane*). The masters are unchanged.
+  - **Painted bases (Game Director, 27 Nov 2026 evening: "paint proper bases").** The base continues the slice's own
+    painting rather than a flat colour: its densest band of rows mirrored downwards, so the forest goes on as forest
+    undergrowth, Bled's lake as water and Barje's channels as reeds; a wide hole in that band (Triglav's forest has an
+    arch) is cloned from the paint beside it, from the shadier side; edge trees without a dense band continue each
+    column's own paint, so a trunk goes on as a trunk. Shaded a little deeper the lower it lies. The base is painted on
+    the finished tile, so it wraps the way the tile repeats (painted before the tile was mirrored, it made a mirrored
+    blob on the seam). If Codex paints bases, they replace these.
 - **Triglav's spruces are near trees the party walks past (Game Director, 27 Nov 2026).** Codex's edge trees were
   lifted 40 % up the scene and slid at 1.1 over the forest with their trunks in mid-air. They are now 1.6 × as large,
   blurred (out of focus, close to the eye, `blur` in the export tool), their trunks below the scene's bottom edge, at
   1.35 in front of the party and the flowers (`passing`): only on the road, never in battle, and faded while the party
   stands at a stop, so they cover the heroes only for a moment while they walk.
+- **Passing trees in every wooded region (Game Director, 27 Nov 2026 evening).** Peca, Trnovski gozd and Ljubljanski
+  grad get the same near trees, a `passing-trees` layer each. Their own edge trees (Gozd's framing trees, Grad's oaks)
+  are cut by the picture's sides: the tool mirrors such a picture into a double tree and cannot pad it, so a huge tree
+  would always be on screen. Until Codex paints passing trees for them, Triglav's whole clumps stand in (`study`),
+  mirrored (`flip`) and graded to each region's light (`tint`: moonlit blue for Trnovski gozd, sunset warmth for
+  Ljubljanski grad, as they are for Peca's autumn forest). About 40 KB each.
 - **The four later packs (27 Nov 2026, reviewed on phones by `tests/parallax-phone.test.js`; PROPOSED, for the Game
   Director to confirm).** The same rules: nothing drawn in front of a layer moves slower than it, and things that stand
   on one another move together, or one slides along the other while the party walks.
