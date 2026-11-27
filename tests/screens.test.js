@@ -89,6 +89,23 @@ run(async () => {
   const inBattle = await ev(() => { const b = document.querySelector('.dialog.bag .itemrow.heal .btn'); const r = { disabled: b && b.disabled, label: b && b.textContent }; document.querySelector('.dialog.bag .btn.primary').click(); return r; });
   check(inBattle.disabled && inBattle.label === 'po bitki', 'in a battle a remedy waits: used after the battle', JSON.stringify(inBattle));
 
+  // the ending (27 Nov 2026): a victory — the party cheers close up, tap a hero for skills and best hits, the longest words
+  await ev(() => { const Z = window.__ZG; Z.newRun('krpan'); Z.setParty(['krpan', 'kresnik', 'matjaz']); Z.S.heroes[0].sk = [3, 1, 0]; Z.S.heroes[2].down = true;
+    ['ljubljana', 'kres', 'zmajevina', 'gospodar'].forEach(w => Z.noteLongWord(w));
+    Z.noteHit('krpan', { value: '−41 · omama', move: 'Lipov kij', word: 'VRATA' }); Z.noteHit('krpan', { value: '+12 zdravja', move: 'x' }); Z.noteHit('krpan', { value: '−64', move: 'Lipov kij', word: 'KOLOVRAT' });
+    Z.go('ending'); });
+  await sleep(500);
+  const end = await ev(() => { const hs = [...document.querySelectorAll('.endhero')], sp = hs.map(h => h.querySelector('.sp'));
+    return { n: hs.length, big: Math.min(...hs.map(h => h.querySelector('.spr').getBoundingClientRect().height)), cheer: sp.every(e => getComputedStyle(e).animationName === 'cheer'),
+      down: document.querySelectorAll('.endparty .spr.down').length, items: /Predmeti/.test(document.querySelector('.ending').textContent),
+      words: [...document.querySelectorAll('.endwords .pchip')].map(c => c.firstChild.textContent) }; });
+  check(end.n === 3 && end.big >= 90 && end.cheer && !end.down, 'the ending: every hero cheers close up (about 100 px on a phone, a fallen one too)', JSON.stringify(end));
+  check(!end.items && end.words.join() === 'LJUBLJANA,ZMAJEVINA,GOSPODAR,KRES', 'the ending lists the longest words, longest first, instead of the items', JSON.stringify(end.words));
+  await ev(() => document.querySelector('.endhero').click()); await sleep(200);
+  const info = await ev(() => ({ chips: [...document.querySelectorAll('.endinfo .pchip')].map(c => c.textContent), hits: [...document.querySelectorAll('.endhits li')].map(l => l.textContent) }));
+  check(info.chips[0].includes('★★') && /še ne zna/.test(info.chips[2]) && info.hits.length === 2 && /^−64/.test(info.hits[0]) && /KOLOVRAT/.test(info.hits[0]),
+    'tapping a hero shows the skills learned (with their stopnja) and the hardest hits, hardest first', JSON.stringify(info));
+
   check(errors.length === 0, 'no page or console errors', errors.join(' | '));
   return ctx;
 });

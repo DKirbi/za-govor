@@ -55,6 +55,14 @@ run(async () => {
       given: C.D.entries.map(e => [...e.answer].filter((_, p) => !C.given.has(window.__ZG.B && (e.row + (e.dir === 'D' ? p : 0)) + ',' + (e.col + (e.dir === 'A' ? p : 0)))).length) }; });
   check(st && st.style === 'wheel' && st.wheel && st.letters === 7 && !st.kb && !st.clues, 'on a phone the zagovor opens on a wheel of letters: no clues, no keyboard', JSON.stringify(st && { style: st.style, letters: st.letters, kb: st.kb }));
   check(st && st.given.every(n => n >= 2), 'Malček shows some letters in the grid, but every word keeps at least two to find', JSON.stringify(st && st.given));
+  // compact (27 Nov 2026): no word bar under the scene, no rules in the header; ? opens the rules and stops the clock
+  const cmp = await ev(() => { const bar = document.querySelector('.wordbar'), head = document.querySelector('.whead');
+    return { bar: bar ? getComputedStyle(bar).display : null, tut: !!document.querySelector('.overlay.tut'), headH: Math.round(head.getBoundingClientRect().height), text: head.textContent }; });
+  check(cmp.bar === 'none' && !cmp.tut && cmp.headH <= 40 && !/povleci/.test(cmp.text), 'the wheel saves space: no word bar, one short header row, the rules not shown by themselves', JSON.stringify(cmp));
+  await ev(() => document.querySelector('.whead .wq').click()); await sleep(200);
+  const tq = await ev(() => ({ tut: !!document.querySelector('.overlay.tut'), title: (document.querySelector('.overlay.tut h2') || {}).textContent, held: window.__ZG.G.tut && window.__ZG.G.tut.kind }));
+  check(tq.tut && tq.title === 'Zagovor: kolo črk' && tq.held === 'kolo', 'the ? button opens Kako se igra for the wheel over the puzzle (the clock stops)', JSON.stringify(tq));
+  await ev(() => window.__ZG.closeTut()); await sleep(150);
   const wheelBox = await ev(() => { const r = document.querySelector('.wheel').getBoundingClientRect(); return { w: Math.round(r.width), inView: r.left >= 0 && r.right <= innerWidth }; });
   check(wheelBox.w >= 220 && wheelBox.inView, 'the wheel is big enough for a thumb and fits the screen', JSON.stringify(wheelBox));
 

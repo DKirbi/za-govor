@@ -125,6 +125,15 @@ favour of it.
   `tests/parallax.test.js` measures floating slices and the passing trees; the "front layers never cover a foot" rules
   leave passing trees out.
 
+**The ending is a victory (Game Director, 27 Nov 2026, evening)**
+- *Ljubljana je rešena!* in gold, with confetti in the folk colours. The party stands close up (about 100 px a hero on a
+  phone, up to 192 on a computer) and **cheers**: each hero hops in turn over a glow of their colour; a fallen hero gets
+  up for it.
+- **Tapping a hero** shows the skills they learned, with their stopnja (★), the ones not learned yet, and their **three
+  hardest hits** of the journey (damage, skill and word), noted from the battle cards.
+- **The longest words** of the journey (letter mesh and crosswords, six at most) replace the list of items.
+  `tests/screens.test.js` checks the cheer, the words and a hero's details.
+
 **Dosežki in junaki in three tabs (Game Director, 27 Nov 2026, evening)**
 - The page has tabs: **Dosežki** (first), **Junaki** and the new **Nasprotniki**, one shown at a time (← → move between
   them). The way back from a hero's card lands on Junaki.
@@ -146,8 +155,12 @@ favour of it.
   shown), Učenjak a middle one (about 18), Knjižni molj the poorest that still fills the grid (about 9, none shown).
   A real word that is not in the grid is an extra word: a weak hit, once. Values PROPOSED.
 - Phones open the wheel, computers the typed crossword (PROPOSED); *Nastavitve → Križanka zagovora* switches it on any
-  device. The other crosswords stay typed. New *Kako se igra* for the wheel. `src/wheel.js`; `tests/wheel.test.js`
-  (17 checks); the phone and keyword tests keep testing the typed crossword.
+  device. The other crosswords stay typed. `src/wheel.js`; `tests/wheel.test.js` (19 checks); the phone and keyword
+  tests keep testing the typed crossword.
+- **Compact (Game Director, 20:54):** the wheel takes no space for rules. One short row says *Zagovor* and its title,
+  with **?** (the wheel's *Kako se igra*, over the puzzle, clock stopped; a gold dot until it has been opened) and **✕**
+  (cancel; the power stays). The word bar under the scene is hidden while the wheel is open, and the word being made
+  sits between *Razkrij* and the count of words left, in one row over the wheel.
 
 **Mojster veščine (Game Director, 27 Nov 2026, evening)**
 - A new silver achievement in *Druščina*: the first time a hero uses a skill at its highest stopnja (3) in a journey

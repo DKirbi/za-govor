@@ -81,9 +81,12 @@ function wheelSetup(C) {
 
 function renderWheel() {
   const C = B.cw, D = C.D, n = D.letters.length;
-  UI.puzzle.append(h('div', { class: 'cwhead' }, h('span', { class: 'k finisher' }, 'Zagovor'),
-    h('h3', {}, `${D.title} — povleci po črkah na kolesu. Vsaka beseda iz križanke sproži napad, cela križanka zagovor.`), h('span', { class: 'grow' }),
-    h('button', { class: 'btn small', onclick: () => { closeCrossword(); fb('Zagovor prekinjen — moč ostane shranjena.', 'warn'); } }, 'Prekliči zagovor')));
+  // one short row (Game Director, 27 Nov 2026: save vertical space, no rules repeated): the rules are behind ?, which
+  // opens Kako se igra over the puzzle and stops the clock; a gold dot marks it until it has been opened once
+  const seen = TUT_SEEN.has('kolo');
+  UI.puzzle.append(h('div', { class: 'whead' }, h('span', { class: 'k finisher' }, 'Zagovor'), h('b', {}, D.title), h('span', { class: 'grow' }),
+    h('button', { class: 'wq' + (seen ? '' : ' new'), type: 'button', 'aria-label': 'Kako se igra kolo črk', title: 'Kako se igra', onclick: () => { showTut('kolo', true); wheelPaint(); } }, '?'),
+    h('button', { class: 'wx', type: 'button', 'aria-label': 'Prekliči zagovor (moč ostane)', title: 'Prekliči zagovor — moč ostane', onclick: () => { closeCrossword(); fb('Zagovor prekinjen — moč ostane shranjena.', 'warn'); } }, '✕')));
   C.cellEls = new Map();
   const grid = h('div', { class: 'cwgrid wgrid', style: { 'grid-template-columns': `repeat(${D.cols}, var(--cell))` } });
   for (let r = 0; r < D.rows; r++) for (let c = 0; c < D.cols; c++) {
@@ -100,9 +103,10 @@ function renderWheel() {
     h('button', { class: 'wshuffle', title: 'Premešaj črke (presledek)', 'aria-label': 'Premešaj črke', onpointerdown: e => e.stopPropagation(), onclick: wheelShuffle }, '⟳'));
   wheelPointer(C);
   C.wordEl = h('div', { class: 'wword', 'aria-live': 'polite' });
-  C.revBtn = C.reveals > 0 ? h('button', { class: 'btn small', title: 'Pokaže eno črko v križanki; beseda z njo udari s pol moči', onclick: wheelReveal }, '') : null;
+  C.revBtn = C.reveals > 0 ? h('button', { class: 'btn small wrev', title: 'Razkrij črko: pokaže eno črko v križanki; beseda z njo udari s pol moči', onclick: wheelReveal }, '') : null;
   C.extraEl = h('span', { class: 'wextra muted' });
-  UI.puzzle.append(h('div', { class: 'wbody' }, h('div', { class: 'wgridwrap' }, grid), C.wordEl, C.wheel, h('div', { class: 'wtools' }, C.revBtn, C.extraEl)));
+  // the word being made sits between Razkrij črko and the count, in one row over the wheel
+  UI.puzzle.append(h('div', { class: 'wbody' }, h('div', { class: 'wgridwrap' }, grid), h('div', { class: 'wrow' }, C.revBtn || h('span'), C.wordEl, C.extraEl), C.wheel));
   if (B.paused) UI.puzzle.append(h('div', { class: 'pausebanner' }, h('div', {}, 'Premor — ', h('button', { class: 'btn', onclick: togglePause }, 'Nadaljuj'))));
   wheelPaint();
 }
@@ -118,8 +122,10 @@ function wheelPaint() {
   const pts = C.sel.map(i => C.pos[i]); if (C.drag && C.pt && pts.length) pts.push(C.pt);
   C.line.setAttribute('points', pts.map(p => p.join(',')).join(' '));
   if (!C.wordEl.classList.contains('said')) C.wordEl.textContent = UP(C.sel.map(i => C.D.letters[i]).join(''));
-  if (C.revBtn) { C.revBtn.textContent = `Razkrij črko · ${C.reveals}`; C.revBtn.disabled = C.reveals <= 0; }
-  C.extraEl.textContent = C.extra.size ? `Dodatne besede: ${C.extra.size}` : `Besed v križanki: ${C.D.entries.length - C.solved.size}`;
+  if (C.revBtn) { C.revBtn.textContent = `Razkrij · ${C.reveals}`; C.revBtn.disabled = C.reveals <= 0; }
+  C.extraEl.textContent = `še ${C.D.entries.length - C.solved.size}` + (C.extra.size ? ` · +${C.extra.size}` : '');
+  C.extraEl.title = `Besed v križanki še: ${C.D.entries.length - C.solved.size}` + (C.extra.size ? `; dodatnih besed: ${C.extra.size}` : '');
+  const q = UI.puzzle.querySelector('.wq'); if (q) q.classList.toggle('new', !TUT_SEEN.has('kolo'));
 }
 // drag over the letters (the line follows the finger) and let go to send; or tap them one by one and tap the last
 // one again to send. Going back to the letter before the last takes the last one off.

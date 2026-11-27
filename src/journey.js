@@ -579,20 +579,59 @@ function openShop(stop) {
 }
 
 // ------------------------------------------------------------ the end of the road
+// What the ending shows (Game Director, 27 Nov 2026): each hero's three hardest hits of the journey (from the battle
+// card of the attack: its move, word and damage) and the journey's six longest words (letter mesh and crosswords).
+function noteHit(id, card) {
+  const R = S.run, m = R && /−(\d+)/.exec(String(card.value || ''));
+  if (!m) return;
+  const L = ((R.hits = R.hits || {})[id] = R.hits[id] || []);
+  L.push({ d: +m[1], move: card.move, word: card.word || '' }); L.sort((a, b) => b.d - a.d); L.length = Math.min(L.length, 3);
+}
+function noteLongWord(w) {
+  const R = S.run; if (!R || !w) return;
+  const L = (R.long = R.long || []);
+  if (L.includes(w)) return;
+  L.push(w); L.sort((a, b) => [...b].length - [...a].length || a.localeCompare(b, 'sl')); L.length = Math.min(L.length, 6);
+}
 function renderEnding() {
   const R = S.run || { battles: 0, words: 0, gold: 0, relics: [] };
   statJourney(true);   // src/stats.js, once
   achJourneyWon();   // src/achievements.js: the journey, Znanje, story cards (who was alive when Lintvern fell)
   R.over = true;   // a finished journey cannot be continued from the menu
   clearSave();
-  SCR.append(h('div', { class: 'title ending' },
-    h('div', { class: 'logo' }, 'Ljubljana je rešena'),
+  // a victory: the whole party cheers close up (the fallen get up for it), confetti in the colours of the folk border;
+  // tapping a hero shows the skills they learned and their hardest hits
+  const info = h('div', { class: 'endinfo', 'aria-live': 'polite' });
+  const heroBtns = HEROES.map((hr, k) => h('button', { class: 'endhero', style: { '--c': hr.c, '--d': (k * .22) + 's' }, 'aria-label': `${hr.name}: veščine in najmočnejši udarci`,
+    onclick: () => showEndHero(k) }, h('span', { class: 'endglow', 'aria-hidden': 'true' }), spriteEl(hr.id, hr.c), h('b', {}, hr.name)));
+  function showEndHero(k) {
+    const hr = HEROES[k], st = S.heroes[k], hits = (R.hits || {})[hr.id] || [];
+    heroBtns.forEach((b, i) => b.classList.toggle('on', i === k));
+    info.innerHTML = '';
+    info.style.setProperty('--c', hr.c);
+    info.append(h('h3', {}, hr.name, h('span', { class: 'muted' }, ` · raven ${st.lvl}`)),
+      h('div', { class: 'psec' }, h('h3', {}, 'Veščine'), h('div', { class: 'pchips' }, hr.moves.map((m, t) => { const r = st.sk ? st.sk[t] : (t === 0 ? 1 : 0);
+        return h('span', { class: 'pchip' + (r ? '' : ' w') }, m, r > 1 ? h('i', { class: 'stars' }, ' ' + '★'.repeat(r - 1)) : null, r ? null : h('small', {}, ' · še ne zna')); }))),
+      h('div', { class: 'psec' }, h('h3', {}, 'Najmočnejši udarci'), hits.length
+        ? h('ol', { class: 'endhits' }, hits.map(x => h('li', {}, h('b', {}, `−${x.d}`), h('span', {}, x.move), x.word ? h('em', {}, x.word) : null)))
+        : h('p', { class: 'muted' }, 'Na tej poti ni zapisanih udarcev.')));
+    sfx('sel', { rate: 1.1 });
+  }
+  const long = R.long || [];
+  const confetti = h('div', { class: 'confetti', 'aria-hidden': 'true' }, Array.from({ length: 28 }, (_, i) => h('i', { style: { left: (i * 37 % 100) + '%', '--d': (-(i * 0.43) % 6) + 's', '--x': ((i % 5) - 2) * 14 + 'px', '--k': ['#c8463a', '#f6d36a', '#f2ead8', '#4f8a4a', '#4c8ff0'][i % 5] } })));
+  SCR.append(h('div', { class: 'title ending victory' },
+    confetti,
+    h('div', { class: 'logo' }, 'Ljubljana je rešena!'),
     h('div', { class: 'tagline' }, 'Lintvern je premagan. Z grajskega stolpa se vidi vsa pot, ki si jo prehodil — od Ptuja do sem.'),
     h('div', { class: 'folk-rule' }),
-    h('div', { class: 'endparty' }, HEROES.map((hr, k) => h('figure', {}, spriteEl(hr.id, hr.c, S.heroes[k].down ? 'down' : ''), h('figcaption', {}, hr.name)))),
+    h('div', { class: 'endparty cheer' }, heroBtns),
+    h('p', { class: 'endtap muted' }, 'Pritisni junaka: njegove veščine in najmočnejši udarci.'),
+    info,
     h('div', { class: 'stats' },
       h('div', {}, 'Bitke'), h('div', {}, R.battles), h('div', {}, 'Izrečene besede'), h('div', {}, R.words),
-      h('div', {}, 'Zlatniki'), h('div', {}, R.gold), h('div', {}, 'Predmeti'), h('div', {}, R.relics.length ? R.relics.map(id => ITEMS[id].name).join(', ') : '—')),
+      h('div', {}, 'Zlatniki'), h('div', {}, R.gold)),
+    long.length ? h('div', { class: 'endwords' }, h('h3', {}, 'Najdaljše besede'),
+      h('div', { class: 'pchips' }, long.map(w => h('span', { class: 'pchip w' }, UP(w), h('small', {}, ` ${[...w].length}`))))) : null,
     h('p', { class: 'thanks' }, 'Hvala, ker si prehodil pot do konca.'),
     inspiredLine(),
     h('div', { class: 'row', style: { 'justify-content': 'flex-start' } }, h('button', { class: 'btn primary', onclick: leaveEnding }, 'Nova pot ', h('kbd', {}, 'Enter')))));
