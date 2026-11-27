@@ -125,6 +125,25 @@ favour of it.
   `tests/parallax.test.js` measures floating slices and the passing trees; the "front layers never cover a foot" rules
   leave passing trees out.
 
+**Predjamski grad and Ljubljanica (Game Director, 27 Nov 2026, evening)**
+- **Predjama's cliff is part of a mountain:** the castle's cliff no longer stands alone on a meadow. A forested karst
+  mountain moves and repeats with it: its summit always lies behind the cliff, its slopes run off both ways to a
+  valley, and behind them far mountains in the evening haze and the karst ridge. Stand-in made by the export tool from
+  Peca's mountain (cropped at its summit and mirrored there, warmed) and Triglav's foothills (hazed), until Codex
+  paints Predjama's own. Export tool options `cols`, `haze` and `span`.
+- **Ljubljanica has one castle and a bridge with two ends:** the town strip (houses, the Franciscan church, the castle
+  on its hill) was joined to its mirror image, so the castle stood twice side by side; it now tiles wall to wall as
+  Codex painted it. The bridge was mirrored into an arcade without end and shown 1.86 × too wide: it now stands alone at
+  its painted proportions every three view widths, its ends on a stone quay taken from Codex's clean plate, the river in
+  front of its piers. Stand-ins until Codex's new Ljubljanica.
+- **For Codex:** `docs/art-workflow/FOLK_PARALLAX_SCENES_SPEC.md` recomposes three scenes: Ljubljanica along one river
+  bank with the castle as the slowest layer and the Tromostovje once, at the last stop before Povodni mož; Ljubljanski
+  grad at the castle's walls instead of a view of the castle; Predjama's own karst mountain. Three open questions for
+  the Game Director at its end.
+- `tests/parallax.test.js`: Predjama's mountain repeats with the cliff, its summit always behind it and mountain in every
+  column; Ljubljanica's one castle per stretch and a bridge standing alone on the quay. `ZG_REGIONS=predjama,…` measures
+  only some regions.
+
 **The pedlar, gold and remedies (Game Director, 27 Nov 2026, evening)**
 - **The pedlar shows four things at most, each sold once:** one remedy, two potions or poisons and one relic the party
   does not have (it showed six, and potions could be bought again and again). A bought thing says *prodano*.

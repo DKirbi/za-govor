@@ -99,6 +99,8 @@ All ten campaign regions now have folk-art panorama references, first-pass paral
 - [x] Create and approve the Ljubljanski grad sunset scene preview; complete the first layer set with separate sky, clouds, distant hills, old-town roofs, connected castle hill, edge trees, wide grass lane, near flowers, static composite and interactive approach preview.
 - [x] Add Ljubljanski grad as a review-only runtime pack: export eight WebP layers, keep the PNG masters, add variant B with the test disabled, and create a game-size composite.
 - [x] Measure all ten packs on phones (portrait 360×640, 390×844, 412×915 and landscape 844×390) while the party runs; fix the depth-order breaks of Piran, Predjama, Barje and Ljubljanski grad and the Barje channels gap (27 Nov 2026).
+- [x] Stand-ins for the Game Director's evening review (27 Nov 2026): Predjama's cliff inside a forested mountain with far mountains behind; Ljubljanica without twin castles, its bridge (now 0.22, on a quay with the houses) standing alone at its true proportions instead of an endless mirrored arcade.
+- [ ] Codex: [corrections](../art-workflow/FOLK_PARALLAX_CORRECTIONS_SPEC.md) and the [three recomposed scenes](../art-workflow/FOLK_PARALLAX_SCENES_SPEC.md) (Ljubljanica along one bank with the Tromostovje once, Ljubljanski grad at the castle's walls, Predjama's karst mountain); Claude: a landmark shown once at a region's last stop.
 - [ ] After each scene's slices are approved, the Game Director confirms the speeds; then cloud/water/ambient motion and character staging.
 
 ## Layer workflow

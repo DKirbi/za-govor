@@ -8,6 +8,10 @@ The game already works around each problem below (generated fills, borrowed tree
 are acceptable for review, not for release. Codex's corrected masters replace them, and Claude then removes the
 workarounds. Codex's style, palettes and compositions stay as they are. This is repair work, not a redesign.
 
+**See also** [`FOLK_PARALLAX_SCENES_SPEC.md`](FOLK_PARALLAX_SCENES_SPEC.md) (27 Nov 2026, evening): Ljubljanica,
+Ljubljanski grad and Predjamski grad are recomposed there. Where the two overlap (Ljubljanica's bridge, river and
+glints in §4), the scenes spec decides.
+
 ## How the game uses the layers (what the corrections must fit)
 
 - **Scene.** Each region's layers are resized into one view of **996 × 560** px (16:9), as Codex's composites place
@@ -116,7 +120,7 @@ ground textures less.
 |---|---|---|---|---|
 | 1 | Ptuj | `castle-hill.png` | 1.54 × wide | 2172 × 470 or 3345 × 724 |
 | 1 | Ptuj | `town.png` | 1.55 × wide | 2172 × 468 or 3362 × 724 |
-| 1 | Ljubljanica | `bridge.png` | 1.86 × wide | 2172 × 389 or 4047 × 724 |
+| 1 | Ljubljanica | `bridge.png` | 1.00 × since 27 Nov (the tool) | replaced by `tromostovje.png`, scenes spec §1 |
 | 1 | Peca | `peca-mountain.png` | 1.16 × wide | 2172 × 623 or 2525 × 724 |
 | 2 | Peca | `midground-forest.png` | 1.16 × wide | 2172 × 623 or 2525 × 724 (with the base from §1: then to row 539 of 623, i.e. the same 86.7 %) |
 | 2 | Peca | `foreground-ground.png` | 1.26 × wide | 2172 × 575 or 2736 × 724 |
@@ -152,5 +156,5 @@ ground textures less.
 ## Out of scope
 
 - Ptuj's winter redraw (a separate, earlier request).
-- New regions, new landmarks, recolouring existing layers.
+- New regions, new landmarks, recolouring existing layers (except the three scenes of `FOLK_PARALLAX_SCENES_SPEC.md`).
 - The skill cards and achievement icons.
