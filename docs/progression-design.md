@@ -557,10 +557,13 @@ Game Director, 24 Nov 2026; "implement bosses and minibosses (gods including) mu
 - **The health bar drains as one bar, from the right:** the full bars stay on the left, the first bar to fall is the
   rightmost (Game Director, 28 Nov 2026, on the phone).
 - **Theme:** each event's key word is one part of the boss's theme (`BOSS_KEYS`).
+- **A big word only pushes the health to the middle of a bar, so the event starts** (Game Director, 28 Nov 2026):
+  damage outside an event stops there; during an event only its own words hurt the boss (burns and other blows do
+  nothing).
+- **The difficulty stays as built** (28 Nov 2026, after the simulator table below: "the bosses should stay this hard"),
+  the gods included.
 
 **PROPOSED — built this way, for the Game Director to confirm**
-- Damage outside an event stops at the middle of a bar, so one big word cannot skip an event; during an event only its
-  own words hurt the boss (burns and other blows do nothing).
 - If the minute runs out, the rest of that bar is fought on the mesh and the next event still starts at the middle of
   the next bar.
 - An event that comes due while the zagovor (or another crossword) is open waits and opens as it closes.
@@ -578,8 +581,9 @@ Game Director, 24 Nov 2026; "implement bosses and minibosses (gods including) mu
 - An event's wheel has one word fewer than the zagovor's on the same Znanje (at least four).
 
 **OPEN**
-- The Volkodlak is an ordinary enemy today (Trnovski gozd and others); as a mini-boss he needs his own encounter (a
-  region's last battle, say), or every Volkodlak becomes a two-event fight. Not built.
+- The Volkodlak is an ordinary enemy today (Trnovski gozd, Predjamski grad, Barje). The Game Director confirmed him as a
+  mini-boss again on 28 Nov ("Volkodlak could be miniboss"); his encounter is open. *PROPOSED:* the last battle of
+  Trnovski gozd, under its full moon, with two bars and two events; the ordinary Volkodlak stays in the pools. Not built.
 - Scorched letters carrying into the wheel — not built.
 - The gods other than Stribog still use only their special outside the events (Stribog got gusts between his letter
   scrambles on 28 Nov). Whether they get plain attacks too is the Game Director's call.
@@ -598,5 +602,13 @@ about twice as long. The bot plays an event word every pace × `cw` seconds and 
 slower than a player's, and the samples are small (a god's row moves by ±10 points between runs of the same build).
 The build keeps the confirmed 15 s and sets the blow of Povodni mož and the Lintvern to **0.3 × their attack**
 (PROPOSED). The gods strike with their special in the event (every 15 s, against every 9.5 s outside it); they are
-clearly harder than before because a fight with bars lasts longer. A lost challenge never ends a journey, but if they
-should stay near the old rate, their event blow could be their plain attack instead (OPEN).
+clearly harder than before because a fight with bars lasts longer; a lost challenge never ends a journey. The Game
+Director kept it so (28 Nov).
+
+**Ideas of 28 Nov (Game Director's brainstorm — not decided, not built)**
+- *Permanent unlocks on harder Znanje:* on the harder tiers some skills unlock for good, so heroes start a journey
+  stronger and earn less XP, and meet the bosses and gods stronger.
+- *Spread the bosses:* Povodni mož (Ljubljanica) and the Lintvern (Ljubljanski grad) come one after the other. Idea: meet
+  Povodni mož earlier; his *Poplava* sweeps the party away (towards Piran, say) and the party comes back to finish him
+  at half his health — one health bar per meeting.
+- *More mini-bosses,* the Volkodlak first (above).
