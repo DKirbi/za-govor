@@ -635,7 +635,7 @@ const FOE_CHARS = [
   { id: 'mora', name: 'Mora', sub: 'nočna mora', plays: [['Dušenje', 1, '−5'], ['Uspavanka', 3, null, 'junak zaspi']], note: 'Lebdi brez nog, dolgi črni lasje, svetleče oči. Na drugi karti sedi spečemu na prsih, kakor pripoveduje izročilo.' },
   { id: 'volkodlak', name: 'Volkodlak', sub: 'volk v človeški koži', plays: [['Zobje', 1, '−6'], ['Hrani se s ponovitvijo', 2, 'napad +1']], note: 'Siv kožuh, rdeče oči, raztrgane hlače. Ko ponoviš besedo, zatuli v polno luno in postane močnejši.' },
   { id: 'vila', name: 'Vodna vila', sub: 'vila iz Ljubljanice', plays: [['Val', 1, '−4'], ['Poplava', 3, null, 'spodnja vrsta je poplavljena']], note: 'Dolgi zeleni lasje z lokvanjem, bela obleka, ki se spodaj spremeni v val. Poplava na karti odnaša črke.' },
-  { id: 'povodni', name: 'Povodni mož', sub: 'gospodar reke · šef', plays: [['Objem vode', 1, '−8'], ['Vrtinec', 3, null, 'reši križanko, da se rešiš']], note: 'Večja sličica (64 × 64): zelen, luskast, z brado iz vodnih trav in plavutastimi ušesi. Vrtinec na karti vrti črke.' },
+  { id: 'povodni', name: 'Povodni mož', sub: 'gospodar reke · šef', plays: [['Objem vode', 1, '−8'], ['Vrtinec', 3, null, 'preizkušnja na kolesu črk']], note: 'Večja sličica (64 × 64): zelen, luskast, z brado iz vodnih trav in plavutastimi ušesi. Vrtinec na karti vrti črke: na sredi vsake od njegovih dveh vrstic zdravja ga premagaš na kolesu črk.' },
   { id: 'lintvern', name: 'Lintvern', sub: 'ljubljanski zmaj · šef', plays: [['Kremplji', 1, '−11'], ['Topot', 2, '−4 vsem'], ['Ognjeni dih', 3, '−13 vsem · gori']], note: 'Večja sličica (64 × 64): zelen zmaj z rdečimi krili in repom s puščico. Na kartah je za njim ljubljanski grad; na drugi gori.' },
 ];
 
@@ -799,8 +799,10 @@ const ENEMIES = {
     pattern: ['attack'], moves: { attack: 'Zobje' } },
   vila: { name: 'Vodna vila', f: true, hp: 30, atk: 4, speed: 9, calmStep: 0.34, size: 64, xp: 30,
     pattern: ['attack', 'flood'], moves: { attack: 'Val', flood: 'Poplava', heal: 'Zdravilni val' } },
-  povodni: { name: 'Povodni mož', hp: 260, atk: 16, speed: 12.5, calmStep: 0.25, size: 100, xp: 90, boss: true, cwlock: 'vrtinec',
-    pattern: ['attack', 'attack', 'cwlock'], moves: { attack: 'Objem vode', cwlock: 'Vrtinec' } },
+  // two health bars and two Vrtinec events on the letter wheel (§12, 28 Nov 2026); his lock crossword gave way to them,
+  // and on the mesh he floods the bottom row (Poplava, PROPOSED)
+  povodni: { name: 'Povodni mož', hp: 260, atk: 16, speed: 12.5, calmStep: 0.25, size: 100, xp: 90, boss: true, bars: 2,
+    pattern: ['attack', 'attack', 'flood'], moves: { attack: 'Objem vode', flood: 'Poplava' } },
   // Lintvern (balance D, 17 Nov 2026): three attacks of his own — Kremplji (one hero), Topot (everyone a little, and
   // heroes knocked out of the letter mesh for a while) and his signature, Ognjeni dih: at 66 % and 33 % of his health
   // he draws breath for a long, visible moment (longer on Malček, shorter on Knjižni molj), then burns every hero
@@ -808,12 +810,13 @@ const ENEMIES = {
   // stops his attacks (stuns, Okamnitev) and delays on him are halved. At half health he enrages: faster, Zmajeva
   // uganka, and as many wyverns again as he started with (data/world.json → grad.adds). Health by Znanje (hpBy): the toughest
   // enemy of the road on every Znanje (Game Director, 20 Nov 2026), above Povodni mož; his wyverns are meant to fall first.
-  lintvern: { name: 'Lintvern', tags: ['zmaj'], hp: 250, hpBy: { lahka: 340, srednja: 320, tezka: 320 }, atk: 11, speed: 11.5, calmStep: 0.25, size: 100, xp: 150, boss: true, cwlock: 'zmaj', unstoppable: true,
+  // three health bars and three Ognjeni vihar events (§12, 28 Nov 2026): they take Zmajeva uganka's place
+  lintvern: { name: 'Lintvern', tags: ['zmaj'], hp: 250, hpBy: { lahka: 340, srednja: 320, tezka: 320 }, atk: 11, speed: 11.5, calmStep: 0.25, size: 100, xp: 150, boss: true, bars: 3, unstoppable: true,
     pattern: ['scratch', 'scratch', 'stomp'],
-    phase2: { at: 0.5, pattern: ['scratch', 'stomp', 'scratch', 'cwlock'], speed: 10, calmStep: 0.34, summon: true },
+    phase2: { at: 0.5, pattern: ['scratch', 'stomp', 'scratch'], speed: 10, calmStep: 0.34, summon: true },
     breath: { at: [0.66, 0.33], sec: { lahka: 14, srednja: 8, tezka: 6 }, words: { lahka: 4, srednja: 3, tezka: 2 }, hit: 1.2, burn: 4, scorch: 10, fade: 2.5, fadeWords: 3, use: 4 },
     stomp: { hit: 0.4, out: { lahka: 1, srednja: 2, tezka: 2 }, sec: 6, words: 2 },
-    moves: { attack: 'Kremplji', scratch: 'Kremplji', stomp: 'Topot', breath: 'Ognjeni dih', cwlock: 'Zmajeva uganka' } },
+    moves: { attack: 'Kremplji', scratch: 'Kremplji', stomp: 'Topot', breath: 'Ognjeni dih' } },
 };
 
 // Regional enemies share a sprite with one of the six above (`art`) and are tinted in CSS.
@@ -856,12 +859,12 @@ const NODES = [
   { id: 'plaz', type: 'trap', title: 'Plaz kamenja', sub: 'Dogodek na čas',
     teach: 'Hitre besede z dano črko. Dolga beseda lahko razbije več skal hkrati.' },
   { id: 'reka', type: 'battle', title: 'Ljubljanica', sub: 'Bitka · Povodni mož',
-    teach: 'Zaseda (križanka za uvodni napad), Vrtinec (križanka, ki te zaklene), poplavljene črke.',
+    teach: 'Zaseda (križanka za uvodni napad), dve vrstici zdravja z Vrtincem na kolesu črk, poplavljene črke.',
     battle: { enemies: ['vila', 'povodni'], finishers: ['perun', 'mokos'], meterStart: 0, ambush: 'zaseda', tips: [
-      { until: 4, text: 'Vodna vila poplavlja spodnjo vrsto črk. Povodni mož te lahko potegne v vrtinec — takrat je mreža zaprta.' },
+      { until: 4, text: 'Vodna vila poplavlja spodnjo vrsto črk. Na sredi vsake vrstice zdravja te Povodni mož potegne v vrtinec: besede s kolesa črk mu vzamejo preostanek vrstice.' },
       { until: 99, text: 'Mokošina druga ali tretja veščina (dve ali tri zelene črke) osuši poplavljene črke.' } ] } },
   { id: 'grad', type: 'battle', title: 'Ljubljanski grad', sub: 'Bitka · Lintvern',
-    teach: 'Šefovski boj: kremplji, topot, ognjeni dih z ožganimi črkami in, ko pobesni, zmajeva uganka.',
+    teach: 'Šefovski boj: tri vrstice zdravja, kremplji, topot, ognjeni dih z ožganimi črkami; na sredi vsake vrstice ognjeni vihar na kolesu črk.',
     battle: { enemies: ['lintvern'], finishers: ['triglav', 'kres'], meterStart: 0.3, tips: [
       { until: 4, text: 'Ko Lintvern zajema sapo, ga nič ne ustavi: ognjeni dih ožge črke — kdor jih uporabi, se opeče. Pod polovico zdravja pobesni in te sili v zmajevo uganko.' },
       { until: 99, text: 'Triglavski zagovor omami nasprotnika — prihrani ga za drugo fazo.' } ] } },
@@ -1428,7 +1431,8 @@ function renderEnemies() {
     })() : null;
     UI.enemies.append(h('div', { class: 'foewrap' }, isT ? h('span', { class: 'tg' }, '▼ izbran') : null, e.el,
       h('span', { class: 'foename' }, e.name),
-      h('div', { class: 'hpbar', style: { width: Math.max(44, SPR_SIZE[foeArt(e)] * (S.mobile ? 1 : 2)) + 'px' } }, h('i', { style: { width: (100 * e.hp / e.maxHp) + '%' } })),
+      e.bars > 1 ? bossBar(e, Math.max(44, SPR_SIZE[foeArt(e)] * (S.mobile ? 1 : 2)) + 'px')   // a boss: one segment per health bar (src/bosses.js)
+        : h('div', { class: 'hpbar', style: { width: Math.max(44, SPR_SIZE[foeArt(e)] * (S.mobile ? 1 : 2)) + 'px' } }, h('i', { style: { width: (100 * e.hp / e.maxHp) + '%' } })),
       h('span', { class: 'hpnum' }, `${e.hp}/${e.maxHp}`),
       pips));
   });
@@ -2145,18 +2149,15 @@ function applyBurn(e, p, label, long, dur = 1) {     // fire by default; poison 
 
 function damageEnemy(e, amount, opts = {}) {
   if (!e || e.hp <= 0) return 0;
-  const a = Math.max(1, Math.round(amount));
+  let a = Math.max(1, Math.round(amount));
+  if (e.bars > 1) { a = bossClamp(e, a, opts); if (a <= 0) { renderEnemies(); return 0; } }   // a boss's health bars and events (src/bosses.js)
   if (opts.by != null && opts.by >= 0) noteDamage(e, opts.by, Math.min(a, e.hp));   // what a reviewed hero took off this enemy (their XP)
   e.hp = Math.max(0, e.hp - a); e.hitT = performance.now();
   floatOn(e.el, `−${a}`, opts.burn ? 'burn' : opts.crit ? 'crit' : 'dmg');
   if (a > B.stats.best) B.stats.best = a;
-  if (e.phase2 && !e.phase2on && e.hp > 0 && e.hp / e.maxHp <= e.phase2.at) {
-    e.phase2on = true; e.pattern = e.phase2.pattern.slice(); e.step = 0;
-    if (e.charging) { e.spd0 = e.phase2.speed; e.cs0 = e.phase2.calmStep; } else { e.speed = e.phase2.speed; e.calmStep = e.phase2.calmStep; e.charge = 0.4; }
-    const calls = e.phase2.summon ? summonAdds(e) : 0;
-    spawnCard(e.el, { tier: 3, foe: true, name: e.name, move: `${e.name} pobesni!`, extra: 'druga faza: hitrejši napadi, zmajeva uganka' + (calls ? ` · prileti ${calls} ${calls === 1 ? 'zmajček' : 'zmajčka'}` : '') });
-    log(`${e.name} pobesni — druga faza!` + (calls ? ` Prileti ${calls === 1 ? 'zmajček' : 'še ' + calls + ' zmajčka'}.` : ''));
-  }
+  // the second phase never starts inside an event, nor on the blow that brings one: it waits for the event's end
+  // (src/bosses.js, bossEventDone)
+  if (e.phase2 && !e.phase2on && e.hp > 0 && e.hp / e.maxHp <= e.phase2.at && !inBossEvent(e) && !e.eventDue) enterPhase2(e);
   if (e.breath && e.hp > 0) breathCheck(e);
   if (e.hp <= 0) {
     sfx('dead', { delay: .28 });
@@ -2176,6 +2177,13 @@ function damageEnemy(e, amount, opts = {}) {
   }
   renderEnemies();
   return a;
+}
+function enterPhase2(e) {
+  e.phase2on = true; e.pattern = e.phase2.pattern.slice(); e.step = 0;
+  if (e.charging) { e.spd0 = e.phase2.speed; e.cs0 = e.phase2.calmStep; } else { e.speed = e.phase2.speed; e.calmStep = e.phase2.calmStep; e.charge = 0.4; }
+  const calls = e.phase2.summon ? summonAdds(e) : 0;
+  spawnCard(e.el, { tier: 3, foe: true, name: e.name, move: `${e.name} pobesni!`, extra: 'druga faza: hitrejši napadi' + (calls ? ` · prileti ${calls} ${calls === 1 ? 'zmajček' : 'zmajčka'}` : '') });
+  log(`${e.name} pobesni — druga faza!` + (calls ? ` Prileti ${calls === 1 ? 'zmajček' : 'še ' + calls + ' zmajčka'}.` : ''));
 }
 // ------------------------------------------------------------ at most three enemies on screen (24 Nov 2026)
 // Game Director: more enemies may come, but only three stand on screen at a time. The rest wait in B.queue
@@ -2472,7 +2480,7 @@ function battleTick(dt) {
   reviewedTick(dt); if (B.over) return;   // Kurent's dance, Pregon zime, weakened enemies (src/progression.js)
   if (S.mode === 'real') {
     const k = B.cw && B.cw.kind;
-    const f = k === 'lock' || k === 'ambush' ? 0 : k === 'finisher' ? 0.5 : 1;
+    const f = k === 'lock' || k === 'ambush' || k === 'boss' ? 0 : k === 'finisher' ? 0.5 : 1;   // in a boss's event only its own blows land (bossEventTick)
     let statusChanged = false;
     for (const e of B.enemies) {
       if (e.hp <= 0) continue;
@@ -2495,6 +2503,7 @@ function battleTick(dt) {
     if (realDragonTick(dt)) gridChanged = true; if (B.over) return;
     if (gridChanged) { renderParty(); renderSide(); if (!B.cw) renderPuzzle(); }
     if (statusChanged) renderEnemies();
+    bossEventTick(dt); if (B.over) return;
     if (B.cw && B.cw.timer !== Infinity) {
       B.cw.timer -= dt;
       if (UI.cwTimer) UI.cwTimer.style.width = clamp(100 * B.cw.timer / B.cw.timerMax, 0, 100) + '%';
@@ -2679,7 +2688,7 @@ function openFinisher() {
 }
 function openCrossword(kind, id, opts = {}) {
   // the zagovor on a letter wheel where the device or Nastavitve says so (src/wheel.js); the typed crossword otherwise
-  const D = (kind === 'finisher' && wheelOn() && makeWheel(id)) || makeCrossword(kind, id);
+  const D = opts.D || (kind === 'finisher' && wheelOn() && makeWheel(id)) || makeCrossword(kind, id);   // a boss's event brings its own wheel
   const cells = new Map();
   D.entries.forEach((e, k) => {
     for (let p = 0; p < e.answer.length; p++) {
@@ -2690,10 +2699,11 @@ function openCrossword(kind, id, opts = {}) {
     }
   });
   const real = S.mode === 'real';
-  const timerMax = kind === 'lock' ? (real ? 34 : Infinity) : kind === 'ambush' ? (real ? 30 : Infinity) : Infinity;
+  const timerMax = kind === 'lock' ? (real ? 34 : Infinity) : kind === 'ambush' ? (real ? 30 : Infinity) : kind === 'boss' ? (real ? BOSS_EVENT.sec : Infinity) : Infinity;
   B.cw = { kind, id, D, cells, fill: new Map(), solved: new Set(), locked: new Set(), cur: { e: 0, p: 0 },
     timer: timerMax, timerMax, enemy: opts.enemy || null, flash: new Set(), focused: false,
     reveals: LV().reveals, revealed: new Set() };
+  if (kind === 'boss') Object.assign(B.cw, opts.boss);   // the event's bar, share and blows (src/bosses.js)
   if (D.style === 'wheel') wheelSetup(B.cw);
   clearWord();
   renderPuzzle(); renderWord();
@@ -2886,7 +2896,7 @@ function cwCheck() {
   cwPaint();
 }
 const lvlMult = () => 1 + 0.05 * (S.level - 1);   // balance D: ×1,4 at level 9 (was ×1,8, which flattened the late game)
-function cwTarget() { return B.enemies[B.target] && B.enemies[B.target].hp > 0 ? B.enemies[B.target] : B.enemies.find(x => x.hp > 0); }
+function cwTarget() { if (B.cw && B.cw.kind === 'boss' && B.cw.enemy && B.cw.enemy.hp > 0) return B.cw.enemy; return B.enemies[B.target] && B.enemies[B.target].hp > 0 ? B.enemies[B.target] : B.enemies.find(x => x.hp > 0); }
 const crk = n => n === 1 ? 'črka' : n === 2 ? 'črki' : n <= 4 ? 'črke' : 'črk';
 function cwEntrySolved(e, hidden = 0, aided = false) {
   const C = B.cw, len = e.answer.length, word = UP(e.answer), lv = lvlMult(), pw = aided ? 0.5 : 1;
@@ -2915,6 +2925,8 @@ function cwEntrySolved(e, hidden = 0, aided = false) {
     const d = Math.round(2.5 * len * lv * pw);
     B.enemies.filter(x => x.hp > 0).forEach(x => damageEnemy(x, d));
     spawnCard(leadEl(), { tier: 2, c: 'var(--water)', name: 'Družina', move: 'Udarec iz zasede', word, value: `−${d} vsem` });
+  } else if (C.kind === 'boss') {   // a boss's event: the word takes its share of the half bar (src/bosses.js)
+    if (C.enemy && C.enemy.hp > 0) spawnCard(leadEl(), { tier: 2, c: 'var(--gold)', name: 'Družina', move: evName(C.enemy), word, value: `−${bossWordHit(C, e, aided)}` });
   } else if (C.enemy && C.enemy.hp > 0) {
     spawnCard(leadEl(), { tier: 2, c: 'var(--perun)', name: 'Družina', move: 'Protiudarec', word, value: `−${damageEnemy(C.enemy, 3 * len * lv * pw)}` });
   }
@@ -2925,6 +2937,7 @@ function cwComplete() {
   const letters = D.entries.reduce((s, e) => s + e.answer.length, 0);
   closeCrossword();
   B.stats.cw++;
+  if (C.kind === 'boss') { bossEventDone(C, true); renderSide(); return; }
   if (C.kind === 'finisher') {
     B.meter = 0;
     const fx = FINISHER_FX[C.id], hk = fxHero(fx), hero = HEROES[hk];
@@ -2969,6 +2982,7 @@ function cwComplete() {
 function cwFail() {
   const C = B.cw; if (!C) return;
   closeCrossword();
+  if (C.kind === 'boss') { bossEventDone(C, false); return; }
   if (C.kind === 'lock') {
     const e = C.enemy, d = hurtParty((e ? e.atk : 8) * 3, e, true);
     if (e) spawnCard(e.el, { tier: 3, foe: true, name: e.name, move: C.id === 'zmaj' ? 'Ognjeni posmeh' : 'Vrtinec te premetava', value: `−${d}`, portrait: e.name[0] });
@@ -2977,7 +2991,7 @@ function cwFail() {
     log('Opazili so te. Bitka se nadaljuje brez nadaljnje prednosti.'); fb('Opazili so te.', 'warn');
   }
 }
-function closeCrossword() { B.cw = null; UI.cwTimer = null; const bt = UI.puzzle && UI.puzzle.closest('.battle'); if (bt) bt.classList.remove('wheelon'); renderPuzzle(); renderSide(); renderWord(); fitSoon(); if (!B.over) showTut('mesh'); }
+function closeCrossword() { B.cw = null; UI.cwTimer = null; const bt = UI.puzzle && UI.puzzle.closest('.battle'); if (bt) bt.classList.remove('wheelon'); renderPuzzle(); renderSide(); renderWord(); fitSoon(); if (!B.over) showTut('mesh'); { const b = B; later(() => { if (B === b) bossEventMaybe(); }, 300); } }
 
 
 // ------------------------------------------------------------ battle end
@@ -3415,6 +3429,6 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 // test hook for automated checks (harmless in play)
-window.__ZG = { ACH, get ACHP() { return ACHP; }, ACH_WORDS, achReset, achCheck, achProgress, cardPainting, hasSkillCard, openSkillCard, achSkillFired, achSkillRank, noteHit, noteLongWord, makeWheel, wheelOn, setWheelPref, WHEEL_LV, wheelSubmit, wheelReveal, wheelShuffle, waitingPrayer, migratePrayers, get PARTY_MAX() { return PARTY_MAX; }, FOE_SLOTS, stepIn, statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, noteSupport, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), openShop, openBag, SHOP_MAX, BATTLE_GOLD, CHEST_GOLD, noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, godWaits, godArrives, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, PLAYSTYLE, ROLES, ownC, SLOT_C, skillPanel, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), CLUES, LEVELS };
+window.__ZG = { ACH, get ACHP() { return ACHP; }, ACH_WORDS, achReset, achCheck, achProgress, cardPainting, hasSkillCard, openSkillCard, achSkillFired, achSkillRank, noteHit, noteLongWord, battleTick: dt => battleTick(dt), bossEventMaybe, openBossEvent, bossEventHit, bossFloor, evMid, evEnd, BOSS_EVENT, BOSS_KEYS, makeWheel, wheelOn, setWheelPref, WHEEL_LV, wheelSubmit, wheelReveal, wheelShuffle, waitingPrayer, migratePrayers, get PARTY_MAX() { return PARTY_MAX; }, FOE_SLOTS, stepIn, statsOn, setStats, STATS, statBattle, statJourney, flushStats, get STATS_OK() { return STATS_OK; }, BGX, AB, bgVariant, bgStatTags, bgPlace, setBgForce: v => { bgForce = v || null; }, stopBattle, attackAnim, delayFoe, rollStrong, bossGroup, enemyGroup, scorchedUsed, calmDragonWord, realDragonTick, canWithdraw, freeRetry, restAfterRegion, canGrow, poolPts, PTS_PER_LV, addXp, heroPts, noteSupport, fitGroups, regionScale, groupSize, makeEnemy, breathe, startCharge, scorchTiles, summonAdds, lvlMult, plantStarters: () => plantStarters(), starterLens, regionForms, planChests, planWells, planStops, planEvents, trainHere, enterRegion: i => enterRegion(i), openShop, openBag, SHOP_MAX, BATTLE_GOLD, CHEST_GOLD, noteFound, FOUND, SEEN, meaningOf, MEANINGS, isAsked, REGION_WORDS, useHint: () => useHint(), shortestForms, shuffleGrid: b => shuffleGrid(b), readSaveRaw: () => localStorage.getItem('zg-save'), get SAVED() { return SAVED; }, writeSave, clearSave, loadSave, isCheckpoint, saveLine, askExit, checkpointIds, menuItems, renderWordForTest: () => renderSelection(), joinHero, spendPoint, partyPoints, godFoe, challengeBattle, leaveEnding, godWaits, godArrives, planShrines, GOD, DIFFS, setDiff: d => { S.know = Object.keys(LEVELS).find(k => LEVELS[k].diff === d) || S.know; }, planHeroes, pickHero, firedTier, upTags, gainXp, levelFor, LV_XP, MAX_LV, SKILL_UPS, REVIEWED, RK, XP_RULE, foeXp, foeLevel, heroMaxHp, rankText, heroState, reviewedHits: (h, e) => revHits(h, e), hurtParty: (n, e, all) => hurtParty(n, e, all), damageEnemy: (e, n, o) => damageEnemy(e, n, o), HERO_HOME, setLayout, setSound, get SOUND_ON() { return SOUND_ON; }, get VOLUME() { return VOLUME; }, BUILD, applySetup, get car() { return UI.car; }, LEX, REPORT_FORM, REJECTED, REPORTS, reportWord, flushReports, noteRejected, G, setPause, showTut, closeTut, resetTuts, TUT_SEEN, fitScreen, get ZOOM() { return ZOOM; }, LATER, UNLOCKED, unlock, healParty, autoPotion, autoItems, HEAL_CAP, S, HEROES, ROSTER, CHARS, PLAYSTYLE, ROLES, ownC, SLOT_C, skillPanel, ENEMIES, WORLD, ITEMS, setParty, resetRun, newRun, giveItem, travelAct, get B() { return B; }, WORDS, LEMMA, findPath: s => findPath(s), allWords: () => allWords(), go, NODES, makeCrossword: (k, id) => makeCrossword(k, id), openCrossword: (k, id, o) => openCrossword(k, id, o), closeCrossword: () => closeCrossword(), CLUES, LEVELS };
 go('title');
 

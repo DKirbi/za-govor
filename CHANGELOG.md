@@ -36,6 +36,29 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
+## 0.23.0 — 28 Nov 2026 · zaprta alfa · bosses and mini-bosses in health bars, with timed letter-wheel events
+
+Branch `feat/boss-bars-events`, stacked on PR #46 (`review/folk-backgrounds`, 0.22.0). Game Director, 24 Nov and
+28 Nov 2026: "implement bosses and minibosses (gods including) multiple healthbars and minigames"
+(`docs/progression-design.md` §12, `docs/combat-system.md` §3a).
+
+- **Health bars:** the gods as challengers and Povodni mož have two, the Lintvern three. The bar under a boss shows one
+  segment per bar and a gold mark where each event starts; it drains as one bar, from the right (Game Director, 28 Nov).
+- **Events (*Preizkušnja*):** the letter mesh takes a boss to the middle of a bar; there a one-minute event opens on the
+  letter wheel (Kolo črk) — *Vrtinec* (POVODNI, MOŽ), *Ognjeni vihar* (ZMAJ, OGENJ, GRAD), a god's third skill (Perun's
+  *Nevihta*: STRELA, NEVIHTA …). Its words take the rest of the bar, the last event lands the last blow. Over the wheel:
+  the boss's bars, the time, the next blow and the party's health; no ✕, the ? opens the rules.
+- While an event lasts the boss **strikes every hero every 15 s** (0.3 × attack; a god with their special), only the
+  event's words hurt it and the other enemies wait. **Mirni način:** no clock, a blow every third word sent.
+- If the minute runs out, the rest of the bar is fought on the mesh; an event never opens over the zagovor, it waits.
+- PROPOSED with the build: the events replace Povodni mož's lock crossword and the Lintvern's *Zmajeva uganka*;
+  Povodni mož's third move is now *Poplava*; the Lintvern enrages after his second event, never inside it.
+- *Nasprotniki* shows a boss's event among its attacks and how many health bars it has; texts of the Ljubljanica and
+  Ljubljanski grad battles and the gallery updated.
+- Tests: `tests/bosses.test.js` (new, 15 checks); the desktop walk-through types the Lintvern's second event on the
+  wheel; balance and achievement tests mark the Lintvern's events as played where they test other things. The
+  simulator's bot plays events on the wheel and can override `BOSS_EVENT` (balance table in §12).
+
 ## 0.22.0 — 27 Nov 2026 · zaprta alfa · ten folk parallax backgrounds for review, measured on phones; the phone's tip behind a ? button; a clearer hero picker; phone review fixes; gold from chests, remedies
 
 Branch `review/folk-backgrounds`: PRs #40, #41, #43, #44 and #45 (Codex's four later parallax studies and their runtime
