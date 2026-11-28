@@ -11,6 +11,7 @@ workarounds. Codex's style, palettes and compositions stay as they are. This is 
 **See also** [`FOLK_PARALLAX_SCENES_SPEC.md`](FOLK_PARALLAX_SCENES_SPEC.md) (27 Nov 2026, evening): Ljubljanica,
 Ljubljanski grad and Predjamski grad are recomposed there. Where the two overlap (Ljubljanica's bridge, river and
 glints in §4), the scenes spec decides.
+Everything Codex still has to paint is listed in [`CODEX_ART_BACKLOG.md`](CODEX_ART_BACKLOG.md).
 
 ## How the game uses the layers (what the corrections must fit)
 

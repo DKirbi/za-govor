@@ -1,6 +1,6 @@
 # Folk parallax backgrounds: three scenes to recompose for Codex
 
-**Status:** READY FOR CODEX once the Game Director answers the three open questions at the end. Requested by the Game
+**Status:** READY FOR CODEX. The Game Director answered the open questions on 28 Nov 2026 (see the end). Requested by the Game
 Director on 27 Nov 2026 (20:12–20:31) while playing PR #46 on a phone.
 **Art:** Codex. **Runtime, exports and checks:** Claude. Written by Claude (Lead Developer).
 
@@ -41,8 +41,8 @@ shown 1.86 × too wide.
 per 1077 px); a stone quay from `riverfront-clean-plate.png` runs under the houses; the bridge, at its painted
 proportions, stands alone on the quay every 3 view widths, with the river in front of its piers.
 
-**The scene to paint.** The party walks along **one embankment of the Ljubljanica** (PROPOSED: the left bank,
-Cankarjevo nabrežje towards Prešernov trg). Across the river is the old town's riverfront under Grajski grič. At the
+**The scene to paint.** The party walks along **one embankment of the Ljubljanica**: the **left bank** (CONFIRMED, Game
+Director 28 Nov 2026), Cankarjevo nabrežje towards Prešernov trg. Across the river is the old town's riverfront under Grajski grič. At the
 end of the region the **Tromostovje** spans the river, and Povodni mož rises from the water there.
 
 | # | New master (`ljubljanica-parallax/layers/`) | What | Speed | Tiles |
@@ -52,7 +52,7 @@ end of the region the **Tromostovje** spans the river, and Povodni mož rises fr
 | 3 | `riverfront-houses-a.png`, `riverfront-houses-b.png` | **the far bank:** two different rows of 3–4-storey houses with pastel façades, roofs with dormers and chimneys, and a tree or two in front. The two strips should be different streets, so the bank changes along the walk. Both strips start and end with a whole house wall. **No castle and no hill in them.** | 0.22 | wall to wall, no mirror |
 | 4 | `far-quay.png` | the far bank's stone quay (as in the clean plate) with Plečnik's steps down to the water, an iron ring or two, ivy, weeping willows at the edge | 0.22 (the houses stand on it) | seamless |
 | 5 | keep `river-surface.png`, `water-reflections.png` (repaint at the in-game shape, corrections spec §4) | the river | 0.5 | seamless |
-| 6 | `tromostovje.png` | **the Tromostovje, side-on as in the approved reference:** the central stone bridge (1842) with Plečnik's two footbridges (1929–32), white balustrades with ball-topped posts, lamps, and the stairs down to the lower terrace. Three balustrades one behind the other show that there are three bridges. **Both ends land on the quays**: the bridge begins at one bank and ends at the other, nothing beyond it. | 0.22 (it stands on the quays) | once, at the last stop |
+| 6 | `tromostovje.png` | **the Tromostovje, seen side-on in the background only (CONFIRMED 28 Nov: the party does not cross it), as in the approved reference:** the central stone bridge (1842) with Plečnik's two footbridges (1929–32), white balustrades with ball-topped posts, lamps, and the stairs down to the lower terrace. Three balustrades one behind the other show that there are three bridges. **Both ends land on the quays**: the bridge begins at one bank and ends at the other, nothing beyond it. | 0.22 (it stands on the quays) | once, at the last stop |
 | 7 | `near-quay-lane.png` | **our bank, the lane:** the embankment promenade (stone paving) with a low balustrade along its far (top) edge, between the party and the river. Keep the balustrade within the lane picture's top 30 view px: the lane rises to 40 px above the heroes' feet in battle, so it stays behind their legs. | 1.0 | seamless |
 | 8 | keep a few near tufts if you like | front edge | 1.2 | seamless |
 
@@ -65,32 +65,33 @@ end of the region the **Tromostovje** spans the river, and Povodni mož rises fr
 - **The battle with Povodni mož** is a still scene at the last stop: the Tromostovje in the middle of the view, the
   river in front of it, the party on our quay.
 
-## 2. Ljubljanski grad: at the castle, not a view of it
+## 2. Ljubljanski grad: inside the walls, in the courtyard
 
 **The Game Director:** the region "should actually have a castle graphic, it still has a view of the castle graphic".
-The journey ends on Grajski grič, where Lintvern nests. The current pack shows the castle far away on its hill above the
-city, which is the view from the river (§1), not being there.
+On 28 Nov 2026 he decided that the region is **inside the walls, in the courtyard** (CONFIRMED), and that he will have
+Codex generate the new images. The journey ends on Grajski grič, where Lintvern nests. The current pack shows the castle
+far away on its hill above the city: that is the view from the river (§1), not being there.
 
 **Stand-in in the game now:** the current pack, unchanged. No stand-in is possible without new art.
 
-**The scene to paint.** The party climbs the last stretch of Grajski grič and walks **along the castle's walls**, close
-up, to the courtyard where Lintvern waits. Turn the view around: the castle is near and large, and **Ljubljana lies
-below in the distance**.
+**The scene to paint.** The party has come through the gate and crosses **the castle's courtyard**. The castle's
+inner walls, wings and towers stand around it, close and tall. The sky shows above the roofs; Ljubljana is not in view.
+The last stop, where Lintvern waits, is under the Outlook Tower. In Ljubljana's coat of arms, the dragon stands on the
+castle's tower.
 
 | # | New master (`ljubljanski-grad-parallax/layers/`) | What | Speed | Tiles |
 |---|---|---|---|---|
 | 1 | keep `sky.png`, `clouds.png` (the sunset) | sky | 0.02 | as now |
-| 2 | `view-from-the-hill.png` | Ljubljana's roofs, church towers and the river far below, the Ljubljana basin and the Kamnik–Savinja Alps on the horizon, low in the picture | 0.06 | seamless |
-| 3 | `castle-walls.png` | **the castle's outer walls, close:** stone ramparts with battlements and embrasures, buttresses and a covered walkway. The wall's top lies at 10–25 % of the scene height, and its foot is hidden behind the lane. The view (layer 2) shows only above and between stretches of the wall. | 0.4 | seamless, wall to wall |
-| 4 | `castle-landmarks.png` (or one file each) | on the walls, each once in a while: **the Outlook Tower** (1848, on the site of the old Pipers' tower) with its flag, **the Pentagonal Tower** (the old main entrance, once reached by a drawbridge), **St George's chapel** (Gothic, consecrated 1489) | 0.4 (they are the walls) | clear of both sides; every 2–3 view widths |
-| 5 | `castle-gate-courtyard.png` | the entrance to the courtyard for the last stop and the battle with Lintvern: the curved gate passage, the courtyard's walls | 0.4 | once, at the last stop |
-| 6 | keep `foreground-grass-lane.png`, or `castle-path-lane.png` | the lane: a cobbled path along the walls, grass at its edges | 1.0 | seamless |
-| 7 | keep the edge trees and flowers if they fit, or beeches of the castle hill | near edges | 1.0–1.2 | seamless or padded |
+| 2 | `castle-roofs-far.png` | the far side of the courtyard: roofs, chimneys and tower tops of the castle's farther wings against the sky, low in the picture | 0.15 | seamless |
+| 3 | `courtyard-wings.png` | **the courtyard's walls and wings, close:** stone and plastered walls with windows, doors, arcades, the wall-walk with battlements on the outer side. Their tops lie at 10–25 % of the scene height, so the party walks among buildings. | 0.4 | seamless, wall to wall (no mirror) |
+| 4 | `courtyard-landmarks.png` (or one file each) | in the wings, each once in a while: **St George's chapel** (Gothic, consecrated 1489) with its door onto the courtyard; **the Pentagonal Tower** (the old main entrance, once over a drawbridge) | 0.4 (they are the wings) | clear of both sides; every 2–3 view widths |
+| 5 | `outlook-tower.png` | **the Outlook Tower** (1848) with its flag, for the last stop and the battle with Lintvern. Leave room on and above its top for the dragon. | 0.4 | once, at the last stop |
+| 6 | `courtyard-paving-lane.png` | the lane: the courtyard's paving (stone setts), a drain or two, grass between the stones at the edges | 1.0 | seamless |
+| 7 | optional `courtyard-front.png` | near edges: a stone bench, a cart wheel, a cannon on its carriage, a lamp, low and only at the bottom corners | 1.0–1.2 | padded |
 
-- Keep the warm sunset of the current pack. The castle's stone in sunset light should read clearly against the sky.
-- The walls are the landmark here: tall enough that the party walks *under* them, as in a castle.
-- Lintvern's battle at the gate (layer 5) leaves the middle of the view open for the dragon (enemies stand at 62–70 %
-  of the height and the boss is larger).
+- Keep the warm sunset of the current pack: the stone in evening light should read clearly against the sky.
+- The wings are close and tall, but the middle of the view stays open for the battle. Heroes stand at 75–87 % of the
+  height and enemies at 62–70 %, and Lintvern is larger.
 
 ## 3. Predjamski grad: the cliff is part of a mountain
 
@@ -130,22 +131,21 @@ raised a little (0.12) and Triglav's foothills in an evening haze as far mountai
 1. Ljubljanica: one castle per screen at most, moving slower than the houses; the bridge's ends on both quays; with
    Claude's "once" landmark, the Tromostovje shows only at the last stop. `tests/parallax.test.js` checks one castle
    per stretch and a bridge standing alone.
-2. Ljubljanski grad: the walls tile wall to wall without a mirror; the party's heads stay below the walls' top; the
-   gate frames Lintvern at the last stop.
+2. Ljubljanski grad: the wings tile wall to wall without a mirror; the party's heads stay below the wings' tops; the
+   Outlook Tower frames Lintvern at the last stop.
 3. Predjamski grad: exported without the stand-in, the mountain's summit is behind the cliff at every scroll position,
    and there is mountain or cliff in every column (the `predjama` check in `tests/parallax.test.js`).
 4. Everywhere: shown at 1.00 × (± 2 %), `npm test` passes, and the Game Director reviews the region on a phone
    (`?ozadje=B`, or *Kakovost slik → Visoka*).
 
-## Open questions for the Game Director (answer before Codex starts)
+## The Game Director's answers (28 Nov 2026, CONFIRMED)
 
 1. **Ljubljanica's bank:** the left bank (Cankarjevo nabrežje, looking across at the old town and the castle, as in
-   the approved reference; RECOMMENDED), or the right bank (looking across at Prešernov trg, with the castle behind
-   the party and out of sight)?
-2. **The Tromostovje:** side-on with its ends on both quays, as in the approved reference (RECOMMENDED), or the party
-   crossing it (the lane becomes the bridge at the last stop)?
-3. **Ljubljanski grad:** a walk along the outer walls to the courtyard gate (RECOMMENDED), or the whole region inside
-   the courtyard?
+   the approved reference).
+2. **The Tromostovje:** seen from the background only, side-on, with its ends on both quays. The party does not cross
+   it.
+3. **Ljubljanski grad:** inside the walls, in the courtyard (§2). The Game Director will have Codex generate the new
+   images.
 
 Sources for the landmarks: [Triple Bridge (Wikipedia)](https://en.wikipedia.org/wiki/Triple_Bridge);
 [Ljubljana Castle (Visit Ljubljana)](https://www.visitljubljana.com/en/ljubljana-castle/).

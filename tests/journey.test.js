@@ -277,8 +277,8 @@ run(async () => {
   await page.keyboard.press('Enter'); await sleep(400);
   const prayed = await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run; return { prayer: (Z.waitingPrayer() || {}).god, gifts: R.gifts.slice(), say: (document.querySelector('.shrine .say.god') || {}).textContent || '',
     party: Z.HEROES.map(h => h.id), unlocked: Z.UNLOCKED.has('perun') }; });
-  check(prayed.prayer === 'perun' && prayed.gifts.includes('perun') && /Tvoja molitev je uslišana/.test(prayed.say) && !prayed.party.includes('perun') && !prayed.unlocked,
-    'Perun answers the prayer and lends his gift; he neither joins nor is unlocked yet', JSON.stringify(prayed));
+  check(prayed.prayer === 'perun' && prayed.gifts.includes('perun') && /Tvoj poklon je sprejet/.test(prayed.say) && !prayed.party.includes('perun') && !prayed.unlocked,
+    'Perun answers the poklon (28 Nov 2026: no molitev) and lends his gift; he neither joins nor is unlocked yet', JSON.stringify(prayed));
   await shot('journey-07b-prayer');
   await page.keyboard.press('Enter'); await sleep(300);
   // the gift: a word that fires a third skill (three letters of one colour) also sends Perun's lightning to every enemy
@@ -319,6 +319,8 @@ run(async () => {
   await page.keyboard.press('Enter'); await sleep(900);
   const fight = await page.evaluate(() => { const Z = window.__ZG, B = Z.B; return { screen: Z.S.screen, foes: B.enemies.map(e => e.name), hp: B.enemies[0].maxHp, pattern: B.enemies[0].pattern.join(), }; });
   check(fight.screen === 'battle' && fight.foes.join() === 'Gromovnik Perun' && fight.pattern === 'special' && fight.hp > 250, 'Perun fights alone, tougher than any boss on the road, with only his special', JSON.stringify(fight));
+  const strib = await page.evaluate(() => { const Z = window.__ZG, k = Z.godFoe('stribog'), e = Z.ENEMIES[k]; return { pattern: e.pattern.join(), gust: e.moves.gust, special: e.moves.special }; });
+  check(strib.pattern === 'gust,gust,special' && strib.gust === 'Sapica' && strib.special === 'Vihar', 'Stribog blows two gusts (Sapica, letters stay) between his storms (Vihar mixes the letters; 28 Nov 2026)', JSON.stringify(strib));
   // his special is a chain: every hero is hit, the first hardest
   const chain = await page.evaluate(() => { const Z = window.__ZG, B = Z.B; Z.S.heroes.forEach(h => { h.down = false; h.hp = h.maxHp = 200; }); B.shield = 0; B.evade = 0;
     enemyAct(B.enemies[0]); return Z.S.heroes.map(h => 200 - h.hp); });

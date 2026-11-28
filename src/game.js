@@ -2289,8 +2289,8 @@ function enemyAct(e) {
     renderEnemies(); return;
   }
   const mv = e.moves[act] || e.moves.attack;
-  e.atkT = performance.now(); e.atkTier = act === 'attack' ? 1 : 3;
-  if (act !== 'attack' && UI.scene) { replay(UI.scene, 'flash'); setTimeout(() => UI.scene && UI.scene.classList.remove('flash'), 420); }
+  e.atkT = performance.now(); e.atkTier = act === 'attack' || act === 'gust' ? 1 : 3;
+  if (act !== 'attack' && act !== 'gust' && UI.scene) { replay(UI.scene, 'flash'); setTimeout(() => UI.scene && UI.scene.classList.remove('flash'), 420); }
   setTimeout(() => { if (e.el) e.el.classList.remove('atk', 'atk3'); }, 660);
   if (act === 'scratch') {   // Lintvern's Kremplji: one hero
     const d = hurtParty(e.atk, e);
@@ -2307,6 +2307,10 @@ function enemyAct(e) {
     const d = hurtParty(e.atk, e);
     spawnCard(e.el, { tier: 1, foe: true, name: e.name, move: mv, value: d ? `−${d}` : 'ščit ujame' });
     log(d ? `${e.name}: ${mv} (−${d}).` : `${e.name}: ${mv} — ščit ujame udarec.`);
+  } else if (act === 'gust') {   // Stribog's Sapica: wind on everyone, lighter, and the letters stay put (28 Nov 2026)
+    const d = hurtEach(living().map(() => Math.round(e.atk * 0.6)), e);
+    spawnCard(e.el, { tier: 1, foe: true, name: e.name, move: mv, value: d ? `−${d} vsem` : 'ščit ujame' });
+    log(d ? `${e.name}: ${mv} (−${d} vsem).` : `${e.name}: ${mv} — ščit ujame veter.`);
   } else if (act === 'heavy') {
     const d = hurtParty(e.atk * 2.4, e, true);
     spawnCard(e.el, { tier: 3, foe: true, name: e.name, move: mv, value: `−${d}`, portrait: e.name[0] });

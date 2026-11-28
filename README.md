@@ -277,13 +277,13 @@ texts and above the heads of heroes and enemies for as long as the effect lasts.
   closes one slot and the other spikes spring at the heroes one by one (each hit shows on its
   hero); even a word from every slot lets one spike graze. Spikes never knock a hero out.
 - **Well:** every hero still standing is healed; the fallen stay down.
-- **Pedlar:** four potions or poisons and two relics for gold.
+- **Pedlar:** four things at most, each sold once: a remedy, potions or poisons and a relic.
 - **Shrine of challenge (*Svetišče*):** every shrine belongs to one god and has its own look
   (Perun's carved post under an oak, Svarog's forge altar, Mokoš's spring with a spindle,
   Dažbog's sun disk, Stribog's windswept cairn, Veles's horned stone in the roots). The gods
-  are not shown, only their signs: lightning, anvil, spindle, sun, wind, horns. **Pray at
-  a shrine** (two a journey, so two gifts can stack) and the god answers (*»Zagrmelo je. Tvoja
-  molitev je uslišana. Preden zapustiš to pokrajino, bom videl, ali si vreden te
+  are not shown, only their signs: lightning, anvil, spindle, sun, wind, horns. **Bow at
+  a shrine** (*Pokloni se*; two a journey, so two gifts can stack) and the god answers (*»Zagrmelo je.
+  Tvoj poklon je sprejet. Preden zapustiš to pokrajino, bom videl, ali si vreden te
   preizkušnje.«*) and lends a **gift**: every word that fires a third skill (three letters of one colour) also brings the
   god's power — Perun's lightning chains to every enemy, Svarog gives a big shield, Mokoš
   heals, Dažbog doubles the next word, Stribog's wind hits everyone and clears the mesh, Veles

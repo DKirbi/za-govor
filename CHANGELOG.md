@@ -125,6 +125,20 @@ favour of it.
   `tests/parallax.test.js` measures floating slices and the passing trees; the "front layers never cover a foot" rules
   leave passing trees out.
 
+**The Game Director's answers (28 Nov 2026)**
+- **Poklon, not molitev:** the gods answer a bow (*»Zagrmelo je. Tvoj poklon je sprejet. …«*); no player-facing
+  *molitev* is left on the shrines (*pokloni pred bogovi*).
+- **Stribog** shuffled the letter mesh with every blow (gods strike only with their special). He now blows two gusts,
+  *Sapica* (0.6× on everyone, the letters stay), between his storms (*Vihar*, 0.75× on everyone and the mesh
+  shuffled). The other gods are unchanged.
+- **Kolo črk confirmed:** the wheel on phones and the typed crossword on computers, the extra word's weak hit and the
+  per-Znanje values.
+- **Codex:** the scenes spec has its answers (Ljubljanica along the left bank; the Tromostovje seen from the background
+  only; Ljubljanski grad inside the walls, in the courtyard, rewritten as its own scene). New
+  `docs/art-workflow/CODEX_ART_BACKLOG.md` lists everything the game still lacks, in order: the three scenes, the
+  corrections to seven packs, 24 skill cards (Zeleni Jurij, Peter Klepec, the six gods), five enemy sprites that borrow
+  another's (Vešča, Perkmandeljc, Pesjan, Zmajček, Zmajev mladič as the olm), 15 story cards and 60 achievement icons.
+
 **The ending is a victory (Game Director, 27 Nov 2026, evening)**
 - *Ljubljana je rešena!* in gold, with confetti in the folk colours. The party stands close up (about 100 px a hero on a
   phone, up to 192 on a computer) and **cheers**: each hero hops in turn over a glow of their colour; a fallen hero gets
