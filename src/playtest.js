@@ -270,7 +270,7 @@ window.addEventListener('keydown', e => {
 
 // ------------------------------------------------------------ fullscreen + fit to screen
 function toast(text) {
-  const old = $('.toast'); if (old) old.remove();
+  const old = $('.toast'); if (old) old.remove();   // (the achievements' column on the right is its own: .ach-toast)
   const t = h('div', { class: 'toast', role: 'status' }, text);
   document.body.append(t); setTimeout(() => t.remove(), 6500);
 }

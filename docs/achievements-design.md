@@ -12,6 +12,15 @@
 - Count only accepted words and completed encounters in a real journey. Exclude practice battles and developer test mode so a player cannot farm a repeatable encounter.
 - A word achievement counts each accepted battle word once when it is sent. Track unique words by base form, and count Slovene letters so Č, Š and Ž each count as one letter.
 - Unlock achievements immediately, then show a small toast and an entry in *Dosežki in junaki*. Keep a compact progress bar for long goals. Avoid interrupting a puzzle with a full-screen award dialog.
+- **Where the toasts stand (Game Director, 28 Nov 2026; built v0.24.0):** a column at the **middle of the right side**;
+  each new toast slides down into place below the last, at most three at a time. They let taps through, so a word is
+  never stopped. Each shows its medal (or the card), *Dosežek* / *Nova karta*, the title and the tier or the hero.
+- **Cards over the whole screen (Game Director, 28 Nov 2026; built v0.24.0):** a skill card won for the first time
+  **flashes in** (a burst of light, the card spins in, a shine runs over it) once the battle is over — over *Zmaga!* or
+  *Poraz*, never during a puzzle; several come one after another. A tap turns the card over to read more (the skill at
+  each stopnja, when it was won); **✕ Zapri on top** closes it. In the menu every skill card and **every achievement**
+  opens the same way, without the effects (an achievement's front is its medal; its back what it asks and how far you are).
+- **Native achievements on Steam, Google Play and Apple:** research in [achievements-platforms.md](achievements-platforms.md).
 - Completing a run earns the run and challenge awards even if a later profile migration changes the hero roster. A special character card is permanently collected on that profile and can be earned on a later run if missed.
 - The special-card condition follows the existing character briefs: the named character must be alive in the active party when the player defeats Lintvern. Joining or starting with that character alone is not enough.
 

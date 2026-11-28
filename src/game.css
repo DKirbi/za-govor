@@ -857,8 +857,27 @@ body.mobile .btn.small.pausebtn { min-height: 40px; padding: 6px 12px; font-size
 .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 95; width: max-content; max-width: min(560px, 92vw);
   background: var(--panel2); border: 1px solid var(--gold); border-radius: 10px; padding: 10px 14px; font-size: 13.5px; line-height: 1.4;
   box-shadow: 0 10px 28px rgba(0, 0, 0, .5); }
-/* an achievement or a new card: at the top, so it never covers the word, the letters or the buttons during a puzzle */
-.toast.ach-toast { bottom: auto; top: calc(env(safe-area-inset-top, 0px) + 10px); }
+/* achievements and new cards: a column at the middle of the right side, each new one below the last, sliding down
+   into place (Game Director, 28 Nov 2026). Taps go through, so a word is never stopped (src/achievements.js, achPump) */
+.ach-stack { position: fixed; right: calc(env(safe-area-inset-right, 0px) + 8px); top: 42%; z-index: 96; width: min(280px, 56vw);
+  display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.ach-stack .ach-toast { --t: #a8743a; border-radius: 10px; box-shadow: 0 10px 28px rgba(0, 0, 0, .5);
+  display: grid; grid-template-columns: 34px 1fr; gap: 9px; align-items: center; padding: 8px 11px; font-size: 13px; line-height: 1.3;
+  border: 1px solid color-mix(in srgb, var(--t) 70%, var(--line)); border-left: 4px solid var(--t);
+  background: color-mix(in srgb, var(--panel2) 92%, var(--t)); animation: atIn .34s cubic-bezier(.2,.8,.2,1) both; }
+.ach-stack .ach-toast.t-srebrna { --t: #b9c2cc; } .ach-stack .ach-toast.t-zlata { --t: #e2b84a; }
+.ach-stack .ach-toast.is-card { --t: var(--gold); }
+.ach-stack .ach-toast.out { animation: atOut .3s ease-in both; }
+.ach-toast .at-icon { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 17px; color: #1b130c;
+  background: radial-gradient(circle at 35% 30%, #fff8, transparent 55%), var(--t); overflow: hidden; }
+.ach-toast .at-icon img { width: 100%; height: 100%; object-fit: cover; }
+.ach-toast.is-card .at-icon { border-radius: 5px; width: 34px; height: 26px; justify-self: center; }   /* a card's toast shows the card */
+.ach-toast .at-body { display: grid; gap: 1px; min-width: 0; }
+.ach-toast .at-body small { font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--t); }
+.ach-toast .at-body b { font-size: 13.5px; overflow-wrap: anywhere; }
+.ach-toast .at-body span { font-size: 11.5px; color: var(--dim); }
+@keyframes atIn { from { opacity: 0; transform: translateY(-22px); } to { opacity: 1; transform: none; } }
+@keyframes atOut { to { opacity: 0; transform: translateX(24px); } }
 
 /* Puzzle intro: what the puzzle wants, with a picture of a solved one */
 .tutdlg { width: min(720px, 96vw); max-height: 94vh; max-height: 94dvh; overflow: auto; padding: 18px 22px 20px; }
@@ -1605,3 +1624,65 @@ body .ending .endhero .hero.spr { --px: min(4px, calc(92cqw / var(--art, 48))); 
 .bossstrip .bsh i { display: block; height: 5px; border-radius: 3px; background: #2a2c36; overflow: hidden; }
 .bossstrip .bsh u { display: block; height: 100%; background: var(--c); }
 .bossstrip .bsh.down { opacity: .4; }
+
+/* ---------------------------------------------------------------- one card over the whole screen (Game Director, 28 Nov 2026)
+   src/achievements.js cardViewer: the front, a tap turns it over, ✕ Zapri on top closes it; .reveal: won for the first time */
+.cardview.cv2 { cursor: default; grid-template-rows: auto 1fr auto; place-items: center; gap: 10px;
+  padding: calc(env(safe-area-inset-top, 0px) + 10px) 12px calc(env(safe-area-inset-bottom, 0px) + 12px); background: rgba(8,8,12,.93); }
+.cv2 .cv-top { width: min(96vw, 900px); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.cv2 .cv-kicker { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); }
+.cv2 .cv-close { min-height: 44px; padding: 0 16px; }
+.cv2 .cv-hint { position: static; font-size: 11.5px; color: var(--dim); }
+.cv2 .cv-stage { position: relative; width: 100%; height: 100%; display: grid; place-items: center; }
+.cv2 .cv-card { width: min(94vw, 860px, calc((100vh - 170px) * 1.5)); width: min(94vw, 860px, calc((100dvh - 170px) * 1.5)); aspect-ratio: 3 / 2;
+  padding: 0; border: 0; background: none; cursor: pointer; perspective: 1500px; font: inherit; color: inherit; container-type: inline-size; }
+.cv2 .cv-inner { position: relative; display: block; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .55s cubic-bezier(.2,.7,.2,1); }
+.cv2.turned .cv-inner { transform: rotateY(180deg); }
+.cv2 .cv-face { position: absolute; inset: 0; display: block; overflow: hidden; border-radius: 10px; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  box-shadow: 0 18px 50px rgba(0,0,0,.7); }
+.cv2 .cv-back { transform: rotateY(180deg); }
+.cv2 .cv-front img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.cv2 .cv-plate { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 14px 9px; text-align: left; font-size: 13.5px; color: #e8e2d4;
+  background: linear-gradient(transparent, rgba(0,0,0,.82)); }
+.cv2 .cv-plate b { color: var(--gold); font-size: 16px; }
+.cv2 .cv-sheet { display: flex; flex-direction: column; gap: clamp(8px, 1.6cqw, 14px); height: 100%; overflow: auto; padding: clamp(14px, 3cqw, 30px) clamp(16px, 3.4cqw, 34px); text-align: left;
+  border: 2px solid var(--c, var(--gold)); border-radius: 10px; background: radial-gradient(120% 90% at 0 0, color-mix(in srgb, var(--c, var(--gold)) 16%, transparent), transparent 60%), var(--panel2); }
+.cv2 .cv-sheet > small { font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--dim); }
+.cv2 .cv-name { font-size: clamp(19px, 3.8cqw, 34px); color: var(--gold); }
+.cv2 .cv-ranks { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; font-size: clamp(13.5px, 2.3cqw, 20px); line-height: 1.4; }
+.cv2 .cv-ranks b { color: var(--c, var(--gold)); }
+.cv2 .cv-text { font-size: clamp(14px, 2.4cqw, 21px); line-height: 1.45; }
+.cv2 .cv-sheet .cv-when { margin-top: auto; text-transform: none; letter-spacing: 0; }
+/* an achievement as a card: its medal on a field of its tier */
+.cv2.ach-cv { --t: #a8743a; } .cv2.ach-cv.t-srebrna { --t: #b9c2cc; } .cv2.ach-cv.t-zlata { --t: #e2b84a; }
+.cv2.ach-cv .cv-sheet { --c: var(--t); }
+.cv2 .cv-medal { display: grid; place-items: center; align-content: center; gap: 10px; height: 100%; padding: 16px; text-align: center; border: 3px solid var(--t); border-radius: 10px;
+  background: radial-gradient(70% 70% at 50% 38%, color-mix(in srgb, var(--t) 30%, transparent), transparent 70%), var(--panel2); }
+.cv2 .cv-medal b { font-size: clamp(18px, 4.6vw, 28px); }
+.cv2 .cv-medal small { color: var(--t); letter-spacing: .06em; text-transform: uppercase; font-size: 12px; }
+.cv2 .cv-icon { width: clamp(72px, 22vw, 120px); aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; overflow: hidden; font-size: clamp(30px, 9vw, 52px); font-weight: 800;
+  color: #1b130c; background: radial-gradient(circle at 35% 30%, #fff9, transparent 55%), var(--t); box-shadow: 0 0 0 4px color-mix(in srgb, var(--t) 35%, transparent); }
+.cv2 .cv-icon img { width: 100%; height: 100%; object-fit: cover; }
+.cv2.ach-cv.locked .cv-medal { filter: grayscale(.85); opacity: .8; }
+.cv2 .ach-bar { display: block; }
+.achlist .ach { cursor: pointer; }
+.achlist .ach:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+/* the reveal: a burst of light, the card spins in, a shine runs over it */
+.cv2.reveal .cv-card { animation: cvIn .95s cubic-bezier(.2,.8,.25,1.12) both; }
+.cv2.reveal .cv-flash { position: absolute; left: 50%; top: 50%; width: 140vmax; height: 140vmax; margin: -70vmax 0 0 -70vmax; pointer-events: none; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,246,214,.95) 0, rgba(255,214,110,.55) 12%, rgba(255,190,60,.18) 30%, transparent 55%); animation: cvFlash 1.3s ease-out both; }
+.cv2.reveal .cv-front::after { content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.55) 50%, transparent 65%); transform: translateX(-130%); animation: cvShine 1.1s .75s ease-out both; }
+.cv2.reveal .cv-face { animation: cvGlow 2.4s .6s ease-in-out 2 both; }
+.cv2.reveal .cv-kicker { animation: cvKick 1s .4s both; }
+@keyframes cvIn { 0% { opacity: 0; transform: scale(.35) rotateY(200deg); } 55% { opacity: 1; transform: scale(1.06) rotateY(-8deg); } 100% { transform: none; } }
+@keyframes cvFlash { 0% { opacity: 0; transform: scale(.2); } 22% { opacity: 1; } 100% { opacity: 0; transform: scale(1.1); } }
+@keyframes cvShine { to { transform: translateX(130%); } }
+@keyframes cvGlow { 0%, 100% { box-shadow: 0 18px 50px rgba(0,0,0,.7); } 50% { box-shadow: 0 0 0 3px rgba(240,200,90,.8), 0 0 46px 8px rgba(240,190,70,.55), 0 18px 50px rgba(0,0,0,.7); } }
+@keyframes cvKick { 0% { opacity: 0; letter-spacing: .4em; } 100% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .cv2 .cv-inner { transition: none; }
+  .cv2.reveal .cv-card, .cv2.reveal .cv-face, .cv2.reveal .cv-kicker { animation: none; }
+  .cv2.reveal .cv-flash, .cv2.reveal .cv-front::after { display: none; }
+  .ach-stack .ach-toast, .ach-stack .ach-toast.out { animation-duration: .01s; }
+}

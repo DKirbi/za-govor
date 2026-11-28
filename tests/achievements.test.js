@@ -2,6 +2,9 @@
 // Only real journeys count: not test mode, not practice battles. The profile (zg-dosezki) survives a reload and a new
 // journey; toasts come one after another; the Dosežki in junaki page groups them with tiers and progress bars; a story
 // card is earned by the heroes alive when Lintvern falls; a skill's painted card is collected the first time it fires.
+// 28 Nov 2026 (Game Director): the toasts stand in a column at the middle of the right side, each new one below the last;
+// a card won for the first time flashes in over the battle's result; every card, and every achievement in the menu,
+// opens as one card on the whole screen that a tap turns over and ✕ Zapri closes.
 // Battle cards (Game Director, 26 Nov 2026): a hero's skill shows Codex's painting in every Kakovost slik setting, or an
 // empty board with ??? until it is painted; enemies keep their hand-made SVG boards.
 const { openGame, runner, sleep } = require('./harness');
@@ -48,13 +51,15 @@ run(async () => {
   const w1 = await playWord(); await sleep(120);
   const card = await ev(() => { const c = document.querySelector('.card.folk.paint'); return c ? { img: !!c.querySelector('.pic.paint img[src^="data:image/webp"]'), cls: c.className } : null; });
   await sleep(500);
-  const p1 = await prof(), toast1 = await ev(() => (document.querySelector('.toast') || {}).textContent || '');
+  const p1 = await prof(), toast1 = await ev(() => { const t = document.querySelector('.ach-stack .ach-toast'); return t ? t.getAttribute('aria-label') : ''; });
+  const col = await ev(() => { const s = document.querySelector('.ach-stack'), r = s && s.getBoundingClientRect(); return s && { right: Math.round(innerWidth - r.right), top: r.top / innerHeight, pe: getComputedStyle(s).pointerEvents }; });
   check(p1.counters.words === 1 && p1.unlocked['prva-beseda'] && p1.words.length === 1, 'the first real word: counted once, its base form kept, Prva beseda unlocked', JSON.stringify({ w1, c: p1.counters, words: p1.words }));
   check(Object.keys(p1.cards.skill).some(k => /^(krpan|kurent):[123]$/.test(k)), 'the skill that fired collects its painted card (first time in a journey battle)', JSON.stringify(p1.cards.skill));
   check(card && card.img, 'the battle card shows Codex\'s painting by default (no setting, no address)', JSON.stringify(card));
   check(/^(Dosežek: Prva beseda|Nova karta: )/.test(toast1), 'a short toast, never a dialog: the first unlock is on screen', toast1);
-  const queued = await ev(async () => { const seen = new Set(), t0 = Date.now(); while (Date.now() - t0 < 7200) { const t = document.querySelector('.toast'); if (t) seen.add(t.textContent); await new Promise(r => setTimeout(r, 150)); } return [...seen]; });
-  check(queued.length >= 2 && queued.some(t => /^Nova karta: .+ \((Martin Krpan|Kurent)\)$/.test(t)) && queued.some(t => /Prva beseda/.test(t)), 'several unlocks at once: the toasts come one after another', JSON.stringify(queued));
+  check(col && col.right <= 12 && col.top > 0.3 && col.top < 0.55 && col.pe === 'none', 'the toasts stand at the middle of the right side and let taps through', JSON.stringify(col));
+  const queued = await ev(async () => { const seen = new Set(), t0 = Date.now(); while (Date.now() - t0 < 7200) { document.querySelectorAll('.ach-stack .ach-toast').forEach(t => seen.add(t.getAttribute('aria-label'))); await new Promise(r => setTimeout(r, 150)); } return [...seen]; });
+  check(queued.length >= 2 && queued.some(t => /^Nova karta: .+ · (Martin Krpan|Kurent)$/.test(t)) && queued.some(t => /Prva beseda/.test(t)), 'several unlocks at once: the toasts come one below the other', JSON.stringify(queued));
 
   // the card test is gone from the tester statistics
   const tags = await ev(() => window.__ZG.bgStatTags());
@@ -100,6 +105,45 @@ run(async () => {
   const krpanCards = Object.keys(p3.cards.skill).filter(k => k.startsWith('krpan:')).length;
   check(hs && hs.shown && hs.flipHidden && hs.open === krpanCards && hs.open + hs.locked === 3, 'the hero screen switches to the skill cards: collected ones painted, the rest ???', JSON.stringify({ hs, krpanCards }));
   check(hs && (hs.open ? hs.viewer && closed : true), 'a tapped card opens full screen; Esc closes it', JSON.stringify({ viewer: hs && hs.viewer, closed }));
+  // the card turns over (tap) to its back: the skill at each stopnja and when it was won; ✕ Zapri on top closes it
+  const turn = await ev(async () => { const Z = window.__ZG, wait = ms => new Promise(r => setTimeout(r, ms));
+    Z.openSkillCard('krpan', 1); await wait(80); const v = document.querySelector('.cv2'); if (!v) return null;
+    const out = { reveal: v.classList.contains('reveal'), kicker: v.querySelector('.cv-kicker').textContent, close: !!v.querySelector('.cv-top .cv-close') };
+    v.querySelector('.cv-card').click(); await wait(80); out.turned = v.classList.contains('turned'); out.ranks = v.querySelectorAll('.cv-back .cv-ranks li').length;
+    v.querySelector('.cv-close').click(); await wait(80); out.closed = !document.querySelector('.cv2') && !Z.S.bagEl; return out; });
+  check(turn && !turn.reveal && /^Karta veščine/.test(turn.kicker) && turn.close && turn.turned && turn.ranks === 3 && turn.closed,
+    'a card in the menu: no effects; a tap turns it over to its three stopnje; Zapri on top closes it', JSON.stringify(turn));
+  // every achievement in the menu opens the same way, as a card
+  await ev(() => window.__ZG.go('heroes')); await sleep(300);
+  const achc = await ev(async () => { const wait = ms => new Promise(r => setTimeout(r, ms)), li = document.querySelector('.achlist .ach.got'); if (!li) return null; li.click(); await wait(80);
+    const v = document.querySelector('.cv2.ach-cv'); if (!v) return { opened: false };
+    const out = { opened: true, title: v.querySelector('.cv-medal b').textContent, reveal: v.classList.contains('reveal') };
+    v.querySelector('.cv-card').click(); await wait(80); out.turned = v.classList.contains('turned'); out.text = v.querySelector('.cv-back .cv-text').textContent;
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); await wait(80); out.closed = !document.querySelector('.cv2'); return out; });
+  check(achc && achc.opened && !achc.reveal && achc.turned && achc.text && achc.closed, 'an achievement in Dosežki opens as a card the same way (front, back, Esc or Zapri)', JSON.stringify(achc));
+
+  // ---------------------------------------------------------------- a card won for the first time flashes in after the battle
+  const won = await ev(() => { const Z = window.__ZG; Z.S.revealOff = false; Z.S.tutOn = false;
+    if (!Z.S.run) { Z.newRun('krpan'); Z.joinHero('kurent'); }
+    const left = ['krpan', 'kurent', 'matjaz', 'kresnik'].flatMap(id => [1, 2, 3].map(t => [id, t])).filter(([id, t]) => Z.cardPainting(id, t) && !Z.hasSkillCard(id, t)).slice(0, 2);
+    Z.S.testMode = false; Z.S.mode = 'calm'; Z.stopBattle(Z.S.run.stops.find(s => s.kind === 'battle' && !s.done)); Z.B.enemies.forEach(e => { e.charge = -99; });
+    left.forEach(([id, t]) => Z.achSkillFired(id, t)); return { left, mid: !!document.querySelector('.cv2'), queued: Z.ACH_REVEALS.length }; });
+  await ev(() => { const Z = window.__ZG; Z.B.enemies.forEach(e => { if (e.hp > 0) Z.damageEnemy(e, 99999); }); });
+  await sleep(1000);
+  const beforeShow = await ev(() => !!document.querySelector('.cv2'));
+  await sleep(1700);
+  const rv = await ev(() => { const v = document.querySelector('.cv2'); return v && { reveal: v.classList.contains('reveal'), flash: !!v.querySelector('.cv-flash'), kicker: v.querySelector('.cv-kicker').textContent, screen: window.__ZG.S.screen, label: v.getAttribute('aria-label') }; });
+  await page.keyboard.press(' '); await sleep(150);
+  const turnedKey = await ev(() => !!document.querySelector('.cv2.turned'));
+  await ev(() => document.querySelector('.cv2 .cv-close').click()); await sleep(600);
+  const second = await ev(() => { const v = document.querySelector('.cv2'); return v && { reveal: v.classList.contains('reveal'), label: v.getAttribute('aria-label') }; });
+  if (second) { await ev(() => document.querySelector('.cv2 .cv-close').click()); await sleep(200); }
+  const rest = await ev(() => ({ open: !!document.querySelector('.cv2'), left: window.__ZG.ACH_REVEALS.length, result: window.__ZG.S.screen }));
+  check(won.left.length === 2 && !won.mid && won.queued === 2 && !beforeShow && rv && rv.reveal && rv.flash && rv.kicker === 'Nova karta veščine' && rv.screen === 'result',
+    'two cards won in a battle: nothing during the puzzle; over Zmaga! the first flashes in (Nova karta veščine)', JSON.stringify({ won, beforeShow, rv }));
+  check(turnedKey && second && second.reveal && second.label !== rv.label && !rest.open && rest.left === 0 && rest.result === 'result',
+    'Space turns it over; Zapri brings the next one; then the result waits for Naprej', JSON.stringify({ turnedKey, second, rest }));
+  await ev(() => { const Z = window.__ZG; Z.S.revealOff = true; if (Z.S.resultEl) Z.S.resultEl.remove(); Z.go('title'); }); await sleep(200);
   await ev(() => { const Z = window.__ZG; Z.go('hero', { kind: 'codex', ids: ['jurij'], crumb: 'Nazaj', next: () => Z.go('heroes') }); }); await sleep(300);
   const tbd = await ev(async () => { const btn = [...document.querySelectorAll('.hm-actions .btn')].find(b => b.textContent === 'Karte veščin'); if (!btn) return null; btn.click();
     await new Promise(r => setTimeout(r, 100)); const q = s => [...document.querySelectorAll(s)];

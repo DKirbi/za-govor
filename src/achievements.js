@@ -27,22 +27,25 @@ const ACH_CZS = /[čšž]/i;
 const ACH_LEN = w => [...w].length;   // Č, Š and Ž are one letter each (one code point in the word list)
 const ACH_TIERS = { bronasta: 'bronasta', srebrna: 'srebrna', zlata: 'zlata' };
 
-// ---------------------------------------------------------------- the toasts, one after another
+// ---------------------------------------------------------------- the toasts: a column on the right, at mid-height
+// Each new one comes in below the last, from the top down (Game Director, 28 Nov 2026); at most three at a time, the
+// rest wait. They let taps through, so they never stop a word, and the other toasts keep the bottom of the screen.
+// t: { kind, title, sub, tier, icon }; its whole sentence is the toast's aria-label (read out, and what tests see)
 const ACH_QUEUE = [];
-let achShowing = false;
-function achToast(text) {
-  ACH_QUEUE.push(text);
-  if (achShowing) return;
-  // another toast on screen (a hero unlocked, a region behind you) is read first
-  const next = (waits = 0) => {
-    const other = document.querySelector('.toast:not(.ach-toast)');
-    if (other && waits < 3) { achShowing = true; setTimeout(() => next(waits + 1), 1500); return; }
+const ACH_TOASTS = { max: 3, life: 4200 };
+const achLine = t => [t.kind, t.title].filter(Boolean).join(': ') + (t.sub ? ` · ${t.sub}` : '');
+function achToast(t) { ACH_QUEUE.push(t); achPump(); }
+function achPump() {
+  let col = document.querySelector('.ach-stack');
+  if (!col) { col = h('div', { class: 'ach-stack' }); document.body.append(col); }
+  while (ACH_QUEUE.length && col.children.length < ACH_TOASTS.max) {
     const t = ACH_QUEUE.shift();
-    if (!t) { achShowing = false; return; }
-    achShowing = true; toast(t); const el = document.querySelector('.toast'); if (el) el.classList.add('ach-toast');
-    setTimeout(next, 3200);
-  };
-  next();
+    const el = h('div', { class: 'ach-toast' + (t.tier ? ' t-' + t.tier : '') + (t.card ? ' is-card' : ''), role: 'status', 'aria-label': achLine(t) },
+      h('span', { class: 'at-icon', 'aria-hidden': 'true' }, t.icon ? h('img', { src: t.icon, alt: '' }) : (t.card ? '❖' : '★')),
+      h('span', { class: 'at-body' }, h('small', {}, t.kind), h('b', {}, t.title), t.sub ? h('span', {}, t.sub) : null));
+    col.append(el);
+    setTimeout(() => { el.classList.add('out'); setTimeout(() => { el.remove(); achPump(); }, 300); }, ACH_TOASTS.life);
+  }
 }
 
 // ---------------------------------------------------------------- rules
@@ -86,7 +89,8 @@ function achCheck(ev, x) {
   got.forEach(a => {
     ACHP.unlocked[a.id] = Date.now();
     if (a.card && a.group === 'Zgodbe') ACHP.cards.story[a.card] = ACHP.unlocked[a.id];
-    achToast(a.card && a.group === 'Zgodbe' ? `Nova karta zgodbe: ${a.title} (${CHARS.find(c => c.id === a.card).name})` : `Dosežek: ${a.title} · ${ACH_TIERS[a.tier]}`);
+    achToast(a.card && a.group === 'Zgodbe' ? { kind: 'Nova karta zgodbe', title: a.title, sub: CHARS.find(c => c.id === a.card).name, card: true }
+      : { kind: 'Dosežek', title: a.title, sub: ACH_TIERS[a.tier], tier: a.tier, icon: a.icon });
   });
   achSave();
   return got;
@@ -162,12 +166,24 @@ function achParty() { if (S.run) S.run.achMaxParty = Math.max(S.run.achMaxParty 
 // in a real journey battle (Game Director, 25 Nov 2026); practice battles and test mode do not count
 const skillCardKey = (id, tier) => `${id}:${tier}`;
 const hasSkillCard = (id, tier) => !!ACHP.cards.skill[skillCardKey(id, tier)];
+// The card is then revealed: it flashes in over the screen once the battle is over, never during a puzzle (Game
+// Director, 28 Nov 2026); in battle a toast says it was won. S.revealOff (tests) keeps the toast only.
+const ACH_REVEALS = [];
 function achSkillFired(id, tier) {
   const key = skillCardKey(id, tier);
   if (!achOn() || !BGX.cards[key] || ACHP.cards.skill[key]) return;
   ACHP.cards.skill[key] = Date.now(); achSave();
   const ch = CHARS.find(c => c.id === id);
-  achToast(`Nova karta: ${ch.moves[tier - 1]} (${ch.name})`);
+  achToast({ kind: 'Nova karta', title: ch.moves[tier - 1], sub: ch.name, card: true, icon: BGX.cards[key].src });
+  if (!S.revealOff) ACH_REVEALS.push({ id, tier });
+}
+// after a battle (go() leaving 'battle'): the cards won in it, one after another; another window open → a little later
+function achRevealSoon(wait = 700) { if (ACH_REVEALS.length) setTimeout(achRevealNext, wait); }
+function achRevealNext(tries = 0) {
+  if (!ACH_REVEALS.length) return;
+  if (S.bagEl || (S.screen === 'battle' && B && !B.over)) { if (tries < 40) setTimeout(() => achRevealNext(tries + 1), 800); return; }
+  const r = ACH_REVEALS.shift();
+  if (!openSkillCard(r.id, r.tier, { reveal: true, onClose: () => achRevealSoon(350) })) ACH_REVEALS.unshift(r);
 }
 // a skill fired at its highest stopnja in a journey battle: Mojster veščine (Game Director, 27 Nov 2026)
 function achSkillRank(id, tier, rank) { if (achOn() && rank >= MAX_RANK) achCheck('skillTop', { hero: id, tier }); }
@@ -180,7 +196,8 @@ function achSection() {
     const lockedHero = a.card && a.group === 'Zgodbe' && !UNLOCKED.has(a.card);
     const title = secret || lockedHero ? '???' : a.title;
     const text = secret ? 'Skrivni dosežek.' : lockedHero ? 'Karta junaka, ki ga še ne poznaš.' : a.text;
-    return h('li', { class: 'ach t-' + a.tier + (got ? ' got' : '') + (secret || lockedHero ? ' secret' : ''), 'data-ach': a.id },
+    return h('li', { class: 'ach t-' + a.tier + (got ? ' got' : '') + (secret || lockedHero ? ' secret' : ''), 'data-ach': a.id, role: 'button', tabindex: '0',
+      'aria-label': `${title}: odpri kot karto`, onclick: () => openAchCard(a), onkeydown: e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openAchCard(a); } } },
       h('span', { class: 'ach-icon', 'aria-hidden': 'true' }, a.icon ? h('img', { src: a.icon, alt: '' }) : (secret || lockedHero ? '?' : a.group[0])),
       h('div', { class: 'ach-body' },
         h('b', {}, title, h('span', { class: 'ach-tier' }, ACH_TIERS[a.tier])),
@@ -241,16 +258,44 @@ function skillCardsView(id) {
         h('div', { class: 'sc-cap' }, h('b', {}, ch.moves[t - 1]), h('span', {}, skillCardText(id, t))));
     })));
 }
-function openSkillCard(id, t) {
-  if (S.bagEl) return;
-  const ch = CHARS.find(c => c.id === id), P = BGX.cards[skillCardKey(id, t)];
-  const close = () => { ov.remove(); S.bagEl = null; S.overlayKey = null; };
-  const ov = h('div', { class: 'cardview', role: 'dialog', 'aria-modal': 'true', 'aria-label': `${ch.moves[t - 1]} (${ch.name})`, tabindex: '-1', onclick: close },
-    h('figure', {}, h('img', { src: P.src, alt: `${ch.moves[t - 1]} — ${ch.name}` }),
-      h('figcaption', {}, h('div', {}, h('b', {}, ch.moves[t - 1]), ` · ${ch.name}`), h('span', {}, skillCardText(id, t)))),
-    h('span', { class: 'cv-hint' }, S.mobile ? 'Tapni za zapiranje' : 'Klikni ali pritisni Esc za zapiranje'));
+// ---------------------------------------------------------------- one card over the whole screen (Game Director, 28 Nov 2026)
+// The front; a tap (Space or Enter) turns it over to read more; Zapri on top (or Esc) closes it. reveal: a card won for
+// the first time flashes in; the menu shows the same card without the effects. Returns false if another window is open.
+function cardViewer({ label, front, back, kicker = '', reveal = false, tone = '', onClose }) {
+  if (S.bagEl) return false;
+  let turned = false;
+  const turn = () => { turned = !turned; ov.classList.toggle('turned', turned); card.setAttribute('aria-pressed', String(turned)); sfx('sel', { rate: turned ? 1.15 : .9 }); };
+  const close = () => { ov.remove(); S.bagEl = null; S.overlayKey = null; if (onClose) onClose(); };
+  const card = h('button', { class: 'cv-card', 'aria-pressed': 'false', 'aria-label': `${label}: obrni karto`, onclick: turn },
+    h('span', { class: 'cv-inner' }, h('span', { class: 'cv-face cv-front' }, front), h('span', { class: 'cv-face cv-back' }, back)));
+  const ov = h('div', { class: 'cardview cv2' + (reveal ? ' reveal' : '') + (tone ? ' ' + tone : ''), role: 'dialog', 'aria-modal': 'true', 'aria-label': label, tabindex: '-1' },
+    h('div', { class: 'cv-top' }, h('span', { class: 'cv-kicker' }, kicker), h('button', { class: 'btn cv-close', onclick: close }, '✕ Zapri')),
+    h('div', { class: 'cv-stage' }, reveal ? h('span', { class: 'cv-flash', 'aria-hidden': 'true' }) : null, card),
+    h('span', { class: 'cv-hint' }, S.mobile ? 'Tapni karto, da jo obrneš.' : 'Klikni karto (ali presledek), da jo obrneš · Esc zapre.'));
   document.body.append(ov); S.bagEl = ov; ov.focus();
-  S.overlayKey = e => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); close(); } };
+  S.overlayKey = e => { if (e.key === 'Escape') { e.preventDefault(); close(); } else if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); turn(); } };
+  if (reveal) chorus();   // the short chorus of a new level
+  return true;
+}
+// a skill's card: Codex's painting in front; on the back the skill, what it does at each stopnja, when it was won
+function openSkillCard(id, t, opt = {}) {
+  const ch = CHARS.find(c => c.id === id), P = BGX.cards[skillCardKey(id, t)], name = ch.moves[t - 1], got = ACHP.cards.skill[skillCardKey(id, t)];
+  const ranks = isReviewed(id) ? [1, 2, 3].map(r => h('li', {}, h('b', {}, `${r}. stopnja`), ' ', fxText(rankText(id, t, r)))) : [h('li', {}, skillCardText(id, t))];
+  return cardViewer({ label: `${name} (${ch.name})`, reveal: !!opt.reveal, onClose: opt.onClose, kicker: opt.reveal ? 'Nova karta veščine' : `Karta veščine · ${ch.name}`,
+    front: [h('img', { src: P.src, alt: `${name} — ${ch.name}`, draggable: 'false' }), h('span', { class: 'cv-plate' }, h('b', {}, name), ` · ${ch.name}`)],
+    back: h('span', { class: 'cv-sheet', style: { '--c': ch.c } }, h('small', {}, `${ch.name} · veščina ${t}`), h('b', { class: 'cv-name' }, name),
+      h('ul', { class: 'cv-ranks' }, ranks), h('small', { class: 'cv-when' }, got ? 'Zbrana ' + new Date(got).toLocaleDateString('sl-SI') : 'Še ni zbrana')) });
+}
+// an achievement (or a story card) as a card: its medal in front, what it asks and how far you are on the back
+function openAchCard(a) {
+  const got = ACHP.unlocked[a.id], p = achProgress(a), secret = a.hidden && !got, lockedHero = a.card && a.group === 'Zgodbe' && !UNLOCKED.has(a.card);
+  const title = secret || lockedHero ? '???' : a.title, text = secret ? 'Skrivni dosežek: kaj zahteva, izveš, ko ga dosežeš.' : lockedHero ? 'Karta junaka, ki ga še ne poznaš.' : a.text;
+  return cardViewer({ label: title, kicker: a.group === 'Zgodbe' ? 'Karta zgodbe' : `Dosežek · ${a.group}`, tone: 'ach-cv t-' + a.tier + (got ? ' got' : ' locked'),
+    front: h('span', { class: 'cv-medal' }, h('span', { class: 'cv-icon', 'aria-hidden': 'true' }, a.icon && !secret ? h('img', { src: a.icon, alt: '' }) : (secret || lockedHero ? '?' : a.group[0])),
+      h('b', {}, title), h('small', {}, ACH_TIERS[a.tier] + (got ? '' : ' · še ni doseženo'))),
+    back: h('span', { class: 'cv-sheet' }, h('small', {}, a.group), h('b', { class: 'cv-name' }, title), h('span', { class: 'cv-text' }, text),
+      p && !got && !secret ? h('span', { class: 'ach-bar' }, h('i', { style: { width: (100 * p[0] / p[1]) + '%' } }), h('span', {}, `${p[0]}/${p[1]}`)) : null,
+      h('small', { class: 'cv-when' }, got ? 'Doseženo ' + new Date(got).toLocaleDateString('sl-SI') : 'Še ni doseženo')) });
 }
 // Liki in karte (developer gallery): all of Codex's skill cards, collected or not
 function galleryPaintedCards() {
