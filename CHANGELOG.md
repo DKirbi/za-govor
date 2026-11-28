@@ -36,6 +36,27 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
+## 0.24.0 — 28 Nov 2026 · zaprta alfa · achievement toasts on the right, skill cards revealed, cards over the whole screen
+
+Branch `feat/achievement-toasts-cards`, stacked on PR #47 (0.23.0). Game Director, 28 Nov 2026.
+
+- **Toasts:** achievements and new cards stand in a column at the middle of the right side, each new one sliding down
+  below the last (three at a time, the rest wait); taps go through. Each shows its medal or the card's painting, the
+  kind, the title and the tier or hero; the sentence is the toast's label for screen readers. Other toasts keep the
+  bottom of the screen.
+- **A skill card won for the first time flashes in** once the battle is over, over *Zmaga!* / *Poraz* — a burst of
+  light, the card spins in, a shine runs over it, the level-up chorus; several come one after another. The card is
+  still collected the first time the skill fires (25 Nov rule); in battle only the toast says so.
+- **One card over the whole screen** (`cardViewer`): a tap (Space, Enter) turns it over to its back — the skill at each
+  stopnja and when it was won; **✕ Zapri** on top or Esc closes it. The hero screen's *Karte veščin*, *Liki in karte*
+  and **every achievement in *Dosežki*** open this way, without the effects (an achievement: its medal in front, what
+  it asks and how far you are behind). Reduced motion turns the effects off.
+- Research: native achievements on Google Play, Apple Game Center and Steam, and what makes achievements work —
+  `docs/achievements-platforms.md`.
+- Tests: `achievements.test.js` (29 checks) covers the column, the turned card, an achievement as a card and two
+  cards revealed after a battle. `tests/harness.js` switches the reveal off unless a test asks for it
+  (`openGame({ reveals: true })`, kept across reloads), as it does with the puzzle intros.
+
 ## 0.23.0 — 28 Nov 2026 · zaprta alfa · bosses and mini-bosses in health bars, with timed letter-wheel events
 
 Branch `feat/boss-bars-events`, stacked on PR #46 (`review/folk-backgrounds`, 0.22.0). Game Director, 24 Nov and

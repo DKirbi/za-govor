@@ -490,6 +490,11 @@ Built (v0.10.0): the rocks come from the region's rock words (`data/words.json`:
 - **Built:** hero screens (meeting a hero, after a battle, the party) end in a **full-width footer** right under the content; on a phone it sticks to the bottom of the screen, so the way on is never below the fold (checked on 360×640).
 - **Built:** *Upravljanje* in *Kako igrati* covers phone, tablet and computer (this device first), and says the game is most comfortable on a tablet or computer.
 - **Built (25 Nov, v0.19.0):** the character screen's toggle between the hero's card and the **folk skill cards** (*Karte veščin*), a tapped card full screen (tap or Esc closes it). A skill's card is collected the first time the skill fires in a real journey battle (Game Director, 25 Nov), with a toast. In battle the paintings were an A/B test against the SVG boards (Game Director, 25 Nov). **Superseded 26 Nov (0.21.0):** the paintings are the default in every *Kakovost slik* setting and the test is over; a hero's skill without a painting shows an empty board with **???** in battle, on the hero screen (*Karte veščin*, now on every hero) and in *Liki in karte*. Enemies keep their hand-made boards.
+- **Built (28 Nov, v0.24.0, Game Director):** a skill card won for the first time **flashes in** over the battle's
+  result (never during a puzzle); a tap turns it over, **✕ Zapri** on top closes it; the menu opens every card and every
+  achievement the same way without the effects. Achievement toasts stand at the middle of the right side. Details in
+  `docs/achievements-design.md`. *Open:* whether the reveal should come when a skill is **learned** at a well or a
+  signpost rather than when it first fires (the 25 Nov rule, kept).
 - **Built (25 Nov, v0.19.0):** **achievements** in *Dosežki in junaki* (59, groups, tiers, progress bars, secrets) and the **story cards** earned at the Lintvern win, from [achievements-design.md](achievements-design.md); the profile survives journeys.
 - *Not built:* **post-match screen** (the team, the **last damage dealer** in front, statistics on the others and on their cards); the story cards' pictures; achievement icons (Codex, `achievement-art-spec.md`).
 

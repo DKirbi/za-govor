@@ -38,7 +38,7 @@ const PHONE = { viewport: { width: 390, height: 844, deviceScaleFactor: 2, isMob
 
 // every browser a test opens, so a crashed test still closes them and the process exits
 const OPEN = [];
-async function openGame({ phone = false, width = 1100, height = 1000, intros = false, randomStops = false } = {}) {
+async function openGame({ phone = false, width = 1100, height = 1000, intros = false, reveals = false, randomStops = false } = {}) {
   if (!fs.existsSync(path.resolve(__dirname, '../dist/index.html'))) throw new Error('dist/index.html missing — run `python3 build.py` first.');
   fs.mkdirSync(OUT_DIR, { recursive: true });
   const browser = await puppeteer.launch({ executablePath: chromePath(), headless: 'new', args: ['--no-sandbox'] });
@@ -52,6 +52,9 @@ async function openGame({ phone = false, width = 1100, height = 1000, intros = f
   // Puzzle intros ("Kako se igra") hold every clock until dismissed; tests switch them off unless they ask for them.
   await page.waitForFunction(() => !!window.__ZG);
   if (!intros) await page.evaluate(() => { window.__ZG.S.tutOn = false; });
+  // A skill card won for the first time flashes in after the battle and waits for Zapri; tests switch that off unless
+  // they ask for it (the card is still collected and its toast still shows; src/achievements.js, S.revealOff).
+  await page.evaluate(on => { try { if (on) localStorage.removeItem('zg-noreveal'); else localStorage.setItem('zg-noreveal', '1'); } catch (e) {} window.__ZG.S.revealOff = !on; }, reveals);   // survives a reload
   // chests and wells stand on a journey by chance (data/world.json → chance); tests that walk the road want every one there
   // (balance E: every event slot is then a chest; `traps` and `firstChest` are left alone)
   if (!randomStops) await page.evaluate(() => { const C = window.__ZG.WORLD.chance || {}; Object.values(C).forEach(o => { if (o && typeof o === 'object' && !Array.isArray(o)) Object.keys(o).forEach(k => { o[k] = 1; }); }); });
