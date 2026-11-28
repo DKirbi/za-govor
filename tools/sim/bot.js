@@ -30,7 +30,7 @@
   }
   const rndIn = (a, b) => a + Math.random() * (b - a);
   const draw = w => { const keys = Object.keys(w), tot = keys.reduce((s, k) => s + w[k], 0); let r = Math.random() * tot; for (const k of keys) { r -= w[k]; if (r <= 0) return +k; } return +keys[keys.length - 1]; };
-  const ROOTS = () => ({ WORLD, LV_XP, DIFFS, ENEMIES, LEVELS, ITEMS, GOD_BAL });
+  const ROOTS = () => ({ WORLD, LV_XP, DIFFS, ENEMIES, LEVELS, ITEMS, GOD_BAL, BOSS_EVENT: typeof BOSS_EVENT !== 'undefined' ? BOSS_EVENT : null });   // BOSS_EVENT: src/bosses.js
   // overrides: { 'WORLD.balance.hp': [...], 'LV_XP': [...], 'DIFFS.lahka.foeHp': 0.9, ... } (objects are changed in place)
   SIM.set = ov => {
     const R = ROOTS();
@@ -99,6 +99,7 @@
     const C = B.cw; if (!C) return;
     const order = C.D.entries.map((e, k) => k).filter(k => !C.solved.has(k)).sort((a, b) => (C.D.entries[a].geslo ? 1 : 0) - (C.D.entries[b].geslo ? 1 : 0));
     const k = order[0]; if (k == null) return;
+    if (C.D.style === 'wheel') { wheelSolve(k); return; }   // Kolo črk: a boss's event (src/bosses.js)
     const e = C.D.entries[k];
     for (let p = 0; p < e.answer.length; p++) C.fill.set(cellKey(e, p), e.answer[p].toLowerCase());
     C.cur = { e: k, p: 0 };

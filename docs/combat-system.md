@@ -44,6 +44,21 @@ The same interruption rule applies to both sides: hero attacks can be interrupte
 - The battle is won only when nobody stands and nobody waits.
 - The Lintvern's wyverns that he calls when he enrages join the line and fly in where there is room. Ordinary battles still have one to three enemies; whether some get more waiting is a balance question for the simulator.
 
+## 3a. Bosses' health bars and events (Game Director, 24 and 28 Nov 2026)
+
+**Status:** CONFIRMED and IMPLEMENTED (v0.23.0, `src/bosses.js`); the details marked PROPOSED in
+`docs/progression-design.md` §12 are built that way and wait for confirmation.
+
+- The gods as challengers and Povodni mož have **two health bars**, the Lintvern **three**. The bar drains as one bar,
+  from the right.
+- Damage on the letter mesh stops at the **middle of a bar**. There a **timed event** opens on the letter wheel (Kolo
+  črk, a minute): its words take the rest of that bar, and the last event lands the last blow.
+- While an event lasts, only its words hurt the boss, the boss **strikes every hero every 15 s** (Mirni način: after
+  every third word sent) and every other enemy, burn and timer of the mesh waits.
+- If the minute runs out, the rest of that bar goes back to the mesh. An event never opens over another crossword: it
+  waits for the zagovor to close.
+- A boss's second phase (the Lintvern's) starts after an event, never inside it.
+
 ## 4. Screen communication and special effects
 
 Enemies may have unique actions, statuses and special effects. Their current states should be communicated clearly on screen, using appropriate combinations of:

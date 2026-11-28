@@ -1,5 +1,5 @@
 // Desktop walk-through with the keyboard: battle, chest, finisher crossword,
-// Lintvern's letter lock and forced crossword, ambush crossword, rock slide.
+// the Lintvern's breath and his second health-bar event on the letter wheel (typed), ambush crossword, rock slide.
 const { openGame, runner, sleep, typeText } = require('./harness');
 const { check, run } = runner('Desktop playthrough (keyboard)');
 
@@ -31,6 +31,15 @@ async function solveCrossword(page) {
     if (!cur) return true;
     await typeText(page, cur);
     await sleep(150);
+  }
+  return page.evaluate(() => !window.__ZG.B.cw);
+}
+// a boss's event on the letter wheel (src/bosses.js): letters typed on the keyboard, Enter sends the word
+async function solveWheel(page) {
+  for (let i = 0; i < 14; i++) {
+    const w = await page.evaluate(() => { const C = window.__ZG.B && window.__ZG.B.cw; if (!C) return null; const x = C.D.entries.find((_, k) => !C.solved.has(k)); return x ? x.answer : null; });
+    if (!w) break;
+    await typeText(page, w); await page.keyboard.press('Enter'); await sleep(200);
   }
   return page.evaluate(() => !window.__ZG.B.cw);
 }
@@ -106,11 +115,12 @@ run(async () => {
   check(await solveCrossword(page), 'finisher crossword can be solved by typing');
 
   // Battle 4 (Ljubljanski grad): the Lintvern of balance D — Topot knocks a hero out of the mesh; at 66 % he draws
-  // breath (a stun does not stop him) and Ognjeni dih burns the heroes and scorches letters; phase 2 forces a crossword
+  // breath (a stun does not stop him) and Ognjeni dih burns the heroes and scorches letters; at half his health his second
+  // event (Ognjeni vihar 2/3) opens on the letter wheel, and after it he enrages (three health bars, 28 Nov)
   await page.evaluate(() => window.__ZG.go('battle', window.__ZG.NODES[5])); await sleep(600);
   await page.evaluate(() => { const e = window.__ZG.B.enemies[0]; e.step = 2; e.charge = 0.99; }); await sleep(500);
   check(await page.evaluate(() => Object.values(window.__ZG.B.sleep).some(s => s.why === 'topot')), 'Lintvern\'s Topot knocks a hero out of the letter mesh');
-  await page.evaluate(() => { const B = window.__ZG.B, e = B.enemies[0]; B.sleep = {}; e.hp = Math.round(e.maxHp * 0.67); e.charge = -5; });
+  await page.evaluate(() => { const B = window.__ZG.B, e = B.enemies[0]; B.sleep = {}; e.evDone = 2; e.hp = Math.round(e.maxHp * 0.67); e.charge = -5; });   // his events put aside: any word may land here
   await playWord(page); await sleep(500);
   const charging = await page.evaluate(() => { const B = window.__ZG.B, e = B.enemies[0]; const out = { charging: !!e.charging, speed: e.speed, status: (e.el && e.el.textContent) || '' };
     e.stunUntil = B.time + 30; e.charge = 0.99; return out; });
@@ -119,12 +129,14 @@ run(async () => {
   const breath = await page.evaluate(() => { const B = window.__ZG.B, e = B.enemies[0]; return { charging: !!e.charging, scorched: B.grid.filter(t => t.scorch).length, burning: Object.values(B.heroBurn).some(n => n > 0), tiles: document.querySelectorAll('.mesh .tile.scorch').length }; });
   check(!breath.charging && breath.scorched >= 8 && breath.tiles === breath.scorched && breath.burning, 'Ognjeni dih comes even through a stun: the heroes burn and letters are scorched', JSON.stringify(breath));
   await shot('desktop-04b-scorch');
-  await page.evaluate(() => { const e = window.__ZG.B.enemies[0]; e.stunUntil = 0; e.hp = Math.floor(e.maxHp * 0.5) + 1; e.phase2on = false; e.charge = -5; e.breathDone = [0.66, 0.33]; });   // any word takes him under half; a strong word must not start the 33 % breath instead (it made this check flaky)
-  await playWord(page); await sleep(600);
-  await page.evaluate(() => { const e = window.__ZG.B.enemies[0]; e.step = 3; e.charge = 0.99; }); await sleep(600);
-  check((await state(page)).cw === 'lock', 'phase 2 forces a crossword with the mesh closed');
-  await shot('desktop-04-forced-crossword');
-  check(await solveCrossword(page), 'forced crossword can be solved');
+  await page.evaluate(() => { const e = window.__ZG.B.enemies[0]; e.stunUntil = 0; e.evDone = 1; e.hp = Math.floor(e.maxHp * 0.5) + 1; e.phase2on = false; e.charge = -5; e.breathDone = [0.66, 0.33]; });   // any word takes him under half; a strong word must not start the 33 % breath instead (it made this check flaky)
+  await playWord(page); await sleep(900);
+  const vihar = await page.evaluate(() => { const B = window.__ZG.B, C = B.cw, e = B.enemies[0]; return { cw: C && C.kind, title: C && C.D.title, hp: e.hp, mid: window.__ZG.evMid(e, 1), p2: e.phase2on }; });
+  check(vihar.cw === 'boss' && vihar.title === 'Ognjeni vihar · 2/3' && vihar.hp === vihar.mid && !vihar.p2, 'at half his health the mesh stops and his second event opens on the letter wheel', JSON.stringify(vihar));
+  await shot('desktop-04-boss-event');
+  check(await solveWheel(page), 'the event can be played on the keyboard: letters, then Enter');
+  const after = await page.evaluate(() => { const e = window.__ZG.B.enemies[0]; return { p2: e.phase2on, hp: e.hp, end: window.__ZG.evEnd(e, 1) }; });
+  check(after.p2 && after.hp === after.end, 'his second bar falls with the event, and only then he enrages', JSON.stringify(after));
 
   // Battle 3 (Ljubljanica) starts with an ambush crossword
   await page.evaluate(() => window.__ZG.go('battle', window.__ZG.NODES[4])); await sleep(2100);   // Zaseda! is said first, then the crossword opens

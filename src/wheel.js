@@ -10,7 +10,7 @@
 // finds; Malček's words are also shorter and some of their letters are shown.
 // PROPOSED defaults (24 Nov, not answered yet): the wheel on a phone, the typed crossword on a computer; Nastavitve
 // switches either way on any device (zg-kolo). A real word from the wheel that is not in the grid is an extra word:
-// a weak hit (once per word). The other crosswords (Zaseda, Vrtinec, Zmajeva uganka) stay typed for now.
+// a weak hit (once per word). A boss's health-bar events use the wheel too (src/bosses.js); Zaseda stays typed.
 const WHEEL_LV = {
   malcek: { letters: 7, count: 5, minLen: 3, maxLen: 6, pick: 'rich', given: 0.3 },
   ucenjak: { letters: 7, count: 6, minLen: 3, maxLen: 7, pick: 'mid', given: 0.12 },
@@ -45,8 +45,8 @@ function wheelLetters(key, n) {
   }
   return out;
 }
-function makeWheel(id, L = WL()) {
-  const th = CLUES.themes[id] || { title: 'Zagovor', keys: [] };
+function makeWheel(id, L = WL(), opt = {}) {   // opt.keys: the key words to try (a boss's event), opt.title
+  const th = opt.keys ? { title: opt.title || 'Kolo črk', keys: opt.keys.map(k => [k]) } : CLUES.themes[id] || { title: 'Zagovor', keys: [] };
   const keys = shuffle(th.keys.map(k => k[0].toLowerCase()).filter(k => [...k].length <= L.letters));
   for (const key of [...keys, null]) {
     const cands = [];
@@ -83,10 +83,13 @@ function renderWheel() {
   const C = B.cw, D = C.D, n = D.letters.length;
   // one short row (Game Director, 27 Nov 2026: save vertical space, no rules repeated): the rules are behind ?, which
   // opens Kako se igra over the puzzle and stops the clock; a gold dot marks it until it has been opened once
-  const seen = TUT_SEEN.has('kolo');
-  UI.puzzle.append(h('div', { class: 'whead' }, h('span', { class: 'k finisher' }, 'Zagovor'), h('b', {}, D.title), h('span', { class: 'grow' }),
+  const seen = TUT_SEEN.has('kolo'), boss = C.kind === 'boss';
+  UI.puzzle.append(h('div', { class: 'whead' }, h('span', { class: 'k ' + (boss ? 'boss' : 'finisher') }, boss ? 'Preizkušnja' : 'Zagovor'), h('b', {}, D.title), h('span', { class: 'grow' }),
     h('button', { class: 'wq' + (seen ? '' : ' new'), type: 'button', 'aria-label': 'Kako se igra kolo črk', title: 'Kako se igra', onclick: () => { showTut('kolo', true); wheelPaint(); } }, '?'),
-    h('button', { class: 'wx', type: 'button', 'aria-label': 'Prekliči zagovor (moč ostane)', title: 'Prekliči zagovor — moč ostane', onclick: () => { closeCrossword(); fb('Zagovor prekinjen — moč ostane shranjena.', 'warn'); } }, '✕')));
+    boss ? null : h('button', { class: 'wx', type: 'button', 'aria-label': 'Prekliči zagovor (moč ostane)', title: 'Prekliči zagovor — moč ostane', onclick: () => { closeCrossword(); fb('Zagovor prekinjen — moč ostane shranjena.', 'warn'); } }, '✕')));
+  // a boss's event (src/bosses.js): its health bars, the time, the next blow and the party's health over the wheel
+  UI.bossStrip = boss ? h('div', { class: 'bossstrip', 'aria-live': 'off' }) : null;
+  if (boss) UI.puzzle.append(UI.bossStrip);
   C.cellEls = new Map();
   const grid = h('div', { class: 'cwgrid wgrid', style: { 'grid-template-columns': `repeat(${D.cols}, var(--cell))` } });
   for (let r = 0; r < D.rows; r++) for (let c = 0; c < D.cols; c++) {
@@ -123,6 +126,7 @@ function wheelPaint() {
   C.line.setAttribute('points', pts.map(p => p.join(',')).join(' '));
   if (!C.wordEl.classList.contains('said')) C.wordEl.textContent = UP(C.sel.map(i => C.D.letters[i]).join(''));
   if (C.revBtn) { C.revBtn.textContent = `Razkrij · ${C.reveals}`; C.revBtn.disabled = C.reveals <= 0; }
+  if (C.kind === 'boss') bossStrip();
   C.extraEl.textContent = `še ${C.D.entries.length - C.solved.size}` + (C.extra.size ? ` · +${C.extra.size}` : '');
   C.extraEl.title = `Besed v križanki še: ${C.D.entries.length - C.solved.size}` + (C.extra.size ? `; dodatnih besed: ${C.extra.size}` : '');
   const q = UI.puzzle.querySelector('.wq'); if (q) q.classList.toggle('new', !TUT_SEEN.has('kolo'));
@@ -165,13 +169,15 @@ function wheelSubmit() {
   const C = B && B.cw; if (!C || C.D.style !== 'wheel') return;
   const w = C.sel.map(i => C.D.letters[i]).join(''); C.sel = []; C.drag = false; C.pt = null;
   if ([...w].length < 2) { wheelPaint(); return; }
+  bossEventSent();   // Mirni način: a boss strikes after every third word sent in its event (src/bosses.js)
+  if (B.cw !== C) return;
   const k = C.D.entries.findIndex((e, k) => !C.solved.has(k) && e.answer.toLowerCase() === w);
   if (k >= 0) { wheelSolve(k); return; }
   if (C.D.entries.some((e, k) => C.solved.has(k) && e.answer.toLowerCase() === w)) { wheelSay(`${UP(w)} — že najdena`, 'warn'); sfx('bad'); wheelPaint(); return; }
   if ([...w].length >= MINW() && (C.D.avail.has(w) || WORDS.has(w))) {
     if (C.extra.has(w)) { wheelSay(`${UP(w)} — že najdena`, 'warn'); wheelPaint(); return; }
     C.extra.add(w);
-    const t = cwTarget(), d = t ? damageEnemy(t, [...w].length * lvlMult()) : 0;   // a weak hit, about a three-letter mesh word
+    const t = cwTarget(), d = t ? damageEnemy(t, [...w].length * lvlMult(), { event: C.kind === 'boss' }) : 0;   // a weak hit, about a three-letter mesh word
     wheelSay(`${UP(w)} — dodatna beseda` + (d ? `, −${d}` : ''), 'ok'); sfx('sel', { rate: 1.6 });
     renderEnemies(); if (B.cw === C) wheelPaint(); checkEnd(); return;
   }

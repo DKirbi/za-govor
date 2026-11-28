@@ -95,7 +95,7 @@ run(async () => {
   // ---- the Lintvern in battle (Učenjak, a full party of three, the castle)
   await journey(page, 'ucenjak', ['krpan', 'kurent', 'ajda'], 9);
   const fight = await ev(page, () => { const Z = window.__ZG, stop = Z.S.run.stops.find(s => s.kind === 'boss'); Z.stopBattle(stop);
-    const B = Z.B; B.enemies.forEach(e => { e.charge = -99; }); return { foes: B.enemies.map(e => e.key).join(), n: B.enemies.length }; });
+    const B = Z.B; B.enemies.forEach(e => { e.charge = -99; e.evDone = e.bars; }); return { foes: B.enemies.map(e => e.key).join(), n: B.enemies.length }; });   // his health-bar events as played (tests/bosses.test.js)
   check(fight.foes === 'zmajcek,lintvern,zmajcek', 'three heroes meet the Lintvern with two wyverns', fight.foes);
   const charge = await ev(page, () => { const Z = window.__ZG, B = Z.B, e = B.enemies[1]; Z.damageEnemy(e, Math.ceil(e.maxHp * 0.36));
     const out = { charging: !!e.charging, speed: e.speed, calmStep: e.calmStep }; Z.damageEnemy(e, Math.ceil(e.maxHp * 0.32)); out.queued = e.breathQ; out.p2 = e.phase2on; out.n = B.enemies.length; out.waiting = B.queue.length; return out; });

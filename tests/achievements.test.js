@@ -130,7 +130,7 @@ run(async () => {
   // ---------------------------------------------------------------- Lintvern falls: story cards for the heroes alive
   await ev(() => { const Z = window.__ZG; Z.achReset(); Z.resetRun(); Z.S.testMode = false; Z.S.mode = 'calm'; Z.newRun('krpan'); Z.joinHero('kurent'); Z.joinHero('matjaz');
     Z.enterRegion(Z.WORLD.regions.length - 1); });
-  await ev(() => { const Z = window.__ZG; Z.S.heroes[1].hp = 0; Z.S.heroes[1].down = true; Z.stopBattle(Z.S.run.stops.find(s => s.kind === 'boss')); Z.B.enemies.forEach(e => { e.charge = -99; }); });
+  await ev(() => { const Z = window.__ZG; Z.S.heroes[1].hp = 0; Z.S.heroes[1].down = true; Z.stopBattle(Z.S.run.stops.find(s => s.kind === 'boss')); Z.B.enemies.forEach(e => { e.charge = -99; e.evDone = e.bars; }); });   // his events as played
   await sleep(300);
   await ev(() => { const Z = window.__ZG; Z.B.enemies.forEach(e => { if (e.hp > 0) Z.damageEnemy(e, 99999); }); });
   await sleep(1900);

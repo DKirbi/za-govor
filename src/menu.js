@@ -374,7 +374,7 @@ function foesSection() {
   const box = h('div', { class: 'foeinfo', 'aria-live': 'polite' });
   const show = k => {
     const e = ENEMIES[k], where = WORLD.regions.filter(r => [...(r.pool || []), ...(r.boss || []), ...(r.adds ? [r.adds.key] : [])].includes(k)).map(r => r.name);
-    const moves = [...new Set(Object.values(e.moves || {}))], n = foeBeaten(k);
+    const moves = [...new Set([...Object.values(e.moves || {}), ...(e.bars > 1 && BOSS_EVENT_NAME[k] ? [BOSS_EVENT_NAME[k]] : [])])], n = foeBeaten(k);   // a boss's event (src/bosses.js)
     box.innerHTML = '';
     const art = e.art || k;
     box.append(h('div', { class: 'pickinfo foepick', style: { '--c': e.boss ? '#c0506a' : '#8b93a6' } },
@@ -384,6 +384,7 @@ function foesSection() {
         h('h2', {}, e.name),
         h('div', { class: 'ptags' }, e.boss ? h('span', { class: 'rtag', style: { '--tc': '#e8b74a' } }, h('img', { class: 'fxi', src: pxUrl('crown'), alt: '' }), 'glavni nasprotnik') : null,
           h('span', { class: 'php' }, pxIcon('heart'), ` ${e.hpBy ? Math.max(...Object.values(e.hpBy)) : e.hp}`),
+          e.bars > 1 ? h('span', { class: 'muted' }, `${e.bars} vrstice zdravja`) : null,
           h('span', { class: 'muted' }, `premagan${e.f ? 'a' : ''} ${n}-krat`)),
         h('div', { class: 'psec' }, h('h3', {}, 'Napadi'), h('div', { class: 'pchips' }, moves.map(m => h('span', { class: 'pchip' }, m)))),
         where.length ? h('div', { class: 'psec' }, h('h3', {}, 'Srečaš ' + (e.f ? 'jo' : 'ga')), h('div', { class: 'pchips' }, where.map(m => h('span', { class: 'pchip' }, m)))) : null)));

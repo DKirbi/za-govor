@@ -194,7 +194,7 @@ const GOD_BAL = { hp: 260, perRegion: 26, atk: 5, atkPerRegion: 1 / 3 };
 function godFoe(id) {
   const key = 'bog-' + id, ch = CHARS.find(c => c.id === id), ri = S.run ? S.run.ri : 3, G = GOD[id];
   ENEMIES[key] = { name: G.title, f: !!G.f, art: id, tint: HOLY_TINT, hp: GOD_BAL.hp + GOD_BAL.perRegion * ri, atk: GOD_BAL.atk + Math.round(ri * GOD_BAL.atkPerRegion), speed: 9.5, calmStep: 0.34, size: 72,
-    xp: 40, boss: true, god: id, moves: { attack: ch.moves[0], gust: ch.moves[0], special: ch.moves[2] },
+    xp: 40, boss: true, bars: 2, god: id, moves: { attack: ch.moves[0], gust: ch.moves[0], special: ch.moves[2] },
     // Stribog mixed the letters with every blow (Game Director, 28 Nov 2026): two gusts on everyone (Sapica, no mixing)
     // between his storms; the other gods still strike only with their special
     pattern: id === 'stribog' ? ['gust', 'gust', 'special'] : ['special'] };

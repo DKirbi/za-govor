@@ -5,8 +5,9 @@ Prototype: https://claude.ai/artifact/NTdMnud7X8Um2p38G1fVnb
 This replaces the earlier "three starters and cursed-god bosses" proposal. Everything below is built in the browser prototype unless marked *not built*.
 
 ## Status at a glance
+- **28 Nov — v0.23.0, branch `feat/boss-bars-events` (built, stacked on PR #46):** bosses and mini-bosses with **health bars** — two for the gods and Povodni mož, three for the Lintvern — and a **timed letter-wheel event** at the middle of each bar (§12); the bar drains from the right; the old lock crossword and Zmajeva uganka gave way to the events.
 - **25 Nov — v0.20.0 (prepared 24 Nov as v0.18.0), PR #39 `feat/party-three-gods-queue` (built, Game Director's decisions of 24 Nov):** a party of **three** at most (§2); **two shrines** per journey, never in the last region, and the gods' new rules: a fair fight with everyone healed and skill points spendable before it, a won challenge keeps the gift to the journey's end (no longer into the next journey), a lost one never ends the journey and lets the gift go out after the next region (§2a); **at most three enemies on screen**, the rest wait in line (`docs/combat-system.md` §3).
-- **24 Nov (decided, *not built*):** the wheel-križanka on every device's settings, keeping the in-game keyboard (§11.4); bosses and mini-bosses with **two or three health bars** and a **timed letter-wheel event** for each (§12).
+- **24 Nov (decided; built since):** the wheel-križanka on every device's settings, keeping the in-game keyboard (§11.4, built v0.22.0 for the zagovor); bosses and mini-bosses with **two or three health bars** and a **timed letter-wheel event** for each (§12, built v0.23.0).
 - **25 Nov — v0.19.0, PR #38 `codex/folk-skill-cards` (built, draft for review):** Codex's painted skill cards in battle as an A/B test and collected on the hero screen; 59 achievements and 15 story cards (`docs/achievements-design.md`, `data/achievements.json`); Codex's folk parallax backgrounds for six regions as preview variants (§11.8; `docs/art-benchmarks/background-parallax-roadmap.md`).
 - **20 Nov — v0.17.0, branch `feat/balance-e` (built, balance E from simulations of the real game, §4c):** every hero levels on their own and more slowly, with one point of their own a level; skill points are spent, and skills shown, only at wells and signposts; three battles a region and one chest or trap; enemies steeper in the second half, tougher bosses, Knjižni molj steeper. Malček is won about half the time at a word every 10 s (balance D: 98 %). A simulator that plays the built game (`tools/sim/`).
 - **17 Nov — v0.13.0, branch `feat/balance-d` (built, balance version D from the simulations):** the party levels together and shares its skill points; a reviewed hero fires every skill they know up to the number of their letters; enemies grow by region, with a third enemy from Bled and strong enemies from Trnovski gozd; Ptuj is the same tutorial on every Znanje; Knjižni molj steepens towards the castle; Povodni mož and a new Lintvern with three attacks, scorched letters and wyverns; opt-in battle statistics for testers (§4b). Monsters and gods get their own review later; D is the working balance until then.
@@ -339,6 +340,7 @@ The six drawn enemies stay. Four regional enemies reuse their sprites with a col
 | Vešča (witch) | Mora, green | 26 / 4 | *Zli pogled*: a hero falls asleep |
 | Perkmandeljc (mine dwarf) | Škrat, blue-grey | 30 / 5 | *Zasutje*: buries four letters |
 | Pesjan (dog-headed raider) | Volkodlak, brown | 52 / 7 | *Lov*: a heavy hit on everyone |
+| *A bigger Pesjan* (CONFIRMED 28 Nov, *not built*) | Pesjan, larger | OPEN | takes the ordinary Volkodlak's place on the road; the Volkodlak becomes one mini-boss (§12) |
 | Zmajev mladič (the olm of Postojna, once believed to be a dragon's young) | Lintvern, pale | 40 / 6 | *Jamski prah*: buries four letters |
 
 ## 7. Items
@@ -537,22 +539,117 @@ With this much reading (intros, bios, folk cards) and a long road, players must 
 - **A new, finished or lost journey removes the save.**
 - The sparse checkpoints are also the answer to quitting to undo a loss or reroll a stop: it costs the whole stretch since the last checkpoint. No per-stop saves, no seed, no special rule for a battle left midway.
 
-## 12. Bosses and mini-bosses: health bars and timed letter-wheel events (24 Nov) — *not built*
-Game Director, 24 Nov 2026. Builds on the wheel-križanka (§11.4). Mockups of the phone screen were drawn in the chat of 24 Nov.
+## 12. Bosses and mini-bosses: health bars and timed letter-wheel events (24 Nov) — built (v0.23.0, 28 Nov)
+Game Director, 24 Nov 2026; "implement bosses and minibosses (gods including) multiple healthbars and minigames" on
+28 Nov 2026. Builds on the wheel-križanka (§11.4). Code: `src/bosses.js`, hooks in `damageEnemy`, `openCrossword`,
+`battleTick` and the crossword's end (`src/game.js`) and in the wheel (`src/wheel.js`); tests: `tests/bosses.test.js`.
+
+**CONFIRMED** (IMPLEMENTED v0.23.0 unless marked)
+- **Mini-bosses have two health bars and two timed events:** the gods as challengers (§2a) and Povodni mož. **The
+  Lintvern has three.** The Volkodlak: see OPEN below (not built).
+- **A fixed rhythm:** the letter mesh takes an enemy to the **middle of a health bar**; there the **timed event** starts
+  and its words take the **rest of that bar**. Then the mesh again to the middle of the next bar, and the next event.
+  Half of a boss's health is fought on the mesh and half in the events, and the last event lands the last blow.
+- **The event is the wheel-križanka, timed:** **a minute** (`BOSS_EVENT.sec`). Every word finished takes its share of
+  the enemy's health (by its letters; half with a revealed letter). While it lasts, the enemy **hits every hero every
+  15 seconds**; the other enemies wait. The event cannot be cancelled (no ✕); its ? opens the wheel's rules.
+- **The event screen shows** the boss's health bars with the next events marked, the time, the seconds to the next blow
+  and the party's health bars, over the grid and the wheel.
+- **The health bar drains as one bar, from the right:** the full bars stay on the left, the first bar to fall is the
+  rightmost (Game Director, 28 Nov 2026, on the phone).
+- **Theme:** each event's key word is one part of the boss's theme (`BOSS_KEYS`).
+- **A big word only pushes the health to the middle of a bar, so the event starts** (Game Director, 28 Nov 2026):
+  damage outside an event stops there; during an event only its own words hurt the boss (burns and other blows do
+  nothing).
+- **The difficulty stays as built** (28 Nov 2026, after the simulator table below: "the bosses should stay this hard"),
+  the gods included.
+
+**PROPOSED — built this way, for the Game Director to confirm**
+- If the minute runs out, the rest of that bar is fought on the mesh and the next event still starts at the middle of
+  the next bar.
+- An event that comes due while the zagovor (or another crossword) is open waits and opens as it closes.
+- Names and key words: Povodni mož — **Vrtinec**, POVODNI then MOŽ; the Lintvern — **Ognjeni vihar**, ZMAJ, OGENJ, GRAD;
+  a god's event is named after their third skill (Perun's *Nevihta*) with two words of their theme (STRELA, NEVIHTA;
+  JEKLO, KOVAČ; ZEMLJA, VRETENO; MEDVED, ŽIVINA; ZARJA, SONCE; VETER, BURJA).
+- The blow: a god strikes with their special; Povodni mož and the Lintvern with half their attack on every hero
+  (`BOSS_EVENT.hit`; see Balance below).
+- **Mirni način:** no clock; the boss strikes after **every third word sent** (`BOSS_EVENT.calmEvery`), as enemy attacks
+  in calm mode already count words.
+- The events replace the old forced crosswords: Povodni mož's lock crossword (*Vrtinec*, the mesh closed) and the
+  Lintvern's *Zmajeva uganka*. Povodni mož's third move is now *Poplava* (the bottom row flooded). The Lintvern's fire
+  breath (66 % and 33 %) stays on the mesh; his second phase (half his health = the start of his second event) waits for
+  the end of that event, never inside it or on the blow that brings it.
+- An event's wheel has one word fewer than the zagovor's on the same Znanje (at least four).
+
+**OPEN**
+- **The boss flow stays as it is (Game Director, 28 Nov 2026):** Povodni mož at the Ljubljanica, the Lintvern at
+  Ljubljanski grad, the gods at their shrines. No new mini-boss encounter for now.
+- **Lore expansion — future mini-bosses, written down 28 Nov (not designed, not built):**
+  - *Volkodlak* — **CONFIRMED 28 Nov: the Volkodlak is one mini-boss, and the ordinary one on the road becomes just a
+    bigger version of the Pesjan** (whose sprite is already the Volkodlak's, tinted). *Not built.* OPEN: where he
+    fights (an idea: the last battle of Trnovski gozd, under its full moon, with two bars and two events); the bigger
+    Pesjan's name and numbers (Pesjan's moves, the old Volkodlak's strength, PROPOSED); whether "feeds on repeated
+    words" stays with the mini-boss; the Volkodlak's achievements (*Volkodlakov strah*, *… nočna mora*, the one about
+    repeated words, *every kind of foe*) — they count beaten Volkodlaki, so they wait for the mini-boss or move to the
+    bigger Pesjan.
+  - *Divji mož* — the wild man of Slovene folklore. He needs a folklore research pass (ChatGPT) before any design:
+    region, nature (foe or guardian), look and words.
+- Scorched letters carrying into the wheel — not built.
+- The gods other than Stribog still use only their special outside the events (Stribog got gusts between his letter
+  scrambles on 28 Nov). Whether they get plain attacks too is the Game Director's call.
+
+**Balance (simulator, 28 Nov, 100 journeys each, bot word pace 10 / 8 / 6 s on Malček / Učenjak / Knjižni molj)**
+
+| Build | journeys won M / U / KM | gods beaten M / U / KM | Lintvern at the first try (M) | Lintvern fight (M) |
+|---|---|---|---|---|
+| v0.22.0, no bars | 37 / 16 / 22 % | 59 / 68 / 70 % | 88 % | 110 s |
+| bars, blow 0.5 × attack every 15 s | 22 / 13 / 11 % | 49 / 38 / 56 % | 34 % | 206 s |
+| **bars, blow 0.3 × attack every 15 s (built)** | 29 / 8 / 17 % | 27 / 38 / 59 % | 52 % | 218 s |
+| bars, blow 0.3 × attack every 20 s | 35 / 19 / 21 % | 49 / 53 / 70 % | 67 % | 225 s |
+
+The target of 20 Nov (on Malček at least 4 of 10 journeys lost) holds in every row. With the bars a boss fight takes
+about twice as long. The bot plays an event word every pace × `cw` seconds and never uses Razkrij, so its events are
+slower than a player's, and the samples are small (a god's row moves by ±10 points between runs of the same build).
+The build keeps the confirmed 15 s and sets the blow of Povodni mož and the Lintvern to **0.3 × their attack**
+(PROPOSED). The gods strike with their special in the event (every 15 s, against every 9.5 s outside it); they are
+clearly harder than before because a fight with bars lasts longer; a lost challenge never ends a journey. The Game
+Director kept it so (28 Nov).
+
+**Ideas of 28 Nov (Game Director's brainstorm — not decided, not built)**
+- *Permanent unlocks on harder Znanje:* on the harder tiers some skills unlock for good, so heroes start a journey
+  stronger and earn less XP, and meet the bosses and gods stronger.
+- *Spread the bosses* (meet Povodni mož earlier, finish him later at half health) — **not pursued:** the Game Director
+  keeps the current flow (28 Nov). A note for later: the Ljubljanica never reaches Piran (it flows into the Sava); the
+  authentic link is the karst — the "river of seven names" runs underground near Postojna and rises at Vrhnika.
+- *More mini-bosses* — the lore expansion list above.
+- *Permanent unlocks* — decided the same day: §13.
+
+## 13. Lasting progress by *Znanje* (Game Director, 28 Nov 2026) — *not built*
 
 **CONFIRMED**
-- **Mini-bosses have two health bars and two timed events:** the gods (§2a), Povodni mož, the Volkodlak and mini-bosses added later. **The Lintvern has three.**
-- **A fixed rhythm:** the letter mesh takes an enemy to the **middle of a health bar**; there the **timed event** starts and its words take the **rest of that bar**. Then the mesh again to the middle of the next bar, and the next event. So half of a boss's health is fought on the mesh and half in the events, and the last event lands the last blow.
-- **The event is the wheel-križanka, timed:** about **a minute**. Every word finished takes its share of the enemy's health. While it lasts, the enemy **hits every hero about every 15 seconds**, so the faster the crossword is done, the fewer hits the party takes. If time runs out first, the party has taken every hit of the minute.
-- **The event screen shows** the enemy's health bars (the event's share marked) and the party's health bars, over the grid and the wheel.
-- **Theme:** each event is one part of the boss's crossword; its theme word is split into as many parts as there are events (§11.4).
+- **Malček never makes a hero permanently stronger.** It fills only some achievements of its own (achievements specific
+  to that difficulty), nothing else.
+- **On Učenjak and Knjižni molj XP is scarcer, and so the heroes' levels are permanent:** a hero keeps the levels, and
+  with them the skills, from one journey to the next.
+- **Skill cards won on the harder tiers look far more prominent and rare.**
+- **More achievements unlock on the harder tiers.**
 
-**PROPOSED / OPEN**
-- *PROPOSED:* damage on the mesh stops at the middle of a bar, so one big word cannot skip an event.
-- *PROPOSED:* the part of a bar an event did not win is fought on the mesh, and the next event still starts in the middle of the next bar.
-- *PROPOSED:* the Lintvern's blazing tornado (*ognjeni vihar*) takes Zmajeva uganka's place; his fire breath (now at 66 % and 33 %) and his second phase (50 %) move into the mesh halves of the fight, so they do not fire as an event begins or ends. Scorched letters could carry into the wheel.
-- *OPEN:* the Volkodlak is an ordinary enemy today (Trnovski gozd and others); as a mini-boss he needs his own encounter (a region's last battle, say), or every Volkodlak becomes a two-event fight.
-- *OPEN:* calm mode — proposed: the hits come every few submitted words instead of every 15 s, as enemy attacks in calm mode already do.
-- *OPEN:* three-part theme words for the Lintvern and for Povodni mož if he keeps two events (POVODNI + MOŽ has two parts).
-- Balance: events of heavy hits change how long a boss fight lasts; the simulator (`tools/sim`) must play them before numbers are set. Target from 20 Nov: on Malček at least 4 of 10 journeys lost.
-- **Build order:** the wheel on ordinary crosswords → events on Povodni mož with a simulator run → the gods → the Lintvern.
+When built, this supersedes "every journey starts at level 1" (`heroState`, §4 and §4c) on Učenjak and Knjižni molj.
+Malček keeps it.
+
+**OPEN — needs the Game Director's decisions before building**
+1. **One record or two?** Are a hero's lasting levels shared by Učenjak and Knjižni molj, or kept for each tier?
+2. **What carries over:** levels, XP, skill points not yet spent, the skills chosen and their stopnje? Gold, the bag,
+   relics, gifts and health would still start fresh. Does a lost journey keep what it earned?
+3. **How scarce:** the XP factor on each tier. The simulator proposes numbers once 1–2 are settled.
+4. **The ceiling:** levels stop at 9. A party that has reached 9 makes the harder tiers easier over time, so the enemy
+   curve (§4c) may need to follow the heroes' level, or the tier may need a prestige reset.
+5. **The rare cards:** what changes on a card won on Učenjak or Knjižni molj (frame, foil, a mark of the tier). This
+   needs an art spec (ChatGPT) before Codex paints anything.
+6. **Which achievements** belong to Malček only, and which are new on the harder tiers (`docs/achievements-design.md`).
+
+**Balancing it:** today every simulated journey starts from scratch. With lasting levels, a journey's difficulty
+depends on what earlier journeys earned. The simulator then needs fixed **player profiles** — saved starting states
+such as "first journey on Učenjak (everyone at level 1)", "after a few journeys (heroes at 4–5)" and "veteran (heroes
+at 9)" — and runs of several journeys in a row with the save carried over. That shows how fast heroes grow and when a
+tier stops being a challenge.
