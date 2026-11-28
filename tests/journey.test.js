@@ -16,9 +16,10 @@ async function walk(page) {
   await page.keyboard.press('ArrowRight');
   for (let i = 0; i < 60; i++) { await sleep(200); if ((await state(page)).prompt) return; }
 }
-// win the current battle quickly: enemies are left with 1 health, then real words finish them
+// win the current battle quickly: enemies are left with 1 health (a boss's health-bar events as played,
+// tests/bosses.test.js), then real words finish them
 async function winBattle(page) {
-  await page.evaluate(() => window.__ZG.B.enemies.forEach(e => { e.hp = 1; }));
+  await page.evaluate(() => window.__ZG.B.enemies.forEach(e => { e.hp = 1; if (e.bars) e.evDone = e.bars; }));
   for (let i = 0; i < 8; i++) {
     const s = await page.evaluate(() => { const Z = window.__ZG, B = Z.B; if (!B || B.over || Z.S.screen !== 'battle') return 'done';
       const t = B.enemies.findIndex(e => e.hp > 0); if (t < 0) return 'done'; B.target = t;
