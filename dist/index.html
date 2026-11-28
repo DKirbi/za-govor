@@ -3073,7 +3073,7 @@ const xpNeed = () => 100 * S.level;
 const letterEq = (tile, typed) => tile === typed;
 
 // Version of this build, filled in by build.py from package.json and git (see CHANGELOG.md).
-const BUILD = {"version": "0.22.0", "stage": "zaprta alfa", "commit": "cd7d2ca"};
+const BUILD = {"version": "0.22.0", "stage": "zaprta alfa", "commit": ""};
 const app = $('#app');
 let SCR = null;   // current screen container
 // There is no top bar: pages under the menu have a sticky way back, timed puzzles a Premor button in their header,
@@ -4300,8 +4300,8 @@ function enemyAct(e) {
     renderEnemies(); return;
   }
   const mv = e.moves[act] || e.moves.attack;
-  e.atkT = performance.now(); e.atkTier = act === 'attack' ? 1 : 3;
-  if (act !== 'attack' && UI.scene) { replay(UI.scene, 'flash'); setTimeout(() => UI.scene && UI.scene.classList.remove('flash'), 420); }
+  e.atkT = performance.now(); e.atkTier = act === 'attack' || act === 'gust' ? 1 : 3;
+  if (act !== 'attack' && act !== 'gust' && UI.scene) { replay(UI.scene, 'flash'); setTimeout(() => UI.scene && UI.scene.classList.remove('flash'), 420); }
   setTimeout(() => { if (e.el) e.el.classList.remove('atk', 'atk3'); }, 660);
   if (act === 'scratch') {   // Lintvern's Kremplji: one hero
     const d = hurtParty(e.atk, e);
@@ -4318,6 +4318,10 @@ function enemyAct(e) {
     const d = hurtParty(e.atk, e);
     spawnCard(e.el, { tier: 1, foe: true, name: e.name, move: mv, value: d ? `−${d}` : 'ščit ujame' });
     log(d ? `${e.name}: ${mv} (−${d}).` : `${e.name}: ${mv} — ščit ujame udarec.`);
+  } else if (act === 'gust') {   // Stribog's Sapica: wind on everyone, lighter, and the letters stay put (28 Nov 2026)
+    const d = hurtEach(living().map(() => Math.round(e.atk * 0.6)), e);
+    spawnCard(e.el, { tier: 1, foe: true, name: e.name, move: mv, value: d ? `−${d} vsem` : 'ščit ujame' });
+    log(d ? `${e.name}: ${mv} (−${d} vsem).` : `${e.name}: ${mv} — ščit ujame veter.`);
   } else if (act === 'heavy') {
     const d = hurtParty(e.atk * 2.4, e, true);
     spawnCard(e.el, { tier: 3, foe: true, name: e.name, move: mv, value: `−${d}`, portrait: e.name[0] });
@@ -8193,37 +8197,37 @@ const GOD = {
   perun: { name: 'Perun', to: 'Perunu', acc: 'Peruna', title: 'Gromovnik Perun', sign: 'strela',
     look: 'Pod starim hrastom stoji izrezljan steber, na njem gromovno znamenje.',
     gift: 'strela preskoči na vse nasprotnike',
-    answer: 'Zagrmelo je. Tvoja molitev je uslišana. Preden zapustiš to pokrajino, bom videl, ali si vreden te preizkušnje.',
+    answer: 'Zagrmelo je. Tvoj poklon je sprejet. Preden zapustiš to pokrajino, bom videl, ali si vreden te preizkušnje.',
     come: 'Pred kažipotom nebo potemni in zagrmi. Perun je prišel po svoje.',
     won: 'Hm … tebe si bom zapomnil. Ko bo naslednjič zagrmelo, se ozri v nebo.' },
   svarog: { name: 'Svarog', to: 'Svarogu', acc: 'Svaroga', title: 'Nebeški kovač Svarog', sign: 'nakovalo',
     look: 'Kamnit oltar z nakovalom. V njem gori ogenj, ki ga nihče ne neti.',
     gift: 'družina dobi velik ščit',
-    answer: 'Ogenj je slišal tvojo molitev. Preden zapustiš to pokrajino, bom videl, ali si iz pravega železa.',
+    answer: 'Ogenj je videl tvoj poklon. Preden zapustiš to pokrajino, bom videl, ali si iz pravega železa.',
     come: 'Kamni ob poti zažarijo kot v kovačnici. Svarog je prišel po svoje.',
     won: 'Železo se pokaže šele v ognju. Tvoje se ni zlomilo. Tebe si bom zapomnil.' },
   mokos: { name: 'Mokoš', to: 'Mokoši', acc: 'Mokoš', title: 'Mati Mokoš', sign: 'vreteno', f: true,
     look: 'Studenec v kamnitem krogu, nad njim stoji vreteno.',
     gift: 'družina se pozdravi',
-    answer: 'Tvoja molitev je uslišana, otrok. Preden zapustiš to pokrajino, bom videla, ali si vreden te preizkušnje.',
+    answer: 'Tvoj poklon je sprejet, otrok. Preden zapustiš to pokrajino, bom videla, ali si vreden te preizkušnje.',
     come: 'Iz tal privre studenec in se dvigne v podobo. Mokoš je prišla po svoje.',
     won: 'Nit tvoje usode je trša, kot sem mislila. Spredla jo bom naprej … in videla, kam vodi.' },
   dazbog: { name: 'Dažbog', to: 'Dažbogu', acc: 'Dažboga', title: 'Sončni Dažbog', sign: 'sonce',
     look: 'Na visokem drogu se sveti sončni kolut.',
     gift: 'naslednja beseda šteje dvojno',
-    answer: 'Sonce je videlo tvojo molitev. Preden zapustiš to pokrajino, bom videl, ali si vreden moje luči.',
+    answer: 'Sonce je videlo tvoj poklon. Preden zapustiš to pokrajino, bom videl, ali si vreden moje luči.',
     come: 'Sonce obstane nad potjo in ne zaide. Dažbog je prišel po svoje.',
     won: 'Hm. Sonce ne pozabi nikogar, ki je zdržal njegov pogled. Tebe si bom zapomnil.' },
   stribog: { name: 'Stribog', to: 'Stribogu', acc: 'Striboga', title: 'Ded vetrov Stribog', sign: 'veter',
     look: 'Kup kamenja na vetrovnem vrhu. Trakovi na drogu nikoli ne mirujejo.',
     gift: 'veter zadene vse nasprotnike in očisti mrežo',
-    answer: 'Veter je prinesel tvojo molitev do mene. Preden zapustiš to pokrajino, bom videl, ali te odnese ali obstaneš.',
+    answer: 'Veter mi je prinesel tvoj poklon. Preden zapustiš to pokrajino, bom videl, ali te odnese ali obstaneš.',
     come: 'Ob kažipotu zatuli veter. Stribog je prišel po svoje.',
     won: 'Veter si zapomni vsak glas. Tvojega bom nosil daleč … dlje, kot misliš.' },
   veles: { name: 'Veles', to: 'Velesu', acc: 'Velesa', title: 'Gospodar podzemlja Veles', sign: 'rogovi',
     look: 'Temen kamen med koreninami, okronan z volovskimi rogovi. Ob njem se zvija kača.',
     gift: 'vsi nasprotniki so zastrupljeni',
-    answer: 'Tvoja molitev je uslišana … a vsak dar ima svojo ceno. Preden zapustiš to pokrajino, bom videl, ali jo zmoreš plačati.',
+    answer: 'Tvoj poklon je sprejet … a vsak dar ima svojo ceno. Preden zapustiš to pokrajino, bom videl, ali jo zmoreš plačati.',
     come: 'Pod potjo zašumijo korenine in zemlja se odpre. Veles je prišel po svoje.',
     won: 'Hm … tebe si bom zapomnil. In nekoč pridem po svoj dolg.' },
 };
@@ -8296,7 +8300,8 @@ function shrinePrompt(stop, pass, train) {
 
 // ------------------------------------------------------------ Svetišče: bow to the god's sign
 // The button is "Pokloni se" (Game Director, 27 Nov 2026; it was "Pomoli se"): pokloniti se is the usual Slovene
-// for bowing to someone in reverence; nakloniti se reads first as "to lean", and nakloniti komu as "to grant".
+// for bowing to someone in reverence; nakloniti se reads first as "to lean", and nakloniti komu as "to grant". The gods
+// answer a poklon, not a molitev (Game Director, 28 Nov 2026: "pokloni pred bogovi" has the better meaning).
 function renderShrine(arg) {
   arg = arg || S.shrineArg; S.shrineArg = arg;
   const R = S.run, stop = arg.stop, id = stop.god, G = GOD[id], ch = CHARS.find(c => c.id === id);
@@ -8360,7 +8365,10 @@ const GOD_BAL = { hp: 260, perRegion: 26, atk: 5, atkPerRegion: 1 / 3 };
 function godFoe(id) {
   const key = 'bog-' + id, ch = CHARS.find(c => c.id === id), ri = S.run ? S.run.ri : 3, G = GOD[id];
   ENEMIES[key] = { name: G.title, f: !!G.f, art: id, tint: HOLY_TINT, hp: GOD_BAL.hp + GOD_BAL.perRegion * ri, atk: GOD_BAL.atk + Math.round(ri * GOD_BAL.atkPerRegion), speed: 9.5, calmStep: 0.34, size: 72,
-    xp: 40, boss: true, god: id, pattern: ['special'], moves: { attack: ch.moves[2], special: ch.moves[2] } };
+    xp: 40, boss: true, god: id, moves: { attack: ch.moves[0], gust: ch.moves[0], special: ch.moves[2] },
+    // Stribog mixed the letters with every blow (Game Director, 28 Nov 2026): two gusts on everyone (Sapica, no mixing)
+    // between his storms; the other gods still strike only with their special
+    pattern: id === 'stribog' ? ['gust', 'gust', 'special'] : ['special'] };
   return key;
 }
 function challengeBattle(id, ch) {
