@@ -340,6 +340,7 @@ The six drawn enemies stay. Four regional enemies reuse their sprites with a col
 | Vešča (witch) | Mora, green | 26 / 4 | *Zli pogled*: a hero falls asleep |
 | Perkmandeljc (mine dwarf) | Škrat, blue-grey | 30 / 5 | *Zasutje*: buries four letters |
 | Pesjan (dog-headed raider) | Volkodlak, brown | 52 / 7 | *Lov*: a heavy hit on everyone |
+| *A bigger Pesjan* (CONFIRMED 28 Nov, *not built*) | Pesjan, larger | OPEN | takes the ordinary Volkodlak's place on the road; the Volkodlak becomes one mini-boss (§12) |
 | Zmajev mladič (the olm of Postojna, once believed to be a dragon's young) | Lintvern, pale | 40 / 6 | *Jamski prah*: buries four letters |
 
 ## 7. Items
@@ -581,9 +582,18 @@ Game Director, 24 Nov 2026; "implement bosses and minibosses (gods including) mu
 - An event's wheel has one word fewer than the zagovor's on the same Znanje (at least four).
 
 **OPEN**
-- The Volkodlak is an ordinary enemy today (Trnovski gozd, Predjamski grad, Barje). The Game Director confirmed him as a
-  mini-boss again on 28 Nov ("Volkodlak could be miniboss"); his encounter is open. *PROPOSED:* the last battle of
-  Trnovski gozd, under its full moon, with two bars and two events; the ordinary Volkodlak stays in the pools. Not built.
+- **The boss flow stays as it is (Game Director, 28 Nov 2026):** Povodni mož at the Ljubljanica, the Lintvern at
+  Ljubljanski grad, the gods at their shrines. No new mini-boss encounter for now.
+- **Lore expansion — future mini-bosses, written down 28 Nov (not designed, not built):**
+  - *Volkodlak* — **CONFIRMED 28 Nov: the Volkodlak is one mini-boss, and the ordinary one on the road becomes just a
+    bigger version of the Pesjan** (whose sprite is already the Volkodlak's, tinted). *Not built.* OPEN: where he
+    fights (an idea: the last battle of Trnovski gozd, under its full moon, with two bars and two events); the bigger
+    Pesjan's name and numbers (Pesjan's moves, the old Volkodlak's strength, PROPOSED); whether "feeds on repeated
+    words" stays with the mini-boss; the Volkodlak's achievements (*Volkodlakov strah*, *… nočna mora*, the one about
+    repeated words, *every kind of foe*) — they count beaten Volkodlaki, so they wait for the mini-boss or move to the
+    bigger Pesjan.
+  - *Divji mož* — the wild man of Slovene folklore. He needs a folklore research pass (ChatGPT) before any design:
+    region, nature (foe or guardian), look and words.
 - Scorched letters carrying into the wheel — not built.
 - The gods other than Stribog still use only their special outside the events (Stribog got gusts between his letter
   scrambles on 28 Nov). Whether they get plain attacks too is the Game Director's call.
@@ -608,7 +618,38 @@ Director kept it so (28 Nov).
 **Ideas of 28 Nov (Game Director's brainstorm — not decided, not built)**
 - *Permanent unlocks on harder Znanje:* on the harder tiers some skills unlock for good, so heroes start a journey
   stronger and earn less XP, and meet the bosses and gods stronger.
-- *Spread the bosses:* Povodni mož (Ljubljanica) and the Lintvern (Ljubljanski grad) come one after the other. Idea: meet
-  Povodni mož earlier; his *Poplava* sweeps the party away (towards Piran, say) and the party comes back to finish him
-  at half his health — one health bar per meeting.
-- *More mini-bosses,* the Volkodlak first (above).
+- *Spread the bosses* (meet Povodni mož earlier, finish him later at half health) — **not pursued:** the Game Director
+  keeps the current flow (28 Nov). A note for later: the Ljubljanica never reaches Piran (it flows into the Sava); the
+  authentic link is the karst — the "river of seven names" runs underground near Postojna and rises at Vrhnika.
+- *More mini-bosses* — the lore expansion list above.
+- *Permanent unlocks* — decided the same day: §13.
+
+## 13. Lasting progress by *Znanje* (Game Director, 28 Nov 2026) — *not built*
+
+**CONFIRMED**
+- **Malček never makes a hero permanently stronger.** It fills only some achievements of its own (achievements specific
+  to that difficulty), nothing else.
+- **On Učenjak and Knjižni molj XP is scarcer, and so the heroes' levels are permanent:** a hero keeps the levels, and
+  with them the skills, from one journey to the next.
+- **Skill cards won on the harder tiers look far more prominent and rare.**
+- **More achievements unlock on the harder tiers.**
+
+When built, this supersedes "every journey starts at level 1" (`heroState`, §4 and §4c) on Učenjak and Knjižni molj.
+Malček keeps it.
+
+**OPEN — needs the Game Director's decisions before building**
+1. **One record or two?** Are a hero's lasting levels shared by Učenjak and Knjižni molj, or kept for each tier?
+2. **What carries over:** levels, XP, skill points not yet spent, the skills chosen and their stopnje? Gold, the bag,
+   relics, gifts and health would still start fresh. Does a lost journey keep what it earned?
+3. **How scarce:** the XP factor on each tier. The simulator proposes numbers once 1–2 are settled.
+4. **The ceiling:** levels stop at 9. A party that has reached 9 makes the harder tiers easier over time, so the enemy
+   curve (§4c) may need to follow the heroes' level, or the tier may need a prestige reset.
+5. **The rare cards:** what changes on a card won on Učenjak or Knjižni molj (frame, foil, a mark of the tier). This
+   needs an art spec (ChatGPT) before Codex paints anything.
+6. **Which achievements** belong to Malček only, and which are new on the harder tiers (`docs/achievements-design.md`).
+
+**Balancing it:** today every simulated journey starts from scratch. With lasting levels, a journey's difficulty
+depends on what earlier journeys earned. The simulator then needs fixed **player profiles** — saved starting states
+such as "first journey on Učenjak (everyone at level 1)", "after a few journeys (heroes at 4–5)" and "veteran (heroes
+at 9)" — and runs of several journeys in a row with the save carried over. That shows how fast heroes grow and when a
+tier stops being a challenge.

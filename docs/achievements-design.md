@@ -118,6 +118,11 @@ As a separate hidden skill challenge, **Zadnja beseda**: defeat Lintvern on *Knj
 
 ## Scope and implementation notes
 
+- **28 Nov 2026 (Game Director, not built):** *Malček* fills only some achievements of its own, and **more achievements
+  unlock on Učenjak and Knjižni molj** (`docs/progression-design.md` §13); which ones is OPEN. The Volkodlak becomes one
+  mini-boss and the ordinary one on the road a bigger Pesjan (§12), so the achievements that count beaten Volkodlaki
+  (*Volkodlakov strah*, *Volkodlakova nočna mora*, the repeated-words one, every kind of foe) need new targets — OPEN.
+
 This is a catalog, not the achievement code or a promise that every proposed card has approved folklore art. The first implementation slice could add persistent counters, the progress list and the first word, battle, journey and first-card unlocks. Add the remaining counters when their events can be recorded reliably. Keep platform achievements (Steam/Play Games) as optional mirrors of in-game unlocks; the in-game collection remains the source of truth.
 
 Use the existing brief's rule for story cards: the hero must be alive in the active party at the final win. Do not require a hit or last blow from that hero; the rest of the party is carrying them through the final battle, too.
