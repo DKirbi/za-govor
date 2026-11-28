@@ -2,7 +2,7 @@
 const { spawnSync } = require('child_process');
 const path = require('path');
 
-const files = ['crossword-generator.test.js', 'levels.test.js', 'keyword.test.js', 'phone.test.js', 'desktop.test.js', 'journey.test.js', 'credits.test.js', 'menu.test.js', 'report.test.js', 'lexicon.test.js', 'title.test.js', 'save.test.js', 'input.test.js', 'words.test.js', 'flow.test.js', 'starters.test.js', 'progression.test.js', 'balance.test.js', 'backgrounds.test.js', 'parallax.test.js', 'achievements.test.js'];
+const files = ['crossword-generator.test.js', 'levels.test.js', 'keyword.test.js', 'phone.test.js', 'desktop.test.js', 'journey.test.js', 'credits.test.js', 'menu.test.js', 'report.test.js', 'lexicon.test.js', 'title.test.js', 'save.test.js', 'input.test.js', 'words.test.js', 'flow.test.js', 'starters.test.js', 'progression.test.js', 'balance.test.js', 'backgrounds.test.js', 'parallax.test.js', 'parallax-phone.test.js', 'achievements.test.js', 'picker.test.js', 'screens.test.js', 'wheel.test.js'];
 let failed = 0;
 for (const f of files) {
   const r = spawnSync(process.execPath, [path.join(__dirname, f)], { stdio: 'inherit' });

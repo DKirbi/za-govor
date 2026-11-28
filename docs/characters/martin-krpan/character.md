@@ -104,6 +104,12 @@ Keep animations economical and readable at the existing gameplay sprite scale. P
 
 ### Approved travel, victory and downed states
 
+> **SUPERSEDED in the game (Game Director, 25 Nov 2026; 0.21.0):** heroes and enemies use simple pixel sprites. Krpan draws
+> his pixel sprite in every *Kakovost slik* setting and attacks with the shared lunge; Codex's sprite pack below is no longer
+> built in. **27 Nov 2026:** the Game Director discarded the pack completely; its atlases, frames, sheet, previews and asset
+> review left the repository (Git history: `main` at 99c2d99). Martin Krpan is pixel art only. His skills (§3–4), their
+> painted skill cards and the mare-lift folk illustration are unchanged.
+
 For the Martin Krpan sprite pack in PR #34, the following poses are approved:
 
 - **Running:** a four-frame right-facing loop in this order: left-foot contact, compression, right-foot contact, opposite compression. Keep the salt sack secured and the cudgel in his existing hand.
@@ -112,7 +118,7 @@ For the Martin Krpan sprite pack in PR #34, the following poses are approved:
 
 These three Martin Krpan states establish a **proposed benchmark** for a future roster-wide sprite convention (`docs/art-benchmarks/hero-sprites/README.md`). They do not approve or define assets for any other character.
 
-**IMPLEMENTED (PR #34, *Kakovost slik = Visoka*):** running loops while the party walks; victory plays once when the last enemy falls; the kneel is held, greyed, while Krpan is down. The skill animations follow §5 above (Lipov kij, Kmečka moč ranks 1–3, Mesarica). The mapping lives in `data/hero-art.json`.
+**SUPERSEDED (0.21.0, 25 Nov 2026):** from PR #34 to 0.20.0, *Kakovost slik = Visoka* played these states and the skill sequences from Codex's sheet (`data/hero-art.json`, now removed). The poses were approved as art; the pack was discarded on 27 Nov 2026 and is not in the repository.
 
 ### Folk-art illustration — Krpan lifts his mare
 

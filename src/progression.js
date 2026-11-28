@@ -323,8 +323,8 @@ function revWounded(k, real, src) {
   noteSupport(src, k, got);   // healing himself counts as healing
   const gold = got && S.run ? gainGold(Math.ceil(got * RK.kresnik[2].gold)) : 0;
   if (got) floatOn(UI.heroEls[k], `+${got}`, 'heal');
-  if (gold) { B.stats.gold += gold; floatOn(UI.party, `+${gold} zlatnikov`, 'crit'); }
-  log(`Kresna moč: ${HEROES[k].name} +${got} zdravja` + (gold ? `, +${gold} zlatnikov.` : '.'));
+  if (gold) { B.stats.gold += gold; floatOn(UI.party, `+${zlat(gold)}`, 'crit'); }
+  log(`Kresna moč: ${HEROES[k].name} +${got} zdravja` + (gold ? `, +${zlat(gold)}.` : '.'));
 }
 
 // ------------------------------------------------------------ time in battle (both modes: B.time runs in calm mode too)

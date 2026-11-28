@@ -193,8 +193,8 @@ h1, h2, h3 { margin: 0; }
 
 /* Crossword */
 .cwhead { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
-.cwhead .k { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; padding: 2px 8px; border-radius: 99px; }
-.cwhead .k.finisher { background: var(--gold); color: #1d1608; }
+.cwhead .k, .whead .k { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; padding: 2px 8px; border-radius: 99px; }
+.cwhead .k.finisher, .whead .k.finisher { background: var(--gold); color: #1d1608; }
 .cwhead .k.lock { background: var(--danger); color: #2a0b0b; }
 .cwhead .k.ambush { background: var(--water); color: #08202b; }
 .cwhead h3 { font-size: 15px; }
@@ -230,6 +230,13 @@ h1, h2, h3 { margin: 0; }
 .event { max-width: 720px; margin: 10px auto; display: grid; gap: 12px; }
 .event .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
 .chestbox { display: flex; gap: 16px; align-items: center; }
+.chestbox > .obj { flex: none; }
+/* remedies in the bag (Game Director, 27 Nov 2026): pick one, then the hero it heals */
+.itemrow.heal.on { border-color: var(--good); }
+.healpick { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: -2px 0 6px; padding: 8px 10px; border-radius: 10px; background: var(--bg2); }
+.healpick .btn { border-color: color-mix(in srgb, var(--c) 60%, var(--line)); }   /* the chest keeps its shape: a flex row squeezed it narrow next to the text */
+.chestlead { font-size: 16px; font-weight: 600; line-height: 1.35; }
+.chestclue { color: var(--gold); margin-top: 6px; }
 .chestsq { width: 90px; height: 70px; border: 2px solid var(--gold); border-radius: 8px; display: grid; place-items: center; font-weight: 800;
   background: color-mix(in srgb, var(--gold) 15%, var(--panel)); }
 .letters { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
@@ -407,28 +414,6 @@ body.mobile .curclue { margin-top: 0; }
 @keyframes lunge3 { 0% { transform: translateX(calc(var(--px) * -5)) } 14% { transform: translate(calc(var(--px) * 8), calc(var(--px) * -3)) }
   30% { transform: translateX(calc(var(--px) * 11)) } 44% { transform: translateX(calc(var(--px) * 5)) } 58% { transform: translate(calc(var(--px) * 11), calc(var(--px) * -2)) }
   74% { transform: translateX(calc(var(--px) * 9)) } 88% { transform: translateX(calc(var(--px) * 3)) } 100% { transform: none } }
-/* Visoka: a hero with frames (data/hero-art.json, src/backgrounds.js) plays them from one sheet. spriteEl puts --cols, --rows
-   and the rows of its states on the element: --ri idle, --rr running, --rw victory, --rd down; attackAnim sets --ra, the row
-   of the skill it plays. --r is the row shown, --f the frame the animation steps through (every animated sequence has four
-   frames; a held state has one). Idle loops; a skill plays once in 0,72 s in place of the lunge; running loops while the
-   party walks; victory (.cheer) plays once when the last enemy falls and holds its last frame; down holds the kneel, greyed
-   like every fallen hero but upright. A hero without a state (no hi-run, hi-win or hi-down) keeps what the game did before. */
-@property --f { syntax: '<number>'; inherits: false; initial-value: 0; }
-.spr.hi { --r: var(--ri, 0); }
-.spr.hi.atk, .spr.hi.atk3 { --r: var(--ra, var(--ri, 0)); }
-.scene.travel.walking .party .spr.hi.hi-run:not(.down) { --r: var(--rr); }
-.spr.hi.hi-win.cheer { --r: var(--rw); }
-.spr.hi.hi-down.down, .spirit.down .spr.hi.hi-down { --r: var(--rd); }
-.spr.hi .sp { background-size: calc(var(--cols) * 100%) calc(var(--rows) * 100%);
-  background-position: calc(var(--f) / (var(--cols) - 1) * 100%) calc(var(--r, 0) / (var(--rows) - 1) * 100%);
-  animation: hiplay 1.2s steps(4, jump-none) infinite; }
-.spirit .spr.hi .sp { animation: hiplay 1.2s steps(4, jump-none) infinite, breathe 3.2s steps(1) infinite; }   /* the hero screens keep their breathing */
-.spr.hi.atk .sp, .spr.hi.atk3 .sp { animation: hiplay .72s steps(4, jump-none) both; }
-.scene.travel.walking .party .spr.hi.hi-run:not(.down) .sp { animation: hiplay .5s steps(4, jump-none) infinite; }
-.spr.hi.hi-win.cheer .sp { animation: hiplay .8s steps(4, jump-none) both; }
-.hero.spr.hi.hi-down.down .sp, .spirit.down .spr.hi.hi-down .sp { animation: none !important; transform: none; --f: 0;
-  background-position: 0 calc(var(--r) / (var(--rows) - 1) * 100%); filter: grayscale(1) brightness(.7); }
-@keyframes hiplay { from { --f: 0 } to { --f: 3 } }
 .hit { animation: hitblink .5s steps(1) .14s both !important; }
 @keyframes hitblink { 0% { opacity: 0; transform: translateX(5px) } 14% { opacity: 1; transform: translateX(-5px) } 28% { opacity: 0; transform: translateX(4px) }
   42% { opacity: 1; transform: translateX(-4px) } 56% { opacity: 0; transform: translateX(2px) } 70% { opacity: 1; transform: translateX(-2px) } 84% { opacity: 0 } 100% { opacity: 1; transform: none } }
@@ -489,7 +474,7 @@ body.mobile .gstage { height: 268px; } body.mobile .gstage .hero.spr { width: 96
 body.mobile .gstage .party { left: 6%; } body.mobile .gstage .enemies { right: 6%; }
 body.mobile .card.folk { font-size: 11px; }
 body.mobile .card.folk.t1 { width: 100px; } body.mobile .card.folk.t2 { width: 146px; } body.mobile .card.folk.t3 { width: 200px; }
-@media (prefers-reduced-motion: reduce) { .sp, .spr.atk .sp, .spr.atk3 .sp, .spr.hi .sp, .spr.hi.cheer .sp, .scene.travel.walking .party .spr.hi .sp, .hit, .scene.flash::after { animation: none !important; } .scene.flash::after { display: none; } }
+@media (prefers-reduced-motion: reduce) { .sp, .spr.atk .sp, .spr.atk3 .sp, .hit, .scene.flash::after { animation: none !important; } .scene.flash::after { display: none; } }
 
 /* iteration 4: hidden keyword column (geslo) */
 .cell.gk { outline: 2px solid var(--gold); outline-offset: -2px; }
@@ -522,6 +507,11 @@ body.mobile .card.folk.t1 { width: 100px; } body.mobile .card.folk.t2 { width: 1
 /* Codex's painted skill cards (variant B of the card test, src/backgrounds.js): the whole 3:2 painting with its own
    painted frame, a little narrower than the SVG boards so a card stays about as tall over the scene */
 .card.folk .pic.paint img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; pointer-events: none; }
+/* a hero's skill without Codex's painting yet: an empty board with ??? (Game Director, 26 Nov 2026) */
+.card.folk .pic.paint .tbd { display: grid; place-items: center; aspect-ratio: 3 / 2; font: 800 20px/1 Georgia, serif; letter-spacing: .12em; color: #6e6253;
+  background: radial-gradient(ellipse at 50% 40%, #2c2620, #15120f); box-shadow: inset 0 0 0 3px #3a2c1f; }
+.card.folk.t1 .pic.paint .tbd { font-size: 15px; } .card.folk.t3 .pic.paint .tbd { font-size: 26px; }
+.gboard.skill img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 3px; box-shadow: 0 2px 0 #1c110b, 0 6px 14px rgba(0,0,0,.4); }
 .card.folk.paint.t1 { width: 100px; } .card.folk.paint.t2 { width: 150px; } .card.folk.paint.t3 { width: 204px; }
 body.mobile .card.folk.paint.t1 { width: 86px; } body.mobile .card.folk.paint.t2 { width: 124px; } body.mobile .card.folk.paint.t3 { width: 170px; }
 .card.folk.foecard .cap .vl { color: #ff9a9a; }
@@ -568,17 +558,18 @@ body.mobile .gbg { grid-template-columns: 1fr; }
   font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
 .say b { display: block; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; font-family: system-ui, sans-serif; margin-bottom: 2px; }
 .hm-card { display: grid; gap: 10px; }
-.flip { perspective: 1100px; width: 100%; max-width: 400px; height: 262px; justify-self: center; }
-.flip-in { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .6s cubic-bezier(.3, 1.3, .5, 1); }
+/* the hero's card: the front sizes to its painting and plate (the name always sits on the plate, under the painting);
+   the back lies over it and scrolls when the story is longer (Game Director, 27 Nov 2026) */
+.flip { perspective: 1100px; width: 100%; max-width: 400px; justify-self: center; }
+.flip-in { position: relative; width: 100%; transform-style: preserve-3d; transition: transform .6s cubic-bezier(.3, 1.3, .5, 1); }
 .flip.back .flip-in { transform: rotateY(180deg); }
 .face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 8px; overflow: hidden; border: 2px solid #2a1a12;
   box-shadow: 0 2px 0 #1c110b, 0 12px 26px rgba(0,0,0,.5); font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
-.face.front { background: var(--paper); color: var(--paper-ink); display: grid; grid-template-rows: auto 1fr; }
+.face.front { position: relative; inset: auto; background: var(--paper); color: var(--paper-ink); display: grid; grid-template-rows: auto auto; }
 .face.front svg { display: block; width: 100%; height: auto; }
-.face.front .plate { padding: 8px 12px; display: grid; gap: 4px; align-content: center; }
-.face.front .plate b { font-size: 20px; } .face.front .plate span { font-size: 12.5px; }
-.face.front .mv { display: flex; gap: 6px; flex-wrap: wrap; font-family: system-ui, sans-serif; font-size: 11px; }
-.face.front .mv { display: flex; flex-wrap: wrap; gap: 6px; }
+.face.front .plate { padding: 10px 14px 13px; display: grid; gap: 8px; align-content: start; border-top: 2px solid #2a1a12; }
+.face.front .plate b { font-size: 21px; line-height: 1.15; }
+.face.front .mv { display: flex; gap: 6px; flex-wrap: wrap; font-family: system-ui, sans-serif; font-size: 12px; }
 /* the card's skills: filled when the hero knows them, outlined (dashed, faint) when not yet; a star per upgrade */
 .face.front .mv em { font-style: normal; border: 1.5px solid #2a1a12; border-radius: 99px; padding: 3px 11px; line-height: 1.3; }
 .face.front .mv em.on { background: #2a1a12; color: #f6efdc; }
@@ -588,11 +579,12 @@ body.mobile .gbg { grid-template-columns: 1fr; }
   background: repeating-linear-gradient(0deg, #d9b98a 0 3px, #d3b282 3px 4px, #dcbd90 4px 9px), #d9b98a; }
 .face.rear h4 { font-size: 16px; margin: 0 0 6px; border-bottom: 2px solid #7d1f25; padding-bottom: 4px; display: flex; justify-content: space-between; align-items: baseline; }
 .face.rear h4 small { font-size: 11px; font-weight: 500; font-family: system-ui, sans-serif; }
+.face.rear .rsub { font-style: italic; color: #4a3220; }
 .face.rear p { margin: 0 0 6px; font-size: 13.5px; line-height: 1.45; }
 .hm-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-@media (max-width: 760px) { .hm-body { grid-template-columns: 1fr; } .spirit { height: 210px; } .spirit .hero.spr { --px: 3px; } .spirit::before { width: 150px; height: 150px; margin-left: -75px; } .flip { height: 250px; } }
+@media (max-width: 760px) { .hm-body { grid-template-columns: 1fr; } .spirit { height: 210px; } .spirit .hero.spr { --px: 3px; } .spirit::before { width: 150px; height: 150px; margin-left: -75px; } }
 body.mobile .hm-body { grid-template-columns: 1fr; padding: 12px; } body.mobile .spirit { height: 200px; } body.mobile .spirit .hero.spr { --px: 3px; }
-body.mobile .spirit::before { width: 150px; height: 150px; margin-left: -75px; } body.mobile .flip { height: 250px; } body.mobile .hm h2 { font-size: 22px; }
+body.mobile .spirit::before { width: 150px; height: 150px; margin-left: -75px; } body.mobile .hm h2 { font-size: 22px; }
 @media (prefers-reduced-motion: reduce) { .spirit .sp, .spirit::before, .spirit .mote, .spirit.cursed .hero.spr { animation: none !important; } .spirit.cursed .hero.spr { filter: none; } .flip-in { transition: none; } }
 
 /* ---------- Per-hero health, levels, fallen heroes ---------- */
@@ -600,6 +592,9 @@ body.mobile .spirit::before { width: 150px; height: 150px; margin-left: -75px; }
 .herowrap .hpbar { min-width: 0; width: 100%; height: 6px; }
 .herowrap .hpbar i { background: var(--good); }
 .herowrap .hpbar.low i { background: var(--gold); } .herowrap .hpbar.crit i { background: var(--danger); }
+/* the diamond under a hero in battle: the colour of their letters (ownC), so it is plain whose letters are whose */
+.owndia { display: inline-block; width: 8px; height: 8px; margin: 0 5px 0 2px; vertical-align: 1px; transform: rotate(45deg); background: var(--c);
+  box-shadow: 0 0 0 1.5px #0b0c10, 0 0 6px color-mix(in srgb, var(--c) 60%, transparent); }
 .herowrap .hpnum { display: flex; gap: 4px; align-items: center; white-space: nowrap; }
 .herowrap .lv { color: var(--gold); font-size: 7px; letter-spacing: 1px; }
 .herowrap .lv u { text-decoration: none; opacity: .28; }
@@ -632,9 +627,27 @@ body.mobile #app:has(.battle) { padding-bottom: 0; }
 body.mobile .battle { display: flex; flex-direction: column; height: calc(100dvh - var(--battle-top, 57px)); }
 body.mobile .battle > * { flex-shrink: 0; }
 body.mobile .battle > .scene { flex: 1 1 auto; min-height: 170px; }
-/* the tip sits over the sky, under the actors and cards, and lets taps through */
-.scene > .coach { position: absolute; top: 8px; left: 8px; right: 8px; pointer-events: none;
-  font-size: 12px; line-height: 1.35; padding: 6px 9px; background: rgba(22, 30, 52, .92); border: 1px solid #34466e; }
+/* the tip is a "?" button in the scene's top-left corner, over the sky; a tap opens it as a popover (27 Nov 2026).
+   The strip itself lets taps through, only the button and the open popover take them. */
+.scene > .coach-tip { position: absolute; top: 6px; left: 6px; right: 6px; z-index: 2; pointer-events: none;
+  background: none; border: 0; border-radius: 0; padding: 0; }
+.coach-btn { position: relative; pointer-events: auto; width: 30px; height: 30px; padding: 0; border-radius: 50%;
+  display: grid; place-items: center; font: 700 16px/1 system-ui, sans-serif; color: var(--gold);
+  background: rgba(22, 30, 52, .92); border: 1px solid #34466e; box-shadow: 0 2px 6px rgba(0, 0, 0, .35); cursor: pointer;
+  -webkit-tap-highlight-color: transparent; }
+.coach-btn::before { content: ''; position: absolute; inset: -7px; }   /* a 44 px touch target around the 30 px disc */
+.coach-btn[aria-expanded="true"] { border-color: var(--gold); background: #2a2413; }
+.coach-tip.fresh .coach-btn::after { content: ''; position: absolute; top: -2px; right: -2px; width: 9px; height: 9px;
+  border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 2px rgba(22, 30, 52, .92); animation: coachdot 1.6s ease-in-out 3; }
+@keyframes coachdot { 50% { transform: scale(1.35); } }
+@media (prefers-reduced-motion: reduce) { .coach-tip.fresh .coach-btn::after { animation: none; } }
+.coach-pop { position: relative; pointer-events: auto; margin-top: 8px; width: max-content; max-width: 100%;
+  font-size: 12.5px; line-height: 1.4; color: #cfe0ff; padding: 8px 10px; border-radius: 8px;
+  background: rgba(22, 30, 52, .96); border: 1px solid #34466e; box-shadow: 0 6px 18px rgba(0, 0, 0, .45); }
+.coach-pop::before { content: ''; position: absolute; top: -6px; left: 10px; width: 10px; height: 10px; transform: rotate(45deg);
+  background: inherit; border-left: 1px solid #34466e; border-top: 1px solid #34466e; }
+.coach-pop b { color: var(--gold); font-weight: 700; }
+.coach-pop[hidden] { display: none; }
 /* while the tip covers the sky, the dashed frame alone marks the target */
 body.mobile .scene.coaching .foewrap .tg { visibility: hidden; }
 /* feedback covers the word-count line for its 3 s instead of adding a row; proposals stay on one line */
@@ -724,30 +737,59 @@ body.mobile .wordbar .chips { min-height: 24px; }
 .gobjs figure { margin: 0; display: grid; justify-items: center; gap: 4px; font-size: 11.5px; color: var(--dim); }
 
 .pick { max-width: 860px; margin: 10px auto; display: grid; gap: 12px; }
-.pick .lead { color: var(--dim); margin: 0; line-height: 1.45; }
+.pick h1.pick-h, body.mobile .pick h1.pick-h { font-size: 30px; margin: 0; line-height: 1.1; }
+body.mobile .pick h1.pick-h { font-size: 24px; }
 .pickgrid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
-.pickcard { display: grid; justify-items: center; gap: 2px; background: var(--panel); border: 2px solid var(--line); border-radius: var(--radius); padding: 8px 4px; cursor: pointer; min-width: 0; }
+.pickcard { display: grid; justify-items: center; align-content: start; gap: 4px; background: var(--panel); border: 2px solid var(--line); border-radius: var(--radius); padding: 8px 4px; cursor: pointer; min-width: 0; }
 .pickcard.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 14%, var(--panel)); }
 .pickcard.god { border-style: dashed; } .pickcard.god.on { border-style: solid; }
 .pickcard i { width: 64px; height: 64px; background-size: 200% 100%; image-rendering: pixelated; }
 .pickcard b { font-size: 12.5px; text-align: center; } .pickcard span { font-size: 11px; color: var(--dim); text-align: center; }
-.pickinfo { display: grid; grid-template-columns: 220px 1fr; gap: 16px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; }
-.pickinfo h2 { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-.pickinfo .stats { margin: 8px 0; }
+/* the chosen hero, in one row: the sprite 40 %, the details 60 % (Game Director, 27 Nov 2026) */
+.pickinfo { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 14px; align-items: stretch; background: var(--panel);
+  border: 1px solid var(--line); border-top: 3px solid var(--c); border-radius: var(--radius); padding: 14px; scroll-margin-top: 8px; }
+.pickinfo .spirit { height: auto; min-height: 220px; padding-bottom: 18px; }
+.pdet { display: grid; gap: 9px; align-content: start; min-width: 0; }
+.pdet h2 { margin: 0; font-size: 24px; line-height: 1.15; }
+.ptags { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+.ptags .gtag { margin: 0; }
+.psub { margin: 0; color: var(--dim); font-size: 13.5px; line-height: 1.35; }
+.psec h3 { margin: 0 0 5px; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
+.pchips { display: flex; flex-wrap: wrap; gap: 5px; }
+.pchip { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 13px; font-weight: 700; line-height: 1.35; white-space: nowrap;
+  color: var(--ink); background: color-mix(in srgb, var(--c) 18%, var(--bg2)); border: 1px solid color-mix(in srgb, var(--c) 55%, var(--line)); }
+.pchip.w { font-weight: 600; color: var(--dim); background: var(--bg2); border-color: var(--line); }
+.pfx { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.pfx li { display: flex; align-items: center; gap: 8px; font-size: 14px; line-height: 1.3; }
+.pfx img.fxi { height: 17px; flex: none; margin: 0; vertical-align: 0; }
+.pickgo { grid-column: 1 / -1; display: flex; gap: 8px; }
+.pickgo .btn { min-height: 44px; justify-content: center; } .pickgo .btn.primary { flex: 1 1 auto; font-weight: 800; }
+/* a hero's role: its icon and name in the role's colour (only in the chosen hero's details, not on the list's cards) */
+.rtag { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px 2px 6px; border-radius: 99px; font-size: 12px; font-weight: 800; line-height: 1.4;
+  white-space: nowrap; color: var(--tc); background: color-mix(in srgb, var(--tc) 15%, transparent); border: 1px solid color-mix(in srgb, var(--tc) 45%, transparent); }
+.rtag img.fxi { height: 14px; margin: 0; vertical-align: 0; }
+.php { display: inline-flex; align-items: center; gap: 5px; font-size: 14px; font-weight: 800; }
+.php img.fxi { height: 14px; margin: 0; vertical-align: 0; }
 .ending .endparty { display: flex; gap: 18px; flex-wrap: wrap; margin: 14px 0; }
 .ending .endparty figure { margin: 0; display: grid; justify-items: center; gap: 6px; font-size: 12px; color: var(--dim); }
 
 @media (max-width: 760px) {
   .obj.spr { --px: 1px; } .obj.spr.big { --px: 2px; }
   .tv-status { grid-template-columns: 1fr; } .tv-heroes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .pickgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } .pickinfo { grid-template-columns: 1fr; } .gitems { grid-template-columns: 1fr; }
+  .pickgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } .gitems { grid-template-columns: 1fr; }
 }
 body.mobile .obj.spr { --px: 1px; } body.mobile .obj.spr.big { --px: 2px; }
 body.mobile .tv-obj { bottom: 40px; } body.mobile .tv-obj .cap { font-size: 10px; padding: 0 6px; }
 body.mobile .tv-status { grid-template-columns: 1fr; } body.mobile .tv-heroes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 body.mobile .tv-hero > i { width: 32px; height: 32px; }
 body.mobile .tv-prompt { position: sticky; bottom: 0; z-index: 3; }
-body.mobile .pickgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } body.mobile .pickinfo { grid-template-columns: 1fr; } body.mobile .pickcard i { width: 48px; height: 48px; }
+body.mobile .pickgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } body.mobile .pickcard i { width: 48px; height: 48px; }
+body.mobile .pickinfo { gap: 10px; padding: 10px; } body.mobile .pickinfo .spirit { height: auto; min-height: 180px; padding-bottom: 14px; }
+body.mobile .pickinfo .spirit .hero.spr { --px: 3px; }
+/* narrow phones (360 px): the 40 % column is narrower than a 3× sprite, so the sprite shrinks to fit instead of being cut */
+@supports (container-type: inline-size) { .pickinfo .spirit { container-type: inline-size; }
+  body.mobile .pickinfo .spirit .hero.spr { --px: min(3px, calc(100cqw / var(--art, 48))); } } body.mobile .pickinfo .spirit::before { width: 130px; height: 130px; margin-left: -65px; }
+body.mobile .pdet { gap: 8px; } body.mobile .pdet h2 { font-size: 20px; } body.mobile .pchip { font-size: 12.5px; padding: 3px 8px; } body.mobile .pfx li { font-size: 13.5px; }
 body.mobile .gitems { grid-template-columns: 1fr; } body.mobile .foename { font-size: 9px; }
 body.mobile .regdots i { width: 7px; height: 7px; }
 @media (prefers-reduced-motion: reduce) { .obj.spr.npc .sp { animation: none; } }
@@ -776,7 +818,17 @@ body.held .puzzle, body.held .wordbar, body.held .event .panel, body.held .lanes
   filter: blur(18px) saturate(.4) brightness(.8); pointer-events: none; user-select: none; }
 .overlay.pause { z-index: 70; background: rgba(8, 9, 12, .78); padding: 12px; }
 .overlay.tut { z-index: 80; background: rgba(8, 9, 12, .8); padding: 10px; }
-.pause-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 4px; }
+/* the pause window is a game menu (Game Director, 27 Nov 2026): a tall panel, everything centred, the buttons in one
+   column of equal width, Nadaljuj first; the sound settings at the foot */
+.overlay.pause .dialog { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+  width: min(440px, 92vw); min-height: min(680px, 84vh); padding: 30px 24px; box-sizing: border-box; }
+.overlay.pause h2 { margin: 0; font-size: 36px; letter-spacing: .02em; }
+.overlay.pause .dialog > .muted { margin-top: 6px; max-width: 30ch; line-height: 1.4; }
+.pause-actions { display: grid; gap: 12px; width: min(100%, 320px); margin: 28px auto 6px; }
+.pause-actions .btn { width: 100%; min-height: 54px; font-size: 17px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.pause-actions .btn kbd { font-size: 11px; }
+.overlay.pause .soundctl { width: min(100%, 320px); text-align: left; margin-top: 22px; }
+body.mobile .overlay.pause .dialog { min-height: min(720px, 86vh); }
 .volrow { display: flex; align-items: center; gap: 12px; margin-top: 16px; color: var(--dim); font-size: 13px; }
 .volrow input { flex: 1; accent-color: var(--gold); min-width: 0; }
 .volrow output { width: 3.2em; text-align: right; font-variant-numeric: tabular-nums; }
@@ -1179,8 +1231,10 @@ body.mobile .skillbtn { min-height: 40px; padding: 6px 12px; }
 .sk-sum b { color: var(--ink); }
 .sk-pts { padding: 2px 10px; border-radius: 99px; border: 1px solid var(--line); }
 .sk-pts.on { border-color: var(--gold); color: var(--gold); font-weight: 700; }
-.sk { border: 1px solid var(--line); border-left: 3px solid var(--c); border-radius: 10px; padding: 10px 12px; background: var(--panel2); }
-.sk.off { border-left-style: dashed; background: transparent; }
+/* a skill's card: a full border in the hero's colour around the whole card (Game Director, 27 Nov 2026), dashed while
+   the skill is not learned yet */
+.sk { border: 2px solid var(--c); border-radius: 10px; padding: 10px 12px; background: var(--panel2); }
+.sk.off { border-style: dashed; border-color: color-mix(in srgb, var(--c) 75%, transparent); background: transparent; }
 .sk-head { display: flex; align-items: center; gap: 8px; }
 .sk-head b { font-size: 15px; }
 .sk.off .sk-head b { color: var(--dim); }
@@ -1299,7 +1353,7 @@ body.mobile .hm-foot { position: sticky; bottom: 0; z-index: 25; margin: 0 -10px
   background: linear-gradient(to bottom, transparent, var(--bg) 14px); }
 body.mobile .hm-foot .btn { flex-basis: 100%; min-height: 48px; font-size: 16px; }
 /* a little less height for the pictures on a phone, so more of the screen is the hero and the way on */
-body.mobile .spirit { height: 170px; } body.mobile .flip { height: 220px; }
+body.mobile .spirit { height: 170px; }
 /* the puzzle that waits at a stop */
 .tv-prompt .ptag { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; font-size: 12.5px; font-weight: 700; white-space: nowrap;
   color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 50%, var(--line)); background: color-mix(in srgb, var(--gold) 10%, var(--panel)); }
@@ -1376,6 +1430,12 @@ body.mobile .report .rp-send .btn, body.mobile .report .rp-close { min-height: 4
 .scene.pbg > .partyhp, .scene.pbg > .cards, .scene.pbg > .floats { z-index: 2; }
 .scene.pbg .foewrap > :not(.spr) { position: relative; z-index: 2; }   /* an enemy's name, health and pips stay over a front layer */
 .scene.travel.pbg > .pbg-l.front { z-index: 3; }
+/* near trees the party walks past (`passing`, Triglav): only on the road, never over a battle or the gallery; while the
+   party stands (a stop, a prompt) they fade back, so they never hide anyone during a choice */
+.scene:not(.travel) > .pbg-l.passing { display: none; }
+.scene.travel > .pbg-l.passing { transition: opacity .45s ease; }
+.scene.travel:not(.walking) > .pbg-l.passing { opacity: .22; }
+@media (prefers-reduced-motion: reduce) { .scene.travel > .pbg-l.passing { transition: none; } }
 .gbg .gpbg { position: relative; width: 100%; overflow: hidden; border-radius: 6px; border: 1px solid var(--line); background: #1a1e2b; }
 
 /* ---------------------------------------------------------------- achievements (src/achievements.js, data/achievements.json) */
@@ -1422,3 +1482,105 @@ body.mobile .report .rp-send .btn, body.mobile .report .rp-close { min-height: 4
 .cardview .cv-hint { position: absolute; bottom: 12px; font-size: 11px; color: var(--dim); }
 .gpaint { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
 .gpaint figure { margin: 0; display: grid; gap: 6px; font-size: 12px; color: var(--dim); }
+
+/* Kolo črk: the zagovor's crossword on a letter wheel (src/wheel.js) */
+.wbody { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.wgridwrap { max-width: 100%; overflow-x: auto; }
+.wgrid .cell { cursor: default; }
+.cell.given { background: #efe4c8; color: #6d5a3c; }
+.cell.rev { background: #f2d9a8; color: #8a5a18; }
+.cell.main:not(.ok) { box-shadow: inset 0 0 0 2px var(--gold); }
+.cell.flash { animation: cwflash .7s; }
+@keyframes cwflash { 0% { transform: scale(1.18); } 100% { transform: scale(1); } }
+.battle.wheelon .wordbar { display: none; }   /* the wheel shows its own word: nothing between the scene and the puzzle */
+.battle.wheelon .side:empty { display: none; }
+.whead { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; min-height: 34px; }
+.whead b { font-size: 15px; }
+.whead .grow { flex: 1; }
+.whead .wq, .whead .wx { position: relative; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); background: var(--bg2); color: var(--ink);
+  font: inherit; font-weight: 800; font-size: 16px; display: grid; place-items: center; cursor: pointer; padding: 0; }
+.whead .wq.new::after { content: ''; position: absolute; top: -2px; right: -2px; width: 10px; height: 10px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 2px var(--panel); }
+.wrow { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; width: min(100%, 360px); min-height: 32px; }
+.wrow > :first-child { justify-self: start; } .wrow > :last-child { justify-self: end; font-size: 13px; }
+.wrow .wrev { min-height: 30px; padding: 3px 10px; font-size: 13px; }
+.wword { min-height: 30px; font-size: 22px; font-weight: 800; letter-spacing: .08em; color: var(--gold); text-align: center; white-space: nowrap; }
+.wword.said { font-size: 16px; letter-spacing: 0; }
+.wword.said.ok { color: var(--good); }
+.wword.said.warn { color: var(--dim); }
+.wword.said.bad { color: #f08a7a; animation: shake .3s; }
+.wheel { position: relative; width: min(240px, 62vw); aspect-ratio: 1; border-radius: 50%; touch-action: none; user-select: none; -webkit-user-select: none;
+  background: radial-gradient(circle at 50% 45%, #2a2c36, #1a1b22 70%); border: 2px solid #3a3320; box-shadow: inset 0 0 0 6px #14151a, 0 6px 18px #0006; }
+.wheel .wlines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.wheel .wl { position: absolute; width: 21%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; display: grid; place-items: center;
+  font-size: clamp(18px, 6.4vw, 26px); font-weight: 800; color: var(--paper-ink); background: var(--paper); box-shadow: 0 2px 0 #b9a47e; pointer-events: none; }
+.wheel .wl.on { background: var(--gold); color: #2a1d08; box-shadow: 0 0 0 3px #f6d36a55; }
+.wheel .wshuffle { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 22%; aspect-ratio: 1; border-radius: 50%;
+  border: 1px solid var(--line); background: #22232b; color: var(--dim); font-size: 22px; cursor: pointer; }
+.wheel.mini { width: 150px; pointer-events: none; }
+.wheel.mini .wl { font-size: 17px; }
+body.mobile .wgrid { --cell: 28px; }
+
+/* a boss's crown, floating over its head on the road and in battle (Game Director, 27 Nov 2026: instead of "Šef") */
+.actor.foe.boss > .crown { position: absolute; left: 50%; bottom: calc(100% - var(--crown-dip, 4px)); width: 30px; aspect-ratio: 11 / 7; z-index: 3;
+  background: center / 100% 100% no-repeat; image-rendering: pixelated; transform: translateX(-50%); pointer-events: none;
+  filter: drop-shadow(0 0 4px #f6d36a99) drop-shadow(0 2px 0 #0008); animation: crownbob 2.2s ease-in-out infinite; }
+@keyframes crownbob { 0%, 100% { transform: translate(-50%, 0) rotate(-3deg); } 50% { transform: translate(-50%, -5px) rotate(3deg); } }
+body.mobile .actor.foe.boss > .crown { width: 22px; }
+@media (prefers-reduced-motion: reduce) { .actor.foe.boss > .crown { animation: none; } }
+
+/* Dosežki in junaki: tabs (Dosežki, Junaki, Nasprotniki; Game Director, 27 Nov 2026) */
+.heroes .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin: 4px 0 14px; position: sticky; top: 0; z-index: 2; background: var(--bg); }
+.heroes .tab { flex: 1 1 0; min-height: 44px; padding: 8px 10px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--dim);
+  font: inherit; font-weight: 800; font-size: 15px; cursor: pointer; }
+.heroes .tab.on { color: var(--ink); border-bottom-color: var(--gold); }
+.heroes .tab:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+.foeinfo:empty { display: none; }
+.foeinfo { margin-bottom: 12px; }
+.foegrid .pickcard.on { border-color: var(--gold); }
+.foegrid .pickcard.boss:not(.locked) { border-color: #c0506a88; }
+.foepick .spirit { display: grid; place-items: end center; }
+.foepick .spirit .actor { position: relative; }
+.foepick .spirit { container-type: inline-size; }
+.foepick .spirit .foe.spr { --px: min(2.5px, calc(88cqw / var(--art, 48))); }
+.page .foepick .pdet h2 { display: block; font-size: 24px; letter-spacing: 0; text-transform: none; color: var(--ink); margin: 0; }
+body.mobile .page .foepick .pdet h2 { font-size: 21px; }
+
+/* the ending: a victory (Game Director, 27 Nov 2026) — the party cheers close up, confetti, tap a hero for skills and hits */
+.ending.victory { position: relative; overflow: hidden; }
+.ending.victory .logo { background: linear-gradient(180deg, #fff3c2, #f6d36a 55%, #c98a1c); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 3px 0 #5a3a10) drop-shadow(0 0 18px #f6d36a55); animation: endpop .9s cubic-bezier(.2, 1.6, .4, 1) both; }
+@keyframes endpop { 0% { transform: scale(.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.confetti { position: absolute; inset: 0 0 auto 0; height: 100%; pointer-events: none; z-index: 0; }
+.confetti i { position: absolute; top: -12px; width: 7px; height: 11px; border-radius: 1px; background: var(--k); opacity: .85;
+  animation: confetti 6s linear infinite; animation-delay: var(--d); }
+@keyframes confetti { 0% { transform: translate(0, -10px) rotate(0); } 100% { transform: translate(var(--x), 105vh) rotate(720deg); } }
+.ending.victory > *:not(.confetti) { position: relative; z-index: 1; }
+.endparty.cheer { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 8px; margin: 18px 0 4px; }
+.endhero { position: relative; display: grid; justify-items: center; align-content: end; gap: 6px; padding: 14px 4px 10px; border: 2px solid transparent; border-radius: 14px;
+  background: none; color: var(--ink); cursor: pointer; container-type: inline-size; min-width: 0; }
+.endhero.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 12%, transparent); }
+.endhero b { font-size: 14px; text-align: center; }
+body .ending .endhero .hero.spr { --px: min(4px, calc(92cqw / var(--art, 48))); position: relative; }
+.endhero .sp { transform-origin: 50% 100%; animation: cheer 1.15s ease-in-out infinite; animation-delay: var(--d) !important; }
+@keyframes cheer { 0%, 100% { transform: translateY(0) scale(1, 1); } 14% { transform: translateY(0) scale(1.08, .9); }
+  38% { transform: translateY(-22%) scale(.95, 1.07) rotate(-4deg); } 52% { transform: translateY(-24%) scale(.96, 1.05) rotate(4deg); }
+  70% { transform: translateY(0) scale(1.07, .93); } 82% { transform: translateY(0) scale(1, 1); } }
+.endglow { position: absolute; left: 50%; bottom: 30px; width: 80%; aspect-ratio: 1; transform: translateX(-50%); border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--c) 45%, transparent), transparent 68%); animation: endglow 2.3s ease-in-out infinite; animation-delay: var(--d); }
+@keyframes endglow { 0%, 100% { opacity: .55; transform: translateX(-50%) scale(.9); } 50% { opacity: 1; transform: translateX(-50%) scale(1.05); } }
+.endtap { margin: 2px 0 10px; font-size: 13px; text-align: center; }
+.endinfo:empty { display: none; }
+.endinfo { border: 1px solid var(--line); border-top: 3px solid var(--c); border-radius: var(--radius); background: var(--panel); padding: 12px 14px; display: grid; gap: 10px; }
+.endinfo > h3 { margin: 0; font-size: 19px; }
+.endinfo .pchip .stars { font-style: normal; color: var(--gold); }
+.endhits { margin: 0; padding: 0; list-style: none; display: grid; gap: 5px; }
+.endhits li { display: flex; gap: 10px; align-items: baseline; font-size: 14px; }
+.endhits b { min-width: 46px; color: #f08a7a; font-size: 17px; }
+.endhits em { margin-left: auto; font-style: normal; font-weight: 800; letter-spacing: .05em; color: var(--gold); }
+.endwords { margin: 14px 0 0; }
+.endwords h3 { margin: 0 0 6px; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
+.endwords .pchip { font-size: 15px; letter-spacing: .04em; }
+.endwords .pchip small { color: var(--faint); font-weight: 600; }
+@media (prefers-reduced-motion: reduce) { .confetti, .endhero .sp, .endglow, .ending.victory .logo { animation: none !important; } }
+.endbtns { display: grid; gap: 10px; width: min(100%, 320px); margin: 26px auto 8px; }
+.endbtns .btn { justify-content: center; min-height: 50px; font-size: 17px; font-weight: 800; }

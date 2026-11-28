@@ -80,6 +80,7 @@ run(async () => {
     check(mid.words === 3 && mid.red && end === 0, 'a string that is not a word plays nothing: it flashes red and clears itself', JSON.stringify({ mid, end }));
   }
 
+  await page.evaluate(() => window.__ZG.setWheelPref('klasika'));   // the typed crossword here; Kolo črk, the phone's default, has tests/wheel.test.js
   // 2. Crossword: wrong letters stay black and do nothing; a correct entry turns green and fires
   // full health and no Kresnik burn ticking from the first word, so only the crossword can do damage
   await page.evaluate(() => { const B = window.__ZG.B; B.meter = 30; B.enemies.forEach(e => { e.hp = e.maxHp; e.burn = null; e.burnTurns = 0; }); });
@@ -199,6 +200,42 @@ run(async () => {
   });
   check(back.pause[1] === true && back.resume[1] === false && back.gallery[1] === 'heroes' && back.heroes[1] === 'title' && back.title === 'exit',
     'Android back: pauses a battle, resumes it, steps back page by page to the start screen and only exits from there', JSON.stringify(back));
+
+  // 8. The coach tip (Namig) is a "?" button over the sky (27 Nov 2026): closed at first with a dot for a new tip, a tap opens
+  //    the popover, a tap outside closes it and still reaches what was tapped, the button toggles it, and the grid never moves
+  await page.evaluate(() => { const Z = window.__ZG; Z.S.know = 'malcek'; Z.go('battle', Z.NODES[0]); Z.B.enemies.forEach(e => { e.charge = -99; }); }); await sleep(400);
+  const tipState = () => page.evaluate(() => { const c = document.querySelector('.scene > .coach-tip'), b = c && c.querySelector('.coach-btn'), p = c && c.querySelector('.coach-pop'), r = b && b.getBoundingClientRect(), s = document.querySelector('.scene').getBoundingClientRect();
+    return c && { shown: c.style.display !== 'none', open: !p.hidden, aria: b.getAttribute('aria-expanded'), fresh: c.classList.contains('fresh'), text: p.textContent,
+      btn: [Math.round(r.left - s.left), Math.round(r.top - s.top), Math.round(r.width)], hit: document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2) === b,
+      coaching: document.querySelector('.scene').classList.contains('coaching'), meshTop: Math.round(document.querySelector('.mesh').getBoundingClientRect().top),
+      popW: Math.round(p.getBoundingClientRect().width), sceneW: Math.round(s.width) }; });
+  const t1 = await tipState();
+  check(t1 && t1.shown && !t1.open && t1.aria === 'false' && t1.fresh && /Vleci s prstom/.test(t1.text) && t1.btn[0] < 16 && t1.btn[1] < 16 && t1.hit && !t1.coaching,
+    'the coach tip starts as a "?" button in the scene\'s top-left corner, closed, with a dot for the new tip (the phone wording is in it)', JSON.stringify(t1));
+  await page.tap('.coach-btn'); await sleep(150);
+  const t2 = await tipState();
+  check(t2.open && t2.aria === 'true' && !t2.fresh && t2.coaching && t2.popW <= t2.sceneW - 12 && t2.meshTop === t1.meshTop, 'a tap on ? opens the tip over the sky, inside the scene; the letter grid does not move', JSON.stringify(t2));
+  await page.tap('.coach-pop'); await sleep(100);
+  check((await tipState()).open, 'a tap inside the tip keeps it open');
+  const [tx, ty] = await center(page, '.mesh .tile', 0);
+  await page.touchscreen.tap(tx, ty); await sleep(150);
+  const t3 = await tipState(), tapped = await page.evaluate(() => window.__ZG.B.path.length);
+  check(!t3.open && t3.aria === 'false' && !t3.coaching && tapped === 1, 'a tap outside (on a letter) closes the tip, and the letter is still picked', JSON.stringify({ open: t3.open, tapped }));
+  await page.evaluate(() => { const B = window.__ZG.B; B.path = []; B.typed = ''; window.__ZG.renderWordForTest(); });
+  await page.tap('.coach-btn'); await sleep(100); const t4 = (await tipState()).open;
+  await page.tap('.coach-btn'); await sleep(100); const t5 = (await tipState()).open;
+  check(t4 && !t5, 'the ? button opens and closes the tip');
+  // the first word played brings the next tip: the button gets its dot again, the popover stays closed
+  await page.tap('.coach-btn'); await sleep(100); await shot('phone-08-coach-tip-open'); await page.tap('.coach-btn'); await sleep(100);
+  const [, p2] = await page.evaluate(() => [...window.__ZG.allWords().entries()].find(([w]) => w.length >= 3));
+  for (const i of p2) await tapTile(i);
+  await page.tap('.wordbar .send'); await sleep(400);
+  const t6 = await tipState();
+  check(t6.shown && !t6.open && t6.fresh && /Barvne črke/.test(t6.text), 'the next tip after the first word marks the ? button with the dot again, closed', JSON.stringify({ open: t6.open, fresh: t6.fresh, text: t6.text }));
+  await shot('phone-08-coach-tip');
+  await page.evaluate(() => { window.__ZG.S.know = 'molj'; window.__ZG.go('battle', window.__ZG.NODES[0]); }); await sleep(300);
+  check(await page.evaluate(() => { const c = document.querySelector('.coach-tip'); return !c || c.style.display === 'none'; }), 'Knjižni molj: no coach tip, no ? button');
+  await page.evaluate(() => { window.__ZG.S.know = 'malcek'; });
 
   check(errors.length === 0, 'no page or console errors', errors.join(' | '));
   return ctx;

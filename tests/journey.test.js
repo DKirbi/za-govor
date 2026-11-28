@@ -100,7 +100,7 @@ run(async () => {
     'the beaten enemy gives the hero XP from their own part of the fight: attacks + damage + its level', `${xpAfter} (fixed ${foe0}) ${ownXp.log.slice(0, 160)} ${JSON.stringify(ownXp.rows)}`);
   for (let i = 0; i < 4 && (await state(page)).screen !== 'travel'; i++) { await page.keyboard.press('Enter'); await sleep(450); }
   s = await state(page);
-  check(s.screen === 'travel' && s.gold > 20, 'a won battle pays gold and leads back to the road', `gold ${s.gold}`);
+  check(s.screen === 'travel' && s.gold > 20 && s.gold - 20 <= 6, 'a won battle pays a little gold (1 an enemy: gold comes from chests, 27 Nov 2026) and leads back to the road', `gold ${s.gold}`);
   check(s.hp[0] < s.maxHp[0] && s.hp[0] === hpAfter, 'health does not come back after a battle', `${s.hp[0]}/${s.maxHp[0]}`);
 
   // second stop: a hero waits; greeting does not unlock them, joining does
@@ -136,7 +136,7 @@ run(async () => {
   await page.keyboard.press('Enter'); await sleep(300);
   s = await state(page);
   const items = Object.values(s.bag).reduce((a, n) => a + n, 0) + s.relics.length;
-  check(s.gold > gold0 && items === 1 && s.xp.join() === xp0.join(), 'the chest pays gold and holds one item; it gives no experience', JSON.stringify({ gold: s.gold, bag: s.bag, relics: s.relics, xp: s.xp }));
+  check(s.gold - gold0 >= 35 && items === 1 && s.xp.join() === xp0.join(), 'the chest pays the gold (35 or more, 27 Nov 2026) and holds one item; it gives no experience', JSON.stringify({ gold: s.gold, bag: s.bag, relics: s.relics, xp: s.xp }));
   await page.keyboard.press('Enter'); await sleep(400);
 
   // a hero you walk past stays unknown
@@ -199,9 +199,12 @@ run(async () => {
   check(!shopActs.acts.some(l => /Veščine/.test(l)) && !shopActs.glow, 'the pedlar offers no Veščine and nobody glows there, even with a point to spend', JSON.stringify(shopActs));
   await page.evaluate(() => { window.__ZG.S.heroes[0].pts = 0; });
   await page.keyboard.press('Enter'); await sleep(400);
-  const stock = await page.evaluate(() => document.querySelectorAll('.dialog.bag .itemrow').length);
-  check(stock === 6, 'the pedlar offers four potions or poisons and two relics', String(stock));
+  const stock = await page.evaluate(() => { const Z = window.__ZG, st = Z.S.run.stops.find(x => x.kind === 'shop' && !x.done); return st.stock.map(s => Z.ITEMS[s.id].kind); });
+  check(stock.length <= 4 && stock.filter(k => k === 'heal').length === 1 && stock.filter(k => k === 'relic').length <= 1,
+    'the pedlar offers four things at most (27 Nov 2026): a remedy, potions or poisons and a relic', stock.join());
   await page.evaluate(() => document.querySelectorAll('.dialog.bag .itemrow .btn').forEach(b => { if (!b.disabled) b.click(); }));
+  const once = await page.evaluate(() => [...document.querySelectorAll('.dialog.bag .itemrow')].filter(r => r.classList.contains('sold')).map(r => r.querySelector('.btn').disabled && r.querySelector('.btn').textContent));
+  check(once.length >= 1 && once.every(t => t === 'prodano'), 'each thing is sold once: bought, it shows prodano and cannot be bought again', once.join());
   await sleep(200); await shot('journey-05-pedlar');
   const before = s; s = await state(page);
   check(s.gold < 300 && s.relics.length > before.relics.length, 'buying spends gold and adds the items', JSON.stringify({ gold: s.gold, relics: s.relics, bag: s.bag }));
@@ -269,13 +272,13 @@ run(async () => {
   await page.keyboard.press('Enter'); await sleep(500);
   const shrine = await page.evaluate(() => ({ screen: window.__ZG.S.screen, h2: document.querySelector('.shrine h2').firstChild.textContent, sign: !!document.querySelector('.shrine .godsign.big'),
     gods: document.querySelectorAll('.shrine .hero.spr').length, btns: [...document.querySelectorAll('.shrine .row .btn')].map(b => b.textContent) }));
-  check(shrine.screen === 'shrine' && shrine.h2 === 'Svetišče' && shrine.sign && shrine.gods === 0 && /^Pomoli se/.test(shrine.btns[0]), 'the page is titled Svetišče and shows the god\'s sign, never the god', JSON.stringify(shrine));
+  check(shrine.screen === 'shrine' && shrine.h2 === 'Svetišče' && shrine.sign && shrine.gods === 0 && /^Pokloni se/.test(shrine.btns[0]), 'the page is titled Svetišče and shows the god\'s sign, never the god', JSON.stringify(shrine));
   await shot('journey-07-shrine');
   await page.keyboard.press('Enter'); await sleep(400);
   const prayed = await page.evaluate(() => { const Z = window.__ZG, R = Z.S.run; return { prayer: (Z.waitingPrayer() || {}).god, gifts: R.gifts.slice(), say: (document.querySelector('.shrine .say.god') || {}).textContent || '',
     party: Z.HEROES.map(h => h.id), unlocked: Z.UNLOCKED.has('perun') }; });
-  check(prayed.prayer === 'perun' && prayed.gifts.includes('perun') && /Tvoja molitev je uslišana/.test(prayed.say) && !prayed.party.includes('perun') && !prayed.unlocked,
-    'Perun answers the prayer and lends his gift; he neither joins nor is unlocked yet', JSON.stringify(prayed));
+  check(prayed.prayer === 'perun' && prayed.gifts.includes('perun') && /Tvoj poklon je sprejet/.test(prayed.say) && !prayed.party.includes('perun') && !prayed.unlocked,
+    'Perun answers the poklon (28 Nov 2026: no molitev) and lends his gift; he neither joins nor is unlocked yet', JSON.stringify(prayed));
   await shot('journey-07b-prayer');
   await page.keyboard.press('Enter'); await sleep(300);
   // the gift: a word that fires a third skill (three letters of one colour) also sends Perun's lightning to every enemy
@@ -316,6 +319,8 @@ run(async () => {
   await page.keyboard.press('Enter'); await sleep(900);
   const fight = await page.evaluate(() => { const Z = window.__ZG, B = Z.B; return { screen: Z.S.screen, foes: B.enemies.map(e => e.name), hp: B.enemies[0].maxHp, pattern: B.enemies[0].pattern.join(), }; });
   check(fight.screen === 'battle' && fight.foes.join() === 'Gromovnik Perun' && fight.pattern === 'special' && fight.hp > 250, 'Perun fights alone, tougher than any boss on the road, with only his special', JSON.stringify(fight));
+  const strib = await page.evaluate(() => { const Z = window.__ZG, k = Z.godFoe('stribog'), e = Z.ENEMIES[k]; return { pattern: e.pattern.join(), gust: e.moves.gust, special: e.moves.special }; });
+  check(strib.pattern === 'gust,gust,special' && strib.gust === 'Sapica' && strib.special === 'Vihar', 'Stribog blows two gusts (Sapica, letters stay) between his storms (Vihar mixes the letters; 28 Nov 2026)', JSON.stringify(strib));
   // his special is a chain: every hero is hit, the first hardest
   const chain = await page.evaluate(() => { const Z = window.__ZG, B = Z.B; Z.S.heroes.forEach(h => { h.down = false; h.hp = h.maxHp = 200; }); B.shield = 0; B.evade = 0;
     enemyAct(B.enemies[0]); return Z.S.heroes.map(h => 200 - h.hp); });

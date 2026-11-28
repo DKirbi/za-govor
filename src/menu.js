@@ -295,10 +295,17 @@ function renderSettings() {
     crumb(),
     pageH1('Nastavitve'),
     h('section', {}, h('h2', {}, 'Zvok'), soundControls()),
+    // Kolo črk (src/wheel.js): the zagovor's crossword on a letter wheel or typed; PROPOSED default: the wheel on a phone
+    h('section', {}, h('h2', { id: 'set-kolo' }, 'Križanka zagovora'),
+      h('div', { role: 'radiogroup', 'aria-labelledby': 'set-kolo' },
+        ...[['kolo', 'Kolo črk', 'Besede sestavljaš z vlečenjem po črkah na kolesu, brez opisov. Manj besed na kolesu, težja uganka.'],
+          ['klasika', 'Klasična križanka', S.mobile ? 'Opisi besed, odgovore tipkaš s tipkovnico igre.' : 'Opisi besed, odgovore tipkaš.']].map(([v, label, hint]) =>
+          h('label', { class: 'toggle' }, h('input', { type: 'radio', name: 'set-kolo', class: 'set-kolo', value: v, checked: wheelOn() === (v === 'kolo'), onchange: () => setWheelPref(v) }),
+            h('span', {}, label, h('small', {}, hint)))))),
     statsSection(),
     h('section', {}, h('div', { class: 'devbox' }, h('span', { class: 'devtag' }, 'Razvoj'),
       h('h2', {}, 'Kakovost slik'),
-      h('p', { class: 'muted sec-lead' }, 'Visoka: slojevito ozadje Ptuja (Codex). Nizka: slika, ki je v igri doslej. Zimska različica nima nizke kakovosti in ostane visoka. Samodejno prepusti izbiro preizkusu A/B. Velja za naslednjo sliko.'),
+      h('p', { class: 'muted sec-lead' }, 'Velja samo za ozadja. Visoka: slojevita ozadja (Codex). Nizka: slike, ki so v igri doslej. Zimska različica Ptuja nima nizke kakovosti in ostane visoka. Samodejno prepusti izbiro preizkusu A/B. Velja za naslednjo sliko.'),
       ...[['auto', 'Samodejno (privzeto)'], ['high', 'Visoka kakovost'], ['low', 'Nizka kakovost']].map(([v, label]) =>
         h('label', { class: 'toggle' }, h('input', { type: 'radio', name: 'set-fid', class: 'set-fid', value: v, checked: fidelity() === v, onchange: () => setFidelity(v) }),
           h('span', {}, label))))),
@@ -313,22 +320,83 @@ function renderSettings() {
 }
 
 // ------------------------------------------------------------ Dosežki in junaki
+// Dosežki in junaki: three tabs, Dosežki, Junaki and Nasprotniki (Game Director, 27 Nov 2026). The tab stays chosen
+// while the game runs, so the way back from a hero's card lands on Junaki.
+const HEROES_TABS = [['dosezki', 'Dosežki'], ['junaki', 'Junaki'], ['nasprotniki', 'Nasprotniki']];
 function renderHeroes() {
-  const known = CHARS.filter(c => UNLOCKED.has(c.id)).length;
-  SCR.append(h('div', { class: 'page heroes' },
-    crumb(),
-    pageH1('Dosežki in junaki'),
-    achSection(),   // src/achievements.js
-    h('section', {},
+  const known = CHARS.filter(c => UNLOCKED.has(c.id)).length, tab = S.heroesTab || 'dosezki';
+  const panels = {
+    dosezki: achSection(),   // src/achievements.js
+    junaki: h('section', {},
       h('h2', {}, 'Junaki', h('span', { class: 'tag' }, `spoznanih ${known} od ${CHARS.length}`)),
       h('p', { class: 'muted sec-lead' }, 'Na začetku poznaš tri. Ko koga srečaš na poti, ga spoznaš in z njim lahko začneš naslednjo pot. Izberi junaka za njegovo karto in zgodbo.'),
       h('ul', { class: 'pickgrid herogrid' }, CHARS.map(c => h('li', {}, UNLOCKED.has(c.id)
         ? h('button', { class: 'pickcard' + (isGod(c.id) ? ' god' : ''), style: { '--c': c.c },
           onclick: () => go('hero', { kind: 'codex', ids: [c.id], crumb: 'Nazaj na junake', next: () => go('heroes'), nextLabel: 'Nazaj na junake ' }) },
-          h('i', { style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, c.name), h('span', {}, isGod(c.id) ? 'bog' : ROSTER[c.id].role))
+          h('i', { style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, c.name))
         : h('div', { class: 'pickcard locked', title: 'Še neznan: srečaš ga na poti' },
           h('i', { class: 'shade', style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, '???'), h('span', {}, 'še neznan')))))),
+    nasprotniki: foesSection(),
+  };
+  const tabs = HEROES_TABS.map(([id, label]) => h('button', { class: 'tab' + (id === tab ? ' on' : ''), role: 'tab', id: 'tab-' + id, 'aria-selected': String(id === tab), 'aria-controls': 'tp-' + id,
+    tabindex: id === tab ? '0' : '-1', onclick: () => showHeroesTab(id), onkeydown: e => {
+      const i = HEROES_TABS.findIndex(t => t[0] === id), d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (d) { e.preventDefault(); e.stopPropagation(); showHeroesTab(HEROES_TABS[(i + d + HEROES_TABS.length) % HEROES_TABS.length][0], true); } } }, label));
+  SCR.append(h('div', { class: 'page heroes' },
+    crumb(),
+    pageH1('Dosežki in junaki'),
+    h('div', { class: 'tabs', role: 'tablist', 'aria-label': 'Dosežki, junaki in nasprotniki' }, tabs),
+    HEROES_TABS.map(([id]) => h('div', { class: 'tabpanel', role: 'tabpanel', id: 'tp-' + id, 'aria-labelledby': 'tab-' + id, hidden: id !== tab }, panels[id])),
     h('div', { class: 'devbox' }, h('span', { class: 'devtag' }, 'Razvoj'),
       h('button', { class: 'btn small', onclick: () => go('gallery') }, 'Vse sličice, karte in ozadja'))));
   focusPage();
+}
+function showHeroesTab(id, focus) {
+  S.heroesTab = id; sfx('sel', { rate: .9, vol: .5 });
+  document.querySelectorAll('.heroes .tab').forEach(t => { const on = t.id === 'tab-' + id; t.classList.toggle('on', on); t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; if (on && focus) t.focus(); });
+  document.querySelectorAll('.heroes .tabpanel').forEach(p => { p.hidden = p.id !== 'tp-' + id; });
+}
+// Nasprotniki: the same view as Junaki. An enemy is known once beaten on a journey (the achievements' counters); its
+// details come from the game's own data: its attacks, where the road meets it, how often it has been beaten.
+function foesInRoadOrder() {
+  const out = [];
+  WORLD.regions.forEach(r => [...(r.pool || []), ...(r.boss || []), ...(r.adds ? [r.adds.key] : [])].forEach(k => { if (ENEMIES[k] && !out.includes(k)) out.push(k); }));
+  Object.keys(ENEMIES).forEach(k => { if (!out.includes(k)) out.push(k); });
+  return out;
+}
+const foeBeaten = k => (ACHP.counters || {})['foe:' + k] || 0;
+function foeSprite(k, cls = '') {
+  const e = ENEMIES[k], art = e.art || k;
+  return h('i', { class: cls, style: { 'background-image': `url(${SPRITES[art]})`, filter: cls === 'shade' ? '' : e.tint || '' } });
+}
+function foesSection() {
+  const keys = foesInRoadOrder(), known = keys.filter(foeBeaten);
+  const box = h('div', { class: 'foeinfo', 'aria-live': 'polite' });
+  const show = k => {
+    const e = ENEMIES[k], where = WORLD.regions.filter(r => [...(r.pool || []), ...(r.boss || []), ...(r.adds ? [r.adds.key] : [])].includes(k)).map(r => r.name);
+    const moves = [...new Set(Object.values(e.moves || {}))], n = foeBeaten(k);
+    box.innerHTML = '';
+    const art = e.art || k;
+    box.append(h('div', { class: 'pickinfo foepick', style: { '--c': e.boss ? '#c0506a' : '#8b93a6' } },
+      h('div', { class: 'spirit' }, h('div', { class: 'actor foe spr' + (e.boss ? ' boss' : ''), style: { '--art': Math.round(SPR_SIZE[art] * (e.scale || 1)) } },
+        h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[art]})`, filter: e.tint || '' } }), e.boss ? bossCrown() : null)),
+      h('div', { class: 'pdet' },
+        h('h2', {}, e.name),
+        h('div', { class: 'ptags' }, e.boss ? h('span', { class: 'rtag', style: { '--tc': '#e8b74a' } }, h('img', { class: 'fxi', src: pxUrl('crown'), alt: '' }), 'glavni nasprotnik') : null,
+          h('span', { class: 'php' }, pxIcon('heart'), ` ${e.hpBy ? Math.max(...Object.values(e.hpBy)) : e.hp}`),
+          h('span', { class: 'muted' }, `premagan${e.f ? 'a' : ''} ${n}-krat`)),
+        h('div', { class: 'psec' }, h('h3', {}, 'Napadi'), h('div', { class: 'pchips' }, moves.map(m => h('span', { class: 'pchip' }, m)))),
+        where.length ? h('div', { class: 'psec' }, h('h3', {}, 'Srečaš ' + (e.f ? 'jo' : 'ga')), h('div', { class: 'pchips' }, where.map(m => h('span', { class: 'pchip' }, m)))) : null)));
+    document.querySelectorAll('.foegrid .pickcard').forEach(c => c.classList.toggle('on', c.dataset.foe === k));
+  };
+  const grid = h('ul', { class: 'pickgrid herogrid foegrid' }, keys.map(k => h('li', {}, foeBeaten(k)
+    ? h('button', { class: 'pickcard' + (ENEMIES[k].boss ? ' boss' : ''), 'data-foe': k, onclick: () => { show(k); box.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } },
+      foeSprite(k), h('b', {}, ENEMIES[k].name))
+    : h('div', { class: 'pickcard locked', title: 'Še neznan: spoznaš ga, ko ga prvič premagaš' }, foeSprite(k, 'shade'), h('b', {}, '???'), h('span', {}, 'še neznan')))));
+  const sec = h('section', {},
+    h('h2', {}, 'Nasprotniki', h('span', { class: 'tag' }, `spoznanih ${known.length} od ${keys.length}`)),
+    h('p', { class: 'muted sec-lead' }, 'Nasprotnika spoznaš, ko ga prvič premagaš na poti. Izberi ga za njegove napade in kraje, kjer ga srečaš.'),
+    box, grid);
+  if (known.length) requestAnimationFrame(() => show(known[0]));
+  return sec;
 }

@@ -59,6 +59,36 @@
         "B": 50
       }
     },
+    "piran": {
+      "live": false,
+      "variants": {
+        "B": "piran-ljudska"
+      },
+      "share": {
+        "A": 50,
+        "B": 50
+      }
+    },
+    "predjama": {
+      "live": false,
+      "variants": {
+        "B": "predjama-ljudska"
+      },
+      "share": {
+        "A": 50,
+        "B": 50
+      }
+    },
+    "barje": {
+      "live": false,
+      "variants": {
+        "B": "barje-ljudska"
+      },
+      "share": {
+        "A": 50,
+        "B": 50
+      }
+    },
     "ljubljanica": {
       "live": false,
       "variants": {
@@ -68,17 +98,19 @@
         "A": 50,
         "B": 50
       }
+    },
+    "grad": {
+      "live": false,
+      "variants": {
+        "B": "grad-ljudska"
+      },
+      "share": {
+        "A": 50,
+        "B": 50
+      }
     }
   },
-  "cardTestNote": "Codex's painted skill cards in battle (Game Director, 25 Nov 2026: an A/B test like the backgrounds): A = the hand-made SVG boards, B = the paintings (art/exports/characters/skill-cards.json). live and share as for the backgrounds; ?karte=B previews B. The hero screen's card collection shows the paintings either way.",
-  "cardTest": {
-    "live": true,
-    "share": {
-      "A": 50,
-      "B": 50
-    }
-  },
-  "packsNote": "packs.<id>: manifest path; name (shown in Liki in karte → Ozadja); hideRoad (the pack brings its own ground, so the road strip of variant A is hidden); view {width, height} = the canvas the scene is fitted to, when the art's own canvas does not suit the scene; and per layer id: x, y, scale = where the layer is placed on that canvas (canvas pixels, for a manifest that leaves placement open); speed = how fast a tiling layer scrolls compared with the road while the party walks (1 = with the road); pan = how far a layer that does not tile moves across a region (1 = from the centre to its right edge); drift = steady sideways motion of a tiling layer in canvas pixels per second (negative = to the right), off under reduced motion. Layers that must stay together share their values. All are PROPOSED values tuned in the browser against where the game stands its actors (enemies' feet at 62–70 % of the scene height, heroes' at 75–87 %), not art specifications. Folk packs (tools/art_folk_parallax.py, 25 Nov 2026): x and y are written by the tool from Codex's composites; stand + riseOnly = a painted lane that rises to the actors' feet but never sinks below its place; below = a low front layer kept that many canvas pixels under the lowest feet; focusY (per pack) = which band a scene wider than the view shows (1 = its bottom, as before; less keeps more of the top and the landmark).",
+  "packsNote": "packs.<id>: manifest path; name (shown in Liki in karte → Ozadja); hideRoad (the pack brings its own ground, so the road strip of variant A is hidden); view {width, height} = the canvas the scene is fitted to, when the art's own canvas does not suit the scene; and per layer id: x, y, scale = where the layer is placed on that canvas (canvas pixels, for a manifest that leaves placement open); speed = how fast a tiling layer scrolls compared with the road while the party walks (1 = with the road); pan = how far a layer that does not tile moves across a region (1 = from the centre to its right edge); drift = steady sideways motion of a tiling layer in canvas pixels per second (negative = to the right), off under reduced motion. Layers that must stay together share their values. All are PROPOSED values tuned in the browser against where the game stands its actors (enemies' feet at 62–70 % of the scene height, heroes' at 75–87 %), not art specifications. Folk packs (tools/art_folk_parallax.py, 25 Nov 2026): x and y are written by the tool from Codex's composites; stand + riseOnly = a painted lane that rises to the actors' feet but never sinks below its place; below = a low front layer kept that many canvas pixels under the lowest feet; focusY (per pack) = which band a scene wider than the view shows (1 = its bottom, as before; less keeps more of the top and the landmark). passing = near trees the party walks past (the wooded regions Triglav, Peca, Trnovski gozd and Ljubljanski grad, 27 Nov 2026): a front layer seen only on the road, hidden in battle and in the gallery, faded while the party stands at a stop.",
   "packs": {
     "ptuj": {
       "manifest": "art/manifests/ptuj.json",
@@ -389,6 +421,13 @@
           "x": -771,
           "y": 0,
           "speed": 1.1
+        },
+        "passing-trees": {
+          "x": -15,
+          "y": 146,
+          "speed": 1.35,
+          "front": true,
+          "passing": true
         }
       }
     },
@@ -440,17 +479,19 @@
           "stand": 40,
           "riseOnly": true
         },
-        "spruces": {
-          "x": 0,
-          "y": 10,
-          "speed": 1.1
-        },
         "flowers": {
           "x": -149,
           "y": 469,
           "speed": 1.15,
           "front": true,
           "below": 4
+        },
+        "spruces": {
+          "x": -15,
+          "y": 146,
+          "speed": 1.35,
+          "front": true,
+          "passing": true
         }
       }
     },
@@ -568,6 +609,13 @@
           "speed": 1.25,
           "front": true,
           "below": 4
+        },
+        "passing-trees": {
+          "x": -15,
+          "y": 146,
+          "speed": 1.35,
+          "front": true,
+          "passing": true
         }
       }
     },
@@ -593,8 +641,18 @@
           "drift": -1.5
         },
         "town-castle": {
-          "x": -39,
+          "x": -50,
           "y": 69,
+          "speed": 0.22
+        },
+        "quay": {
+          "x": 2,
+          "y": 352,
+          "speed": 0.22
+        },
+        "bridge": {
+          "x": 80,
+          "y": 268,
           "speed": 0.22
         },
         "river": {
@@ -607,17 +665,277 @@
           "y": 381,
           "speed": 0.5
         },
-        "bridge": {
-          "x": -30,
-          "y": 310,
-          "speed": 0.55
-        },
         "road": {
           "x": -675,
           "y": 446,
           "speed": 1,
           "stand": 40,
           "riseOnly": true
+        }
+      }
+    },
+    "grad-ljudska": {
+      "manifest": "art/manifests/grad-ljudska.json",
+      "name": "Ljubljanski grad — ljudska poslikava (Codex)",
+      "hideRoad": true,
+      "view": {
+        "width": 996,
+        "height": 560
+      },
+      "focusY": 0.82,
+      "layers": {
+        "sky": {
+          "x": 2,
+          "y": 0,
+          "speed": 0.02
+        },
+        "clouds": {
+          "x": 0,
+          "y": 16,
+          "speed": 0.025,
+          "drift": -1.2
+        },
+        "distant-basin-hills": {
+          "x": 2,
+          "y": 240,
+          "speed": 0.12
+        },
+        "ljubljana-old-town": {
+          "x": 0,
+          "y": 245,
+          "speed": 0.22
+        },
+        "castle-hill-and-fortress": {
+          "x": 0,
+          "y": 83,
+          "speed": 0.38
+        },
+        "near-foreground-tree-frame": {
+          "x": 2,
+          "y": 0,
+          "speed": 1
+        },
+        "foreground-grass-lane": {
+          "x": 2,
+          "y": 365,
+          "speed": 1,
+          "stand": 40,
+          "riseOnly": true
+        },
+        "near-foreground-flowers": {
+          "x": 2,
+          "y": 488,
+          "speed": 1.22,
+          "front": true,
+          "below": 4
+        },
+        "passing-trees": {
+          "x": -15,
+          "y": 146,
+          "speed": 1.35,
+          "front": true,
+          "passing": true
+        }
+      }
+    },
+    "piran-ljudska": {
+      "manifest": "art/manifests/piran-ljudska.json",
+      "name": "Piranske soline — ljudska poslikava (Codex)",
+      "hideRoad": true,
+      "view": {
+        "width": 996,
+        "height": 560
+      },
+      "focusY": 0.9,
+      "layers": {
+        "sky": {
+          "x": -18,
+          "y": -11,
+          "speed": 0.02
+        },
+        "sun": {
+          "x": 0,
+          "y": 153,
+          "speed": 0.02
+        },
+        "clouds": {
+          "x": 0,
+          "y": 27,
+          "speed": 0.025,
+          "drift": -1.2
+        },
+        "hills": {
+          "x": -992,
+          "y": 260,
+          "speed": 0.12
+        },
+        "sea": {
+          "x": 2,
+          "y": 213,
+          "speed": 0.2
+        },
+        "far-shore": {
+          "x": 2,
+          "y": 224,
+          "speed": 0.28
+        },
+        "house": {
+          "x": 0,
+          "y": 135,
+          "speed": 0.28
+        },
+        "water": {
+          "x": 2,
+          "y": 254,
+          "speed": 0.5
+        },
+        "embankments": {
+          "x": 2,
+          "y": 236,
+          "speed": 0.5
+        },
+        "reflections": {
+          "x": 0,
+          "y": 221,
+          "speed": 0.54
+        },
+        "grass-lane": {
+          "x": -3,
+          "y": 355,
+          "speed": 1,
+          "stand": 40,
+          "riseOnly": true
+        },
+        "near-grass": {
+          "x": 7,
+          "y": 494,
+          "speed": 1.25,
+          "front": true,
+          "below": 4
+        }
+      }
+    },
+    "predjama-ljudska": {
+      "manifest": "art/manifests/predjama-ljudska.json",
+      "name": "Predjamski grad — ljudska poslikava (Codex)",
+      "hideRoad": true,
+      "view": {
+        "width": 996,
+        "height": 560
+      },
+      "focusY": 0.8,
+      "layers": {
+        "sky": {
+          "x": -18,
+          "y": -11,
+          "speed": 0.02
+        },
+        "clouds": {
+          "x": 0,
+          "y": 10,
+          "speed": 0.025,
+          "drift": -1.2
+        },
+        "mountains": {
+          "x": 2,
+          "y": 117,
+          "speed": 0.06
+        },
+        "ridge": {
+          "x": 2,
+          "y": 241,
+          "speed": 0.12
+        },
+        "hill": {
+          "x": -289,
+          "y": 42,
+          "speed": 0.38
+        },
+        "castle-cliff": {
+          "x": 0,
+          "y": 4,
+          "speed": 0.38
+        },
+        "stream": {
+          "x": 0,
+          "y": 365,
+          "speed": 0.38
+        },
+        "grass-lane": {
+          "x": -3,
+          "y": 386,
+          "speed": 1,
+          "stand": 40,
+          "riseOnly": true
+        },
+        "near-foreground": {
+          "x": 0,
+          "y": 476,
+          "speed": 1.25,
+          "front": true,
+          "below": 4
+        }
+      }
+    },
+    "barje-ljudska": {
+      "manifest": "art/manifests/barje-ljudska.json",
+      "name": "Ljubljansko barje — ljudska poslikava (Codex)",
+      "hideRoad": true,
+      "view": {
+        "width": 996,
+        "height": 560
+      },
+      "focusY": 0.82,
+      "layers": {
+        "sky": {
+          "x": 2,
+          "y": 0,
+          "speed": 0.02
+        },
+        "clouds": {
+          "x": 0,
+          "y": 7,
+          "speed": 0.025,
+          "drift": -1.2
+        },
+        "ridge": {
+          "x": 2,
+          "y": 157,
+          "speed": 0.12
+        },
+        "far-meadow": {
+          "x": 2,
+          "y": 206,
+          "speed": 0.2
+        },
+        "channels": {
+          "x": 0,
+          "y": 223,
+          "speed": 0.46
+        },
+        "landmarks": {
+          "x": -992,
+          "y": 7,
+          "speed": 0.46
+        },
+        "reflections": {
+          "x": 0,
+          "y": 256,
+          "speed": 0.48
+        },
+        "grass-lane": {
+          "x": 2,
+          "y": 348,
+          "speed": 1,
+          "stand": 40,
+          "riseOnly": true
+        },
+        "near-foreground": {
+          "x": -988,
+          "y": 489,
+          "speed": 1.22,
+          "front": true,
+          "below": 4
         }
       }
     }

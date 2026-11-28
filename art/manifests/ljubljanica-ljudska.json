@@ -58,9 +58,9 @@
       "id": "town-castle",
       "order": 3,
       "file": "art/exports/environments/ljubljanica-ljudska/town-castle.webp",
-      "width": 2148,
+      "width": 1077,
       "height": 292,
-      "x": -39,
+      "x": -50,
       "y": 69,
       "alpha": true,
       "tileX": true,
@@ -70,15 +70,70 @@
       "previewBox": [
         -5,
         7,
-        110,
+        108.1,
         null
       ],
       "fit": "fill",
-      "mirrored": "both sides"
+      "cols": [
+        19,
+        2153
+      ]
+    },
+    {
+      "id": "quay",
+      "order": 4,
+      "file": "art/exports/environments/ljubljanica-ljudska/quay.webp",
+      "width": 1864,
+      "height": 71,
+      "x": 2,
+      "y": 352,
+      "alpha": false,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/ljubljanica-parallax/layers/riverfront-clean-plate.png",
+      "sourceSha1": "4e602f7bcaaa8cd6370e8c0f494bf5bd840627d2",
+      "previewBox": [
+        0,
+        5.9,
+        94,
+        100
+      ],
+      "fit": "fill",
+      "mirrored": "both sides",
+      "rows": [
+        352,
+        423
+      ],
+      "cols": [
+        100,
+        1672
+      ]
+    },
+    {
+      "id": "bridge",
+      "order": 5,
+      "file": "art/exports/environments/ljubljanica-ljudska/bridge.webp",
+      "width": 2988,
+      "height": 134,
+      "x": 80,
+      "y": 268,
+      "alpha": true,
+      "tileX": true,
+      "role": "background",
+      "source": "docs/art-benchmarks/ljubljanica-parallax/layers/bridge.png",
+      "sourceSha1": "dac045f15d6d584588d13ac6ebc065b95f3a9329",
+      "previewBox": [
+        8,
+        35.6,
+        77,
+        45.65
+      ],
+      "fit": "fill",
+      "period": 3
     },
     {
       "id": "river",
-      "order": 4,
+      "order": 6,
       "file": "art/exports/environments/ljubljanica-ljudska/river.webp",
       "width": 2880,
       "height": 123,
@@ -100,7 +155,7 @@
     },
     {
       "id": "glints",
-      "order": 5,
+      "order": 7,
       "file": "art/exports/environments/ljubljanica-ljudska/glints.webp",
       "width": 1394,
       "height": 72,
@@ -120,30 +175,8 @@
       "fit": "fill"
     },
     {
-      "id": "bridge",
-      "order": 6,
-      "file": "art/exports/environments/ljubljanica-ljudska/bridge.webp",
-      "width": 2112,
-      "height": 104,
-      "x": -30,
-      "y": 310,
-      "alpha": true,
-      "tileX": true,
-      "role": "background",
-      "source": "docs/art-benchmarks/ljubljanica-parallax/layers/bridge.png",
-      "sourceSha1": "dac045f15d6d584588d13ac6ebc065b95f3a9329",
-      "previewBox": [
-        -5,
-        46,
-        110,
-        35
-      ],
-      "fit": "fill",
-      "mirrored": "both sides"
-    },
-    {
       "id": "road",
-      "order": 7,
+      "order": 8,
       "file": "art/exports/environments/ljubljanica-ljudska/road.webp",
       "width": 3378,
       "height": 228,

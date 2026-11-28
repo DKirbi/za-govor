@@ -2,7 +2,7 @@
 
 This first layer pack uses the revised [Triglav folk panorama](../slovenia-folk-location-previews/triglav-folk-background.png). The mountain wall has natural rock contours without a human portrait. Its travel lane is a wide, level grassy route running left to right so a camera pan can carry the heroes forward.
 
-Open the [interactive side-scroll preview](preview.html) to scrub or play the approach. The [static layer composite](layered-composite-preview.png) shows the first assembly. These are art-direction references; they do not replace the game's pixel-art battle scene or add runtime parallax.
+Open the [interactive side-scroll preview](preview.html) to scrub or play the approach. The [static layer composite](layered-composite-preview.png) shows the first assembly. This panorama is available as opt-in runtime variant B; variant A remains the default pixel-art battle scene.
 
 ## Layer stack
 
@@ -26,5 +26,5 @@ The ratios are relative to a rightward camera journey. The scenery translates le
 - Krpan is a party-sprite stand-in and moves toward Pesjan in the preview. Pesjan uses the current Volkodlak sprite with the game's regional tint. Ajdovska deklica is suggested only by the chapter setting; her gameplay pixel sprite is not in the current sprite bundle.
 - The separate cutouts were generated as visual slices and positioned for the composite. Their masks and overlap edges are not pixel-exact extractions. Check the whole pan, portrait/landscape mobile crops, and battle-floor clearance before production use.
 - The broad grass layer and low edge decorations keep a continuous footing without a winding stone trail. Keep foreground plants below the characters' knees and away from their route.
-- The preview respects reduced-motion settings. It is a local art-direction page, not a renderer integration.
+- The preview respects reduced-motion settings. Runtime rendering is handled by the shared parallax system; this page remains the camera-motion reference.
 

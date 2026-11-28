@@ -1,6 +1,6 @@
 # Slovenian folk-style location previews
 
-Five local art-direction concepts extend the treatment documented in [the Ptuj folk-card and background guide](../ptuj-folk-style-preview/README.md). Each panorama is shown by itself and with actual idle-frame game sprites composited over it. These are previews only: no production art manifest, runtime scene, or character sprite has been changed.
+Nine local art-direction concepts extend the treatment documented in [the Ptuj folk-card and background guide](../ptuj-folk-style-preview/README.md). Each panorama is shown by itself and with existing idle-frame game sprites composited over it. These remain art references; runtime pack drafts are tracked in the parallax studies, stay opt-in, and do not change the default pixel-art backgrounds or character sprites.
 
 ## Peca
 
@@ -26,30 +26,58 @@ Five local art-direction concepts extend the treatment documented in [the Ptuj f
 
 [Background only](trnovski-gozd-folk-background-grasslane.png) · A moonlit karst forest, doline and natural rock forms frame the campaign's Martin Krpan and Volkodlak on a broad, continuous grassy lane for left-to-right travel. The first winding-path composition remains available as the [original scene](trnovski-gozd-folk-background.png). Its separate layers and rightward camera preview are in the [Trnovski gozd parallax study](../trnovski-gozd-parallax/README.md). The landscape cue is the forested high karst plateau and doline of Trnovski gozd; see the [Natura 2000 Slovenia reference](https://natura2000.gov.si/fileadmin/user_upload/Dokumenti/natura2000inslovenia.pdf).
 
+## Piranske soline — first parallax pass
+
+![Piranske soline sunset scene with Martin Krpan and Mora](piran-folk-preview.png)
+
+[Background only](piran-folk-background.png) · Shallow salt basins, dividing embankments, a traditional salt-worker house, the sea at sunset, and a broad grass-topped lane set up a left-to-right battle approach. The basins and salt-worker heritage follow the [Sečovlje Salina Nature Park overview](https://www.portoroz.si/en/what-to-do/natural-landmarks/obj/13831-secovlje-salina-nature-park). Lepa Vida is the chapter's designated heroine, but her current game data has no idle battle sprite; Krpan is a party-position stand-in and Mora is from Piran's regional enemy pool. The Piran setting is a game location choice, not a claim about the ballad's origin. The first separate layers and rightward camera preview are in the [Piranske soline parallax study](../piranske-soline-parallax/README.md).
+
+## Predjamski grad — scene and parallax study
+
+![Predjama Castle folk-art scene with Erazem and Perkmandeljc](predjama-folk-preview.png)
+
+[Background only](predjama-folk-background.png) · The castle is shown integrated into the Karst cliff above a broad, clear grassy travel lane. Erazem uses his current idle sprite. Perkmandeljc uses the game's Škrat sprite with the same cool hue filter used in battle. The scene follows the official site's description of Predjama Castle within a 123-metre cliff and the Lokva disappearing underground below it; see [Postojna Cave Park's Predjama Castle overview](https://www.postojnska-jama.eu/en/predjama-castle). This is a stylized art-direction preview, not a surveyed reconstruction. The approved scene now has a first-pass layer set, static composite and [interactive parallax study](../predjama-parallax/README.md).
+
+## Ljubljansko barje — first parallax pass
+
+![Ljubljansko barje folk-art scene with Zeleni Jurij and Vila](barje-folk-preview.png)
+
+[Background only](barje-folk-background.png) · A misty wetland mosaic, reed-lined channels, distant hedgerows, a broad grass lane and small pile dwellings on stilts set the scene for a left-to-right approach. Zeleni Jurij is the chapter's hero; Vila is an enemy in its regional pool. The houses evoke the prehistoric pile-dwelling heritage at Ig and are a stylized historical motif, not a claim about present-day visible buildings. See the [Ljubljansko barje Landscape Park](https://www.ljubljanskobarje.si/obiscite-park/individualni-obisk/pot-na-mah/english-translations/01-starting-point/) and UNESCO's [Prehistoric Pile Dwellings around the Alps](https://whc.unesco.org/en/list/1363/maps/). The first separate layers and rightward travel preview are in the [Barje parallax study](../barje-parallax/README.md).
+
 ## Ljubljanica
 
 ![Ljubljanica folk-art scene with Zeleni Jurij and Povodni mož](ljubljanica-folk-preview.png)
 
 [Background only, side-view version](ljubljanica-folk-background.png) · The river, historic embankment, side-on Triple Bridge and castle hill set up a scene with the existing Zeleni Jurij hero sprite and Povodni mož. **Zeleni Jurij is a visual stand-in:** the campaign chapter's hero is Peter Klepec, but his sprite is not present in the current game sprite sheet. The revised view makes the bridge arches visible from across the river. It remains an art-direction sketch, not a measured architectural elevation; the official landmark description identifies a central bridge with two pedestrian side bridges. See [Visit Ljubljana's bridge overview](https://www.visitljubljana.com/en/poi/triple-bridge).
 
+## Ljubljanski grad — first parallax pass
+
+![Ljubljana Castle folk-art scene with Krpan and Lintvern](ljubljanski-grad-folk-preview.png)
+
+[Background only](ljubljanski-grad-folk-background.png) · A sunset view places the castle and its wooded hill above Ljubljana's rooftops, with a wide grass lane for the left-to-right approach. Krpan is a party-sprite stand-in and Lintvern is the existing boss sprite used for staging. The first separate layers and interactive approach preview are in the [Ljubljanski grad parallax study](../ljubljanski-grad-parallax/README.md). The composition is a stylized concept guided by [Visit Ljubljana's castle overview](https://www.visitljubljana.com/en/poi/ljubljana-castle), not a surveyed reconstruction.
+
 ## Shared art direction
 
 - Continue the recent folk-card treatment: broad hand-painted shapes, dark confident contours, warm ochre, cream, russet and moss green, restrained board texture, and clear scene layers.
 - Keep background forms spacious and readable, with open ground for the battle party and visible landmarks behind it.
-- Use generated background art as a concept. Keep the game's existing sprites crisp, at integer scaling, and unchanged so the painterly versus pixel-art contrast remains clear.
-- Each preview uses one hero and one enemy idle frame extracted from the current `src/game.js` sprite sheet, with small ground shadows. The original location compositions remain flattened reference images.
+- Use generated background art as a concept. Keep the game's existing sprites crisp and at integer scaling; preserve their existing palette filters so the painterly versus pixel-art contrast remains clear.
+- Each preview uses current game idle-frame sprite data with small ground shadows. Erazem comes from `src/art-extra.js`; Perkmandeljc uses the in-game Škrat sprite and its existing hue filter. The original location compositions remain flattened reference images.
 - The scenic images are stylized illustrations, not surveyed reconstructions. They do not include production parallax, water animation, finalized battle coordinates, or battle UI.
 
 ## Prompt set and generation
 
-Built-in ImageGen generated each background as a wide 16:9, character-free Slovenian folk-board panorama, using the Ptuj preview and an approved folk skill card as style references. The scene prompts were:
+Built-in ImageGen generated the scenes as wide 16:9, character-free Slovenian folk-board panoramas. The early scenes used the Ptuj preview and an approved folk skill card as style references; the coastal Piran scene used Bled for its painted language and the Trnovski grass-lane preview for its travel-lane composition; Predjama used Piran and Trnovski gozd as style and lane references; Barje used the Trnovski grass-lane panorama for its painted contours and clear travel lane. The scene prompts were:
 
 - **Peca:** wooded Karavanke mountain, rocky foothill, and a small cave entrance suggesting King Matjaž's legend.
 - **Triglav:** three alpine summits, natural limestone cliffs without a portrait, larch and spruce slopes, and a small white ibex with golden horns for Zlatorog. The current game sprites show Krpan as a party stand-in and the regional Pesjan.
 - **Bled:** side-on lake panorama with the island church, castle cliff, calm reflections, and a broad horizontal grassy shore route. The preview pairs Zeleni Jurij's party sprite with the regional Vila enemy.
-- **Trnovski gozd:** quiet moonlit woodland path, beech and fir silhouettes, high-karst doline and layered forested plateau.
+- **Trnovski gozd:** moonlit beech and fir silhouettes, high-karst doline and layered forested plateau; a later composition revision added a broad horizontal grassy lane for left-to-right travel.
+- **Piranske soline:** sunset salt pans with shallow rectangular basins, traditional salt-worker house, sea horizon, and a broad horizontal grass-topped travel lane; a small distant sail nods to the ballad's opening motif.
+- **Predjamski grad:** compact late-medieval castle integrated into a dramatic Karst cliff, a cave mouth and the Lokva disappearing underground, framed by beech and fir forest and a broad level grass lane.
+- **Ljubljansko barje:** a dawn wetland panorama with shallow channels, reed beds, low mist, distant hedgerows, stylized timber pile dwellings, and a wide continuous grassy travel lane.
 - **Ljubljanica:** river-level side elevation with the Triple Bridge spanning horizontally, arch openings visible against the water, old-town facades and the castle hill behind it. A targeted view-angle revision produced the selected background.
+- **Ljubljanski grad:** sunset panorama of the castle joined to its wooded hill above the Ljubljana roofline, framed by close trees and a broad continuous grassy approach lane.
 
 ## Next: parallax and mobile
 
-These are reference images, not ready-to-ship game backgrounds. The [Ptuj parallax study](../ptuj-parallax/README.md), [Peca parallax study](../peca-parallax/README.md), [Triglav parallax study](../triglav-parallax/README.md), [Bled parallax study](../bled-parallax/README.md), and [Trnovski gozd parallax study](../trnovski-gozd-parallax/README.md) provide first-pass separate folk-art layer sets. The [Ljubljanica parallax study](../ljubljanica-parallax/README.md) sketches the rightward camera journey and its bridge, clouds, reflections, water, and path layers. The [background roadmap](../background-parallax-roadmap.md) lists all ten game regions and the preview-first workflow. These cutouts remain concept references: no runtime parallax layers, motion, or mobile layouts are implemented in the game.
+These are reference images, not ready-to-ship game backgrounds. The [Ptuj parallax study](../ptuj-parallax/README.md), [Peca parallax study](../peca-parallax/README.md), [Triglav parallax study](../triglav-parallax/README.md), [Bled parallax study](../bled-parallax/README.md), [Trnovski gozd parallax study](../trnovski-gozd-parallax/README.md), [Piranske soline parallax study](../piranske-soline-parallax/README.md), [Predjama parallax study](../predjama-parallax/README.md), [Ljubljansko barje parallax study](../barje-parallax/README.md), and [Ljubljanski grad parallax study](../ljubljanski-grad-parallax/README.md) provide first-pass separate folk-art layer sets and camera previews. The [Ljubljanica parallax study](../ljubljanica-parallax/README.md) sketches the rightward camera journey and its bridge, clouds, reflections, water, and path layers. The [background roadmap](../background-parallax-roadmap.md) lists all ten game regions and the preview-first workflow. All ten folk packs now have review-only variant B exports; tests remain disabled, so packs are not randomized. Variant B is available through `?ozadje=B` or the high-quality setting. Runtime motion tuning, mobile framing and final battle placement remain outstanding.

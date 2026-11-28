@@ -139,7 +139,8 @@
         85
       ],
       "fit": "fill",
-      "mirrored": "both sides"
+      "mirrored": "both sides",
+      "floor": 0.5
     },
     {
       "id": "grass-lane",
@@ -165,30 +166,8 @@
       "laneMirroredBelow": true
     },
     {
-      "id": "spruces",
-      "order": 8,
-      "file": "art/exports/environments/triglav-ljudska/spruces.webp",
-      "width": 1494,
-      "height": 280,
-      "x": 0,
-      "y": 10,
-      "alpha": true,
-      "tileX": true,
-      "role": "background",
-      "source": "docs/art-benchmarks/triglav-parallax/layers/foreground-spruces.png",
-      "sourceSha1": "4715d3c1b2fafa4b86ef3853c444d8e9d117e6f9",
-      "previewBox": [
-        0,
-        -40,
-        100,
-        100
-      ],
-      "fit": "fill",
-      "period": 1.5
-    },
-    {
       "id": "flowers",
-      "order": 9,
+      "order": 8,
       "file": "art/exports/environments/triglav-ljudska/flowers.webp",
       "width": 1295,
       "height": 79,
@@ -206,6 +185,29 @@
         77
       ],
       "fit": "fill"
+    },
+    {
+      "id": "spruces",
+      "order": 9,
+      "file": "art/exports/environments/triglav-ljudska/spruces.webp",
+      "width": 2490,
+      "height": 464,
+      "x": -15,
+      "y": 146,
+      "alpha": true,
+      "tileX": true,
+      "role": "foreground",
+      "source": "docs/art-benchmarks/triglav-parallax/layers/foreground-spruces.png",
+      "sourceSha1": "4715d3c1b2fafa4b86ef3853c444d8e9d117e6f9",
+      "previewBox": [
+        0,
+        -39.5,
+        160,
+        160
+      ],
+      "fit": "fill",
+      "period": 2.5,
+      "blur": 5
     }
   ]
 }

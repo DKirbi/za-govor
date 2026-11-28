@@ -1,6 +1,6 @@
 {
   "name": "za-govor",
-  "version": "0.20.0",
+  "version": "0.22.0",
   "config": {
     "stage": "zaprta alfa"
   },
@@ -15,6 +15,7 @@
     "test:keyword": "node tests/keyword.test.js",
     "test:levels": "node tests/levels.test.js",
     "test:journey": "node tests/journey.test.js",
+    "test:parallax-phone": "node tests/parallax-phone.test.js",
     "test:title": "node tests/title.test.js",
     "test:lexicon": "node tests/lexicon.test.js",
     "test:menu": "node tests/menu.test.js",
@@ -25,6 +26,9 @@
     "test:backgrounds": "node tests/backgrounds.test.js",
     "test:parallax": "node tests/parallax.test.js",
     "test:achievements": "node tests/achievements.test.js",
+    "test:picker": "node tests/picker.test.js",
+    "test:screens": "node tests/screens.test.js",
+    "test:wheel": "node tests/wheel.test.js",
     "screenshots": "node tools/readme-shots.js",
     "android:sync": "python3 build.py && cap sync android",
     "android:open": "cap open android",

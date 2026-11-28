@@ -1,6 +1,6 @@
 # Peca folk-art parallax slices
 
-The source is the approved [Peca folk-art background](../slovenia-folk-location-previews/peca-folk-background.png), shown earlier with the existing Kralj Matjaž and Škrat pixel sprites in the [character contrast preview](../slovenia-folk-location-previews/peca-folk-preview.png). This first slice pass turns that panorama into independently movable layers. It is a concept/reference pack and does not replace the in-game background or change the game renderer.
+The source is the approved [Peca folk-art background](../slovenia-folk-location-previews/peca-folk-background.png), shown earlier with the existing Kralj Matjaž and Škrat pixel sprites in the [character contrast preview](../slovenia-folk-location-previews/peca-folk-preview.png). This first slice pass turns that panorama into independently movable layers. It is available as opt-in runtime variant B; variant A remains the default in-game background.
 
 Open the [interactive Peca pan](preview.html) to scrub the layers or play a 12-second approach to the cave. The assembled [static layer preview](layered-composite-preview.png) shows how the layers fit together.
 
@@ -25,4 +25,4 @@ The ratios are first-pass fractions of horizontal camera travel. As the camera a
 - The transparent cuts were generated as separate images and positioned in the preview. They preserve the broad shapes and palette but are not pixel-exact extractions; inspect their edges and overlaps before production use.
 - Keep the near-ground top continuous across the viewport so the forest cannot reveal a sky-colored gap. Preserve a clear battle floor and keep plants below ankle height.
 - Keep Kralj Matjaž and Škrat in the existing crisp pixel-art style. The prior character/background composite remains available as the sprite-contrast reference.
-- Check all camera positions for layer edges and mobile crops. These images are for art direction; production exports, renderer integration, and device-specific framing remain future work.
+- Check all camera positions for layer edges and mobile crops. Runtime exports use the shared renderer; production speed tuning and device-specific framing remain future work.

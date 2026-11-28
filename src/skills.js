@@ -69,7 +69,9 @@ function skillPanel(id, st, { train = null } = {}) {
   // what stopnja 2 and 3 add on top of the skill: only the change (Game Director, 20 Nov 2026: short, for a phone)
   const rankLine = (r, tag) => `moč +${r === 2 ? 20 : 40} %, učinki ${r === 2 ? '1,5' : '2'} × dlje; ${UP_TAG[tag][0].toLowerCase()}: ${UP_TAG[tag][1]}`;
   // once for all three: what the dots mean (it used to open every skill's text)
-  const legend = h('p', { class: 'sk-legend' }, h('span', { class: 'sk-dots', 'aria-hidden': 'true', style: { '--c': ch.c } }, h('i'), h('i')), ' = koliko črk junakove barve ima beseda');
+  // the dots are the colour of the hero's letters: their place in the party on a journey (ownC), else their own colour
+  const pk = inRun ? HEROES.findIndex(x => x.id === id) : -1, dotC = pk >= 0 ? ownC(pk) : ch.c;
+  const legend = h('p', { class: 'sk-legend' }, h('span', { class: 'sk-dots', 'aria-hidden': 'true', style: { '--c': dotC } }, h('i'), h('i')), ' = koliko črk junakove barve ima beseda');
   return h('div', { class: 'skills' }, head, legend,
     [1, 2, 3].map(t => {
       const l = lv(t), known = l > 0, tags = rev ? [] : ups[t - 1].split(' ');
@@ -77,7 +79,7 @@ function skillPanel(id, st, { train = null } = {}) {
       const why = train && inRun && !act ? (l >= MAX_RANK ? 'Najvišja stopnja' : !known && t > 1 && !lv(t - 1) ? `Najprej veščina ${t - 1}` : 'Ni točk') : null;
       return h('section', { class: 'sk' + (known ? ' on' : ' off'), style: { '--c': ch.c } },
         h('div', { class: 'sk-head' },
-          h('span', { class: 'sk-dots', title: `beseda ${LEN_INS(t)} te barve`, 'aria-label': `veščina ${t}` }, Array.from({ length: t }, () => h('i'))),
+          h('span', { class: 'sk-dots', title: `beseda ${LEN_INS(t)} te barve`, 'aria-label': `veščina ${t}`, style: { '--c': dotC } }, Array.from({ length: t }, () => h('i'))),
           h('b', {}, ch.moves[t - 1]),
           h('span', { class: 'sk-state' }, known ? [`stopnja ${l}`, rankPips(l)] : 'še ni znana')),
         h('p', { class: 'sk-text' }, fxText(rev ? rankText(id, t, 1) : SKILL_TEXT[id][t - 1])),

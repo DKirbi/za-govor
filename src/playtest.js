@@ -92,7 +92,7 @@ window.addEventListener('blur', () => { if (S.mode === 'real' && !held()) setPau
 const TUT_SEEN = new Set((() => { try { return JSON.parse(localStorage.getItem('zg-tut') || '[]'); } catch (e) { return []; } })());
 function saveTutSeen() { try { localStorage.setItem('zg-tut', JSON.stringify([...TUT_SEEN])); } catch (e) { /* no storage */ } }
 function resetTuts() { TUT_SEEN.clear(); saveTutSeen(); }
-const curTutKind = () => S.screen === 'battle' ? (B && B.cw ? B.cw.kind : 'mesh') : S.screen;
+const curTutKind = () => S.screen === 'battle' ? (B && B.cw ? (B.cw.D.style === 'wheel' ? 'kolo' : B.cw.kind) : 'mesh') : S.screen;
 const K = t => h('kbd', {}, t);
 
 // Figures are built from the real game pieces (tiles, cells, rocks, the chest sprite) in a solved state.
@@ -103,7 +103,7 @@ function figMesh() {
   svg.append(svgEl('polyline', { points: pts, fill: 'none', stroke: '#5fd38d', 'stroke-width': 5, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: 0.6 }));
   return [
     h('div', { class: 'meshwrap' },
-      h('div', { class: 'mesh' }, [...L].map((ch, i) => h('div', { class: 'tile' + (path.includes(i) ? ' sel valid' : '') + (i === 6 || i === 8 ? ' own' : ''), style: { '--c': own.c } },
+      h('div', { class: 'mesh' }, [...L].map((ch, i) => h('div', { class: 'tile' + (path.includes(i) ? ' sel valid' : '') + (i === 6 || i === 8 ? ' own' : ''), style: { '--c': ownC(0) } },
         i === 6 || i === 8 ? h('span', { class: 'ini' }, own.ini || own.name[0]) : null, ch))), svg),
     h('div', { class: 'tut-res ok' }, h('b', {}, 'VODA'), ' — štiri sosednje črke, prava beseda. Črka D je obarvana, zato napade ', own.name, '.')];
 }
@@ -119,6 +119,21 @@ function figCross() {
     h('div', { class: 'tut-key' },
       h('i', { style: { background: 'var(--good)' } }), h('span', {}, 'prava beseda: napad se sproži'),
       h('i', { style: { background: '#16171c', border: '1px solid var(--line)' } }), h('span', {}, 'vpisano, a še ni prav: nič se ne zgodi'))];
+}
+function figWheel() {
+  // VESEL is found (green), LEV is being dragged on the wheel
+  const rows = ['vesel', '..?..', '..v..'], cls = { '0,0': 'ok', '0,1': 'ok', '0,2': 'ok', '0,3': 'ok', '0,4': 'ok', '2,2': 'given' };
+  const cells = [];
+  rows.forEach((row, r) => [...row].forEach((ch, c) => cells.push(ch === '.' ? h('div', { class: 'cell void' }) : h('div', { class: 'cell ' + (cls[r + ',' + c] || '') }, h('b', {}, ch === '?' ? '' : ch)))));
+  const L = 'evsle', n = L.length, pos = [...L].map((_, i) => { const a = 2 * Math.PI * i / n - Math.PI / 2; return [50 + 36 * Math.cos(a), 50 + 36 * Math.sin(a)]; });
+  const sel = [3, 0, 1];   // L, E, V
+  const line = svgEl('polyline', { points: sel.map(i => pos[i].join(',')).join(' '), fill: 'none', stroke: 'var(--gold)', 'stroke-width': 4.5, 'stroke-linecap': 'round', opacity: .75 });
+  const svg = svgEl('svg', { class: 'wlines', viewBox: '0 0 100 100', preserveAspectRatio: 'none' }); svg.append(line);
+  return [
+    h('div', { class: 'cwgrid wgrid', style: { 'grid-template-columns': 'repeat(5, var(--cell))' } }, cells),
+    h('div', { class: 'wword' }, 'LEV'),
+    h('div', { class: 'wheel mini' }, svg, [...L].map((ch, i) => h('span', { class: 'wl' + (sel.includes(i) ? ' on' : ''), style: { left: pos[i][0] + '%', top: pos[i][1] + '%' } }, UP(ch)))),
+    h('div', { class: 'tut-key' }, h('i', { style: { background: 'var(--good)' } }), h('span', {}, 'najdena beseda: napad se sproži'))];
 }
 function figChest() {
   const tiles = w => h('div', { class: 'letters' }, [...w].map(ch => h('div', { class: 'tile' }, ch)));
@@ -174,9 +189,16 @@ const TUT = {
       S.mobile ? ['Vleci s prstom po sosednjih črkah, tudi poševno, ali pa jih pritiskaj eno za drugo.'] : ['Tipkaj besedo; pot po sosednjih črkah se poišče sama. Lahko tudi vlečeš z miško ali klikaš črke eno za drugo.'],
       S.mobile ? [`Ko spustiš prst, se beseda pošlje sama. Če črke pritiskaš, pritisni Pošlji ob besedi ali še enkrat zadnjo črko. Beseda ima vsaj ${MINW()} črke; daljša udari močneje.`] : [K('Enter'), ` ali Pošlji odda besedo. Imeti mora vsaj ${MINW()} črke; daljša udari močneje.`],
       B && B.starters && B.starters.length ? ['Na začetku poti v vrsticah mreže ležijo cele besede, z leve ali z desne. Poišči jih za prve udarce.'] : null,
-      [h('span', { class: 'tile own mini', style: { '--c': ROSTER.krpan.c } }, h('span', { class: 'ini' }, ROSTER.krpan.ini), 'd'), ' Barvne črke pripadajo junakom: ko jih uporabiš, napade junak te barve. Več črk iste barve sproži močnejšo veščino.'],
+      [h('span', { class: 'tile own mini', style: { '--c': ownC(0) } }, h('span', { class: 'ini' }, ROSTER.krpan.ini), 'd'), ' Barvne črke pripadajo junakom: ko jih uporabiš, napade junak te barve. Več črk iste barve sproži močnejšo veščino.'],
       S.mobile ? ['Vsaka črka polni zagovor. Ko je poln, gumb Izreci zagovor odpre križanko za mogočen udarec.'] : ['Vsaka črka polni zagovor. Ko je poln, ', K('presledek'), ' odpre križanko za mogočen udarec.']].filter(Boolean) }),
   finisher: () => tutCross('finisher'), lock: () => tutCross('lock'), ambush: () => tutCross('ambush'),
+  kolo: () => ({ title: 'Zagovor: kolo črk', lead: 'Zagovor je poln. Iz črk na kolesu sestavi besede, ki se skrivajo v križanki. Vsaka je napad, cela križanka še mogočnejši udarec.',
+    fig: figWheel(), calm: true,
+    time: S.mode === 'real' ? 'Časa ni, a nasprotniki napadajo naprej, le pol počasneje. Zagovor lahko prekličeš; moč ostane.' : 'Časa ni in nasprotniki čakajo. Zagovor lahko prekličeš; moč ostane.',
+    steps: [
+      S.mobile ? ['Vleci s prstom po črkah na kolesu in ga dvigni, ko je beseda cela. Črke lahko tudi pritiskaš eno za drugo in zadnjo pritisneš še enkrat.'] : ['Vleci z miško po črkah na kolesu ali tipkaj črke; ', K('Enter'), ' pošlje besedo.'],
+      ['Opisov ni: dolžino besede kaže križanka, nekaj črk je že vpisanih. Beseda iz križanke pozeleni in takoj sproži napad.'],
+      ['Prava beseda, ki je ni v križanki, je dodatna beseda: šibek udarec. ⟳ v sredini kolesa premeša črke.' + (LV().reveals ? ' Gumb »Razkrij črko« pokaže eno črko.' : '')]] }),
   chest: () => ({ title: 'Zaklenjena skrinja', lead: 'Iz premešanih črk sestavi skrito besedo. Namig pove, kaj iščeš.', fig: figChest(),
     time: `Rdeča črta je čas${evSecs('timeMax')}. Ko poteče, skrinja ostane zaklenjena.`,
     steps: [

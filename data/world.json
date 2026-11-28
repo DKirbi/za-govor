@@ -43,6 +43,8 @@
     { "id": "velesov-strup", "name": "Velesov strup", "kind": "use", "poison": true, "price": 30, "text": "Strup, samodejno na začetku bitke: najmočnejši nasprotnik dalj časa izgublja zdravje.", "icon": [ "vial", "#5fbf4a", "#5fbf4a" ], "when": "start" },
     { "id": "volcja-jagoda", "name": "Volčja jagoda", "kind": "use", "poison": true, "price": 25, "text": "Strup, samodejno na začetku bitke: nasprotnik z najhujšim napadom napada 30 % šibkeje.", "icon": [ "berry", "#4a3a7a", "#4a3a7a" ], "when": "start" },
     { "id": "morin-prah", "name": "Morin prah", "kind": "use", "poison": true, "price": 30, "text": "Strup, samodejno: ko junak pade pod 40 % zdravja, vsi nasprotniki za nekaj časa zaspijo.", "icon": [ "pouch", "#8a6ad0", "#5a3a9a" ], "when": "hurt" },
-    { "id": "kresna-zerjavica", "name": "Kresna žerjavica", "kind": "use", "price": 25, "text": "Samodejno na začetku bitke: vsi nasprotniki zagorijo.", "icon": [ "ember", "#e2572a", "#f2b632" ], "when": "start" }
+    { "id": "kresna-zerjavica", "name": "Kresna žerjavica", "kind": "use", "price": 25, "text": "Samodejno na začetku bitke: vsi nasprotniki zagorijo.", "icon": [ "ember", "#e2572a", "#f2b632" ], "when": "start" },
+    { "id": "zeliscni-caj", "name": "Zeliščni čaj", "kind": "heal", "price": 15, "heal": 0.4, "text": "Zunaj bitke izbereš junaka: vrne mu 40 % zdravja.", "icon": [ "mug", "#8fbf4a", "#4f7a2a" ] },
+    { "id": "arnikino-mazilo", "name": "Arnikino mazilo", "kind": "heal", "price": 30, "heal": 1, "text": "Zunaj bitke izbereš junaka: vrne mu vse zdravje.", "icon": [ "vial", "#f2b632", "#c97a1c" ] }
   ]
 }

@@ -2,7 +2,7 @@
   "pack": "Peca — ljudska poslikava (Codex)",
   "version": "0.1.0",
   "status": "review",
-  "approval": "OPEN — Game Director review required (first in-game draft, 25 Nov 2026)",
+  "approval": "OPEN — Game Director review required (first runtime draft, 26 Nov 2026)",
   "canvas": {
     "width": 996,
     "height": 560,
@@ -105,7 +105,7 @@
       "order": 5,
       "file": "art/exports/environments/peca-ljudska/forest.webp",
       "width": 1986,
-      "height": 193,
+      "height": 206,
       "x": 0,
       "y": 159,
       "alpha": true,
@@ -120,7 +120,8 @@
         51
       ],
       "fit": "fill",
-      "mirrored": "right side"
+      "mirrored": "right side",
+      "floor": 0.5
     },
     {
       "id": "cave-rock",
@@ -189,6 +190,31 @@
       "fit": "fill",
       "mirrored": "left side",
       "period": 2.5
+    },
+    {
+      "id": "passing-trees",
+      "order": 9,
+      "file": "art/exports/environments/peca-ljudska/passing-trees.webp",
+      "width": 2490,
+      "height": 464,
+      "x": -15,
+      "y": 146,
+      "alpha": true,
+      "tileX": true,
+      "role": "foreground",
+      "source": "docs/art-benchmarks/triglav-parallax/layers/foreground-spruces.png",
+      "sourceSha1": "4715d3c1b2fafa4b86ef3853c444d8e9d117e6f9",
+      "previewBox": [
+        0,
+        -39.5,
+        160,
+        160
+      ],
+      "fit": "fill",
+      "period": 2.5,
+      "blur": 5,
+      "flip": true,
+      "study": "triglav"
     }
   ]
 }

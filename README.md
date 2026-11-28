@@ -110,7 +110,10 @@ rock slide or a wall of spikes; Ptuj's is always a chest. Wells stay with 75 / 5
 - **Walking:** press `→` (or *Naprej*) and the party walks to the next stop; a prompt offers
   what can be done there (`Enter` for the main choice, `Esc` to walk past where that is allowed).
 - **The party:** you pick one hero. On a fresh game Martin Krpan, Zeleni Jurij and Kurent
-  are known; everyone else is a silhouette until they travel with you. Up to three travel
+  are known; everyone else is a silhouette until they travel with you. *Kdo gre na pot?* shows the
+  chosen hero first, in one row (sprite 40 %, details 60 %): their role (*Napadalec*, *Branilec*,
+  *Zdravilec*, *Podpornik*, *Oviralec*; PROPOSED), health, attacks, special effects with icons and
+  their words. Up to three travel
   together; a fourth can only take somebody's place. **Only one god** may travel with you —
   gods hit harder.
 - **Heroes on the road:** a journey meets three: one always waits at Ptuj, the other two in
@@ -139,9 +142,11 @@ rock slide or a wall of spikes; Ptuj's is always a chest. Wells stay with 75 / 5
   fallen one is raised by *Mrtva voda*, battle potions are opened when a fight begins.
 - **Enemies are random:** every battle draws from the enemies of its region, and they grow
   stronger from region to region.
-- **Gold and items:** battles and chests pay gold; the pedlar sells potions, poisons and
-  relics with names from Slavic myth and Slovene folklore (*Perunova sekira*, *Živa voda*,
-  *Velesov strup*, *Zlatorogova roža*…). See [docs/progression-design.md](docs/progression-design.md)
+- **Gold and items:** gold comes from chests (a won battle pays a coin or five); the pedlar
+  shows four things, each sold once: a remedy, potions or poisons and a relic, with names from
+  Slavic myth and Slovene folklore (*Perunova sekira*, *Živa voda*, *Velesov strup*,
+  *Zlatorogova roža*…). Remedies (*Zeliščni čaj*, *Arnikino mazilo*) are used from *Torba*
+  on the hero you pick, any time outside a battle. See [docs/progression-design.md](docs/progression-design.md)
   for the full lists.
 - **Intros and pause:** the first time each puzzle appears, a *Kako se igra* panel explains
   it with a solved example and the clock waits until you press *Začni*. `Esc` pauses any
@@ -198,11 +203,12 @@ skills they know filled and the others outlined (a star for stopnja 2, two for s
 themselves, with what stopnja 2 and 3 add, are listed in *Veščine* at a well or a signpost (and in the
 codex in the menu). Tapping the hero plays the skills they know, one after another — a quiet extra that
 the game does not announce.
-*Dosežki in junaki* first lists the **achievements** (59 in six groups, bronze, silver and gold, with progress bars
+*Dosežki in junaki* first lists the **achievements** (60 in six groups, bronze, silver and gold, with progress bars
 and two secrets; only real journeys count) and the **story cards** a hero earns by being alive when Lintvern falls.
 A skill's **painted folk card** (Codex) is collected the first time the skill fires in a journey battle; on a hero's
-screen *Karte veščin* shows them, and a tapped card opens full screen. In battle the paintings are an A/B test against
-the hand-made boards (`?karte=B` or *Kakovost slik → Visoka* shows them).
+screen *Karte veščin* shows them, and a tapped card opens full screen. In battle a hero's skill shows its painting in
+every *Kakovost slik* setting; a skill that has no painting yet shows an empty board with ???. Enemies keep their
+hand-made boards.
 
 *Dosežki in junaki* lists every hero: the ones you have unlocked open their card and
 backstory, the others are silhouettes. A developer link there
@@ -271,13 +277,13 @@ texts and above the heads of heroes and enemies for as long as the effect lasts.
   closes one slot and the other spikes spring at the heroes one by one (each hit shows on its
   hero); even a word from every slot lets one spike graze. Spikes never knock a hero out.
 - **Well:** every hero still standing is healed; the fallen stay down.
-- **Pedlar:** four potions or poisons and two relics for gold.
+- **Pedlar:** four things at most, each sold once: a remedy, potions or poisons and a relic.
 - **Shrine of challenge (*Svetišče*):** every shrine belongs to one god and has its own look
   (Perun's carved post under an oak, Svarog's forge altar, Mokoš's spring with a spindle,
   Dažbog's sun disk, Stribog's windswept cairn, Veles's horned stone in the roots). The gods
-  are not shown, only their signs: lightning, anvil, spindle, sun, wind, horns. **Pray at
-  a shrine** (two a journey, so two gifts can stack) and the god answers (*»Zagrmelo je. Tvoja
-  molitev je uslišana. Preden zapustiš to pokrajino, bom videl, ali si vreden te
+  are not shown, only their signs: lightning, anvil, spindle, sun, wind, horns. **Bow at
+  a shrine** (*Pokloni se*; two a journey, so two gifts can stack) and the god answers (*»Zagrmelo je.
+  Tvoj poklon je sprejet. Preden zapustiš to pokrajino, bom videl, ali si vreden te
   preizkušnje.«*) and lends a **gift**: every word that fires a third skill (three letters of one colour) also brings the
   god's power — Perun's lightning chains to every enemy, Svarog gives a big shield, Mokoš
   heals, Dažbog doubles the next word, Stribog's wind hits everyone and clears the mesh, Veles
@@ -477,7 +483,7 @@ CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 | `tests/crossword-generator.test.js` | 4,200 generated crosswords on all three levels: no letter clashes or stray letters, connected grids, everything fits 9×9, only that level's clue banks, short words in enemy crosswords, the gold column spells the keyword |
 | `tests/levels.test.js` | Each knowledge level: chosen on *Nova pot* and saved when the journey starts, hints and proposals, word count and coaching tips, shortest word, crossword bank, letter counts, revealed letters (and half power), mouse clicks reaching the crossword |
 | `tests/keyword.test.js` | Guessing the keyword early ends the crossword and fires the zagovor; in Povodni mož's whirlpool *urska* with a plain s stays black and *urška* breaks it |
-| `tests/phone.test.js` | On a 390×844 touch screen: the mesh sends without *Pošlji* (second tap, lifted drag, non-words clear), the in-game keyboard types crosswords and the rock slide with the system keyboard closed, wrong entries stay black and correct ones fire, chest partial rewards, darts fit 360 px, *Premor*, and the Android back button |
+| `tests/phone.test.js` | On a 390×844 touch screen: the mesh sends without *Pošlji* (second tap, lifted drag, non-words clear), the in-game keyboard types crosswords and the rock slide with the system keyboard closed, wrong entries stay black and correct ones fire, chest partial rewards, darts fit 360 px, *Premor*, and the Android back button; the coach tip is a ? button over the sky: closed with a dot for a new tip, opened by a tap, closed by a tap outside (which still picks the letter) |
 | `tests/menu.test.js` | The start menu: items with and without a journey, no top bar, the version at the bottom, `↑` `↓` `Enter` `Esc`, *← Nazaj na glavni meni* on every page and sticky while *O igri* scrolls, one way back on a hero card; *Nastavitve* (sound off is remembered and greys out the volume, fullscreen only on a computer); *Nova pot* copy (*Tempo* and *Znanje* only, each level saying what losing means), figures, *Predlogi besed* under Malček only, explanations on by default, test mode as a developer option, choices that only count once the journey starts; *Kako igrati* controls per device and the puzzle carousel (buttons, keys, tabs, swipe); heroes and their cards; no *Nadaljuj pot* after the ending; phone fit and the Android back button |
 | `tests/credits.test.js` | *O igri* names the maker (Oygn Productions, Davor Kirbiš), why the game was made, a *Navdih* that names no other game, every source folded behind ©; the ending names the maker and links to *O igri*; no other game is named anywhere in the game; phone fit; Esc and the Android back button |
 | `tests/report.test.js` | *Pošlji besede*: rejected and newly found words are remembered, chips only (no text fields), pick and drop, one row per word with its kind (`manjka` / `pomen`), *Kaj pomeni?* on a battle result in one tap and never again, meanings for every form of a word, the queue without a form, lists survive a reload, the panel fits a 360 px phone; *jasa* and base forms are accepted |
@@ -486,12 +492,16 @@ CHROME_PATH=/path/to/chrome npm test      # if Chrome isn't found automatically
 | `tests/words.test.js` | `data/words.json`: every word is in the word list, chests take the region's words without repeats, the chest clue by *Znanje*, ✕ and *Pošlji* next to the chest's word, rock slides from the region's words and slower, a chest and a well place in every region, chests and wells by chance (fewer on higher *Znanje*, never no chest, a well in each half of the road), no hints at all on Knjižni molj, 3-letter words on every level |
 | `tests/starters.test.js` | Starter words: Malček four words (5, 4, 4, 3 letters), Učenjak three, Knjižni molj two three-letter ones; one per row, forwards or backwards, playable, one form per base form; the help lasts half / a quarter of the road / the first region; about half are the region's words in any form; the log and coach tip point them out; *Premešaj* lets them go |
 | `tests/flow.test.js` | Hero screens keep the way on in view (also on a 360×640 phone), stops name their puzzle, the signpost walks on by itself, an ambush is announced, *Kako igrati* ends in the menu |
-| `tests/journey.test.js` | The road: the first hero, three heroes per journey (Ptuj and two random regions, each place favouring its own hero), only a hero who joins is unlocked, XP only from beaten enemies, levels bring skill points and heal fully, *Znanje* sets the losing rules, *Veščine* at the well (learn, stopnja 2 and 3, never past 3), a word fires the strongest skill the hero knows, a higher stopnja hits harder, the hero screen's *Veščine* button and the unannounced tap-to-demo, wells that heal but no longer raise the fallen, the chest's gold and item, the pedlar, potions, three shrines per journey each of another god, *Svetišče* with the god's sign (never the god), the prayer's answer and gift, Perun coming for the challenge as the ending is left, his chain of lightning, the god's last word, unlock, raised heroes and next-journey gift, a party god's godly version (not struck by the party god, a point and XP when beaten), heroes with points glowing on the road, the three difficulties (enemy health, withdrawing on Lahka, the end on Srednja, the fallen leaving on Težka), a full party swap, spikes that only hurt (spread over the heroes, never fatal), every hero's three skills at stopnja 3, and the dragon |
+| `tests/journey.test.js` | The road: the first hero, three heroes per journey (Ptuj and two random regions, each place favouring its own hero), only a hero who joins is unlocked, XP only from beaten enemies, levels bring skill points and heal fully, *Znanje* sets the losing rules, *Veščine* at the well (learn, stopnja 2 and 3, never past 3), a word fires the strongest skill the hero knows, a higher stopnja hits harder, the hero screen's *Veščine* button and the unannounced tap-to-demo, wells that heal but no longer raise the fallen, the chest's gold and item, the pedlar's four things each sold once, a battle's little gold, potions, three shrines per journey each of another god, *Svetišče* with the god's sign (never the god), the prayer's answer and gift, Perun coming for the challenge as the ending is left, his chain of lightning, the god's last word, unlock, raised heroes and next-journey gift, a party god's godly version (not struck by the party god, a point and XP when beaten), heroes with points glowing on the road, the three difficulties (enemy health, withdrawing on Lahka, the end on Srednja, the fallen leaving on Težka), a full party swap, spikes that only hurt (spread over the heroes, never fatal), every hero's three skills at stopnja 3, and the dragon |
 | `tests/lexicon.test.js` | The word list in the browser: over a million forms accepted and a common part suggested, the 217-word coverage set accepted and its non-words (Croatian, English, made up) refused, the reported words (*jasa*, *loj*, *runa*, *seks*) and *ritem*/*ritual*/*riti*, vulgar words accepted but never suggested, mythology names, *deny.json*, non-standard forms, base forms (*ljudje* → *človek*), headwords Sloleks lacks (*zborišča*, *sedemkotnik*), and at 4× slower CPU a mesh walk under 50 ms and a lookup under 20 µs |
 | `tests/title.test.js` | The title scene: the *Za govor!* heading and tab title, whole-number scaling (3× at 1280 px, 4× at 1920, 2× on a phone), square wordmark pixels, full width with no sideways scrolling (also at an odd width), starting at the top of the page (below a phone's status bar), room left for the menu, the wordmark standing still, sparks rising in whole art pixels and not restarting when the start screen is rebuilt, a still picture with reduced motion |
 | `tests/desktop.test.js` | A keyboard playthrough: c/s/z are not accepted for č/š/ž, first battle, result and hero screens, chest, finisher, Lintvern's letter lock and forced crossword, ambush, rock slide, and no console errors anywhere |
-| `tests/parallax.test.js` | Codex's folk parallax packs (variant B of six regions): built and decoded; the lane at exactly 1.0; no layer slower than the one behind it; layers at 0.2 or faster tile; after a known walk every tiling layer moved by distance × speed; in battle every actor stands on the painted lane and front layers stay under the feet, on a desktop and a phone |
-| `tests/achievements.test.js` | Achievements and folk cards: test mode and practice battles never count; the first real word and the first skill card; queued toasts; the painting on battle cards in B, the SVG board with *Nizka*; the card variant in the statistics; the page; the profile through a reload; the hero screen's skill cards and a card full screen; story cards for the heroes alive at the Lintvern win |
+| `tests/parallax.test.js` | Codex's folk parallax packs (variant B of all ten regions): built and decoded; the lane at exactly 1.0; no layer slower than the one behind it; layers at 0.2 or faster tile; no slice floats over the lane (far layers never show between a slice and the lane's top, measured over many scroll positions); the wooded regions' passing trees (Triglav, Peca, Trnovski gozd, Ljubljanski grad) in front of the walking party, faded while it stands, never in battle; after a known walk every tiling layer moved by distance × speed; in battle every actor stands on the painted lane and front layers stay under the feet, on a desktop and a phone; layers that stand on one another share a speed |
+| `tests/parallax-phone.test.js` | The ten folk packs on four phone screens (360×640, 390×844, 412×915 portrait, 844×390 landscape) while the game itself walks the party: every tiling layer moves frame by frame by the walked distance × its speed; chests, enemies and the signpost keep their place on the painted lane; the heroes stay put on screen, run, and keep their feet on the lane, whose top does not jump; front layers never cover a foot; no hole behind the layers (magenta check) at the start, middle and end of each region and in battle; seamless tiles, and ground and water bands without a gap where they repeat; only the clouds drift, at their rate. Writes start/middle/end/battle screenshots per screen (about 9 minutes; `ZG_REGIONS=piran,grad` and `ZG_SCREENS=360x640` run some) |
+| `tests/achievements.test.js` | Achievements and folk cards: test mode and practice battles never count; the first real word and the first skill card; queued toasts; the painting on battle cards by default and with *Nizka* and *Visoka*, ??? boards for a hero without paintings, enemies' SVG boards; no card variant in the statistics; the page; the profile through a reload; the hero screen's skill cards and a card full screen; story cards for the heroes alive at the Lintvern win |
+| `tests/picker.test.js` | *Kdo gre na pot?*: no lead text, the chosen hero above the list in one row (40 % sprite, 60 % details) on a desktop and at 360 and 412 px with the sprite whole, attacks and words as chips without arrows, *Posebni učinek* in plain words with icons, every character's role and the feminine forms; the hero's card shows only the name and skills on its front, the name on the plate under the painting. |
+| `tests/screens.test.js` | On a phone: the party's letters red, green and blue by their place in the party (far apart on the colour wheel) with a diamond of that colour under each hero and on the skill screen's dots; *Premor* as a tall, centred menu in one column; skill cards with a full border (dashed while not learned); the chest's one line and its square shape; a remedy offered only for the hurt heroes, healing the chosen one and waiting in a battle. |
+| `tests/wheel.test.js` | Kolo črk: every zagovor makes a 7-letter wheel on every Znanje with base-form words from its letters and the key word in the grid; fewer words on Knjižni molj's wheels than Učenjak's and Malček's; on a phone the wheel instead of clues and keyboard, some letters shown on Malček; a dragged grid word fills in and hits, again does nothing; an extra word hits weakly; letters that make no word do nothing; tapping works; ⟳ keeps the letters; the last word speaks the zagovor; the keyboard on a computer; the setting in Nastavitve. |
 | `tests/backgrounds.test.js` | Background A/B tests for Ptuj: the Codex pack built in as variant B (eight layers placed through a 1672×560 view, the road enlarged 1.3×) and Claude's pack as preview-only variant C; variant A unchanged on the road and in battle while the test is off; `?ozadje=B`/`C` previews marked in the statistics; every hero and enemy standing on the ground layer (read from the image) in battle and on the road; town, river and reflections moving together; smooth shrinking for B and hard pixels for C; a short, wide scene covered without side gaps; C's tiling speeds, drift and reduced motion; the foreground in front of the actors and under the battle UI; other regions untouched; the gallery entries; a live test assigning A or B per install by its share and never C |
 
 Screenshots from each run land in `test-output/` (ignored by git).
@@ -547,7 +557,7 @@ za-govor/
 │   ├── cluebank.py           # the three clue banks; validates and builds data/clues.json
 │   ├── art_extra.py          # draws the new heroes, road objects, item icons, backgrounds and knowledge-level figures (needs Pillow)
 │   ├── art_title.py          # draws the title scene, the Za govor! wordmark and its ribbon (needs Pillow)
-│   ├── art_folk_parallax.py  # game layers (WebP) of Codex's six folk parallax studies, their manifests and placement
+│   ├── art_folk_parallax.py  # game layers (WebP) of Codex's ten folk parallax studies, their manifests and placement
 │   ├── art_skill_cards.py    # game exports (WebP) of Codex's 21 painted skill cards
 │   ├── art_ptuj_parallax.py  # draws variant C of the Ptuj background: ten pixel-art parallax layers and their manifest (needs Pillow)
 │   ├── readme-shots.js       # regenerates docs/images/

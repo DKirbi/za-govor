@@ -1,6 +1,6 @@
 # Ljubljanica parallax study
 
-This folder turns the approved side-view Ljubljanica illustration into a motion study for travelling right along the river. The bridge and castle become the destination; the final frame settles on the existing battle reference with Povodni mož. The art layers and preview are references for a later game implementation, not production runtime assets.
+This folder turns the approved side-view Ljubljanica illustration into a motion study for travelling right along the river. The bridge and castle become the destination; the final frame settles on the existing battle reference with Povodni mož. Its layer pack is available as opt-in runtime variant B; variant A remains the default pixel-art scene.
 
 Open [the interactive journey preview](preview.html) in a browser. Scrub the Journey slider or play the 14-second approach. At the end, it resolves to the exact approved [Ljubljanica battle reference](../slovenia-folk-location-previews/ljubljanica-folk-preview.png). The preview uses Zeleni Jurij as a visual stand-in because Peter Klepec is not currently present in the sprite sheet.
 
@@ -47,4 +47,4 @@ The `×` values are fractions of the camera's total horizontal travel. They are 
 
 ## What this is (and is not)
 
-This is a local, interactive art-direction preview plus transparent layer references. It does not modify game code, add a runtime parallax system, alter the approved folk illustration, or finalize camera coordinates. Use it to review the speed hierarchy, the side-view bridge, the water/cloud separation, and how the painterly landscape sits behind the existing pixel-art style.
+This is a local, interactive art-direction preview plus transparent layer references for the shared runtime parallax system. It does not alter the approved folk illustration or finalize camera coordinates. Use it to review the speed hierarchy, the side-view bridge, the water/cloud separation, and how the painterly landscape sits behind the existing pixel-art style.

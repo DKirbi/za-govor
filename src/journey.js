@@ -47,6 +47,10 @@ function objEl(id, frame = 0, cls = '') {
   return h('div', { class: 'actor spr obj ' + cls, style: { '--art': SPR_SIZE[id] } },
     h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[id]})`, 'background-position': frame ? '100% 0' : '0 0' } }));
 }
+// The pedlar (Game Director, 27 Nov 2026): at most four things, and each can be bought once. Gold comes from chests;
+// a won battle pays only a little (BATTLE_GOLD a defeated enemy, a boss BOSS_GOLD).
+const SHOP_MAX = 4, BATTLE_GOLD = 1, BOSS_GOLD = 5;
+const itemTag = it => it.kind === 'relic' ? 'predmet' : it.kind === 'heal' ? 'zdravilo' : it.poison ? 'strup' : 'napoj';
 function gainGold(n) { const g = Math.round(n * (has('velesov-rog') ? 1.5 : 1)); if (S.run) S.run.gold += g; return g; }
 function giveItem(id) {
   const R = S.run, it = ITEMS[id]; if (!R || !it) return;
@@ -60,7 +64,7 @@ function giveItem(id) {
 function randomItem(kind) {
   const R = S.run; if (!R) return null;
   const k = kind || (Math.random() < 0.4 ? 'relic' : 'use');
-  const pool = WORLD.items.filter(it => it.kind === k && !R.relics.includes(it.id));
+  const pool = WORLD.items.filter(it => (it.kind === k || (k === 'use' && it.kind === 'heal')) && !R.relics.includes(it.id));   // a remedy counts as a potion
   return pool.length ? pick(pool) : pick(WORLD.items.filter(it => it.kind === 'use'));
 }
 // can this item be used by hand right now? (Živa voda is drunk automatically in battle)
@@ -128,12 +132,39 @@ function openBag() {
   if (inB && B.cw) return;
   const was = inB ? B.paused : false; if (inB) B.paused = true;
   const close = () => { ov.remove(); S.bagEl = null; S.overlayKey = null; if (inB && B) B.paused = was; };
-  const uses = Object.keys(R.bag).filter(id => R.bag[id] > 0);
+  const held = Object.keys(R.bag).filter(id => R.bag[id] > 0), uses = held.filter(id => ITEMS[id].kind !== 'heal'), heals = held.filter(id => ITEMS[id].kind === 'heal');
   const row = (id, n) => h('div', { class: 'itemrow' }, itemIcon(id), h('div', {}, h('b', {}, ITEMS[id].name, n > 1 ? ` ×${n}` : ''), h('span', {}, ITEMS[id].text)));
+  // a remedy (Game Director, 27 Nov 2026): the player picks it and the hero, whenever not in a battle
+  let pickFor = null;
+  const healList = h('div', { class: 'itemlist' });
+  const paintHeals = () => {
+    healList.innerHTML = '';
+    Object.keys(R.bag).filter(id => R.bag[id] > 0 && ITEMS[id].kind === 'heal').forEach(id => {
+      const it = ITEMS[id], need = S.heroes.some(st => !st.down && st.hp < st.maxHp);
+      healList.append(h('div', { class: 'itemrow heal' + (pickFor === id ? ' on' : '') }, itemIcon(id),
+        h('div', {}, h('b', {}, it.name, R.bag[id] > 1 ? ` ×${R.bag[id]}` : ''), h('span', {}, it.text)),
+        h('button', { class: 'btn small', disabled: inB || !need, title: inB ? 'Zdravila uporabiš zunaj bitke.' : !need ? 'Vsi junaki so zdravi.' : '',
+          onclick: () => { pickFor = pickFor === id ? null : id; paintHeals(); } }, inB ? 'po bitki' : need ? 'Uporabi' : 'vsi zdravi')));
+      if (pickFor === id) healList.append(h('div', { class: 'healpick' }, h('span', { class: 'muted' }, 'Komu?'),
+        HEROES.map((hr, k) => { const st = S.heroes[k], ok = !st.down && st.hp < st.maxHp;
+          return h('button', { class: 'btn small', disabled: !ok, style: { '--c': hr.c }, onclick: () => useHeal(id, k) },
+            h('b', {}, hr.name), ' ', st.down ? 'obležal' : `${st.hp}/${st.maxHp}`); })));
+    });
+  };
+  const useHeal = (id, k) => {
+    const st = S.heroes[k], it = ITEMS[id]; if (!st || st.down || !(R.bag[id] > 0)) return;
+    const got = Math.min(st.maxHp - st.hp, Math.round(st.maxHp * (it.heal || 0.4))); if (got <= 0) return;
+    st.hp += got; R.bag[id]--; pickFor = null; sfx('heal', { vol: .7 });
+    toast(`${HEROES[k].name}: ${it.name}, +${got} zdravja.`);
+    if (S.screen === 'travel' && typeof renderTravelPanel === 'function') renderTravelPanel();
+    paintHeals(); if (!Object.keys(R.bag).some(x => R.bag[x] > 0 && ITEMS[x].kind === 'heal')) healList.replaceChildren(h('p', { class: 'muted' }, 'Zdravil ni več.'));
+  };
+  paintHeals();
   const ov = h('div', { class: 'overlay', onclick: e => { if (e.target === ov) close(); } }, h('div', { class: 'dialog bag' },
     h('h2', {}, 'Torba', h('span', { class: 'goldtag' }, h('i', { class: 'coin' }), R.gold)),
+    heals.length ? [h('h4', {}, inB ? 'Zdravila (uporabiš jih po bitki)' : 'Zdravila (izberi zdravilo in junaka)'), healList] : null,
     h('h4', {}, 'Napoji in strupi (junaki jih uporabijo sami)'),
-    uses.length ? h('div', { class: 'itemlist' }, uses.map(id => row(id, R.bag[id]))) : h('p', { class: 'muted' }, 'Torba je prazna. Napoje in strupe prodaja krošnjar, nekaj jih je tudi v skrinjah.'),
+    uses.length ? h('div', { class: 'itemlist' }, uses.map(id => row(id, R.bag[id]))) : h('p', { class: 'muted' }, heals.length ? 'Napojev in strupov ni.' : 'Torba je prazna. Napoje, strupe in zdravila prodaja krošnjar, nekaj jih je tudi v skrinjah.'),
     h('h4', {}, 'Predmeti (delujejo ves čas)'),
     R.relics.length ? h('div', { class: 'itemlist' }, R.relics.map(id => row(id, 1))) : h('p', { class: 'muted' }, 'Še nobenega predmeta.'),
     h('div', { class: 'row' }, h('button', { class: 'btn primary', onclick: close }, 'Zapri ', h('kbd', {}, 'Esc')))));
@@ -142,36 +173,46 @@ function openBag() {
 }
 
 // ------------------------------------------------------------ choosing the first hero
+// Game Director, 27 Nov 2026: no lead text; the chosen hero comes first, in one row (the sprite 40 %, the details
+// 60 %); attacks and words as chips; the special effects in plain words with icons; each hero's role (PLAYSTYLE),
+// shown only there, not on the cards in the list (15:12, same day).
+const roleTag = id => { const r = roleOf(id); return h('span', { class: 'rtag', style: { '--tc': r.col } }, pxIcon(r.icon), roleName(id, heroF(id))); };
 function renderPick() {
   const ids = starterChoices(), list = ids.map(id => CHARS.find(c => c.id === id));
   S.pickSel = clamp(S.pickSel, 0, list.length - 1);
-  const ch = list[S.pickSel], K = ROSTER[ch.id];
-  const locked = CHARS.length - ids.length;
+  const ch = list[S.pickSel], K = ROSTER[ch.id], fx = (PLAYSTYLE[ch.id] || { fx: [] }).fx;
+  const sec = (label, body) => h('div', { class: 'psec' }, h('h3', {}, label), body);
   SCR.append(h('div', { class: 'pick' },
-    h('div', { class: 'logo', style: { 'font-size': '30px' } }, 'Kdo gre na pot?'),
-    h('p', { class: 'lead' }, 'Izberi enega junaka. Na začetku so znani trije: Martin Krpan, Zeleni Jurij in Kurent. Drugi so še sence — ko koga srečaš na poti, ga spoznaš in naslednjič lahko začneš tudi z njim.' + (locked ? ` Še neznanih: ${locked}.` : ' Spoznal si vse.') + (setupVal('testMode') ? ' (Preizkusni način: na izbiro so vsi.)' : '')),
+    h('h1', { class: 'logo pick-h' }, 'Kdo gre na pot?'),
+    h('div', { class: 'pickinfo', style: { '--c': ch.c } },
+      h('div', { class: 'spirit' }, spriteEl(ch.id, ch.c)),
+      h('div', { class: 'pdet' },
+        h('h2', {}, ch.name),
+        h('div', { class: 'ptags' }, roleTag(ch.id),
+          h('span', { class: 'php', title: 'zdravje', 'aria-label': `zdravje ${HERO_HP[ch.id]}` }, pxIcon('heart'), HERO_HP[ch.id]),
+          isGod(ch.id) ? h('span', { class: 'gtag', style: { '--tc': ST_LABEL.bog[1] } }, ST_LABEL.bog[0]) : null),
+        h('p', { class: 'psub' }, ch.sub.split(' · ')[0]),
+        sec('Napadi', h('div', { class: 'pchips' }, ch.moves.map(m => h('span', { class: 'pchip' }, m)))),
+        fx.length ? sec(fx.length > 1 ? 'Posebni učinki' : 'Posebni učinek', h('ul', { class: 'pfx' }, fx.map(([ic, t]) => h('li', {}, pxIcon(ic), h('span', {}, t))))) : null,
+        sec(`${heroF(ch.id) ? 'Njene' : 'Njegove'} besede · ×1,5`, h('div', { class: 'pchips' }, K.domain.slice(0, 5).map(w => h('span', { class: 'pchip w' }, w))))),
+      h('div', { class: 'pickgo' },
+        h('button', { class: 'btn primary', onclick: startJourney }, 'Na pot ', h('kbd', {}, 'Enter')),
+        h('button', { class: 'btn', onclick: () => go('newrun') }, 'Nazaj'))),
     h('div', { class: 'pickgrid' }, CHARS.map(c => { const i = ids.indexOf(c.id);
       return i < 0 ? h('div', { class: 'pickcard locked', title: 'Še neznan: srečaš ga na poti' }, h('i', { class: 'shade', style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, '???'), h('span', {}, 'še neznan'))
         : h('button', { class: 'pickcard' + (i === S.pickSel ? ' on' : '') + (isGod(c.id) ? ' god' : ''), style: { '--c': c.c }, 'aria-pressed': i === S.pickSel ? 'true' : 'false',
-          onclick: () => { if (S.pickSel === i) return startJourney(); S.pickSel = i; sfx('sel'); mountShell(); renderPick(); } },
-          h('i', { style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, c.name), h('span', {}, isGod(c.id) ? 'bog' : ROSTER[c.id].role)); })),
-    h('div', { class: 'pickinfo', style: { '--c': ch.c } },
-      h('div', { class: 'spirit' }, spriteEl(ch.id, ch.c)),
-      h('div', {},
-        h('h2', {}, ch.name, h('span', { class: 'gtag', style: { '--tc': ST_LABEL[CHAR_ST[ch.id]][1] } }, ST_LABEL[CHAR_ST[ch.id]][0])),
-        h('p', { class: 'muted' }, ch.sub),
-        h('div', { class: 'stats' },
-          h('div', {}, 'Zdravje'), h('div', {}, HERO_HP[ch.id]),
-          h('div', {}, 'Napadi'), h('div', {}, ch.moves.join(' → ')),
-          h('div', {}, 'Največji napad'), h('div', {}, ch.extra),
-          h('div', {}, 'Njegove besede (×1,5)'), h('div', {}, K.domain.slice(0, 5).join(', ') + ' …')),
-        h('div', { class: 'row', style: { 'justify-content': 'flex-start' } },
-          h('button', { class: 'btn primary', onclick: startJourney }, 'Na pot ', h('kbd', {}, 'Enter')),
-          h('button', { class: 'btn', onclick: () => go('newrun') }, 'Nazaj'))))));
+          onclick: () => { if (S.pickSel === i) return startJourney(); S.pickSel = i; sfx('sel'); mountShell(); renderPick(); pickShow(); } },
+          h('i', { style: { 'background-image': `url(${SPRITES[c.id]})` } }), h('b', {}, c.name)); }))));
+}
+// a hero tapped low in the list: bring the chosen hero's details (now at the top) back into view
+function pickShow() {
+  const p = $('.pickinfo'); if (!p || p.getBoundingClientRect().top >= 0) return;
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  p.scrollIntoView({ block: 'start', behavior: reduce ? 'auto' : 'smooth' });
 }
 function pickKey(e) {
   const d = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0;
-  if (d) { e.preventDefault(); const n = starterChoices().length; S.pickSel = (S.pickSel + d + n) % n; sfx('sel'); mountShell(); renderPick(); }
+  if (d) { e.preventDefault(); const n = starterChoices().length; S.pickSel = (S.pickSel + d + n) % n; sfx('sel'); mountShell(); renderPick(); pickShow(); }
   else if (e.key === 'Enter') { e.preventDefault(); startJourney(); }
   else if (e.key === 'Escape') go('newrun');
 }
@@ -185,6 +226,8 @@ const HERO_MEETS = 3;
 // A save from before keeps a party of four until a hero leaves it (src/save.js).
 const PARTY_MAX = 3;
 const HERO_HOME = { ptuj: 'kurent', peca: 'matjaz', triglav: 'ajda', gozd: 'krpan', piran: 'vida', predjama: 'erazem', barje: 'jurij', reka: 'klepec' };   // the legends of the places (README)
+// the boss's crown (pixel art, src/effects.js), floating over its head on the road and in battle
+const bossCrown = () => h('i', { class: 'crown', 'aria-label': 'Šef', role: 'img', style: { 'background-image': `url(${pxUrl('crown')})` } });
 function planHeroes() {
   const slots = WORLD.regions.map((r, i) => r.stops.includes('hero') ? i : -1).filter(i => i > 0);
   return [0, ...shuffle(slots).slice(0, HERO_MEETS - 1)].sort((a, b) => a - b);
@@ -321,9 +364,11 @@ function enterRegion(i) {
       stop.hero = pickHero(reg.id);
       if (stop.hero) R.met.push(stop.hero); else stop.kind = 'well';
     } else if (kind === 'god') stop.god = R.shrines[i];
-    else if (kind === 'shop') {
-      const relics = shuffle(WORLD.items.filter(it => it.kind === 'relic' && !R.relics.includes(it.id))).slice(0, 2);
-      stop.stock = shuffle(WORLD.items.filter(it => it.kind === 'use')).slice(0, 4).concat(relics).map(it => ({ id: it.id, sold: false }));
+    else if (kind === 'shop') {   // at most SHOP_MAX things, each sold once: a remedy, potions or poisons, and a relic
+      const heal = shuffle(WORLD.items.filter(it => it.kind === 'heal')).slice(0, 1);
+      const relics = shuffle(WORLD.items.filter(it => it.kind === 'relic' && !R.relics.includes(it.id))).slice(0, 1);
+      const uses = shuffle(WORLD.items.filter(it => it.kind === 'use')).slice(0, SHOP_MAX - heal.length - relics.length);
+      stop.stock = heal.concat(uses, relics).map(it => ({ id: it.id, sold: false }));
     }
     R.stops.push(stop);
   });
@@ -348,8 +393,10 @@ function renderTravel() {
     if (stop.enemies) {
       if (stop.done) return;
       body = h('div', { class: 'tv-foes' }, stop.enemies.map((k, n) => { const e = ENEMIES[k], art = e.art || k;
-        return h('div', { class: 'actor foe spr' + (e.boss ? ' boss' : '') + (n === stop.strong ? ' strong' : ''), style: { '--art': Math.round(SPR_SIZE[art] * (e.scale || 1)) } }, h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[art]})`, filter: e.tint || '', 'animation-delay': (-n * 400) + 'ms' } })); }));
-      cap = stop.kind === 'boss' ? 'Šef' : stop.kind === 'elite' ? 'Zaseda' : 'Nasprotniki';
+        return h('div', { class: 'actor foe spr' + (e.boss ? ' boss' : '') + (n === stop.strong ? ' strong' : ''), style: { '--art': Math.round(SPR_SIZE[art] * (e.scale || 1)) } }, h('i', { class: 'sp', style: { 'background-image': `url(${SPRITES[art]})`, filter: e.tint || '', 'animation-delay': (-n * 400) + 'ms' } }),
+          e.boss ? bossCrown() : null); }));
+      // a boss: a crown hovers over it instead of a caption (Game Director, 27 Nov 2026: "the word Šef is not fitting")
+      cap = stop.kind === 'boss' ? null : stop.kind === 'elite' ? 'Zaseda' : 'Nasprotniki';
     } else if (stop.kind === 'chest') { body = objEl('skrinja', stop.done ? 1 : 0); cap = stop.done ? '' : 'Skrinja'; }
     else if (stop.kind === 'trap') { if (stop.done) return; body = objEl('plaz'); cap = 'Plaz'; }
     else if (stop.kind === 'darts') { body = objEl('puscice', stop.done ? 1 : 0); cap = stop.done ? '' : 'Konice'; }
@@ -470,7 +517,7 @@ function promptFor(stop) {
         go('travel');
       } }, { label: 'Pojdi mimo', fn: () => pass() }, ...(train ? [train] : [])] };
   }
-  if (stop.kind === 'shop') return { text: 'Krošnjar iz Ribnice razgrne robo: napoji, strupi in nekaj redkih predmetov.', actions: [{ label: 'Poglej robo', primary: true, fn: () => openShop(stop) }, { label: 'Pojdi mimo', fn: () => pass() }] };
+  if (stop.kind === 'shop') return { text: 'Krošnjar iz Ribnice razgrne robo: zdravila, napoji, strupi in kak redek predmet.', actions: [{ label: 'Poglej robo', primary: true, fn: () => openShop(stop) }, { label: 'Pojdi mimo', fn: () => pass() }] };
   if (stop.kind === 'hero') return { text: `${ROSTER[stop.hero].name} stoji ob poti.`, actions: [{ label: 'Pozdravi', primary: true, fn: () => meetHero(stop, [stop.hero]) }, { label: 'Pojdi mimo', fn: () => pass() }] };
   if (stop.kind === 'god') return shrinePrompt(stop, pass, null);   // balance E: skill points only at wells and signposts
   return { text: '…', actions: [{ label: 'Naprej', primary: true, fn: () => pass() }] };
@@ -492,7 +539,8 @@ function travelKey(e) {
 function stopBattle(stop) {
   const R = S.run, reg = WORLD.regions[R.ri], names = stop.enemies.map(k => ENEMIES[k].name).join(', ');
   const boss = stop.kind === 'boss';
-  go('battle', { id: reg.id, bg: reg.bg, title: reg.name, sub: (boss ? 'Šef · ' : 'Bitka · ') + names, stop,
+  go('battle', { id: reg.id, bg: reg.bg, title: reg.name, sub: 'Bitka · ' + names,   // a boss is shown by its crown, not the word Šef (27 Nov 2026)
+    stop,
     battle: { enemies: stop.enemies, strong: stop.strong != null ? stop.strong : -1, scale: regionScale(R.ri), finishers: shuffle(Object.keys(FINISHER_FX)).slice(0, 2), meterStart: 0,
       ambush: stop.kind === 'elite' ? 'zaseda' : null, escort: boss ? reg.escort || null : null, tips: R.firstBattle ? NODES[0].battle.tips : [] } });
 }
@@ -517,8 +565,8 @@ function openShop(stop) {
     goldEl.innerHTML = ''; goldEl.append(h('i', { class: 'coin' }), R.gold); list.innerHTML = '';
     stop.stock.forEach(s => { const it = ITEMS[s.id], can = !s.sold && R.gold >= it.price;
       list.append(h('div', { class: 'itemrow' + (s.sold ? ' sold' : '') }, itemIcon(s.id),
-        h('div', {}, h('b', {}, it.name, h('em', {}, it.kind === 'relic' ? 'predmet' : it.poison ? 'strup' : 'napoj')), h('span', {}, it.text)),
-        h('button', { class: 'btn small', disabled: !can, onclick: () => { R.gold -= it.price; giveItem(s.id); if (it.kind === 'relic') s.sold = true; sfx('ok'); paint(); } },
+        h('div', {}, h('b', {}, it.name, h('em', {}, itemTag(it))), h('span', {}, it.text)),
+        h('button', { class: 'btn small', disabled: !can, onclick: () => { R.gold -= it.price; giveItem(s.id); s.sold = true; sfx('ok'); paint(); } },
           s.sold ? 'prodano' : h('span', { class: 'price' }, h('i', { class: 'coin' }), it.price)))); });
   };
   const ov = h('div', { class: 'overlay' }, h('div', { class: 'dialog bag' },
@@ -531,23 +579,65 @@ function openShop(stop) {
 }
 
 // ------------------------------------------------------------ the end of the road
+// What the ending shows (Game Director, 27 Nov 2026): each hero's three hardest hits of the journey (from the battle
+// card of the attack: its move, word and damage) and the journey's six longest words (letter mesh and crosswords).
+function noteHit(id, card) {
+  const R = S.run, m = R && /−(\d+)/.exec(String(card.value || ''));
+  if (!m) return;
+  const L = ((R.hits = R.hits || {})[id] = R.hits[id] || []);
+  L.push({ d: +m[1], move: card.move, word: card.word || '' }); L.sort((a, b) => b.d - a.d); L.length = Math.min(L.length, 3);
+}
+function noteLongWord(w) {
+  const R = S.run; if (!R || !w) return;
+  const L = (R.long = R.long || []);
+  if (L.includes(w)) return;
+  L.push(w); L.sort((a, b) => [...b].length - [...a].length || a.localeCompare(b, 'sl')); L.length = Math.min(L.length, 6);
+}
 function renderEnding() {
   const R = S.run || { battles: 0, words: 0, gold: 0, relics: [] };
   statJourney(true);   // src/stats.js, once
   achJourneyWon();   // src/achievements.js: the journey, Znanje, story cards (who was alive when Lintvern fell)
   R.over = true;   // a finished journey cannot be continued from the menu
   clearSave();
-  SCR.append(h('div', { class: 'title ending' },
-    h('div', { class: 'logo' }, 'Ljubljana je rešena'),
+  // a victory: the whole party cheers close up (the fallen get up for it), confetti in the colours of the folk border;
+  // tapping a hero shows the skills they learned and their hardest hits
+  const info = h('div', { class: 'endinfo', 'aria-live': 'polite' });
+  const heroBtns = HEROES.map((hr, k) => h('button', { class: 'endhero', style: { '--c': hr.c, '--d': (k * .22) + 's' }, 'aria-label': `${hr.name}: veščine in najmočnejši udarci`,
+    onclick: () => showEndHero(k) }, h('span', { class: 'endglow', 'aria-hidden': 'true' }), spriteEl(hr.id, hr.c), h('b', {}, hr.name)));
+  function showEndHero(k) {
+    const hr = HEROES[k], st = S.heroes[k], hits = (R.hits || {})[hr.id] || [];
+    heroBtns.forEach((b, i) => b.classList.toggle('on', i === k));
+    info.innerHTML = '';
+    info.style.setProperty('--c', hr.c);
+    info.append(h('h3', {}, hr.name, h('span', { class: 'muted' }, ` · raven ${st.lvl}`)),
+      h('div', { class: 'psec' }, h('h3', {}, 'Veščine'), h('div', { class: 'pchips' }, hr.moves.map((m, t) => { const r = st.sk ? st.sk[t] : (t === 0 ? 1 : 0);
+        return h('span', { class: 'pchip' + (r ? '' : ' w') }, m, r > 1 ? h('i', { class: 'stars' }, ' ' + '★'.repeat(r - 1)) : null, r ? null : h('small', {}, ' · še ne zna')); }))),
+      h('div', { class: 'psec' }, h('h3', {}, 'Najmočnejši udarci'), hits.length
+        ? h('ol', { class: 'endhits' }, hits.map(x => h('li', {}, h('b', {}, `−${x.d}`), h('span', {}, x.move), x.word ? h('em', {}, x.word) : null)))
+        : h('p', { class: 'muted' }, 'Na tej poti ni zapisanih udarcev.')));
+    sfx('sel', { rate: 1.1 });
+  }
+  const long = R.long || [];
+  const confetti = h('div', { class: 'confetti', 'aria-hidden': 'true' }, Array.from({ length: 28 }, (_, i) => h('i', { style: { left: (i * 37 % 100) + '%', '--d': (-(i * 0.43) % 6) + 's', '--x': ((i % 5) - 2) * 14 + 'px', '--k': ['#c8463a', '#f6d36a', '#f2ead8', '#4f8a4a', '#4c8ff0'][i % 5] } })));
+  SCR.append(h('div', { class: 'title ending victory' },
+    confetti,
+    h('div', { class: 'logo' }, 'Ljubljana je rešena!'),
     h('div', { class: 'tagline' }, 'Lintvern je premagan. Z grajskega stolpa se vidi vsa pot, ki si jo prehodil — od Ptuja do sem.'),
     h('div', { class: 'folk-rule' }),
-    h('div', { class: 'endparty' }, HEROES.map((hr, k) => h('figure', {}, spriteEl(hr.id, hr.c, S.heroes[k].down ? 'down' : ''), h('figcaption', {}, hr.name)))),
+    h('div', { class: 'endparty cheer' }, heroBtns),
+    h('p', { class: 'endtap muted' }, 'Pritisni junaka: njegove veščine in najmočnejši udarci.'),
+    info,
     h('div', { class: 'stats' },
       h('div', {}, 'Bitke'), h('div', {}, R.battles), h('div', {}, 'Izrečene besede'), h('div', {}, R.words),
-      h('div', {}, 'Zlatniki'), h('div', {}, R.gold), h('div', {}, 'Predmeti'), h('div', {}, R.relics.length ? R.relics.map(id => ITEMS[id].name).join(', ') : '—')),
+      h('div', {}, 'Zlatniki'), h('div', {}, R.gold)),
+    long.length ? h('div', { class: 'endwords' }, h('h3', {}, 'Najdaljše besede'),
+      h('div', { class: 'pchips' }, long.map(w => h('span', { class: 'pchip w' }, UP(w), h('small', {}, ` ${[...w].length}`))))) : null,
     h('p', { class: 'thanks' }, 'Hvala, ker si prehodil pot do konca.'),
     inspiredLine(),
-    h('div', { class: 'row', style: { 'justify-content': 'flex-start' } }, h('button', { class: 'btn primary', onclick: leaveEnding }, 'Nova pot ', h('kbd', {}, 'Enter')))));
+    // below everything, centred, one under the other, like a game's last screen (Game Director, 27 Nov 2026)
+    h('div', { class: 'endbtns' },
+      h('button', { class: 'btn primary', onclick: () => leaveEnding('newrun') }, 'Nova pot', S.mobile ? null : [' ', h('kbd', {}, 'Enter')]),
+      h('button', { class: 'btn', onclick: () => leaveEnding('title') }, 'Nazaj na meni', S.mobile ? null : [' ', h('kbd', {}, 'Esc')]))));
   sfx('win');
 }
 

@@ -1,6 +1,6 @@
 # Ptuj folk-art parallax slices
 
-This is the first layer pack made from the already-reviewed Ptuj folk-art background. The original reference remains at [`ptuj-folk-background.png`](../ptuj-folk-style-preview/ptuj-folk-background.png); the existing Kurent and Škrat contrast preview is unchanged. These first-pass slices are for reviewing scene depth and motion. They do not replace the in-game pixel-art background or change the renderer.
+This is the first layer pack made from the already-reviewed Ptuj folk-art background. The original reference remains at [`ptuj-folk-background.png`](../ptuj-folk-style-preview/ptuj-folk-background.png); the existing Kurent and Škrat contrast preview is unchanged. These slices are available as opt-in runtime variant B; variant A remains the default pixel-art background.
 
 Open [the interactive slice preview](preview.html), scrub the journey slider, or play the 12-second pan. A static assembled frame is also available:
 

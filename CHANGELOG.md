@@ -36,6 +36,251 @@ major × 10000 + minor × 100 + patch (0.8.0 → 800), so each new version insta
 **Releasing a version:** bump `package.json` and add a section here in the same pull request.
 After it is merged, tag the merge commit on `main` (`git tag v0.8.0 <sha> && git push origin v0.8.0`).
 
+## 0.22.0 — 27 Nov 2026 · zaprta alfa · ten folk parallax backgrounds for review, measured on phones; the phone's tip behind a ? button; a clearer hero picker; phone review fixes; gold from chests, remedies
+
+Branch `review/folk-backgrounds`: PRs #40, #41, #43, #44 and #45 (Codex's four later parallax studies and their runtime
+packs) and #42 (0.21.0, below) in one pull request for the Game Director to confirm. Those six PRs are closed in
+favour of it.
+
+**Four more folk backgrounds as variant B (preview only)**
+- **Piranske soline, Predjamski grad, Ljubljansko barje and Ljubljanski grad** get Codex's folk packs as variant B
+  (`?ozadje=B` or *Kakovost slik → Visoka*), like the six regions of 0.19.0. Their tests stay off (`live: false`):
+  nobody is assigned a variant, everyone else sees A. All ten regions now have one. About +3.4 MB of WebP in the build.
+- **Speeds reviewed (PROPOSED, for the Game Director):** nothing in front of a layer moves slower than it, and things
+  that stand on one another move together.
+  - Piran: the sea and the salt pans were one picture at 0.50 that slid behind the far shore (0.24) and the house
+    (0.32). `tools/art_folk_parallax.py` cuts it along the shore: the sea at 0.20 behind the shore, the pans at 0.50
+    in front of it. The house and its shore move together at 0.28; the sun moves with the sky (0.02).
+  - Predjama: the Lokva moves with the cliff it falls from (0.38, not 0.42).
+  - Barje: the willows and pile dwellings move with their channels (0.46, not 0.38).
+  - Ljubljanski grad: the edge trees, behind the lane at its far edge, move with it (1.0, not 1.08).
+  - The four packs' clouds drift at −1.2 px/s like the other six (Codex's −0.2 to −0.5 barely moved on a phone).
+- **Fix:** on Barje a wedge of dawn sky showed down to the lane where the reed channels repeated (an island with
+  tapered ends). Each copy's end now overlaps the next copy's start (`wrap` in the export tool).
+- **Fix:** the export tool wrote Windows paths (`docs\art-benchmarks\…`) into four manifests, which broke
+  `--check` elsewhere; paths are written with `/` and read either way.
+
+**Measured on phones while the party runs**
+- **New `tests/parallax-phone.test.js`:** the ten packs on 360×640, 390×844, 412×915 and 844×390 (a phone on its
+  side), with the game itself walking the party at the start, middle and end of each region and every frame read:
+  each tiling layer moves by the walked distance × its speed (±1 px rounding); chests, enemies, wells and the signpost
+  keep their place on the painted lane; the heroes stay put, run, and keep their feet on the lane, whose top never
+  jumps; front layers never cover a foot; no hole behind the layers on the road or in battle; tiles are seamless and
+  ground and water bands repeat without a gap; standing still or in battle only the clouds move, at their rate.
+- `tests/parallax.test.js` now covers all ten regions and checks that layers standing on one another share a speed.
+
+**The coach tip on a phone is a ? button**
+- Game Director, 27 Nov 2026: in a battle on a phone the *Namig* tip no longer covers the sky of the scene. It is a
+  round **?** button in the scene's top-left corner. A tap opens the tip as a popover; a tap anywhere outside closes
+  it again, and that tap still does what it does there (picks a letter, chooses an enemy). The button toggles it too.
+- A new tip (the next one after the first word, and so on) marks the button with a gold dot until it is opened
+  (it pulses three times; still under reduced motion).
+- The letter grid never moves for it. On a desktop the tip keeps its row under the word bar. *Knjižni molj* has no tips
+  and no button, as before.
+
+**Martin Krpan's high-fidelity pack is discarded completely**
+- Game Director, 27 Nov 2026: Krpan is pixel art only. On top of 0.21.0 (the pack out of the game), its files leave
+  the repository: the pose atlases, the 48 × 48 frames, the sheet and strip, the previews and the asset review.
+  `art/manifests/martin-krpan.json` keeps only the mare-lift folk illustration and says where the pack is in Git
+  history (`main` at 99c2d99). His painted skill cards are a separate pack and stay.
+
+**Phone review fixes (Game Director, 27 Nov 2026, afternoon)**
+- **Whose letters are whose:** a hero's letters in the mesh now take the colour of the hero's **place in the party**,
+  not the hero's own colour: **red, green and blue** (a violet fourth for practice battles and old saves of four).
+  Erazem and Kralj Matjaž were two reds and Kresnik a pale gold. A **diamond** of the same colour stands under each hero
+  in battle, beside the level; the word chips, the proposals' dots, *Junaki in barve*, the skill screen's dots and the
+  tutorial figures use it too. The colours stay clear of the mesh's own (the gold hint and šumnik dot, the mint path,
+  the teal flood). `SLOT_C` and `ownC` in `src/game.js`.
+- **Premor is a game menu:** a tall panel (about 85 % of a phone's height), everything centred, the buttons in one column
+  of equal width with *Nadaljuj* first, the sound settings at the foot.
+- **No slice floats over the lane:** on seven folk packs the sky and far hills showed between a slice (the forest, the
+  lake, the salt pans, the channels, edge trees) and the lane. The export tool grounds those slices (`floor`): the gap
+  under their paint is filled with their own floor colour down under the lane's edge. Measured over many scroll
+  positions in `tests/parallax.test.js` (from up to 96 % of columns to under 0.5 %).
+- **Triglav's floating spruces** are now near trees the party walks past: larger, blurred, their trunks below the frame,
+  in front of the party at 1.35; on the road only, never in battle, faded while the party stands at a stop.
+- **The locked chest** says one line, *Pred teboj se pojavi zakladna skrinja. Jo znaš odpreti?* (its rules are in its
+  *Kako se igra*); Malček's clue stays under it as *Namig: …*. The chest picture was squeezed narrow by the text beside
+  it and keeps its square shape now.
+- **Skill cards** (*Veščine*) have a full border in the hero's colour around the whole card, dashed while the skill is
+  not learned (it was a coloured left edge).
+- **The role tags** (*Napadalec*, *Zdravilec* …) show only in the chosen hero's details on *Kdo gre na pot?*, not on the
+  cards in the list or in *Dosežki in junaki*.
+- **Painted bases and passing trees in every wood (Game Director, evening):** the grounded slices' bases are no
+  longer a flat colour but continue each slice's own painting (forest undergrowth, lake water, reeds, tree trunks),
+  shaded a little, painted on the finished tile so they wrap the way it repeats. **Peca, Trnovski gozd and Ljubljanski
+  grad** get passing trees like Triglav's: Triglav's whole tree clumps, mirrored and graded to each region's light
+  (moonlit for Trnovski gozd, sunset for Ljubljanski grad), until Codex paints their own. Export tool options `flip`,
+  `tint` and `study`; `tests/parallax.test.js` checks the passing trees in all four regions.
+- **Round sun, square castle:** Piranske soline, Predjamski grad and Ljubljansko barje were placed at Codex's preview
+  boxes, 1.3 times wider than tall, so the sun, Predjama's castle, the salt worker's house and Barje's pile dwellings
+  were stretched. They are 1:1 now, like Trnovski gozd and Ljubljanski grad.
+- **Pokloni se** replaces *Pomoli se* on the shrines (*Kdor se tu pokloni …*, *Če se pokloniš …*): a bow before the
+  god's idol, shorter and plainer than a prayer. The gods' answers still say *molitev* (OPEN, for the Game Director).
+- **For Codex:** `docs/art-workflow/FOLK_PARALLAX_CORRECTIONS_SPEC.md` asks for real bases under seven slices, passing
+  trees for three woods, seamless edge trees in Gozd and Grad, and the Ptuj, Peca and Ljubljanica strips repainted at
+  their in-game shape. The tool's stand-ins stay until then.
+- **New `tests/screens.test.js`** (15 checks): the three letter colours by place and far apart on the colour wheel, the
+  diamonds, Premor's column, the skill cards' borders and dots, the chest's line and shape, the remedies (below).
+  `tests/parallax.test.js` measures floating slices and the passing trees; the "front layers never cover a foot" rules
+  leave passing trees out.
+
+**The Game Director's answers (28 Nov 2026)**
+- **Poklon, not molitev:** the gods answer a bow (*»Zagrmelo je. Tvoj poklon je sprejet. …«*); no player-facing
+  *molitev* is left on the shrines (*pokloni pred bogovi*).
+- **Stribog** shuffled the letter mesh with every blow (gods strike only with their special). He now blows two gusts,
+  *Sapica* (0.6× on everyone, the letters stay), between his storms (*Vihar*, 0.75× on everyone and the mesh
+  shuffled). The other gods are unchanged.
+- **Kolo črk confirmed:** the wheel on phones and the typed crossword on computers, the extra word's weak hit and the
+  per-Znanje values.
+- **Codex:** the scenes spec has its answers (Ljubljanica along the left bank; the Tromostovje seen from the background
+  only; Ljubljanski grad inside the walls, in the courtyard, rewritten as its own scene). New
+  `docs/art-workflow/CODEX_ART_BACKLOG.md` lists everything the game still lacks, in order: the three scenes, the
+  corrections to seven packs, 24 skill cards (Zeleni Jurij, Peter Klepec, the six gods), five enemy sprites that borrow
+  another's (Vešča, Perkmandeljc, Pesjan, Zmajček, Zmajev mladič as the olm), 15 story cards and 60 achievement icons.
+
+**The ending is a victory (Game Director, 27 Nov 2026, evening)**
+- *Ljubljana je rešena!* in gold, with confetti in the folk colours. The party stands close up (about 100 px a hero on a
+  phone, up to 192 on a computer) and **cheers**: each hero hops in turn over a glow of their colour; a fallen hero gets
+  up for it.
+- **Tapping a hero** shows the skills they learned, with their stopnja (★), the ones not learned yet, and their **three
+  hardest hits** of the journey (damage, skill and word), noted from the battle cards.
+- **The longest words** of the journey (letter mesh and crosswords, six at most) replace the list of items.
+- At the bottom, centred and one under the other, **Nova pot** (the setup of a new journey, `Enter`) and **Nazaj na
+  meni** (`Esc`), like a game's last screen. `Nova pot` used to lead to the start menu.
+  `tests/screens.test.js` checks the cheer, the words, a hero's details and the two buttons.
+
+**Dosežki in junaki in three tabs (Game Director, 27 Nov 2026, evening)**
+- The page has tabs: **Dosežki** (first), **Junaki** and the new **Nasprotniki**, one shown at a time (← → move between
+  them). The way back from a hero's card lands on Junaki.
+- **Nasprotniki** uses the same view as Junaki: all eleven enemies in road order, known once beaten on a journey (the
+  achievements' counters), *???* before. A chosen enemy shows its sprite (a boss with its crown), its health, how often
+  it was beaten, its attacks and the regions where it is met, all from the game's data. `tests/menu.test.js` checks it.
+
+**A crown for the boss (Game Director, 27 Nov 2026, evening)**
+- "The word Šef is not fitting": a boss on the road has no caption any more, but a small pixel-art gold crown floats
+  over its head, bobbing gently (still with reduced motion). It wears it in battle too, until it falls, and the battle's
+  title says *Bitka* like any other. `tests/screens.test.js` checks it.
+
+**Kolo črk: the zagovor on a letter wheel (Game Director, 27 Nov 2026, evening)**
+- The zagovor's crossword in the Wordscapes style decided on 24 Nov: a wheel of 7 letters, the grid only shows
+  progress, no clues. Drag over the letters and let go (or tap them and the last one again; type and Enter on a
+  computer); ⟳ shuffles. The key word of the zagovor (PERUN, KRESNIK, MOKOŠ …) is always on the wheel and in the grid;
+  the other words are base forms of everyday words from the same letters.
+- **Fewer words on the wheel, harder:** Malček gets the richest of 36 wheels (about 33 words, 30 % of the letters
+  shown), Učenjak a middle one (about 18), Knjižni molj the poorest that still fills the grid (about 9, none shown).
+  A real word that is not in the grid is an extra word: a weak hit, once. Values PROPOSED.
+- Phones open the wheel, computers the typed crossword (PROPOSED); *Nastavitve → Križanka zagovora* switches it on any
+  device. The other crosswords stay typed. `src/wheel.js`; `tests/wheel.test.js` (19 checks); the phone and keyword
+  tests keep testing the typed crossword.
+- **Compact (Game Director, 20:54):** the wheel takes no space for rules. One short row says *Zagovor* and its title,
+  with **?** (the wheel's *Kako se igra*, over the puzzle, clock stopped; a gold dot until it has been opened) and **✕**
+  (cancel; the power stays). The word bar under the scene is hidden while the wheel is open, and the word being made
+  sits between *Razkrij* and the count of words left, in one row over the wheel.
+
+**Mojster veščine (Game Director, 27 Nov 2026, evening)**
+- A new silver achievement in *Druščina*: the first time a hero uses a skill at its highest stopnja (3) in a journey
+  battle, *Dosežek: Mojster veščine* pops up. Practice battles and test mode do not count, as for every achievement.
+  60 achievements now; its icon is listed in `docs/achievement-art-spec.md` for Codex.
+- The achievements stay the game's own (in `zg-dosezki`, the same on every platform). Google Play Games and Steam
+  achievements can mirror them later (`docs/achievements-design.md`); nothing Android-specific is needed for them.
+
+**Predjamski grad and Ljubljanica (Game Director, 27 Nov 2026, evening)**
+- **Predjama's cliff is part of a mountain:** the castle's cliff no longer stands alone on a meadow. A forested karst
+  mountain moves and repeats with it: its summit always lies behind the cliff, its slopes run off both ways to a
+  valley, and behind them far mountains in the evening haze and the karst ridge. Stand-in made by the export tool from
+  Peca's mountain (cropped at its summit and mirrored there, warmed) and Triglav's foothills (hazed), until Codex
+  paints Predjama's own. Export tool options `cols`, `haze` and `span`.
+- **Ljubljanica has one castle and a bridge with two ends:** the town strip (houses, the Franciscan church, the castle
+  on its hill) was joined to its mirror image, so the castle stood twice side by side; it now tiles wall to wall as
+  Codex painted it. The bridge was mirrored into an arcade without end and shown 1.86 × too wide: it now stands alone at
+  its painted proportions every three view widths, its ends on a stone quay taken from Codex's clean plate, the river in
+  front of its piers. Stand-ins until Codex's new Ljubljanica.
+- **For Codex:** `docs/art-workflow/FOLK_PARALLAX_SCENES_SPEC.md` recomposes three scenes: Ljubljanica along one river
+  bank with the castle as the slowest layer and the Tromostovje once, at the last stop before Povodni mož; Ljubljanski
+  grad at the castle's walls instead of a view of the castle; Predjama's own karst mountain. Three open questions for
+  the Game Director at its end.
+- `tests/parallax.test.js`: Predjama's mountain repeats with the cliff, its summit always behind it and mountain in every
+  column; Ljubljanica's one castle per stretch and a bridge standing alone on the quay. `ZG_REGIONS=predjama,…` measures
+  only some regions.
+
+**The pedlar, gold and remedies (Game Director, 27 Nov 2026, evening)**
+- **The pedlar shows four things at most, each sold once:** one remedy, two potions or poisons and one relic the party
+  does not have (it showed six, and potions could be bought again and again). A bought thing says *prodano*.
+- **Gold comes from chests:** a whole chest pays 35–50 gold (was 15–25), a chest opened a little up to 40 by its share.
+  A won battle pays 1 gold an enemy and 5 a boss (it was 4 + a share of the enemy's XP, about 7–25 a fight: battles
+  brought some 500–650 gold a journey, chests about 120). Rock slides pay none (3 a rock). `BATTLE_GOLD`, `BOSS_GOLD`
+  in `src/journey.js`, `CHEST_GOLD` in `src/game.js`. Gold reads *1 zlatnik, 2 zlatnika, 3 zlatniki, 5 zlatnikov*.
+- **Remedies (new, `kind: "heal"` in `data/world.json`):** *Zeliščni čaj* (15, gives back 40 % health) and *Arnikino
+  mazilo* (30, all of it). In *Torba* the player picks a remedy and then the hero, any time outside a battle; only
+  heroes who are hurt and standing can be picked, the road's health cards update at once. In a battle the button says
+  *po bitki*. The pedlar always has one and chests can hold one. Names, prices and amounts PROPOSED.
+- `tests/journey.test.js`: the pedlar's four things and *prodano*, a battle's small gold, a chest's 35 or more.
+
+**Kdo gre na pot? and the hero's card (Game Director, 27 Nov 2026)**
+- **The hero picker** has no lead text any more. The chosen hero comes first, above the list, in one row on every
+  screen: the sprite takes 40 %, the details 60 %. On a 360 px phone the sprite shrinks a little to fit its column
+  instead of being cut.
+- **The details:** the name; the hero's **role** with its icon and the health with a heart; who they are (*silak z
+  Vrha*); **Napadi** as chips, with no arrows between them; **Posebni učinek** (*Posebni učinki* when there are
+  more), which replaces *Največji napad*, in a few plain words with an icon each (*nasprotnik krvavi*, *zdravi
+  družino*, *izmik in protinapad* …); and the hero's words as chips, *Njene besede* for the heroines.
+- **Roles (PROPOSED, for the Game Director):** *Napadalec*, *Branilec*, *Zdravilec*, *Podpornik* and *Oviralec*, with
+  the feminine forms for Lepa Vida, Ajdovska deklica and Mokoš. They come from the combat roles in the character
+  specifications and what each kit does today: Krpan, Erazem, Klepec, Kresnik, Perun, Veles and Stribog *napad*;
+  Ajda and Svarog *obramba*; Zeleni Jurij and Mokoš *zdravje*; Kralj Matjaž and Dažbog *podpora*; Kurent and Vida
+  *ovira*. The role shows only in the chosen hero's details: the cards in the list and in *Dosežki in junaki* show
+  just the sprite and the name (their old short description, e.g. *težek udar*, is gone). Data: `ROLES` and
+  `PLAYSTYLE` in `src/game.js`.
+- **New pixel icons** (`src/effects.js`, drawn like the attack and defence icons): a heart, healing, bleeding, poison,
+  fire, an hourglass, an open padlock, a spark, a dodge, a stone, a hit on all, and the role icons (a sword, a shield,
+  a banner).
+- A hero tapped low in the list scrolls the details back into view at the top.
+- **The hero's card** (after a battle, on meeting a hero, in *Dosežki in junaki*): the name was pushed up over the
+  painting on phones, because the card had a fixed height and its plate overflowed. The front now sizes to the
+  painting and its plate, and shows **only the name and the skills**, the name on the plate under the painting. Who
+  the hero is (*vitez iz Predjame · meč, češnje, izmik*) moved to the **back** of the card, above the story.
+- **New `tests/picker.test.js`** (24 checks): no lead text, the hero above the list, 40/60 in one row on a desktop
+  and at 360 and 412 px with the sprite whole, chips without arrows, effects with icons, the roles and their feminine
+  forms, no role on the list's cards, and the card's name on its plate under the painting at all three widths.
+
+## 0.21.0 — 26 Nov 2026 · zaprta alfa · Kakovost slik is about the backgrounds only
+
+Branch `art/krpan-pixel-sprite` (PR #42). Decided by the Game Director on 25 Nov (heroes and enemies use simple pixel
+sprites) and 26 Nov (*Visoka* shows only the difference in the backgrounds; the painted skill cards become the default
+everywhere, with an empty board and ??? where a card is missing).
+
+**Martin Krpan is pixel art again**
+- **Martin Krpan in *Kakovost slik → Visoka*** draws the pixel sprite every other quality already showed (the one in
+  `SPRITES`), with the early-handheld lunge for his attacks. Codex's 48 × 48 sheet (idle, the skill sequences,
+  running, victory, the kneel) is no longer in the game.
+- **His skills are unchanged:** Lipov kij, Kmečka moč (ranks 1–3) and Mesarica keep their damage, targets, bleed and
+  ranks (`src/progression.js`).
+- **Removed:** the hero-sheet path (`data/hero-art.json`, its part of `build.py`, `spriteEl` / `attackAnim` frames,
+  the victory salute, `.spr.hi` in `game.css`) and its two offline tools (`tools/art_hero_pack.py`,
+  `tools/art_krpan_salt_throw.py`). Codex's Krpan pack stays in `art/` as archived source art; it is not built in.
+  The single-file build is about 30 KB smaller.
+
+**The painted skill cards are the default**
+- **In battle a hero's skill shows Codex's painted card in every quality** (*Samodejno*, *Visoka*, *Nizka*). The A/B
+  test against the hand-made SVG boards is over: `cardTest` left `data/backgrounds.json`, `?karte=` is gone and the
+  tester statistics no longer carry `karte=`.
+- **A skill without a painting yet shows an empty board with ???** under its usual caption (name, word, value). Today
+  that is Perun, Svarog, Veles, Mokoš, Dažbog, Stribog, Zeleni Jurij and Peter Klepec; Krpan, Kurent, Kresnik, Kralj
+  Matjaž, Erazem, Lepa Vida and Ajdovska deklica have all three paintings.
+- **The hero screen's *Karte veščin* is on every hero now.** A hero without paintings shows three ??? boards
+  (*Veščina 1 · karta še nastaja*); collecting works as in 0.19.0 for the painted ones.
+- **Enemies keep their hand-made boards**, gods fought at a shrine included.
+- *Liki in karte* plays each hero's skills as the party shows them and lists the painting or ??? under each hero.
+- *Nastavitve → Razvoj → Kakovost slik* now says it changes only the backgrounds.
+
+**Tests**
+- `tests/backgrounds.test.js`: Krpan draws the same pixel sprite in all three qualities and lunges for every skill.
+- `tests/achievements.test.js`: the painting by default and with *Nizka* and *Visoka*; ??? boards for Zeleni Jurij in
+  battle cards, on his hero screen and in the gallery; Mora keeps her SVG board; no `karte=` in the statistics. The
+  test word now goes through a hero's letters, and the quality check runs in the gallery, which fixes two checks that
+  failed now and then when a word hit no hero or the first battle had already ended.
+
 ## 0.20.0 — 25 Nov 2026 · zaprta alfa · A party of three, two shrines, three enemies on screen
 
 Branch `feat/party-three-gods-queue` (PR #39). Prepared on 24 Nov as 0.18.0; it merged after 0.19.0 (PR #38), so it
